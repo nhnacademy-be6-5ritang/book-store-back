@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.bookcart.service.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.nhnacademy.bookstoreback.bookcart.domain.entity.BookCart;
@@ -16,6 +18,11 @@ public class BookCartServiceImpl implements BookCartService {
 	@Override
 	public BookCart createBookCart(BookCart bookCart) {
 		return bookCartRepository.save(bookCart);
+	}
+
+	@Override
+	public List<BookCart> getBookCarts(Long cartId) {
+		return List.of();
 	}
 
 	@Override
