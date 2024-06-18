@@ -9,8 +9,6 @@ public interface ReviewService {
 
 	List<Review> findReviewsByBookId(Long bookId);
 
-	List<Review> findReviewsByUserId(Long userId);
-
 	Review saveReview(Review review);
 
 	Review findReviewById(Long id);

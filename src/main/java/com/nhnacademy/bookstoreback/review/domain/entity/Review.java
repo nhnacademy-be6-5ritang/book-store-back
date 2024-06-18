@@ -22,10 +22,11 @@ public class Review {
 	private String reviewComment;
 	private LocalDateTime reviewCreatedAt;
 
-	// @ManyToOne
+	// @ManyToOne(optional = false)
 	// @JoinColumn(name = "book_id")
 	// private Book book;
-	//
 
-	private Long userId;
+	// @ManyToOne(optional = false)
+	// @JoinColumn(name = "user_id")
+	// private User user;
 }

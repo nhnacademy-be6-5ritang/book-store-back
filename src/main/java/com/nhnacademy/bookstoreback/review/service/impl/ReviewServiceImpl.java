@@ -26,11 +26,6 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public List<Review> findReviewsByUserId(Long userId) {
-		return reviewRepository.findAllByUserId(userId);
-	}
-
-	@Override
 	public Review saveReview(Review review) {
 		return reviewRepository.save(review);
 	}
