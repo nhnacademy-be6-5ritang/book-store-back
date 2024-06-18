@@ -1,9 +1,13 @@
 package com.nhnacademy.bookstoreback.wishlist.domain.entity;
 
+import com.nhnacademy.bookstoreback.user.domain.entity.User;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,8 +26,8 @@ public class WishList {
 	// @JoinColumn(name = "book_id")
 	// private Book book;
 
-	// @ManyToOne(optional = false)
-	// @JoinColumn(name = "user_id")
-	// private User user;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "user_id")
+	private User user;
 
 }
