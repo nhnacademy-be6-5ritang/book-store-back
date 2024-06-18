@@ -16,10 +16,12 @@ public class WishList {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long wishListId;
 
-	private Long userId;
-
 	// @ManyToOne(optional = false)
 	// @JoinColumn(name = "book_id")
 	// private Book book;
+
+	// @ManyToOne(optional = false)
+	// @JoinColumn(name = "user_id")
+	// private User user;
 
 }

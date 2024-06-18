@@ -31,8 +31,8 @@ public class WishListController {
 
 	@GetMapping
 	public ResponseEntity<List<WishList>> getWishLists(@RequestBody WishList request) {
-		List<WishList> wishLists = wishListService.findAllByUserId(request.getUserId());
-		return ResponseEntity.ok(wishLists);
+
+		return null;
 	}
 
 	@DeleteMapping("/{wishListId}")

@@ -17,7 +17,7 @@ public class WishListServiceImpl implements WishListService {
 
 	@Override
 	public List<WishList> findAllByUserId(Long userId) {
-		return wishListRepository.findAllByUserId(userId);
+		return null;
 	}
 
 	@Override
