@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.GetWishListsRequest;
+import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.GetWishListResponse;
 import com.nhnacademy.bookstoreback.wishlist.domain.entity.WishList;
 import com.nhnacademy.bookstoreback.wishlist.service.WishListService;
 
@@ -30,9 +32,9 @@ public class WishListController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<WishList>> getWishLists(@RequestBody WishList request) {
-
-		return null;
+	public ResponseEntity<List<GetWishListResponse>> getWishLists(@RequestBody GetWishListsRequest request) {
+		List<GetWishListResponse> wishLists = wishListService.findAllByUserId(request.userId());
+		return ResponseEntity.ok(wishLists);
 	}
 
 	@DeleteMapping("/{wishListId}")
