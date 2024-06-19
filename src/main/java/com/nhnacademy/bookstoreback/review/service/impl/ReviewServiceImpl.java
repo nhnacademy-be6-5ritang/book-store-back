@@ -2,8 +2,11 @@ package com.nhnacademy.bookstoreback.review.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 import com.nhnacademy.bookstoreback.review.repository.ReviewRepository;
 import com.nhnacademy.bookstoreback.review.service.ReviewService;
@@ -21,8 +24,11 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public List<Review> findReviewsByBookId(Long bookId) {
-		return List.of();
+	public Page<GetReviewResponse> findReviewsByBookId(Long bookId, Pageable pageable) {
+		Page<Review> reviews = reviewRepository.findAllByBookId(bookId, pageable);
+		return reviews
+			.map(review -> new GetReviewResponse(bookId, review.getReviewScore(), review.getReviewComment(),
+				review.getReviewCreatedAt()));
 	}
 
 	@Override
