@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
 
 import jakarta.persistence.Column;
@@ -56,7 +57,7 @@ public class User {
 	private Role role;
 
 	@Column(name = "user_status")
-	private String status;
+	private UserStatus status;
 
 	@Column(name = "user_sso_id")
 	private String ssoId;
@@ -80,7 +81,7 @@ public class User {
 		String contact,
 		BigDecimal points,
 		Role role,
-		String status,
+		UserStatus status,
 		String ssoId,
 		LocalDateTime createdAt,
 		LocalDateTime updatedAt,
@@ -99,5 +100,22 @@ public class User {
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.lastLoginAt = lastLoginAt;
+	}
+
+	public static User toEntity(CreateUserRequest createUserRequest, String encodedPassword) {
+		return User.builder()
+			.name(createUserRequest.name())
+			.email(createUserRequest.email())
+			.password(encodedPassword)
+			.birth(createUserRequest.birth())
+			.contact(createUserRequest.contact())
+			.points(BigDecimal.ZERO)
+			.role(Role.MEMBER)
+			.status(UserStatus.ACTIVE)
+			.ssoId(null)
+			.createdAt(LocalDateTime.now())
+			.updatedAt(LocalDateTime.now())
+			.lastLoginAt(null)
+			.build();
 	}
 }
