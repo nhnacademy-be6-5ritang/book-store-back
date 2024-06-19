@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.book.domain.entity;
+package com.nhnacademy.bookstoreback.order.domain.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
