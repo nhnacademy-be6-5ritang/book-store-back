@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.book.controller;
+package com.nhnacademy.bookstoreback.order.controller;
 
 import java.util.List;
 
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Order;
-import com.nhnacademy.bookstoreback.book.domain.entity.OrderStatus;
-import com.nhnacademy.bookstoreback.book.domain.entity.WrappingPaper;
-import com.nhnacademy.bookstoreback.book.service.OrderService;
-import com.nhnacademy.bookstoreback.book.service.OrderStatusService;
-import com.nhnacademy.bookstoreback.book.service.WrappingPaperService;
+import com.nhnacademy.bookstoreback.order.domain.entity.Order;
+import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
+import com.nhnacademy.bookstoreback.order.domain.entity.WrappingPaper;
+import com.nhnacademy.bookstoreback.order.service.OrderService;
+import com.nhnacademy.bookstoreback.order.service.OrderStatusService;
+import com.nhnacademy.bookstoreback.order.service.WrappingPaperService;
 
 @RestController
 public class OrderController {

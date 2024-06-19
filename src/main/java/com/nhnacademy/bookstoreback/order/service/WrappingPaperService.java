@@ -1,12 +1,12 @@
-package com.nhnacademy.bookstoreback.book.service;
+package com.nhnacademy.bookstoreback.order.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.WrappingPaper;
-import com.nhnacademy.bookstoreback.book.repository.WrappingPaperRepository;
+import com.nhnacademy.bookstoreback.order.domain.entity.WrappingPaper;
+import com.nhnacademy.bookstoreback.order.repository.WrappingPaperRepository;
 
 @Service
 public class WrappingPaperService {
