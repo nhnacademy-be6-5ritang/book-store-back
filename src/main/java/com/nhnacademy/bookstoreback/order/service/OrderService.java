@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.book.service;
+package com.nhnacademy.bookstoreback.order.service;
 
 import java.util.List;
 import java.util.UUID;
@@ -8,13 +8,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Order;
-import com.nhnacademy.bookstoreback.book.domain.entity.OrderStatus;
-import com.nhnacademy.bookstoreback.book.domain.entity.WrappingPaper;
-import com.nhnacademy.bookstoreback.book.repository.OrderRepository;
-import com.nhnacademy.bookstoreback.book.repository.OrderStatusRepository;
-import com.nhnacademy.bookstoreback.book.repository.WrappingPaperRepository;
-import com.nhnacademy.bookstoreback.book.service.impl.OrderServiceImpl;
+import com.nhnacademy.bookstoreback.order.domain.entity.Order;
+import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
+import com.nhnacademy.bookstoreback.order.domain.entity.WrappingPaper;
+import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
+import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
+import com.nhnacademy.bookstoreback.order.repository.WrappingPaperRepository;
+import com.nhnacademy.bookstoreback.order.service.impl.OrderServiceImpl;
 
 @Service
 public class OrderService implements OrderServiceImpl {

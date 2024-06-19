@@ -1,10 +1,10 @@
-package com.nhnacademy.bookstoreback.book.service;
+package com.nhnacademy.bookstoreback.order.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.OrderStatus;
-import com.nhnacademy.bookstoreback.book.repository.OrderStatusRepository;
+import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
+import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
 
 @Service
 public class OrderStatusService {

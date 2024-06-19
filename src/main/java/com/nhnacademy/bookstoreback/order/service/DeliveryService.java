@@ -1,16 +1,16 @@
-package com.nhnacademy.bookstoreback.book.service;
+package com.nhnacademy.bookstoreback.order.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Delivery;
-import com.nhnacademy.bookstoreback.book.domain.entity.DeliveryStatus;
-import com.nhnacademy.bookstoreback.book.domain.entity.Order;
-import com.nhnacademy.bookstoreback.book.repository.DeliveryRepository;
-import com.nhnacademy.bookstoreback.book.repository.DeliveryStatusRepository;
-import com.nhnacademy.bookstoreback.book.repository.OrderRepository;
+import com.nhnacademy.bookstoreback.order.domain.entity.Delivery;
+import com.nhnacademy.bookstoreback.order.domain.entity.DeliveryStatus;
+import com.nhnacademy.bookstoreback.order.domain.entity.Order;
+import com.nhnacademy.bookstoreback.order.repository.DeliveryRepository;
+import com.nhnacademy.bookstoreback.order.repository.DeliveryStatusRepository;
+import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 
 @Service
 public class DeliveryService {
