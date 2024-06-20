@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class Cart {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JoinColumn(name = "cart_id", nullable = false)
+	@JoinColumn(name = "cart_id")
 	private Long cartId;
 
 	@OneToOne

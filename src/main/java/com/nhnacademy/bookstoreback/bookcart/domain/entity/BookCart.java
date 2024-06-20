@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class BookCart {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JoinColumn(name = "book_cart_id", nullable = false)
+	@JoinColumn(name = "book_cart_id")
 	private Long bookCartId;
 
 	@JoinColumn(name = "book_quantity", nullable = false)
