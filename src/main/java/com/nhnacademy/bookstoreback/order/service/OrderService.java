@@ -1,87 +1,107 @@
 package com.nhnacademy.bookstoreback.order.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
+import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
+import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.entity.Order;
 import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.domain.entity.WrappingPaper;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
 import com.nhnacademy.bookstoreback.order.repository.WrappingPaperRepository;
-import com.nhnacademy.bookstoreback.order.service.impl.OrderServiceImpl;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
-public class OrderService implements OrderServiceImpl {
+@Transactional
+public class OrderService {
 
-	@Autowired
-	private OrderRepository orderRepository;
+	private final OrderRepository orderRepository;
 
-	@Autowired
-	private OrderStatusRepository orderStatusRepository;
+	private final OrderStatusRepository orderStatusRepository;
 
-	@Autowired
-	private WrappingPaperRepository wrappingPaperRepository;
+	private final WrappingPaperRepository wrappingPaperRepository;
+
+	public static final String ERROR_STATUS_WAIT = "주문 상태를 대기로 지정할 수 없습니다";
+	public static final String ERROR_ORDER_EXITS = "주문을 가져올 수 없습니다";
 
 	//카트 아이디를 가지고 있다면 그걸 사용해서 정보 추가로 가져오는 코드 추가 예정
-	@Override
-	public Order createOrder(Order order, Long wrappingPaperId) {
-		order.setOrderInfoId(UUID.randomUUID().toString());
+
+	public CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest, Long wrappingPaperId) {
 		List<OrderStatus> orderStatuses = orderStatusRepository.findAll();
 		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId).orElse(null);
-		order.setWrappingPaper(wrappingPaper);
+
 		for (OrderStatus orderStatus : orderStatuses) {
 			if (orderStatus.getOrderStatusName().equals("대기")) {
-				order.setOrderStatus(orderStatus);
+				Order order = Order.toEntity(createOrderRequest, wrappingPaper, orderStatus);
+				orderRepository.save(order);
+				return CreateOrderResponse.from(order);
 			}
 		}
-		return orderRepository.save(order);
+		ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_WAIT, HttpStatus.UNPROCESSABLE_ENTITY,
+			LocalDateTime.now());
+		throw new OrderFailException(errorStatus);
 	}
 
 	// 특정 주문 가져오기
-	@Override
-	public Order getOrder(Long orderId) {
-		return orderRepository.findById(orderId).orElse(null);
+	@Transactional(readOnly = true)
+	public GetOrderResponse getOrder(Long orderId) {
+		Order order = orderRepository.findById(orderId).orElse(null);
+		if (order == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
+		return GetOrderResponse.from(order);
 	}
 
 	//관리자가 배송중이라는 주문 상태를 찾는 jpa
-	public Page<Order> findByOrderStatus_OrderStatusId(Long orderStatusId, Pageable pageable) {
-		return orderRepository.findByOrderStatus_OrderStatusId(orderStatusId, pageable);
+	@Transactional(readOnly = true)
+	public GetOrderByStatusIdResponse findByOrderStatus_OrderStatusId(Long orderStatusId, Pageable pageable) {
+		Page<Order> order = orderRepository.findByOrderStatus_OrderStatusId(orderStatusId, pageable);
+		if (order == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_WAIT, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
+		return GetOrderByStatusIdResponse.from(order);
 	}
 
 	// 주문의 상태 변경
-	public Order updateOrderStatus(Long orderId, Long orderStatusId) {
+	public GetOrderResponse updateOrderStatus(Long orderId, Long orderStatusId) {
 		Order order = orderRepository.findById(orderId).orElse(null);
 		OrderStatus orderStatus = orderStatusRepository.findById(orderStatusId).orElse(null);
-		if (order != null && orderStatus != null) {
-			order.setOrderStatus(orderStatus);
-			return orderRepository.save(order);
+		if (order == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		} else if (orderStatus == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_WAIT, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
 		}
-		return null;
+		order.updateOrderStatus(orderStatus);
+		return GetOrderResponse.from(orderRepository.save(order));
 	}
 
 	//주문에 적용된 포장지 확인
-	public WrappingPaper getWrappingPapers(Long orderId) {
+	@Transactional(readOnly = true)
+	public GetWrappingResponse getWrappingPapers(Long orderId) {
 		Order order = orderRepository.findById(orderId).orElse(null);
-		if (order != null) {
-			return order.getWrappingPaper();
+		if (order == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
 		}
-		return null;
-	}
-
-	//주문에 포장지 적용
-	public Order updateByOrderId(Long orderId, Long wrappingPaperId) {
-		Order order = orderRepository.findById(orderId).orElse(null);
-		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId).orElse(null);
-		if (order != null) {
-			order.setWrappingPaper(wrappingPaper);
-			return orderRepository.save(order);
-		}
-		return null;
+		return GetWrappingResponse.from(order.getWrappingPaper());
 	}
 }
