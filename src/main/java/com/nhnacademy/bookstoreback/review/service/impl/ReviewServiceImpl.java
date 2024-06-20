@@ -14,8 +14,10 @@ import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
+import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.CreateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
+import com.nhnacademy.bookstoreback.review.domain.dto.response.UpdateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 import com.nhnacademy.bookstoreback.review.repository.ReviewRepository;
 import com.nhnacademy.bookstoreback.review.service.ReviewService;
@@ -93,8 +95,20 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public Review updateReview(Review review) {
-		return null;
+	public UpdateReviewResponse updateReview(Long reviewId, UpdateReviewRequest request) {
+		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> {
+			String errorMessage = String.format("해당 리뷰 '%d'는 존재하지 않는 리뷰입니다.", reviewId);
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+
+		review.updateReviewScore(request.reviewScore(), request.reviewComment());
+		reviewRepository.save(review);
+
+		return UpdateReviewResponse.builder()
+			.reviewComment(review.getReviewComment())
+			.reviewScore(review.getReviewScore())
+			.build();
 	}
 
 	@Override

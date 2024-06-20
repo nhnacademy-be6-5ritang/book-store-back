@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
+import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.CreateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
-import com.nhnacademy.bookstoreback.review.domain.entity.Review;
+import com.nhnacademy.bookstoreback.review.domain.dto.response.UpdateReviewResponse;
 import com.nhnacademy.bookstoreback.review.service.ReviewService;
 
 import lombok.RequiredArgsConstructor;
@@ -59,9 +60,12 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@PutMapping
-	public ResponseEntity<Review> updateReview(@PathVariable Long bookId, @RequestBody Review review) {
-		return null;
+	@PutMapping("/{reviewId}")
+	public ResponseEntity<UpdateReviewResponse> updateReview(@PathVariable Long bookId,
+		@RequestBody UpdateReviewRequest request,
+		@PathVariable Long reviewId) {
+		UpdateReviewResponse response = reviewService.updateReview(reviewId, request);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	@DeleteMapping("/{reviewId}")

@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -43,6 +44,7 @@ public class Review {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
+	@Builder
 	public Review(int reviewScore, String reviewComment, LocalDateTime reviewCreatedAt, Book book, User user) {
 		this.reviewScore = reviewScore;
 		this.reviewComment = reviewComment;
@@ -50,4 +52,10 @@ public class Review {
 		this.book = book;
 		this.user = user;
 	}
+
+	public void updateReviewScore(int newScore, String reviewComment) {
+		this.reviewScore = newScore;
+		this.reviewComment = reviewComment;
+	}
+
 }

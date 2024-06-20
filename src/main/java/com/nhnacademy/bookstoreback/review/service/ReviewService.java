@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
+import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.CreateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
+import com.nhnacademy.bookstoreback.review.domain.dto.response.UpdateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 
 public interface ReviewService {
@@ -19,8 +21,7 @@ public interface ReviewService {
 
 	GetReviewResponse findReviewById(Long id);
 
-	Review updateReview(Review review);
+	UpdateReviewResponse updateReview(Long reviewId, UpdateReviewRequest request);
 
 	void deleteReview(Long reviewId);
-
 }
