@@ -2,7 +2,6 @@ package com.nhnacademy.bookstoreback.order.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,17 +25,17 @@ import com.nhnacademy.bookstoreback.order.service.OrderService;
 import com.nhnacademy.bookstoreback.order.service.OrderStatusService;
 import com.nhnacademy.bookstoreback.order.service.WrappingPaperService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @RestController
 public class OrderController {
 
-	@Autowired
-	private OrderService orderService;
+	private final OrderService orderService;
 
-	@Autowired
-	private OrderStatusService orderStatusService;
+	private final OrderStatusService orderStatusService;
 
-	@Autowired
-	private WrappingPaperService wrappingPaperService;
+	private final WrappingPaperService wrappingPaperService;
 
 	//TODO 주문
 

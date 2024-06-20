@@ -22,17 +22,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "Orders")
 public class Order {
 	@Id
@@ -129,5 +126,9 @@ public class Order {
 			.wrappingPaper(wrappingPaper)
 			.orderStatus(orderStatus)
 			.build();
+	}
+
+	public void updateOrderStatus(OrderStatus orderStatus) {
+		this.orderStatus = orderStatus;
 	}
 }

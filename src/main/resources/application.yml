@@ -20,7 +20,7 @@ spring:
         auto_quote_keyword: true
         dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: update #validate로 변경 예정
     defer-datasource-initialization: true
   sql:
     init:

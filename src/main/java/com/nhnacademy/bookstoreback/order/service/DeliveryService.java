@@ -2,7 +2,6 @@ package com.nhnacademy.bookstoreback.order.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nhnacademy.bookstoreback.order.domain.entity.Delivery;
@@ -12,16 +11,17 @@ import com.nhnacademy.bookstoreback.order.repository.DeliveryRepository;
 import com.nhnacademy.bookstoreback.order.repository.DeliveryStatusRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class DeliveryService {
-	@Autowired
-	private DeliveryRepository deliveryRepository;
 
-	@Autowired
-	private OrderRepository orderRepository;
+	private final DeliveryRepository deliveryRepository;
 
-	@Autowired
-	private DeliveryStatusRepository deliveryStatusRepository;
+	private final OrderRepository orderRepository;
+
+	private final DeliveryStatusRepository deliveryStatusRepository;
 
 	public Delivery creatDeliveries(Long ordersId, Delivery delivery) {
 		Order order = orderRepository.findById(ordersId).orElse(null);

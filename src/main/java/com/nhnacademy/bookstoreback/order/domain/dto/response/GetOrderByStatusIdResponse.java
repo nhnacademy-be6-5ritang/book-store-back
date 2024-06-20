@@ -12,16 +12,18 @@ import lombok.Builder;
 @Builder
 public record GetOrderByStatusIdResponse(
 	List<GetOrderResponse> orders,
-	int pageNumber
+	List<Integer> pageNumber
 ) {
 	public static GetOrderByStatusIdResponse from(Page<Order> order) {
 		List<GetOrderResponse> orderResponse = new ArrayList<>();
+		List<Integer> pageNumbers = new ArrayList<>();
 		for (Order orderItem : order) {
 			orderResponse.add(GetOrderResponse.from(orderItem));
+			pageNumbers.add(order.getPageable().getPageNumber());
 		}
 		return GetOrderByStatusIdResponse.builder()
 			.orders(orderResponse)
-			.pageNumber(order.getNumber())
+			.pageNumber(pageNumbers)
 			.build();
 	}
 }
