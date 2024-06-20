@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-	Page<Review> findAllByBookId(Long bookId, Pageable pageable);
+	Page<Review> findAllByBookBookId(Long bookId, Pageable pageable);
 }

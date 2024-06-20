@@ -43,7 +43,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> findReviewsByBookId(Long userId, Long bookId, Pageable pageable) {
-		Page<Review> reviews = reviewRepository.findAllByBookId(bookId, pageable);
+		Page<Review> reviews = reviewRepository.findAllByBookBookId(bookId, pageable);
 		return reviews
 			.map(review -> new GetReviewResponse(userId, bookId, review.getReviewScore(), review.getReviewComment(),
 				review.getReviewCreatedAt()));
