@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.cart.domain.dto.response.CreateCartResponse;
+import com.nhnacademy.bookstoreback.cart.domain.dto.response.GetCartResponse;
 import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 import com.nhnacademy.bookstoreback.cart.service.CartService;
 import com.nhnacademy.bookstoreback.user.service.UserService;
@@ -71,8 +72,8 @@ public class CartController {
 	}
 
 	@GetMapping("/{cartId}")
-	public ResponseEntity<Cart> getCart(@PathVariable Long cartId) {
-		Cart cart = cartService.getCart(cartId);
+	public ResponseEntity<GetCartResponse> getCart(@PathVariable Long cartId) {
+		GetCartResponse cart = cartService.getCart(cartId);
 		return ResponseEntity.ok(cart);
 	}
 }

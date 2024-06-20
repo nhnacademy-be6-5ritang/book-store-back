@@ -1,5 +1,6 @@
 package com.nhnacademy.bookstoreback.wishlist.domain.entity;
 
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
 import jakarta.persistence.Entity;
@@ -22,9 +23,9 @@ public class WishList {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long wishListId;
 
-	// @ManyToOne(optional = false)
-	// @JoinColumn(name = "book_id")
-	// private Book book;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "book_id")
+	private Book book;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id")
