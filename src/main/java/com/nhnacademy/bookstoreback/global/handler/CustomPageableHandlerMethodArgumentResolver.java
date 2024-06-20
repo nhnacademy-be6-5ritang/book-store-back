@@ -8,8 +8,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class CustomPageableHandlerMethodArgumentResolver extends PageableHandlerMethodArgumentResolver {
-	private static final int DEFAULT_PAGE_SIZE = 5;
-	private static final int MAX_PAGE_SIZE = 10;
+	private static final int DEFAULT_PAGE_SIZE = 10;
+	private static final int MAX_PAGE_SIZE = 20;
 
 	public CustomPageableHandlerMethodArgumentResolver() {
 		super();
