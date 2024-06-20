@@ -1,33 +1,56 @@
 package com.nhnacademy.bookstoreback.order.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.nhnacademy.bookstoreback.global.exception.OrderStatusFailException;
+import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
+import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
 
-@Service
-public class OrderStatusService {
-	@Autowired
-	private OrderStatusRepository orderStatusRepository;
+import lombok.RequiredArgsConstructor;
 
-	public OrderStatus create(OrderStatus orderStatus) {
-		return orderStatusRepository.save(orderStatus);
+@RequiredArgsConstructor
+@Service
+@Transactional
+public class OrderStatusService {
+
+	private final OrderStatusRepository orderStatusRepository;
+
+	public static final String ERROR_STATUS_EXITS = "주문 상태를 가져올 수 없습니다";
+
+	public GetOrderStatusResponse create(CreateOrderStatusRequest createOrderStatusRequest) {
+		OrderStatus orderStatus = OrderStatus.toEntity(createOrderStatusRequest);
+		return GetOrderStatusResponse.from(orderStatusRepository.save(orderStatus));
 	}
 
-	public OrderStatus update(OrderStatus orderStatus, Long id) {
+	public GetOrderStatusResponse update(CreateOrderStatusRequest createOrderStatusRequest, Long id) {
 		OrderStatus newOrderStatus = orderStatusRepository.findById(id).orElse(null);
-		if (newOrderStatus != null) {
-			newOrderStatus.setOrderStatusName(orderStatus.getOrderStatusName());
+		if (newOrderStatus == null) {
+
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderStatusFailException(errorStatus);
 		}
-		return orderStatusRepository.save(orderStatus);
+		newOrderStatus.updateName(createOrderStatusRequest.orderStatusName());
+		return GetOrderStatusResponse.from(orderStatusRepository.save(newOrderStatus));
 	}
 
 	public void delete(Long id) {
 		orderStatusRepository.deleteById(id);
 	}
 
-	public OrderStatus findById(Long id) {
-		return orderStatusRepository.findById(id).orElse(null);
+	@Transactional(readOnly = true)
+	public GetOrderStatusResponse findById(Long id) {
+		OrderStatus orderStatus = orderStatusRepository.findById(id).orElse(null);
+		if (orderStatus == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderStatusFailException(errorStatus);
+		}
+		return GetOrderStatusResponse.from(orderStatus);
 	}
 }
