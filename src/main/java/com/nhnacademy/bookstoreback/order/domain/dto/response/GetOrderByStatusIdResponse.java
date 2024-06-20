@@ -1,6 +1,6 @@
 package com.nhnacademy.bookstoreback.order.domain.dto.response;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -15,12 +15,12 @@ public record GetOrderByStatusIdResponse(
 	int pageNumber
 ) {
 	public static GetOrderByStatusIdResponse from(Page<Order> order) {
-		GetOrderResponse orderResponse = null;
+		List<GetOrderResponse> orderResponse = new ArrayList<>();
 		for (Order orderItem : order) {
-			orderResponse = GetOrderResponse.from(orderItem);
+			orderResponse.add(GetOrderResponse.from(orderItem));
 		}
 		return GetOrderByStatusIdResponse.builder()
-			.orders(Collections.singletonList(orderResponse))
+			.orders(orderResponse)
 			.pageNumber(order.getNumber())
 			.build();
 	}
