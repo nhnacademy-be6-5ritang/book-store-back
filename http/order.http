@@ -1,5 +1,5 @@
 ### 포장지 생성
-POST localhost:8080/wrapping
+POST localhost:8080/wrapping/1
 Content-Type: application/json
 
 {
@@ -9,7 +9,7 @@ Content-Type: application/json
 }
 
 ### 주문 생성
-POST localhost:8080/createOrder/1
+POST localhost:8080/createOrder
 Content-Type: application/json
 
 {
@@ -36,7 +36,7 @@ GET localhost:8080/1
 ### 특정 상태의 주문 가져오기
 GET localhost:8080/getOrderByStatus/1
 
-### 주문 상태 업데이트
+### 주문의 상태 업데이트
 PUT localhost:8080/1/orderStatus/1
 
 ### 포장지 확인
@@ -60,7 +60,7 @@ GET localhost:8080/orderStatus/1
 GET localhost:8080/wrapping
 
 ### 포장지 수정
-PUT localhost:8080/wrapping/2
+PUT localhost:8080/wrapping/1
 Content-Type: application/json
 
 {
@@ -75,3 +75,15 @@ GET localhost:8080/wrapping/1
 ### 포장지 삭제
 DELETE localhost:8080/wrapping/2
 
+### 주문 보안 아이디로 주문리스트 가져오기 (/뒤에 주문 보안 아이디를 넣어주세요)
+GET localhost:8080/bookOrder/
+
+### 주문 리스트 생성
+POST localhost:8080/bookOrder
+Content-Type: application/json
+
+{
+  "bookId": 1,
+  "orderId": 1,
+  "quantity": 2
+}
