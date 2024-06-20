@@ -5,13 +5,11 @@ import java.util.List;
 import com.nhnacademy.bookstoreback.reviewimage.domain.entity.ReviewImage;
 
 public interface ReviewImageService {
-	List<ReviewImage> getReviewImages();
+	List<ReviewImage> getReviewImages(Long reviewId);
 
 	ReviewImage saveReviewImage(ReviewImage reviewImage);
 
 	ReviewImage getReviewImageById(Long reviewImageId);
-
-	ReviewImage updateReviewImage(ReviewImage reviewImage);
 
 	void deleteReviewImage(Long reviewImageId);
 }
