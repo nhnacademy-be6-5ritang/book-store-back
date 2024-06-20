@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
+import com.nhnacademy.bookstoreback.review.domain.dto.response.CreateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 import com.nhnacademy.bookstoreback.review.service.ReviewService;
@@ -39,21 +41,22 @@ public class ReviewController {
 		} else {
 			pageable = PageRequest.of(page, size);
 		}
-		Page<GetReviewResponse> reviews = reviewService.findReviewsByBookId(userId, pageable);
+		Page<GetReviewResponse> reviews = reviewService.findReviewsByBookId(userId, bookId, pageable);
 
 		return ResponseEntity.status(HttpStatus.OK).body(reviews);
 	}
 
 	@PostMapping
-	public ResponseEntity<Review> createReview(@PathVariable Long bookId, @RequestBody Review review) {
-		Review review1 = reviewService.saveReview(review);
-		return ResponseEntity.status(HttpStatus.CREATED).body(review1);
+	public ResponseEntity<CreateReviewResponse> createReview(@PathVariable Long bookId,
+		@RequestBody CreateReviewRequest request) {
+		CreateReviewResponse response = reviewService.saveReview(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@GetMapping("/{reviewId}")
-	public ResponseEntity<Review> getReview(@PathVariable Long bookId, @PathVariable Long reviewId) {
-		Review review = reviewService.findReviewById(reviewId);
-		return ResponseEntity.status(HttpStatus.OK).body(review);
+	public ResponseEntity<GetReviewResponse> getReview(@PathVariable Long bookId, @PathVariable Long reviewId) {
+		GetReviewResponse response = reviewService.findReviewById(reviewId);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	@PutMapping
