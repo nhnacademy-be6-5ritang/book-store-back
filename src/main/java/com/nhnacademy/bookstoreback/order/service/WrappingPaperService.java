@@ -13,7 +13,9 @@ import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateWrappingRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateWrappingRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetWrappingResponse;
+import com.nhnacademy.bookstoreback.order.domain.entity.Order;
 import com.nhnacademy.bookstoreback.order.domain.entity.WrappingPaper;
+import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.WrappingPaperRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,12 +26,14 @@ import lombok.RequiredArgsConstructor;
 public class WrappingPaperService {
 
 	private final WrappingPaperRepository wrappingPaperRepository;
+	private final OrderRepository orderRepository;
 
 	public static final String ERROR_WRAPPING_PAPER_NOT_FOUND = "포장지를 가져올 수 없습니다";
 
-	public GetWrappingResponse createWrappingPapers(CreateWrappingRequest createWrappingRequest) {
-
-		return GetWrappingResponse.from(wrappingPaperRepository.save((WrappingPaper.toEntity(createWrappingRequest))));
+	public GetWrappingResponse createWrappingPapers(CreateWrappingRequest createWrappingRequest, Long orderId) {
+		Order order = orderRepository.findById(orderId).orElse(null);
+		return GetWrappingResponse.from(
+			wrappingPaperRepository.save(WrappingPaper.toEntity(createWrappingRequest, order)));
 	}
 
 	@Transactional(readOnly = true)
@@ -68,5 +72,11 @@ public class WrappingPaperService {
 			list.add(getWrappingResponse);
 		}
 		return list;
+	}
+
+	//주문에 적용된 포장지 확인
+	@Transactional(readOnly = true)
+	public GetWrappingResponse findOrder_OrderId(Long orderId) {
+		return GetWrappingResponse.from(wrappingPaperRepository.findByOrder_OrderId(orderId));
 	}
 }

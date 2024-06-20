@@ -15,10 +15,8 @@ import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.entity.Order;
 import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
-import com.nhnacademy.bookstoreback.order.domain.entity.WrappingPaper;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
 import com.nhnacademy.bookstoreback.order.repository.WrappingPaperRepository;
@@ -41,13 +39,12 @@ public class OrderService {
 
 	//카트 아이디를 가지고 있다면 그걸 사용해서 정보 추가로 가져오는 코드 추가 예정
 
-	public CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest, Long wrappingPaperId) {
+	public CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest) {
 		List<OrderStatus> orderStatuses = orderStatusRepository.findAll();
-		WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId).orElse(null);
 
 		for (OrderStatus orderStatus : orderStatuses) {
 			if (orderStatus.getOrderStatusName().equals("대기")) {
-				Order order = Order.toEntity(createOrderRequest, wrappingPaper, orderStatus);
+				Order order = Order.toEntity(createOrderRequest, orderStatus);
 				orderRepository.save(order);
 				return CreateOrderResponse.from(order);
 			}
@@ -92,16 +89,5 @@ public class OrderService {
 		}
 		order.updateOrderStatus(orderStatus);
 		return GetOrderResponse.from(orderRepository.save(order));
-	}
-
-	//주문에 적용된 포장지 확인
-	@Transactional(readOnly = true)
-	public GetWrappingResponse getWrappingPapers(Long orderId) {
-		Order order = orderRepository.findById(orderId).orElse(null);
-		if (order == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new OrderFailException(errorStatus);
-		}
-		return GetWrappingResponse.from(order.getWrappingPaper());
 	}
 }
