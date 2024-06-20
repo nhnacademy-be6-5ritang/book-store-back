@@ -1,17 +1,10 @@
 package com.nhnacademy.bookstoreback.book.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.service.BookService;
 
 @RestController
@@ -25,23 +18,14 @@ public class BookController {
 		this.bookService = bookService;
 	}
 
-	@GetMapping
-	public List<Book> getAllBooks() {
-		return bookService.getAllBooks();
-	}
-
-	@GetMapping("/{bookId}")
-	public Book getBookById(@PathVariable Long bookId) {
-		return bookService.getBookById(bookId);
-	}
-
-	@PostMapping
-	public Book createBook(@RequestBody Book book) {
-		return bookService.createBook(book);
-	}
-
-	@DeleteMapping("/{bookId}")
-	public void deleteBook(@PathVariable Long bookId) {
-		bookService.deleteBook(bookId);
+	@GetMapping("/fetch")
+	public String fetchAndSaveBooks() {
+		try {
+			bookService.fetchAndSaveBook(
+				"http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttb2897robo0933001&itemIdType=ISBN&ItemId=9788930041683&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList");
+			return "Books fetched and saved successfully";
+		} catch (Exception e) {
+			return "Error while fetching and saving books: " + e.getMessage();
+		}
 	}
 }
