@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "Orders")
+@Table(name = "orders")
 public class Order {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,10 +68,6 @@ public class Order {
 	@JoinColumn(name = "order_status_id")
 	private OrderStatus orderStatus;
 
-	@ManyToOne
-	@JoinColumn(name = "wrapping_paper_id")
-	private WrappingPaper wrappingPaper;
-
 	@OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
 	@Fetch(FetchMode.SUBSELECT)
 	@JsonManagedReference(value = "order-delivery")
@@ -108,10 +104,9 @@ public class Order {
 		this.orderInfoId = orderInfoId;
 		this.orderDate = orderDate;
 		this.orderStatus = orderStatus;
-		this.wrappingPaper = wrappingPaper;
 	}
 
-	public static Order toEntity(CreateOrderRequest createOrderRequest, WrappingPaper wrappingPaper,
+	public static Order toEntity(CreateOrderRequest createOrderRequest,
 		OrderStatus orderStatus) {
 		return Order.builder()
 			.orderPayerName(createOrderRequest.payerName())
@@ -123,7 +118,6 @@ public class Order {
 			.orderCouponSale(createOrderRequest.couponSale())
 			.orderInfoId(UUID.randomUUID().toString())
 			.orderDate(LocalDateTime.now())
-			.wrappingPaper(wrappingPaper)
 			.orderStatus(orderStatus)
 			.build();
 	}
