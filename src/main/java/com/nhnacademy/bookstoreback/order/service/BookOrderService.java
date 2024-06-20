@@ -36,6 +36,7 @@ public class BookOrderService {
 	}
 
 	//주문 보안 아이디로 주문리스트 가져오는 JPA
+	@Transactional(readOnly = true)
 	public GetBookOrderByInfoIdResponse findByOrderInfoId(String orderInfoId) {
 		BookOrder bookOrder = bookOrderRepository.findByOrder_OrderInfoId(orderInfoId);
 		return GetBookOrderByInfoIdResponse.from(bookOrder.getBook(),
