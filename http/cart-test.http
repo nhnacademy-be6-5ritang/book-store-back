@@ -1,0 +1,6 @@
+### cart생성 회원 ID가 없을 경우
+POST localhost:8080/carts
+Accept: application/json
+
+### cart가져오기
+GET localhost:8080/carts/1
