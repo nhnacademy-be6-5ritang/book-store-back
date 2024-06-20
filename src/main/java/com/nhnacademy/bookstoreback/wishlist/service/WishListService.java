@@ -2,12 +2,14 @@ package com.nhnacademy.bookstoreback.wishlist.service;
 
 import java.util.List;
 
-import com.nhnacademy.bookstoreback.wishlist.domain.entity.WishList;
+import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.CreateWishListRequest;
+import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.CreateWishListResponse;
+import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.GetWishListResponse;
 
 public interface WishListService {
-	List<WishList> findAllByUserId(Long userId);
+	List<GetWishListResponse> getWishLists(Long userId);
 
-	WishList createWishList(WishList wishList);
+	CreateWishListResponse createWishList(CreateWishListRequest request);
 
 	void deleteWishList(Long wishListId);
 }

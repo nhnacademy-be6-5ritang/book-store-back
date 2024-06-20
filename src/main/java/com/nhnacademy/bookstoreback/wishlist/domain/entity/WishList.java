@@ -31,4 +31,9 @@ public class WishList {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	public WishList(Book book, User user) {
+		this.book = book;
+		this.user = user;
+	}
+
 }
