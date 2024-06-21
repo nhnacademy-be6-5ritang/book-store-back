@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.review.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +33,13 @@ import lombok.RequiredArgsConstructor;
 public class ReviewController {
 	private final ReviewService reviewService;
 
+	@GetMapping("/all")
+	public ResponseEntity<List<GetReviewResponse>> getReviews(@PathVariable Long bookId) {
+		return ResponseEntity.status(HttpStatus.OK).body(reviewService.findAllReviews());
+	}
+
 	@GetMapping
-	public ResponseEntity<Page<GetReviewResponse>> getReviews(@RequestParam("userId") Long userId,
+	public ResponseEntity<Page<GetReviewResponse>> getReviewsByBookId(@RequestParam("userId") Long userId,
 		@RequestParam("page") int page, @RequestParam("size") int size, @RequestParam(required = false) String sort,
 		@PathVariable Long bookId) {
 
@@ -50,22 +57,19 @@ public class ReviewController {
 	@PostMapping
 	public ResponseEntity<CreateReviewResponse> createReview(@PathVariable Long bookId,
 		@RequestBody CreateReviewRequest request) {
-		CreateReviewResponse response = reviewService.saveReview(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.saveReview(request));
 	}
 
 	@GetMapping("/{reviewId}")
 	public ResponseEntity<GetReviewResponse> getReview(@PathVariable Long bookId, @PathVariable Long reviewId) {
-		GetReviewResponse response = reviewService.findReviewById(reviewId);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(reviewService.findReviewById(reviewId));
 	}
 
 	@PutMapping("/{reviewId}")
 	public ResponseEntity<UpdateReviewResponse> updateReview(@PathVariable Long bookId,
 		@RequestBody UpdateReviewRequest request,
 		@PathVariable Long reviewId) {
-		UpdateReviewResponse response = reviewService.updateReview(reviewId, request);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(reviewService.updateReview(reviewId, request));
 	}
 
 	@DeleteMapping("/{reviewId}")

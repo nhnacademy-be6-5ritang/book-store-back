@@ -1,2 +1,39 @@
-POST localhost:8080/reviews
+### 리뷰 추가
+POST localhost:8080/books/1/reviews
 Content-Type: application/json
+
+{
+  "reviewId": 12345,
+  "bookId": 23,
+  "userId": 2,
+  "reviewScore": 5,
+  "reviewComment": "This book is great!",
+  "reviewCreatedAt": "2024-06-21T12:00:00"
+}
+
+### 특정 리뷰 가져오기
+GET localhost:8080/books/1/reviews/1
+Content-Type: application/json
+
+### 리뷰 업데이트
+PUT localhost:8080/books/1/reviews/1
+Content-Type: application/json
+
+{
+  "reviewScore": 4,
+  "reviewComment": "Updated review comment"
+}
+
+### 리뷰 삭제
+DELETE localhost:8080/books/1/reviews/2
+Content-Type: application/json
+
+### 특정 책의 리뷰 리스트 가져오기
+GET localhost:8080/books/23/reviews?userId=2&page=0&size=10
+Content-Type: application/json
+
+### 모든 책의 리뷰 리스트 가져오기
+GET localhost:8080/books/1/reviews/all
+Content-Type: application/json
+
+

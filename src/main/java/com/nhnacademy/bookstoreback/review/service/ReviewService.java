@@ -10,10 +10,9 @@ import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewReques
 import com.nhnacademy.bookstoreback.review.domain.dto.response.CreateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.UpdateReviewResponse;
-import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 
 public interface ReviewService {
-	List<Review> findAllReviews();
+	List<GetReviewResponse> findAllReviews();
 
 	Page<GetReviewResponse> findReviewsByBookId(Long userId, Long bookId, Pageable pageable);
 
