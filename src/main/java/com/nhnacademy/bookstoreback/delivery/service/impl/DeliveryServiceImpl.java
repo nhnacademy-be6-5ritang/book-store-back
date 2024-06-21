@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 import com.nhnacademy.bookstoreback.delivery.repository.DeliveryRepository;
@@ -40,33 +41,59 @@ public class DeliveryServiceImpl implements DeliveryService {
 	private final String INIT_DELIVERY_STATUS = "발송준비중";
 
 	/**
-	 * 특정 사용자의 배달 목록을 페이징 처리하여 반환합니다.
+	 * 특정 사용자 ID와 연관된 배송 목록을 페이지 단위로 가져옵니다.
 	 *
-	 * @param userId 배달 목록을 조회할 사용자의 ID
-	 * @param pageable 페이징 정보를 포함하는 객체
-	 * @return 사용자의 배달 목록을 포함하는 {@link Page} 객체
+	 * @param userId   배송 목록을 가져올 사용자의 ID
+	 * @param pageable 페이지네이션 정보로 페이지 크기, 정렬 등을 제어합니다.
+	 * @return {@link GetDeliveryResponse} 객체들이 포함된 페이지. 각 배송의 세부 정보를 포함합니다.
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Page<Delivery> getDeliveriesByUserId(Long userId, Pageable pageable) {
-		return deliveryRepository.findAllByOrder_Cart_User_Id(userId, pageable);
+	public Page<GetDeliveryResponse> getDeliveriesByUserId(Long userId, Pageable pageable) {
+		return deliveryRepository.findAllByOrder_Cart_User_Id(userId, pageable)
+			.map(delivery -> GetDeliveryResponse.builder()
+				.deliverySenderName(delivery.getDeliverySenderName())
+				.deliverySenderPhone(delivery.getDeliverySenderPhone())
+				.deliverySenderDate(delivery.getDeliverySenderDate())
+				.deliverySenderAddress(delivery.getDeliverySenderAddress())
+				.deliveryReceiver(delivery.getDeliveryReceiver())
+				.deliveryReceiverPhone(delivery.getDeliveryReceiverPhone())
+				.deliveryReceiverDate(delivery.getDeliveryReceiverDate())
+				.deliveryReceiverAddress(delivery.getDeliveryReceiverAddress())
+				.orderId(delivery.getOrder().getOrderId())
+				.deliveryStatusName(delivery.getDeliveryStatus().getDeliveryStatusName())
+				.build()
+			);
 	}
 
 	/**
-	 * 지정된 배달 ID에 해당하는 배달 정보를 반환합니다.
+	 * 주어진 배송 ID에 해당하는 배송 정보를 조회합니다.
 	 *
-	 * @param deliveryId 조회할 배달의 ID
-	 * @return 조회된 배달 정보를 포함하는 {@link Delivery} 객체
-	 * @throws NotFoundException 배달이 존재하지 않는 경우 예외를 발생시킵니다.
+	 * @param deliveryId 조회할 배송의 ID
+	 * @return 주어진 배송 ID에 해당하는 배송 정보를 포함하는 {@link GetDeliveryResponse} 객체
+	 * @throws NotFoundException 주어진 ID에 해당하는 배송이 없을 경우 발생하는 예외
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Delivery getDelivery(Long deliveryId) {
-		return deliveryRepository.findById(deliveryId).orElseThrow(() -> {
+	public GetDeliveryResponse getDelivery(Long deliveryId) {
+		Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() -> {
 			String errorMessage = String.format("해당 배송 '%s'은 존재하지 않는 배송입니다.", deliveryId);
 			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			return new NotFoundException(errorStatus);
 		});
+
+		return GetDeliveryResponse.builder()
+			.deliverySenderName(delivery.getDeliverySenderName())
+			.deliverySenderPhone(delivery.getDeliverySenderPhone())
+			.deliverySenderDate(delivery.getDeliverySenderDate())
+			.deliverySenderAddress(delivery.getDeliverySenderAddress())
+			.deliveryReceiver(delivery.getDeliveryReceiver())
+			.deliveryReceiverPhone(delivery.getDeliveryReceiverPhone())
+			.deliveryReceiverDate(delivery.getDeliveryReceiverDate())
+			.deliveryReceiverAddress(delivery.getDeliveryReceiverAddress())
+			.orderId(delivery.getOrder().getOrderId())
+			.deliveryStatusName(delivery.getDeliveryStatus().getDeliveryStatusName())
+			.build();
 	}
 
 	/**
@@ -147,7 +174,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 		deliveryRepository.save(delivery);
 
 		return UpdateDeliveryResponse.builder()
-			.order(delivery.getOrder())
+			.deliveryId(delivery.getDeliveryId())
+			.orderId(delivery.getOrder().getOrderId())
 			.deliveryStatusName(delivery.getDeliveryStatus().getDeliveryStatusName())
 			.build();
 	}
