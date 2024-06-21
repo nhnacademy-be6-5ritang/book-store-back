@@ -26,16 +26,16 @@ import lombok.RequiredArgsConstructor;
 public class WishListController {
 	private final WishListService wishListService;
 
-	@PostMapping
-	public ResponseEntity<CreateWishListResponse> createWishList(@RequestBody CreateWishListRequest request) {
-		CreateWishListResponse response = wishListService.createWishList(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	}
-
 	@GetMapping
 	public ResponseEntity<List<GetWishListResponse>> getWishLists(@RequestBody GetWishListsRequest request) {
 		List<GetWishListResponse> response = wishListService.getWishLists(request.userId());
 		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping
+	public ResponseEntity<CreateWishListResponse> createWishList(@RequestBody CreateWishListRequest request) {
+		CreateWishListResponse response = wishListService.createWishList(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@DeleteMapping("/{wishListId}")
