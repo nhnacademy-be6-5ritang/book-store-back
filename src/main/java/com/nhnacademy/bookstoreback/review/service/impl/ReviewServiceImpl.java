@@ -36,8 +36,15 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Review> findAllReviews() {
-		return reviewRepository.findAll();
+	public List<GetReviewResponse> findAllReviews() {
+		return reviewRepository.findAll().stream().map(review -> GetReviewResponse.builder()
+				.userId(review.getUser().getId())
+				.bookId(review.getBook().getBookId())
+				.reviewScore(review.getReviewScore())
+				.reviewComment(review.getReviewComment())
+				.reviewCreatedAt(review.getReviewCreatedAt())
+				.build())
+			.toList();
 	}
 
 	@Override
