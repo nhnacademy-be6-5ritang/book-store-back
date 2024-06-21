@@ -1,0 +1,24 @@
+
+### 위시리스트 추가
+POST localhost:8080/wishLists
+Content-Type: application/json
+
+{
+  "bookId": 25,
+  "userId": 2
+}
+
+### 위시리스트 삭제
+DELETE localhost:8080/wishLists/1
+Content-Type: application/json
+
+### 모든 위시리스트 가져오기
+GET localhost:8080/wishLists
+Content-Type: application/json
+
+{
+  "userId": 2
+}
+
+
+
