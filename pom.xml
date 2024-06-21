@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.nhnacademy</groupId>
-    <artifactId>5ritang-book-store-back</artifactId>
+    <artifactId>book-store-back</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>book-store-back</name>
     <description>book-store-back</description>
