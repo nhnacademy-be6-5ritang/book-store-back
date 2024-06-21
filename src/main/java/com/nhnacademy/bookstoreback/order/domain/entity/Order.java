@@ -10,6 +10,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
+import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 
 import jakarta.persistence.Column;
@@ -67,6 +69,10 @@ public class Order {
 	@ManyToOne
 	@JoinColumn(name = "order_status_id")
 	private OrderStatus orderStatus;
+
+	@ManyToOne
+	@JoinColumn(name = "cart_id")
+	private Cart cart;
 
 	@OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
 	@Fetch(FetchMode.SUBSELECT)
