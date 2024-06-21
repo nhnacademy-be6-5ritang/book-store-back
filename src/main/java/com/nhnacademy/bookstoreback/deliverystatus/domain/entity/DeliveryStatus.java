@@ -1,20 +1,19 @@
-package com.nhnacademy.bookstoreback.order.domain.entity;
+package com.nhnacademy.bookstoreback.deliverystatus.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "deliveries_statuses")
 public class DeliveryStatus {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +22,13 @@ public class DeliveryStatus {
 
 	@Column(name = "delivery_status_name")
 	private String deliveryStatusName;
+
+	public DeliveryStatus(String deliveryStatusName) {
+		this.deliveryStatusName = deliveryStatusName;
+	}
+
+	public void updateDeliveryStatus(String deliveryStatusName) {
+		this.deliveryStatusName = deliveryStatusName;
+	}
 
 }
