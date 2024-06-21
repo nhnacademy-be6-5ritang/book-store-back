@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://133.186.241.167:3306/be6_5ritang
     username: be6_5ritang
-    password: j2EqdFa0rt.tX]WK
+    password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -24,6 +24,11 @@ spring:
   sql:
     init:
       mode: always
+
+jwt:
+  secret: 33085d3cf14717d13f122979944e1e886636cc19e0f749dfbce423bb0031beae8b8758243ce109259c32a83a9325ef2c64433bc0339321d9540036a11884f8fc
+  accessTokenExpirationTime: 15 * 60 * 1000
+  refreshTokenExpirationTime: 7 * 24 * 60 * 60 * 1000
 
 logging:
   level:
