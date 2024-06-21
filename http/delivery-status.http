@@ -6,6 +6,14 @@ Content-Type: application/json
   "deliveryStatusName": "발송준비중"
 }
 
+### 배달 상태 추가
+POST localhost:8080/deliveries-statuses
+Content-Type: application/json
+
+{
+  "deliveryStatusName": "출고작업중"
+}
+
 ### 특정 배달 상태 가져오기
 GET localhost:8080/deliveries-statuses/1
 Content-Type: application/json

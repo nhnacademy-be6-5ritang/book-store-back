@@ -6,8 +6,8 @@ import org.springframework.data.domain.Pageable;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
-import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 
 /**
  * DeliveryService는 배달과 관련된 서비스 인터페이스입니다.
@@ -21,7 +21,7 @@ public interface DeliveryService {
 	 * @param pageable 페이지 요청 정보
 	 * @return 주어진 사용자 ID에 대한 배달 목록
 	 */
-	Page<Delivery> getDeliveriesByUserId(Long userId, Pageable pageable);
+	Page<GetDeliveryResponse> getDeliveriesByUserId(Long userId, Pageable pageable);
 
 	/**
 	 * 주어진 배달 ID에 대한 배달 정보를 반환합니다.
@@ -29,7 +29,7 @@ public interface DeliveryService {
 	 * @param deliveryId 배달 ID
 	 * @return 주어진 배달 ID에 대한 배달 정보
 	 */
-	Delivery getDelivery(Long deliveryId);
+	GetDeliveryResponse getDelivery(Long deliveryId);
 
 	/**
 	 * 새로운 배달을 생성합니다.

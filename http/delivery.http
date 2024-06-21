@@ -19,22 +19,21 @@ GET localhost:8080/users/1/deliveries/1
 Content-Type: application/json
 
 ### 배달 상태 업데이트
-PUT localhost:8080/deliveries/1
+PUT localhost:8080/users/1/deliveries/1
 Content-Type: application/json
 
 {
-  "deliveryPolicyName": "기본 배송비",
-  "deliveryPolicyContent": "주문 금액이 5만원 이하",
-  "deliveryPolicyPrice": 5000.00
+  "deliveryStatusId": 6
 }
 
 ### 배달 삭제
-DELETE localhost:8080/deliveries/1
+DELETE localhost:8080/users/1/deliveries/2
 Content-Type: application/json
 
 ### 특정 사용자의 배달리스트 가져오기
-GET localhost:8080/deliveries
+GET localhost:8080/users/1/deliveries?page=0&size=10
 Content-Type: application/json
+
 
 
 

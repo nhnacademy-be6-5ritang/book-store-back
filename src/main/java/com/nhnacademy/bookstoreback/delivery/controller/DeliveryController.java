@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
-import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 import com.nhnacademy.bookstoreback.delivery.service.DeliveryService;
 
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,8 @@ public class DeliveryController {
 	 * @return 사용자의 배달 목록을 포함하는 {@link Page} 객체
 	 */
 	@GetMapping
-	public Page<Delivery> getDeliveriesByUserId(@RequestParam("page") int page, @RequestParam("size") int size,
+	public Page<GetDeliveryResponse> getDeliveriesByUserId(@RequestParam("page") int page,
+		@RequestParam("size") int size,
 		@RequestParam(required = false) String sort, @PathVariable Long userId) {
 
 		Pageable pageable;
@@ -64,7 +65,7 @@ public class DeliveryController {
 	 * @return HTTP 상태 코드 OK(200)와 함께 조회된 배달 정보
 	 */
 	@GetMapping("/{deliveryId}")
-	public ResponseEntity<Delivery> getDelivery(@PathVariable Long deliveryId) {
+	public ResponseEntity<GetDeliveryResponse> getDelivery(@PathVariable Long deliveryId) {
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.getDelivery(deliveryId));
 	}
 
