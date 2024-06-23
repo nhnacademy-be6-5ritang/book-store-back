@@ -30,9 +30,10 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	public List<GetDeliveryPolicyResponse> getDeliveryPolicies() {
 		return deliveryPolicyRepository.findAll().stream()
 			.map(deliveryPolicy -> GetDeliveryPolicyResponse.builder()
+				.deliveryPolicyId(deliveryPolicy.getDeliveryPolicyId())
 				.deliveryPolicyName(deliveryPolicy.getDeliveryPolicyName())
 				.deliveryPolicyPrice(deliveryPolicy.getDeliveryPolicyPrice())
-				.deliveryPolicyContent(deliveryPolicy.getDeliveryPolicyName())
+				.deliveryPolicyContent(deliveryPolicy.getDeliveryPolicyContent())
 				.build())
 			.toList();
 	}
@@ -46,6 +47,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 		});
 
 		return GetDeliveryPolicyResponse.builder()
+			.deliveryPolicyId(deliveryPolicy.getDeliveryPolicyId())
 			.deliveryPolicyName(deliveryPolicy.getDeliveryPolicyName())
 			.deliveryPolicyPrice(deliveryPolicy.getDeliveryPolicyPrice())
 			.deliveryPolicyContent(deliveryPolicy.getDeliveryPolicyContent())
@@ -78,7 +80,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 
 		deliveryPolicy.updateDeliveryPolicy(request.deliveryPolicyName(), request.deliveryPolicyPrice(),
 			request.deliveryPolicyContent());
-		
+
 		deliveryPolicyRepository.save(deliveryPolicy);
 
 		return UpdateDeliveryPolicyResponse.builder()
