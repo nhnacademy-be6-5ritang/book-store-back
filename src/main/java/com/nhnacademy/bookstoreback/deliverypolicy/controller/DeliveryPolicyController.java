@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.CreateDeliveryPolicyRequest;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.UpdateDeliveryPolicyRequest;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.CreateDeliveryPolicyResponse;
+import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDeliveryPoliciesResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDeliveryPolicyResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.UpdateDeliveryPolicyResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.service.DeliveryPolicyService;
@@ -29,7 +30,7 @@ public class DeliveryPolicyController {
 	private final DeliveryPolicyService deliveryPolicyService;
 
 	@GetMapping
-	public ResponseEntity<List<GetDeliveryPolicyResponse>> getDeliveryPolicies() {
+	public ResponseEntity<List<GetDeliveryPoliciesResponse>> getDeliveryPolicies() {
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryPolicyService.getDeliveryPolicies());
 	}
 
