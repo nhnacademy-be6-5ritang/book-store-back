@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
@@ -15,13 +16,13 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryR
  */
 public interface DeliveryService {
 	/**
-	 * 주어진 사용자 ID에 대한 배달 목록을 페이지 형태로 반환합니다.
+	 * 주어진 사용자의 배송 목록을 페이지 단위로 조회합니다.
 	 *
-	 * @param userId 사용자 ID
-	 * @param pageable 페이지 요청 정보
-	 * @return 주어진 사용자 ID에 대한 배달 목록
+	 * @param request  사용자의 배송 조회 요청 정보를 포함하는 객체
+	 * @param pageable 페이지 정보 및 정렬 기준을 포함하는 객체
+	 * @return 조회된 배송 목록의 페이지 객체
 	 */
-	Page<GetDeliveryResponse> getDeliveriesByUserId(Long userId, Pageable pageable);
+	Page<GetDeliveryResponse> getDeliveriesByUserId(GetDeliveriesRequest request, Pageable pageable);
 
 	/**
 	 * 주어진 배달 ID에 대한 배달 정보를 반환합니다.
