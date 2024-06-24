@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nhnacademy.bookstoreback.wishlist.domain.entity.WishList;
+import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.CreateWishListRequest;
+import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.GetWishListsRequest;
+import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.CreateWishListResponse;
+import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.GetWishListResponse;
 import com.nhnacademy.bookstoreback.wishlist.service.WishListService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,16 +26,16 @@ import lombok.RequiredArgsConstructor;
 public class WishListController {
 	private final WishListService wishListService;
 
-	@PostMapping
-	public ResponseEntity<WishList> createWishList(@RequestBody WishList wishList) {
-		WishList wishList1 = wishListService.createWishList(wishList);
-		return ResponseEntity.status(HttpStatus.CREATED).body(wishList1);
+	@GetMapping
+	public ResponseEntity<List<GetWishListResponse>> getWishLists(@RequestBody GetWishListsRequest request) {
+		List<GetWishListResponse> response = wishListService.getWishLists(request.userId());
+		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping
-	public ResponseEntity<List<WishList>> getWishLists(@RequestBody WishList request) {
-
-		return null;
+	@PostMapping
+	public ResponseEntity<CreateWishListResponse> createWishList(@RequestBody CreateWishListRequest request) {
+		CreateWishListResponse response = wishListService.createWishList(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@DeleteMapping("/{wishListId}")

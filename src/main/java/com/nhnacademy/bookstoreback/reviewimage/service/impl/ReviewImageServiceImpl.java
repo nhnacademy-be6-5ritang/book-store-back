@@ -16,8 +16,8 @@ public class ReviewImageServiceImpl implements ReviewImageService {
 	private final ReviewImageRepository reviewImageRepository;
 
 	@Override
-	public List<ReviewImage> getReviewImages() {
-		return reviewImageRepository.findAll();
+	public List<ReviewImage> getReviewImages(Long reviewId) {
+		return reviewImageRepository.findByReviewReviewId(reviewId);
 	}
 
 	@Override
@@ -30,11 +30,6 @@ public class ReviewImageServiceImpl implements ReviewImageService {
 		return reviewImageRepository.findById(reviewImageId).orElse(null);
 	}
 
-	@Override
-	public ReviewImage updateReviewImage(ReviewImage reviewImage) {
-		return null;
-	}
- 
 	@Override
 	public void deleteReviewImage(Long reviewImageId) {
 		reviewImageRepository.deleteById(reviewImageId);

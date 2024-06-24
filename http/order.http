@@ -1,0 +1,89 @@
+### 포장지 생성
+POST localhost:8080/wrapping/1
+Content-Type: application/json
+
+{
+  "wrappingPaperName": "테스트 포장지",
+  "wrappingPaperContent": "테스트 내용",
+  "wrappingPaperPrice": 4000
+}
+
+### 주문 생성
+POST localhost:8080/createOrder
+Content-Type: application/json
+
+{
+  "payerName": "테스트 주문",
+  "payerEmail": "테스트 이메일",
+  "payerNumber": "01065762197",
+  "payerAddress": "테스트 주소",
+  "pointSale": 4000.00,
+  "orderPrice": 10000.00,
+  "couponSale": 10.00
+}
+
+### 주문 상태 생성
+POST localhost:8080/orderStatus
+Content-Type: application/json
+
+{
+  "orderStatusName": "대기"
+}
+
+### 특정 주문 가져오기
+GET localhost:8080/1
+
+### 특정 상태의 주문 가져오기
+GET localhost:8080/getOrderByStatus/1
+
+### 주문의 상태 업데이트
+PUT localhost:8080/1/orderStatus/1
+
+### 포장지 확인
+GET localhost:8080/1/wrapping
+
+### 주문상태 업데이트
+PUT localhost:8080/orderStatus/2
+Content-Type: application/json
+
+{
+  "orderStatusName": "주문취소"
+}
+
+### 주문상태 삭제
+DELETE localhost:8080/orderStatus/2
+
+###주문상태 아이디로 주문상태 확인
+GET localhost:8080/orderStatus/1
+
+### 포장지 전부 가져오기
+GET localhost:8080/wrapping
+
+### 포장지 수정
+PUT localhost:8080/wrapping/1
+Content-Type: application/json
+
+{
+  "wrappingPaperName": "테스트 포장지 수정",
+  "wrappingPaperContent": "테스트 내용 수정",
+  "wrappingPaperPrice": 3000
+}
+
+### 특정 포장지 가져오기
+GET localhost:8080/wrapping/1
+
+### 포장지 삭제
+DELETE localhost:8080/wrapping/2
+
+### 주문 보안 아이디로 주문리스트 가져오기 (/뒤에 주문 보안 아이디를 넣어주세요)
+GET localhost:8080/bookOrder/
+
+### 주문 리스트 생성
+POST localhost:8080/bookOrder
+Content-Type: application/json
+
+{
+  "bookId": 1,
+  "orderId": 1,
+  "quantity": 2
+}

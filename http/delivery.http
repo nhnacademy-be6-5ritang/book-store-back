@@ -1,0 +1,39 @@
+### 배달 추가
+POST localhost:8080/users/1/deliveries
+Content-Type: application/json
+
+{
+  "deliverySenderName": "홍길동",
+  "deliverySenderPhone": "010-1234-5678",
+  "deliverySenderDate": "2024-06-21T10:00:00",
+  "deliverySenderAddress": "서울특별시 중구 세종대로 110",
+  "deliveryReceiver": "김철수",
+  "deliveryReceiverPhone": "010-8765-4321",
+  "deliveryReceiverDate": "2024-06-22T15:00:00",
+  "deliveryReceiverAddress": "부산광역시 해운대구 우동",
+  "orderId": 1
+}
+
+### 특정 배달 가져오기
+GET localhost:8080/users/1/deliveries/1
+Content-Type: application/json
+
+### 배달 상태 업데이트
+PUT localhost:8080/users/1/deliveries/1
+Content-Type: application/json
+
+{
+  "deliveryStatusId": 6
+}
+
+### 배달 삭제
+DELETE localhost:8080/users/1/deliveries/2
+Content-Type: application/json
+
+### 특정 사용자의 배달리스트 가져오기
+GET localhost:8080/users/1/deliveries?page=0&size=10
+Content-Type: application/json
+
+
+
+

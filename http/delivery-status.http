@@ -1,0 +1,39 @@
+### 배달 상태 추가
+POST localhost:8080/deliveries-statuses
+Content-Type: application/json
+
+{
+  "deliveryStatusName": "발송준비중"
+}
+
+### 배달 상태 추가
+POST localhost:8080/deliveries-statuses
+Content-Type: application/json
+
+{
+  "deliveryStatusName": "출고작업중"
+}
+
+### 특정 배달 상태 가져오기
+GET localhost:8080/deliveries-statuses/1
+Content-Type: application/json
+
+### 배달 상태 업데이트
+PUT localhost:8080/deliveries-statuses/1
+Content-Type: application/json
+
+{
+  "deliveryStatusId": 1,
+  "deliveryStatusName": "배송완료"
+}
+
+### 배달 상태 삭제
+DELETE localhost:8080/deliveries-statuses/1
+Content-Type: application/json
+
+### 모든 배달 상태 가져오기
+GET localhost:8080/deliveries-statuses
+Content-Type: application/json
+
+
+
