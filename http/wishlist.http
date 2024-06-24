@@ -17,7 +17,7 @@ GET localhost:8080/wishLists
 Content-Type: application/json
 
 {
-  "userId": 2
+  "userId": 1
 }
 
 
