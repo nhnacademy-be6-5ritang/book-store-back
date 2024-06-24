@@ -8,6 +8,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 
+/**
+ * @author 김기욱
+ * @version 1.0
+ */
 @Entity
 @Getter
 @Table(name = "tags")

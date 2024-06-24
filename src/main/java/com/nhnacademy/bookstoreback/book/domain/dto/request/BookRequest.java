@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 
 import lombok.Data;
 
+/**
+ * @author 김기욱
+ * @version 1.0
+ */
 @Data
 public class BookRequest {
 	private String bookTitle;

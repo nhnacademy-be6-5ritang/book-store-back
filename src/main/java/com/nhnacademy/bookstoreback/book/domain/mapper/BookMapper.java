@@ -12,6 +12,10 @@ import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.book.domain.entity.Publisher;
 
+/**
+ * @author 김기욱
+ * @version 1.0
+ */
 @Component
 public class BookMapper {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

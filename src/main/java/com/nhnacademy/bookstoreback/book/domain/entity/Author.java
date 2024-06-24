@@ -9,6 +9,10 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author 김기욱
+ * @version 1.0
+ */
 @Entity
 @Getter
 @Setter
@@ -19,6 +23,6 @@ public class Author {
 	@Column(name = "author_id")
 	private Long authorId;
 
-	@Column(name = "author_name", nullable = false, length = 30)
+	@Column(name = "author_name", nullable = false, length = 200)
 	private String authorName;
 }
