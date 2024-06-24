@@ -8,6 +8,13 @@ spring:
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  data:
+    redis:
+      host: 133.186.241.167
+      port: 6379
+      password: ${REDIS_PASSWORD}
+      database: 25
+
   jpa:
     open-in-view: false
     show-sql: true
@@ -19,18 +26,28 @@ spring:
         auto_quote_keyword: true
         dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     defer-datasource-initialization: true
   sql:
     init:
       mode: always
 
-jwt:
-  secret: 33085d3cf14717d13f122979944e1e886636cc19e0f749dfbce423bb0031beae8b8758243ce109259c32a83a9325ef2c64433bc0339321d9540036a11884f8fc
-  accessTokenExpirationTime: 15 * 60 * 1000
-  refreshTokenExpirationTime: 7 * 24 * 60 * 60 * 1000
+  jwt:
+    secret: 33085d3cf14717d13f122979944e1e886636cc19e0f749dfbce423bb0031beae8b8758243ce109259c32a83a9325ef2c64433bc0339321d9540036a11884f8fc
+    access-token:
+      expires-in: 10 * 60 * 1000
+    refresh-token:
+      expires-in: 24 * 60 * 60 * 1000
 
 logging:
   level:
-    org.hibernate.orm.jdbc.bind: trace
-    org.springframework.transaction.interceptor: trace
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: trace
+      springframework:
+        transaction:
+          interceptor: trace
+        security: debug
+        web: debug

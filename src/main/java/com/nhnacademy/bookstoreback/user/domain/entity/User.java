@@ -4,11 +4,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.Check;
+
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,6 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "users")
+@Check(constraints = "user_role IN ('ADMIN', 'MEMBER') AND user_status IN ('ACTIVE', 'DORMANT', 'WITHDRAW')")
 public class User {
 
 	@Id
@@ -53,9 +58,11 @@ public class User {
 	@Column(name = "user_point")
 	private BigDecimal points;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "user_role")
 	private Role role;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "user_status")
 	private UserStatus status;
 
