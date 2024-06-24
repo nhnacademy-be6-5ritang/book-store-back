@@ -48,7 +48,7 @@ public class WishListServiceImpl implements WishListService {
 		});
 
 		User user = userRepository.findById(request.userId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 회원 '%s'는 존재하지 않는 회원입니다.", request.bookId());
+			String errorMessage = String.format("해당 회원 '%s'는 존재하지 않는 회원입니다.", request.userId());
 			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			return new NotFoundException(errorStatus);
 		});

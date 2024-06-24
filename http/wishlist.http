@@ -4,8 +4,8 @@ POST localhost:8080/wishLists
 Content-Type: application/json
 
 {
-  "bookId": 25,
-  "userId": 2
+  "bookId": 126,
+  "userId": 1
 }
 
 ### 위시리스트 삭제
