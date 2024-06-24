@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import com.nhnacademy.bookstoreback.auth.jwt.filter.AppCustomLogoutFilter;
 import com.nhnacademy.bookstoreback.auth.jwt.filter.JwtFilter;
 import com.nhnacademy.bookstoreback.auth.jwt.filter.LoginFilter;
+import com.nhnacademy.bookstoreback.auth.jwt.service.AppCustomUserDetailsService;
 import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class SecurityConfig {
 	private final AuthenticationConfiguration authenticationConfiguration;
 	private final JwtUtils jwtUtils;
 	private final RedisTemplate<String, Object> redisTemplate;
+	private final AppCustomUserDetailsService userDetailsService;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,6 +47,7 @@ public class SecurityConfig {
 			.sessionManagement((session) -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
+			.userDetailsService(userDetailsService)
 			.build();
 	}
 

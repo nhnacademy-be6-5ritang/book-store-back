@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
 import com.nhnacademy.bookstoreback.user.domain.entity.Role;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -34,9 +35,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	@Value("${spring.jwt.access-token.expires-in}")
-	private Long accessTokenExpiresIn;
+	private String accessTokenExpiresInStr;
 	@Value("${spring.jwt.refresh-token.expires-in}")
+	private String refreshTokenExpiresInStr;
+
+	private Long accessTokenExpiresIn;
 	private Long refreshTokenExpiresIn;
+
+	@PostConstruct
+	public void init() {
+		this.accessTokenExpiresIn = Long.parseLong(accessTokenExpiresInStr);
+		this.refreshTokenExpiresIn = Long.parseLong(refreshTokenExpiresInStr);
+	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)

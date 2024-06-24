@@ -22,7 +22,7 @@ public class AppCustomUserDetails implements UserDetails {
 			new GrantedAuthority() {
 				@Override
 				public String getAuthority() {
-					return "ROLE_" + user.getRole().name();
+					return user.getRole().name();
 				}
 			}
 		);
