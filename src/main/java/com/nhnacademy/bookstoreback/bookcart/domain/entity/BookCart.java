@@ -40,4 +40,8 @@ public class BookCart {
 		this.book = book;
 		this.cart = cart;
 	}
+
+	public void updateBookQuantity(int bookQuantity) {
+		this.bookQuantity = bookQuantity;
+	}
 }

@@ -5,8 +5,8 @@ import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import lombok.Getter;
 
 @Getter
-public class CartAlreadyExistsException extends GlobalException {
-	public CartAlreadyExistsException(ErrorStatus errorStatus) {
+public class AlreadyExistsException extends GlobalException {
+	public AlreadyExistsException(ErrorStatus errorStatus) {
 		super(errorStatus);
 	}
 }
