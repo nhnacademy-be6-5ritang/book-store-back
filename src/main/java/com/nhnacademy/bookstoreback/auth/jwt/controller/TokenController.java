@@ -28,10 +28,10 @@ public class TokenController {
 	}
 
 	@PostMapping("/reissue")
-	public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<?> reissueTokens(HttpServletRequest request, HttpServletResponse response) {
 		Cookie[] cookies = request.getCookies();
 
-		Map<String, Object> tokens = tokenService.reissueToken(cookies);
+		Map<String, Object> tokens = tokenService.reissueTokens(cookies);
 
 		if (tokens == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Refresh Token 재발급 중 오류가 발생했습니다.");

@@ -45,7 +45,7 @@ public class TokenService {
 		return null;
 	}
 
-	public Map<String, Object> reissueToken(Cookie[] cookies) {
+	public Map<String, Object> reissueTokens(Cookie[] cookies) {
 		String refreshToken = getRefreshTokenFromCookies(cookies);
 
 		if (refreshToken == null || jwtUtils.validateToken(refreshToken) != null) {
