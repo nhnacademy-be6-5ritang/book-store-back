@@ -1,4 +1,5 @@
 spring:
+
   # JPA 설정
   jpa:
     show-sql: true    # Hibernate가 생성하는 SQL 쿼리를 콘솔에 출력
