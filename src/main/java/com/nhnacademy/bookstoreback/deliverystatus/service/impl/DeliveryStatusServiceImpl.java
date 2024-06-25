@@ -36,6 +36,7 @@ public class DeliveryStatusServiceImpl implements DeliveryStatusService {
 		});
 
 		return GetDeliveryStatusResponse.builder()
+			.deliveryStatusId(deliveryStatusId)
 			.deliveryStatusName(deliveryStatus.getDeliveryStatusName())
 			.build();
 	}
@@ -44,6 +45,7 @@ public class DeliveryStatusServiceImpl implements DeliveryStatusService {
 	public List<GetDeliveryStatusResponse> getDeliveryStatuses() {
 		return deliveryStatusRepository.findAll().stream()
 			.map(deliveryStatus -> GetDeliveryStatusResponse.builder()
+				.deliveryStatusId(deliveryStatus.getDeliveryStatusId())
 				.deliveryStatusName(deliveryStatus.getDeliveryStatusName())
 				.build())
 			.toList();

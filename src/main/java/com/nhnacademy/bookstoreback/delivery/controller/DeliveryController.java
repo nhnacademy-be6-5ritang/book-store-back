@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
@@ -31,23 +32,23 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users/{userId}/deliveries")
+@RequestMapping("/deliveries")
 public class DeliveryController {
 	private final DeliveryService deliveryService;
 
 	/**
-	 * 특정 사용자의 배달 목록을 페이징 처리하여 반환합니다.
+	 * 주어진 조건에 따라 특정 사용자의 배송 목록을 페이지 단위로 조회합니다.
 	 *
-	 * @param page 페이지 번호
-	 * @param size 페이지 당 항목 수
-	 * @param sort 정렬 기준 (옵션)
-	 * @param userId 배달 목록을 조회할 사용자의 ID
-	 * @return 사용자의 배달 목록을 포함하는 {@link Page} 객체
+	 * @param page    조회할 페이지 번호 (0부터 시작)
+	 * @param size    페이지당 조회할 레코드 수
+	 * @param sort    정렬 기준 (옵션)
+	 * @param request 사용자의 배송 조회 요청 정보
+	 * @return 조회된 배송 목록 페이지
 	 */
 	@GetMapping
-	public Page<GetDeliveryResponse> getDeliveriesByUserId(@RequestParam("page") int page,
+	public ResponseEntity<Page<GetDeliveryResponse>> getDeliveriesByUserId(@RequestParam("page") int page,
 		@RequestParam("size") int size,
-		@RequestParam(required = false) String sort, @PathVariable Long userId) {
+		@RequestParam(required = false) String sort, @RequestBody GetDeliveriesRequest request) {
 
 		Pageable pageable;
 		if (sort != null) {
@@ -55,14 +56,14 @@ public class DeliveryController {
 		} else {
 			pageable = PageRequest.of(page, size);
 		}
-		return deliveryService.getDeliveriesByUserId(userId, pageable);
+		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.getDeliveriesByUserId(request, pageable));
 	}
 
 	/**
-	 * 주어진 배달 ID에 해당하는 배달 정보를 조회합니다.
+	 * 주어진 ID에 해당하는 배달 정보를 조회합니다.
 	 *
 	 * @param deliveryId 조회할 배달의 ID
-	 * @return HTTP 상태 코드 OK(200)와 함께 조회된 배달 정보
+	 * @return 조회된 배달 정보를 포함하는 {@link ResponseEntity} 객체
 	 */
 	@GetMapping("/{deliveryId}")
 	public ResponseEntity<GetDeliveryResponse> getDelivery(@PathVariable Long deliveryId) {
@@ -81,26 +82,28 @@ public class DeliveryController {
 	}
 
 	/**
-	 * 지정된 배달 ID에 대한 배달 상태 정보를 업데이트합니다.
+	 * 주어진 ID에 해당하는 배달 정보를 업데이트합니다.
 	 *
 	 * @param deliveryId 업데이트할 배달의 ID
-	 * @param request 새로운 배달 정보를 포함하는 업데이트 요청의 세부 사항
-	 * @return 업데이트된 배달 정보상태 정보를 포함하는 {@link UpdateDeliveryResponse} 객체
+	 * @param request    업데이트할 배달 정보가 포함된 객체
+	 * @return 업데이트된 배달 정보를 포함하는 {@link ResponseEntity} 객체
 	 */
 	@PutMapping("/{deliveryId}")
-	public UpdateDeliveryResponse updateDelivery(@PathVariable Long deliveryId,
+	public ResponseEntity<UpdateDeliveryResponse> updateDelivery(@PathVariable Long deliveryId,
 		@RequestBody UpdateDeliveryRequest request) {
-		return deliveryService.updateDelivery(deliveryId, request);
+		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.updateDelivery(deliveryId, request));
 	}
 
 	/**
-	 * 지정된 배달 ID에 대한 배달 정보를 삭제합니다.
+	 * 주어진 ID에 해당하는 배달 정보를 삭제합니다.
 	 *
 	 * @param deliveryId 삭제할 배달의 ID
+	 * @return 상태 코드 204 (콘텐츠 없음)을 포함하는 {@link ResponseEntity} 객체
 	 */
 	@DeleteMapping("/{deliveryId}")
-	public void deleteDelivery(@PathVariable Long deliveryId) {
+	public ResponseEntity<Void> deleteDelivery(@PathVariable Long deliveryId) {
 		deliveryService.deleteDelivery(deliveryId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 }

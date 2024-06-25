@@ -16,6 +16,10 @@ public record CreateBookOrderGetOrderResponse(
 	BigDecimal couponSale
 ) {
 	public static CreateBookOrderGetOrderResponse from(Order order) {
+		if (order == null) {
+			return null;
+		}
+
 		return CreateBookOrderGetOrderResponse.builder()
 			.infoId(order.getOrderInfoId())
 			.orderPrice(order.getOrderPrice())
@@ -23,5 +27,6 @@ public record CreateBookOrderGetOrderResponse(
 			.pointSale(order.getOrderPointSale())
 			.couponSale(order.getOrderCouponSale())
 			.build();
+
 	}
 }

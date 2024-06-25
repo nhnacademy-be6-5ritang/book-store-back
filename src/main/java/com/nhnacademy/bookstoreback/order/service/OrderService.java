@@ -19,7 +19,7 @@ import com.nhnacademy.bookstoreback.order.domain.entity.Order;
 import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
-import com.nhnacademy.bookstoreback.order.repository.WrappingPaperRepository;
+import com.nhnacademy.bookstoreback.order.repository.PaperTypeRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,13 +32,12 @@ public class OrderService {
 
 	private final OrderStatusRepository orderStatusRepository;
 
-	private final WrappingPaperRepository wrappingPaperRepository;
+	private final PaperTypeRepository paperTypeRepository;
 
 	public static final String ERROR_STATUS_WAIT = "주문 상태를 대기로 지정할 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문을 가져올 수 없습니다";
 
 	//카트 아이디를 가지고 있다면 그걸 사용해서 정보 추가로 가져오는 코드 추가 예정
-
 	public CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest) {
 		List<OrderStatus> orderStatuses = orderStatusRepository.findAll();
 

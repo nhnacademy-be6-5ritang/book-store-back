@@ -17,6 +17,9 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+        env:
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
 
       # 소나큐브 테스트 커버리지 측정
       - name: Build and analyze with SonarQube
