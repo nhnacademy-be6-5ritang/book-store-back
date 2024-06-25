@@ -1,5 +1,6 @@
 package com.nhnacademy.bookstoreback.global.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,6 +32,11 @@ public class SecurityConfig {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final AppCustomUserDetailsService userDetailsService;
 
+	@Value("${spring.jwt.access-token.expires-in}")
+	private Long accessTokenExpiresIn;
+	@Value("${spring.jwt.refresh-token.expires-in}")
+	private Long refreshTokenExpiresIn;
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
@@ -38,10 +44,21 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((requests) -> requests
+				.requestMatchers("/", "/login", "/sign-up", "/reissue").permitAll()
+				.requestMatchers("/admin").hasRole("ADMIN")
+				.requestMatchers("/reissue").permitAll()
+				// .anyRequest().authenticated()
 				.anyRequest().permitAll()
 			)
 			.addFilterBefore(new JwtFilter(jwtUtils), LoginFilter.class)
-			.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtils, redisTemplate),
+			.addFilterAt(
+				new LoginFilter(
+					authenticationManager(authenticationConfiguration),
+					jwtUtils,
+					redisTemplate,
+					accessTokenExpiresIn,
+					refreshTokenExpiresIn
+				),
 				UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new AppCustomLogoutFilter(redisTemplate, jwtUtils), LogoutFilter.class)
 			.sessionManagement((session) -> session

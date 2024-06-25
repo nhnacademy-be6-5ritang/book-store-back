@@ -66,14 +66,15 @@ public class AppCustomLogoutFilter extends GenericFilterBean {
 			return;
 		}
 
-		boolean refreshTokenExists = redisTemplate.opsForHash()
-			.hasKey("RefreshToken:" + jwtUtils.getEmailFromToken(refreshToken), refreshToken);
+		String email = jwtUtils.getEmailFromToken(refreshToken);
+		String redisKey = "RefreshToken:" + email;
+		boolean refreshTokenExists = redisTemplate.opsForHash().hasKey(redisKey, "token");
 		if (!refreshTokenExists) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
 
-		redisTemplate.opsForHash().delete("RefreshToken:" + jwtUtils.getEmailFromToken(refreshToken), refreshToken);
+		redisTemplate.opsForHash().delete(redisKey, "token");
 
 		Cookie cookie = new Cookie("Refresh-Token", null);
 		cookie.setMaxAge(0);

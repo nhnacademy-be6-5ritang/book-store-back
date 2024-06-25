@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
 import com.nhnacademy.bookstoreback.user.domain.entity.Role;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -33,20 +31,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
 	private final JwtUtils jwtUtils;
 	private final RedisTemplate<String, Object> redisTemplate;
-
-	@Value("${spring.jwt.access-token.expires-in}")
-	private String accessTokenExpiresInStr;
-	@Value("${spring.jwt.refresh-token.expires-in}")
-	private String refreshTokenExpiresInStr;
-
-	private Long accessTokenExpiresIn;
-	private Long refreshTokenExpiresIn;
-
-	@PostConstruct
-	public void init() {
-		this.accessTokenExpiresIn = Long.parseLong(accessTokenExpiresInStr);
-		this.refreshTokenExpiresIn = Long.parseLong(refreshTokenExpiresInStr);
-	}
+	private final Long accessTokenExpiresIn;
+	private final Long refreshTokenExpiresIn;
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -74,7 +60,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		saveRefreshToken(userEmail, refreshToken, refreshTokenExpiresIn);
 
-		response.setHeader("Authorization", accessToken);
+		response.setHeader("Authorization", "Bearer " + accessToken);
 		response.addCookie(createCookie("Refresh-Token", refreshToken));
 		response.setStatus(HttpStatus.OK.value());
 	}
@@ -86,7 +72,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	}
 
 	private void saveRefreshToken(String userEmail, String refreshToken, Long expiresIn) {
-		redisTemplate.opsForValue().set("RefreshToken:" + userEmail, refreshToken, Duration.ofMillis(expiresIn));
+		String redisKey = "RefreshToken:" + userEmail;
+		redisTemplate.delete(redisKey);
+		redisTemplate.opsForHash().put(redisKey, "token", refreshToken);
+		redisTemplate.expire(redisKey, Duration.ofMillis(expiresIn));
 	}
 
 	private Cookie createCookie(String key, String value) {
