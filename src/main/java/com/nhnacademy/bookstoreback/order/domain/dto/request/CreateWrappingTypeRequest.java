@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 import lombok.Builder;
 
 @Builder
-public record UpdateWrappingRequest(
-	String wrappingPaperName,
-	String wrappingPaperContent,
-	BigDecimal wrappingPaperPrice
+public record CreateWrappingTypeRequest(
+	String paperName,
+	String paperContent,
+	BigDecimal paperPrice
 ) {
 }
