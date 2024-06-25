@@ -1,7 +1,5 @@
 package com.nhnacademy.bookstoreback.order.domain.entity;
 
-import java.math.BigDecimal;
-
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 
 import jakarta.persistence.Column;
@@ -29,19 +27,19 @@ public class BookOrder {
 	private Long orderListId;
 
 	@Column(name = "book_quantity")
-	private BigDecimal bookQuantity;
+	private Integer bookQuantity;
 
 	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;
 
 	@OneToOne
-	@JoinColumn(name = "order_id")
+	@JoinColumn(name = "order_id", nullable = true)
 	private Order order;
 
 	@Builder
 	public BookOrder(
-		BigDecimal bookQuantity,
+		Integer bookQuantity,
 		Book book,
 		Order order) {
 		this.bookQuantity = bookQuantity;
@@ -49,7 +47,7 @@ public class BookOrder {
 		this.order = order;
 	}
 
-	public static BookOrder toEntity(BigDecimal bookQuantity, Book book, Order order) {
+	public static BookOrder toEntity(Integer bookQuantity, Book book, Order order) {
 		return BookOrder.builder()
 			.book(book)
 			.order(order)
@@ -57,4 +55,7 @@ public class BookOrder {
 			.build();
 	}
 
+	public void update(Order order) {
+		this.order = order;
+	}
 }
