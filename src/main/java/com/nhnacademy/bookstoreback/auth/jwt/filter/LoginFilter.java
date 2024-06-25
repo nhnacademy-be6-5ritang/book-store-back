@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
 import com.nhnacademy.bookstoreback.user.domain.entity.Role;
+import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,6 +34,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final Long accessTokenExpiresIn;
 	private final Long refreshTokenExpiresIn;
+	private final UserRepository userRepository;
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -54,13 +56,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
 		GrantedAuthority auth = iterator.next();
 		Role role = Role.valueOf(auth.getAuthority());
+		Long userId = userRepository.findByEmail(userEmail).getId();
 
-		String accessToken = jwtUtils.generateToken("access", userEmail, role, accessTokenExpiresIn);
-		String refreshToken = jwtUtils.generateToken("refresh", userEmail, role, refreshTokenExpiresIn);
+		String accessToken = jwtUtils.generateAccessToken("access", userId, userEmail, role, accessTokenExpiresIn);
+		String refreshToken = jwtUtils.generateRefreshToken("refresh", userId, userEmail, role, refreshTokenExpiresIn);
 
 		saveRefreshToken(userEmail, refreshToken, refreshTokenExpiresIn);
 
-		response.setHeader("Authorization", "Bearer " + accessToken);
+		response.setHeader("Authorization", accessToken);
 		response.addCookie(createCookie("Refresh-Token", refreshToken));
 		response.setStatus(HttpStatus.OK.value());
 	}

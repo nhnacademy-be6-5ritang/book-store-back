@@ -12,11 +12,12 @@ import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
 import com.nhnacademy.bookstoreback.user.domain.entity.Role;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class RefreshTokenService {
+public class TokenService {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final JwtUtils jwtUtils;
 
@@ -24,6 +25,25 @@ public class RefreshTokenService {
 	private Long accessTokenExpiresIn;
 	@Value("${spring.jwt.refresh-token.expires-in}")
 	private Long refreshTokenExpiresIn;
+
+	public Map<String, Object> getUserInfo(HttpServletRequest request) {
+		String accessToken = request.getHeader("Authorization");
+
+		if (accessToken != null && accessToken.startsWith("Bearer ")) {
+			Long id = jwtUtils.getUserIdFromToken(accessToken);
+			String email = jwtUtils.getEmailFromToken(accessToken);
+			Role role = jwtUtils.getRoleFromToken(accessToken);
+
+			Map<String, Object> userInfo = new HashMap<>();
+			userInfo.put("id", id);
+			userInfo.put("email", email);
+			userInfo.put("role", role);
+
+			return userInfo;
+		}
+
+		return null;
+	}
 
 	public Map<String, Object> reissueToken(Cookie[] cookies) {
 		String refreshToken = getRefreshTokenFromCookies(cookies);
@@ -41,11 +61,12 @@ public class RefreshTokenService {
 			return null;
 		}
 
+		Long id = jwtUtils.getUserIdFromToken(refreshToken);
 		String email = jwtUtils.getEmailFromToken(refreshToken);
 		Role role = jwtUtils.getRoleFromToken(refreshToken);
 
-		String newAccessToken = jwtUtils.generateToken("access", email, role, accessTokenExpiresIn);
-		String newRefreshToken = jwtUtils.generateToken("refresh", email, role, refreshTokenExpiresIn);
+		String newAccessToken = jwtUtils.generateAccessToken("access", id, email, role, accessTokenExpiresIn);
+		String newRefreshToken = jwtUtils.generateRefreshToken("refresh", id, email, role, refreshTokenExpiresIn);
 
 		saveRefreshToken(email, newRefreshToken, refreshTokenExpiresIn);
 
