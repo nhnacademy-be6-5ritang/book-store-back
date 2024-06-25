@@ -2,6 +2,10 @@ spring:
   application:
     name: "book-store-back"
 
+  profiles:
+    active: dev
+
+  # DataSource 설정
   datasource:
     url: jdbc:mysql://133.186.241.167:3306/be6_5ritang
     username: be6_5ritang
@@ -14,6 +18,11 @@ spring:
       port: 6379
       password: ${REDIS_PASSWORD}
       database: 25
+    dbcp2:
+      initial-size: 50    # 초기로 생성할 연결의 수를 설정합니다.
+      max-total: 50   # 풀에서 유지할 수 있는 최대 연결 수를 설정합니다.
+      max-idle: 50   # 유휴 상태로 유지할 최대 연결 수를 설정합니다.
+      min-idle: 50    # 유휴 상태로 유지할 최소 연결 수를 설정합니다.
 
   jpa:
     open-in-view: false
@@ -51,3 +60,6 @@ logging:
           interceptor: trace
         security: debug
         web: debug
+
+      test-on-borrow: true    # 풀에서 연결을 빌릴 때마다 해당 연결이 유효한지 검증할지 여부를 설정합니다.
+      validation-query: SELECT 1    # 연결 유효성을 검사하기 위해 실행할 SQL 쿼리를 설정합니다.
