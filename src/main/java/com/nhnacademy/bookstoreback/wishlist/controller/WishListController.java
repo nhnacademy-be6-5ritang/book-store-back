@@ -29,7 +29,7 @@ public class WishListController {
 	@GetMapping
 	public ResponseEntity<List<GetWishListResponse>> getWishLists(@RequestBody GetWishListsRequest request) {
 		List<GetWishListResponse> response = wishListService.getWishLists(request.userId());
-		return ResponseEntity.ok(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	@PostMapping
