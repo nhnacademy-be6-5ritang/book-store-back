@@ -34,8 +34,12 @@ public class JwtUtils {
 		return Jwts.parser()
 			.verifyWith(secretKey)
 			.build()
-			.parseSignedClaims(token)
+			.parseSignedClaims(token.replace("Bearer ", ""))
 			.getPayload();
+	}
+
+	public Long getUserIdFromToken(String token) {
+		return getClaims(token).get("userId", Long.class);
 	}
 
 	public String getEmailFromToken(String token) {
@@ -51,14 +55,10 @@ public class JwtUtils {
 		return getClaims(token).get("token-type", String.class);
 	}
 
-	public Boolean isExpired(String token) {
-		return getClaims(token).getExpiration().before(new Date());
-	}
-
 	public String validateToken(String token) {
 		String errorMessage = null;
 		try {
-			Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+			Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token.replace("Bearer ", ""));
 		} catch (SecurityException | MalformedJwtException e) {
 			errorMessage = "유효하지 않은 토큰입니다.";
 			log.info(errorMessage, e);
@@ -75,10 +75,22 @@ public class JwtUtils {
 		return errorMessage;
 	}
 
-	// TODO: userId 도 저장
-	public String generateToken(String tokenType, String userEmail, Role role, Long expiresIn) {
+	public String generateAccessToken(String tokenType, Long userId, String userEmail, Role role, Long expiresIn) {
+		return "Bearer " + Jwts.builder()
+			.claim("token-type", tokenType)
+			.claim("userId", userId)
+			.claim("email", userEmail)
+			.claim("role", role.name())
+			.issuedAt(new Date(System.currentTimeMillis()))
+			.expiration(new Date(System.currentTimeMillis() + expiresIn * 1000))
+			.signWith(secretKey)
+			.compact();
+	}
+
+	public String generateRefreshToken(String tokenType, Long userId, String userEmail, Role role, Long expiresIn) {
 		return Jwts.builder()
 			.claim("token-type", tokenType)
+			.claim("userId", userId)
 			.claim("email", userEmail)
 			.claim("role", role.name())
 			.issuedAt(new Date(System.currentTimeMillis()))
