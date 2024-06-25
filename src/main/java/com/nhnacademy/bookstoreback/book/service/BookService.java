@@ -115,4 +115,8 @@ public class BookService {
 			e.printStackTrace();
 		}
 	}
+
+	public Book findBookById(Long bookId) {
+		return bookRepository.findById(bookId).orElse(null);
+	}
 }
