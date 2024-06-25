@@ -34,9 +34,9 @@ public class DeliveryStatusController {
 		return ResponseEntity.status(HttpStatus.OK).body(responses);
 	}
 
-	@GetMapping("/{statusId}")
-	public ResponseEntity<GetDeliveryStatusResponse> getDeliveryStatus(@PathVariable Long statusId) {
-		GetDeliveryStatusResponse response = deliveryStatusService.getDeliveryStatus(statusId);
+	@GetMapping("/{deliveryStatusId}")
+	public ResponseEntity<GetDeliveryStatusResponse> getDeliveryStatus(@PathVariable Long deliveryStatusId) {
+		GetDeliveryStatusResponse response = deliveryStatusService.getDeliveryStatus(deliveryStatusId);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
@@ -47,16 +47,16 @@ public class DeliveryStatusController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@PutMapping("/{statusId}")
-	public ResponseEntity<UpdateDeliveryStatusResponse> updateDeliveryStatus(@PathVariable Long statusId,
+	@PutMapping("/{deliveryStatusId}")
+	public ResponseEntity<UpdateDeliveryStatusResponse> updateDeliveryStatus(@PathVariable Long deliveryStatusId,
 		@RequestBody UpdateDeliveryStatusRequest request) {
-		UpdateDeliveryStatusResponse response = deliveryStatusService.updateDeliveryStatus(statusId, request);
+		UpdateDeliveryStatusResponse response = deliveryStatusService.updateDeliveryStatus(deliveryStatusId, request);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@DeleteMapping("/{statusId}")
-	public ResponseEntity<Void> deleteDeliveryStatus(@PathVariable Long statusId) {
-		deliveryStatusService.deleteDeliveryStatus(statusId);
+	@DeleteMapping("/{deliveryStatusId}")
+	public ResponseEntity<Void> deleteDeliveryStatus(@PathVariable Long deliveryStatusId) {
+		deliveryStatusService.deleteDeliveryStatus(deliveryStatusId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

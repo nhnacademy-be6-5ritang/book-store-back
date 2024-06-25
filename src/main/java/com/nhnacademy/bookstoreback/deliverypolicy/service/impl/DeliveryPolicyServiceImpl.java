@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.CreateDeliveryPolicyRequest;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.UpdateDeliveryPolicyRequest;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.CreateDeliveryPolicyResponse;
+import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDeliveryPoliciesResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDeliveryPolicyResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.UpdateDeliveryPolicyResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.entity.DeliveryPolicy;
@@ -27,12 +28,11 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	private final DeliveryPolicyRepository deliveryPolicyRepository;
 
 	@Override
-	public List<GetDeliveryPolicyResponse> getDeliveryPolicies() {
+	public List<GetDeliveryPoliciesResponse> getDeliveryPolicies() {
 		return deliveryPolicyRepository.findAll().stream()
-			.map(deliveryPolicy -> GetDeliveryPolicyResponse.builder()
+			.map(deliveryPolicy -> GetDeliveryPoliciesResponse.builder()
+				.deliveryPolicyId(deliveryPolicy.getDeliveryPolicyId())
 				.deliveryPolicyName(deliveryPolicy.getDeliveryPolicyName())
-				.deliveryPolicyPrice(deliveryPolicy.getDeliveryPolicyPrice())
-				.deliveryPolicyContent(deliveryPolicy.getDeliveryPolicyName())
 				.build())
 			.toList();
 	}
@@ -46,6 +46,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 		});
 
 		return GetDeliveryPolicyResponse.builder()
+			.deliveryPolicyId(deliveryPolicy.getDeliveryPolicyId())
 			.deliveryPolicyName(deliveryPolicy.getDeliveryPolicyName())
 			.deliveryPolicyPrice(deliveryPolicy.getDeliveryPolicyPrice())
 			.deliveryPolicyContent(deliveryPolicy.getDeliveryPolicyContent())
@@ -78,7 +79,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 
 		deliveryPolicy.updateDeliveryPolicy(request.deliveryPolicyName(), request.deliveryPolicyPrice(),
 			request.deliveryPolicyContent());
-		
+
 		deliveryPolicyRepository.save(deliveryPolicy);
 
 		return UpdateDeliveryPolicyResponse.builder()

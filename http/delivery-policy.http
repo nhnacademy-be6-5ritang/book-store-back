@@ -8,6 +8,16 @@ Content-Type: application/json
   "deliveryPolicyPrice": 3000.00
 }
 
+### 배달 정책 추가
+POST localhost:8080/deliveries-policies
+Content-Type: application/json
+
+{
+  "deliveryPolicyName": "기본 배송비",
+  "deliveryPolicyContent": "주문 금액이 5만원 이하일 경우, 기본 배송비 2,500원이 부과됩니다. 무료 배송 혜택은 동일한 주문에서 총 결제 금액이 5만원을 초과할 경우에만 적용됩니다. 특정 지역(도서 산간 등)은 추가 배송비가 발생할 수 있습니다.",
+  "deliveryPolicyPrice": 3000.00
+}
+
 ### 특정 배달 정책 가져오기
 GET localhost:8080/deliveries-policies/1
 Content-Type: application/json

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
@@ -43,14 +44,14 @@ public class DeliveryServiceImpl implements DeliveryService {
 	/**
 	 * 특정 사용자 ID와 연관된 배송 목록을 페이지 단위로 가져옵니다.
 	 *
-	 * @param userId   배송 목록을 가져올 사용자의 ID
+	 * @param request  사용자의 배송 조회 요청 정보를 포함하는 객체
 	 * @param pageable 페이지네이션 정보로 페이지 크기, 정렬 등을 제어합니다.
 	 * @return {@link GetDeliveryResponse} 객체들이 포함된 페이지. 각 배송의 세부 정보를 포함합니다.
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetDeliveryResponse> getDeliveriesByUserId(Long userId, Pageable pageable) {
-		return deliveryRepository.findAllByOrder_Cart_User_Id(userId, pageable)
+	public Page<GetDeliveryResponse> getDeliveriesByUserId(GetDeliveriesRequest request, Pageable pageable) {
+		return deliveryRepository.findAllByOrder_Cart_User_Id(request.userId(), pageable)
 			.map(delivery -> GetDeliveryResponse.builder()
 				.deliverySenderName(delivery.getDeliverySenderName())
 				.deliverySenderPhone(delivery.getDeliverySenderPhone())
