@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.nhnacademy.bookstoreback.user.domain.entity.Role;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -29,41 +30,29 @@ public class JwtUtils {
 		);
 	}
 
-	public String getEmailFromToken(String token) {
+	private Claims getClaims(String token) {
 		return Jwts.parser()
 			.verifyWith(secretKey)
 			.build()
 			.parseSignedClaims(token)
-			.getPayload()
-			.get("email", String.class);
+			.getPayload();
+	}
+
+	public String getEmailFromToken(String token) {
+		return getClaims(token).get("email", String.class);
 	}
 
 	public Role getRoleFromToken(String token) {
-		return Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload()
-			.get("role", Role.class);
+		String roleName = getClaims(token).get("role", String.class);
+		return Role.valueOf(roleName);
 	}
 
 	public String getTokenTypeFromToken(String token) {
-		return Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload()
-			.get("token-type", String.class);
+		return getClaims(token).get("token-type", String.class);
 	}
 
 	public Boolean isExpired(String token) {
-		return Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(token)
-			.getPayload()
-			.getExpiration()
-			.before(new Date());
+		return getClaims(token).getExpiration().before(new Date());
 	}
 
 	public String validateToken(String token) {
@@ -86,11 +75,12 @@ public class JwtUtils {
 		return errorMessage;
 	}
 
+	// TODO: userId 도 저장
 	public String generateToken(String tokenType, String userEmail, Role role, Long expiresIn) {
 		return Jwts.builder()
 			.claim("token-type", tokenType)
 			.claim("email", userEmail)
-			.claim("role", role)
+			.claim("role", role.name())
 			.issuedAt(new Date(System.currentTimeMillis()))
 			.expiration(new Date(System.currentTimeMillis() + expiresIn * 1000))
 			.signWith(secretKey)
