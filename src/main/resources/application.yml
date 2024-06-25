@@ -2,31 +2,13 @@ spring:
   application:
     name: "book-store-back"
 
+  profiles:
+    active: dev
+
+  # DataSource 설정
   datasource:
     url: jdbc:mysql://133.186.241.167:3306/be6_5ritang
     username: be6_5ritang
     password: j2EqdFa0rt.tX]WK
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-
-  jpa:
-    open-in-view: false
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        use_sql_comments: true
-        highlight_sql: true
-        auto_quote_keyword: true
-        dialect: org.hibernate.dialect.MySQLDialect
-    hibernate:
-      ddl-auto: update #validate로 변경 예정
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: always
-
-logging:
-  level:
-    org.hibernate.orm.jdbc.bind: trace
-    org.springframework.transaction.interceptor: trace
