@@ -1,0 +1,6 @@
+### cart 생성
+POST localhost:8080/carts
+Content-Type: application/json
+
+### cart 가져오기
+GET localhost:8080/carts/8
