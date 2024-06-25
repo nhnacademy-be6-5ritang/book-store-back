@@ -1,23 +1,22 @@
 package com.nhnacademy.bookstoreback.order.domain.dto.response;
 
-import java.math.BigDecimal;
-
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
-
 import lombok.Builder;
 
 @Builder
 public record CreateBookOrderResponse(
-	Book book,
+	CreateBookOrderGetBookResponse getBookResponse,
 	CreateBookOrderGetOrderResponse getOrderResponse,
-	BigDecimal quantity
+	Integer quantity,
+	Long orderListId
 ) {
-	public static CreateBookOrderResponse from(Book book, CreateBookOrderGetOrderResponse getOrderResponse,
-		BigDecimal quantity) {
+	public static CreateBookOrderResponse from(CreateBookOrderGetBookResponse createBookOrderGetBookResponse,
+		CreateBookOrderGetOrderResponse getOrderResponse,
+		Integer quantity, Long orderListId) {
 		return CreateBookOrderResponse.builder()
-			.book(book)
+			.getBookResponse(createBookOrderGetBookResponse)
 			.getOrderResponse(getOrderResponse)
 			.quantity(quantity)
+			.orderListId(orderListId)
 			.build();
 	}
 }

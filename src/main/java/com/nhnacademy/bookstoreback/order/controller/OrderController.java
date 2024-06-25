@@ -1,38 +1,44 @@
 package com.nhnacademy.bookstoreback.order.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateWrappingRequest;
-import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateWrappingRequest;
+import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateWrappingTypeRequest;
+import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateWrappingTypeRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderStatusResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetWrappingResponse;
 import com.nhnacademy.bookstoreback.order.service.BookOrderService;
 import com.nhnacademy.bookstoreback.order.service.OrderService;
 import com.nhnacademy.bookstoreback.order.service.OrderStatusService;
+import com.nhnacademy.bookstoreback.order.service.PaperTypeService;
 import com.nhnacademy.bookstoreback.order.service.WrappingPaperService;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping
 public class OrderController {
 
 	private final OrderService orderService;
@@ -43,11 +49,13 @@ public class OrderController {
 
 	private final BookOrderService bookOrderService;
 
+	private final PaperTypeService paperTypeService;
+
 	//TODO 주문
 
-	//주문 만들기 (주문페이지에서 포장선택까지해서)
-	@PostMapping("/createOrder")
-	public ResponseEntity<CreateOrderResponse> createOrder(@RequestBody CreateOrderRequest createOrderRequest
+	//주문 만들기 (도서 주문)
+	@PostMapping(value = "/createOrder")
+	public ResponseEntity<CreateOrderResponse> createOrder(@ModelAttribute CreateOrderRequest createOrderRequest
 	) {
 		return ResponseEntity.ok(orderService.createOrder(createOrderRequest));
 	}
@@ -109,10 +117,10 @@ public class OrderController {
 
 	//TODO 포장지
 
-	//포장지 전부 가져오기
+	// 포장지 전부 -> 가져오기 포장지 종류 가져오기로 변경 예정 -> 수정 O 테스트 X
 	@GetMapping("/wrapping")
-	public ResponseEntity<List<GetWrappingResponse>> getAllWrappingPapers() {
-		return ResponseEntity.ok(wrappingPaperService.getAllWrappingPapers());
+	public ResponseEntity<GetAllPaperResponse> getAllWrappingPapers() {
+		return ResponseEntity.ok(paperTypeService.getAllPaperTypes());
 	}
 
 	//포장지 생성
@@ -122,25 +130,36 @@ public class OrderController {
 		return ResponseEntity.ok(wrappingPaperService.createWrappingPapers(createWrappingRequest, orderId));
 	}
 
-	//포장지 수정
-	@PutMapping("/wrapping/{wrapping_paper_id}")
-	public ResponseEntity<GetWrappingResponse> updateWrappingPaper(
-		@PathVariable("wrapping_paper_id") Long wrappingPaperId,
-		@RequestBody UpdateWrappingRequest updateWrappingRequest) {
-		return ResponseEntity.ok(wrappingPaperService.updateWrappingPapers(wrappingPaperId, updateWrappingRequest));
-	}
-
-	//특정 포장지 가져오기
-	@GetMapping("/wrapping/{wrapping_paper_id}")
-	public ResponseEntity<GetWrappingResponse> getWrappingPaper(
-		@PathVariable("wrapping_paper_id") Long wrappingPaperId) {
-		return ResponseEntity.ok(wrappingPaperService.getWrappingPapers(wrappingPaperId));
+	//특정 포장지 가져오기 -> 특정 포장지 종류로 변경 예정 -> 수정 O 테스트 X
+	@GetMapping("/wrapping/{paper_id}")
+	public ResponseEntity<GetPaperResponse> getWrappingPaper(
+		@PathVariable("paper_id") Long paperId) {
+		return ResponseEntity.ok(paperTypeService.getPaperTypeById(paperId));
 	}
 
 	//포장지 삭제
 	@DeleteMapping("/wrapping/{wrapping_paper_id}")
 	public void deleteWrappingPaper(@PathVariable("wrapping_paper_id") Long wrappingPaperId) {
 		wrappingPaperService.deleteWrappingPapers(wrappingPaperId);
+	}
+
+	//포장지 종류 생성
+	@PostMapping("/createPaper")
+	public ResponseEntity<CreatePaperResponse> createPaper(
+		@ModelAttribute CreateWrappingTypeRequest createWrappingTypeRequest) {
+		return ResponseEntity.ok(paperTypeService.createPaper(createWrappingTypeRequest));
+	}
+
+	@PutMapping("/updatePaper/{paper_type_id}")
+	public ResponseEntity<GetPaperResponse> updatePaper(
+		@ModelAttribute UpdateWrappingTypeRequest updateWrappingTypeRequest,
+		@PathVariable("paper_type_id") Long paperTypeId) {
+		return ResponseEntity.ok(paperTypeService.updatePaperTypeById(paperTypeId, updateWrappingTypeRequest));
+	}
+
+	@DeleteMapping("/deletePaper/{paper_type_id}")
+	public void deletePaper(@PathVariable("paper_type_id") Long paperTypeId) {
+		paperTypeService.deletePaperTypeById(paperTypeId);
 	}
 
 	//TODO 도서 주문

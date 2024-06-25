@@ -17,6 +17,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * @author 김기욱
+ * @version 1.0
+ */
 @Entity
 @NoArgsConstructor
 @Getter
@@ -51,6 +55,9 @@ public class Book {
 
 	@Column(name = "book_packaging", nullable = false)
 	private boolean bookPackaging = false;
+
+	@Column(name = "book_quantity", nullable = false)
+	private int bookQuantity = 100;
 
 	@Column(name = "book_publish_date", nullable = false)
 	@Temporal(TemporalType.DATE)
