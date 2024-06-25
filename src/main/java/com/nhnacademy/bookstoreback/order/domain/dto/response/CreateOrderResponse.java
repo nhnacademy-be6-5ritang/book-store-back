@@ -9,6 +9,7 @@ import lombok.Builder;
 
 @Builder
 public record CreateOrderResponse(
+	Long orderId,
 	String infoId,
 	BigDecimal orderPrice,
 	LocalDateTime orderDate,
@@ -17,6 +18,7 @@ public record CreateOrderResponse(
 ) {
 	public static CreateOrderResponse from(Order order) {
 		return CreateOrderResponse.builder()
+			.orderId(order.getOrderId())
 			.infoId(order.getOrderInfoId())
 			.orderPrice(order.getOrderPrice())
 			.orderDate(order.getOrderDate())

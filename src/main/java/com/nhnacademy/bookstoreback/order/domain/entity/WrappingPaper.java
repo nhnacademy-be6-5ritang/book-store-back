@@ -1,9 +1,5 @@
 package com.nhnacademy.bookstoreback.order.domain.entity;
 
-import java.math.BigDecimal;
-
-import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateWrappingRequest;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,47 +16,34 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "wrappingPapers")
+@Table(name = "wrapping_paper")
 public class WrappingPaper {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "wrapping_paper_id")
 	private Long wrappingPaperId;
-	@Column(name = "wrapping_paper_name")
-	private String wrappingPaperName;
-	@Column(name = "wrapping_paper_content")
-	private String wrappingPaperContent;
-	@Column(name = "wrapping_paper_price")
-	private BigDecimal wrappingPaperPrice;
 
 	@ManyToOne
 	@JoinColumn(name = "order_id")
 	private Order order;
 
+	@ManyToOne
+	@JoinColumn(name = "paper_type_id")
+	private PaperType paperType;
+
 	@Builder
 	public WrappingPaper(
-		String wrappingPaperName,
-		String wrappingPaperContent,
-		BigDecimal wrappingPaperPrice,
-		Order order) {
-		this.wrappingPaperName = wrappingPaperName;
-		this.wrappingPaperContent = wrappingPaperContent;
-		this.wrappingPaperPrice = wrappingPaperPrice;
+		Order order,
+		PaperType paperType) {
 		this.order = order;
+		this.paperType = paperType;
 	}
 
-	public static WrappingPaper toEntity(CreateWrappingRequest createWrappingRequest, Order order) {
+	public static WrappingPaper toEntity(Order order, PaperType paperType) {
 		return WrappingPaper.builder()
-			.wrappingPaperName(createWrappingRequest.wrappingPaperName())
-			.wrappingPaperContent(createWrappingRequest.wrappingPaperContent())
-			.wrappingPaperPrice(createWrappingRequest.wrappingPaperPrice())
 			.order(order)
+			.paperType(paperType)
 			.build();
 	}
 
-	public void update(String wrappingPaperName, String wrappingPaperContent, BigDecimal wrappingPaperPrice) {
-		this.wrappingPaperName = wrappingPaperName;
-		this.wrappingPaperContent = wrappingPaperContent;
-		this.wrappingPaperPrice = wrappingPaperPrice;
-	}
 }

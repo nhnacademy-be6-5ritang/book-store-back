@@ -11,6 +11,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * @author 김기욱
+ * @version 1.0
+ */
 @Entity
 @Getter
 @Setter
