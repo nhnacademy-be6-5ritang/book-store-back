@@ -31,6 +31,11 @@ public class RefreshTokenController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Refresh Token 재발급 중 오류가 발생했습니다.");
 		}
 
+		Cookie cookie = new Cookie("Refresh-Token", null);
+		cookie.setMaxAge(0);
+		cookie.setPath("/");
+		response.addCookie(cookie);
+
 		response.setHeader("Authorization", (String)tokens.get("access"));
 		response.addCookie((Cookie)tokens.get("CookieWithRefreshToken"));
 
