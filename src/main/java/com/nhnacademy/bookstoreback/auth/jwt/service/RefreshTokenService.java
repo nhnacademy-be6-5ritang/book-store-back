@@ -26,21 +26,9 @@ public class RefreshTokenService {
 	private Long refreshTokenExpiresIn;
 
 	public Map<String, Object> reissueToken(Cookie[] cookies) {
-		Map<String, Object> tokens = new HashMap<>();
+		String refreshToken = getRefreshTokenFromCookies(cookies);
 
-		String refreshToken = null;
-		for (Cookie cookie : cookies) {
-			if ("Refresh-Token".equals(cookie.getName())) {
-				refreshToken = cookie.getValue();
-				break;
-			}
-		}
-
-		if (refreshToken == null) {
-			return null;
-		}
-
-		if (jwtUtils.validateToken(refreshToken) != null) {
+		if (refreshToken == null || jwtUtils.validateToken(refreshToken) != null) {
 			return null;
 		}
 
@@ -49,25 +37,39 @@ public class RefreshTokenService {
 			return null;
 		}
 
-		String email = jwtUtils.getEmailFromToken(refreshToken);
-		String redisKey = "RefreshToken:" + email;
-		boolean refreshTokenExists = redisTemplate.opsForHash().hasKey(redisKey, "token");
-		if (!refreshTokenExists) {
+		if (!isRefreshTokenExists(refreshToken)) {
 			return null;
 		}
 
+		String email = jwtUtils.getEmailFromToken(refreshToken);
 		Role role = jwtUtils.getRoleFromToken(refreshToken);
 
 		String newAccessToken = jwtUtils.generateToken("access", email, role, accessTokenExpiresIn);
 		String newRefreshToken = jwtUtils.generateToken("refresh", email, role, refreshTokenExpiresIn);
 
 		saveRefreshToken(email, newRefreshToken, refreshTokenExpiresIn);
-		Cookie cookieWithRefreshToken = createCookie("Refresh-Token", newRefreshToken);
 
+		Map<String, Object> tokens = new HashMap<>();
+		Cookie cookieWithRefreshToken = createCookie("Refresh-Token", newRefreshToken);
 		tokens.put("access", newAccessToken);
 		tokens.put("CookieWithRefreshToken", cookieWithRefreshToken);
 
 		return tokens;
+	}
+
+	private String getRefreshTokenFromCookies(Cookie[] cookies) {
+		for (Cookie cookie : cookies) {
+			if ("Refresh-Token".equals(cookie.getName())) {
+				return cookie.getValue();
+			}
+		}
+		return null;
+	}
+
+	private boolean isRefreshTokenExists(String refreshToken) {
+		String email = jwtUtils.getEmailFromToken(refreshToken);
+		String redisKey = "RefreshToken:" + email;
+		return redisTemplate.opsForHash().hasKey(redisKey, "token");
 	}
 
 	private void saveRefreshToken(String userEmail, String refreshToken, Long expiresIn) {
