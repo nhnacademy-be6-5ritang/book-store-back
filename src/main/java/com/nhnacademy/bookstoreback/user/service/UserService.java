@@ -11,6 +11,7 @@ import com.nhnacademy.bookstoreback.global.exception.UserAlreadyExistsException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.GetUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
@@ -22,6 +23,16 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+
+	public GetUserInfoResponse getUserInfoByEmail(String email) {
+		User user = userRepository.findByEmail(email);
+
+		if (user == null) {
+			return null;
+		}
+
+		return GetUserInfoResponse.fromEntity(user);
+	}
 
 	public CreateUserResponse createUser(CreateUserRequest createUserRequest) {
 		if (userRepository.existsByEmail(createUserRequest.email())) {
