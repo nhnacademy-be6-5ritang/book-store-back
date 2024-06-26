@@ -20,6 +20,7 @@ import com.nhnacademy.bookstoreback.auth.jwt.filter.JwtFilter;
 import com.nhnacademy.bookstoreback.auth.jwt.filter.LoginFilter;
 import com.nhnacademy.bookstoreback.auth.jwt.service.AppCustomUserDetailsService;
 import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
+import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +32,7 @@ public class SecurityConfig {
 	private final JwtUtils jwtUtils;
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final AppCustomUserDetailsService userDetailsService;
+	private final UserRepository userRepository;
 
 	@Value("${spring.jwt.access-token.expires-in}")
 	private Long accessTokenExpiresIn;
@@ -44,7 +46,7 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/", "/login", "/sign-up", "/reissue").permitAll()
+				.requestMatchers("/", "/login", "/sign-up", "/auth/reissue", "/auth/info").permitAll()
 				.requestMatchers("/admin").hasRole("ADMIN")
 				.requestMatchers("/reissue").permitAll()
 				// .anyRequest().authenticated()
@@ -57,7 +59,8 @@ public class SecurityConfig {
 					jwtUtils,
 					redisTemplate,
 					accessTokenExpiresIn,
-					refreshTokenExpiresIn
+					refreshTokenExpiresIn,
+					userRepository
 				),
 				UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new AppCustomLogoutFilter(redisTemplate, jwtUtils), LogoutFilter.class)

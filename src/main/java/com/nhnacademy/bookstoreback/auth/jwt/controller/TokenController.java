@@ -4,11 +4,12 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nhnacademy.bookstoreback.auth.jwt.service.RefreshTokenService;
+import com.nhnacademy.bookstoreback.auth.jwt.service.TokenService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,14 +19,19 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-public class RefreshTokenController {
-	private final RefreshTokenService refreshTokenService;
+public class TokenController {
+	private final TokenService tokenService;
+
+	@GetMapping("/info")
+	public ResponseEntity<Map<String, Object>> getUserInfo(HttpServletRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(tokenService.getUserInfo(request));
+	}
 
 	@PostMapping("/reissue")
-	public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<?> reissueTokens(HttpServletRequest request, HttpServletResponse response) {
 		Cookie[] cookies = request.getCookies();
 
-		Map<String, Object> tokens = refreshTokenService.reissueToken(cookies);
+		Map<String, Object> tokens = tokenService.reissueTokens(cookies);
 
 		if (tokens == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Refresh Token 재발급 중 오류가 발생했습니다.");
