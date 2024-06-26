@@ -31,9 +31,16 @@ public class WishListServiceImpl implements WishListService {
 	@Override
 	public List<GetWishListResponse> getWishLists(Long userId) {
 		List<WishList> wishLists = wishListRepository.findAllByUserId(userId);
+
 		return wishLists.stream()
 			.map(wishList -> GetWishListResponse.builder()
-				.bookId(wishList.getBook().getBookId())
+				.wishListId(wishList.getWishListId())
+				.bookTitle(wishList.getBook().getBookTitle())
+				.authorName(wishList.getBook().getAuthor().getAuthorName())
+				.publisherName(wishList.getBook().getPublisher().getPublisherName())
+				.bookSalePrice(wishList.getBook().getBookSalePrice())
+				.bookSalePercent(wishList.getBook().getBookSalePercent())
+				.bookQuantity(wishList.getBook().getBookQuantity())
 				.build())
 			.toList();
 	}

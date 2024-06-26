@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.CreateWishListRequest;
-import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.GetWishListsRequest;
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.CreateWishListResponse;
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.GetWishListResponse;
 import com.nhnacademy.bookstoreback.wishlist.service.WishListService;
@@ -27,8 +26,9 @@ public class WishListController {
 	private final WishListService wishListService;
 
 	@GetMapping
-	public ResponseEntity<List<GetWishListResponse>> getWishLists(@RequestBody GetWishListsRequest request) {
-		List<GetWishListResponse> response = wishListService.getWishLists(request.userId());
+	public ResponseEntity<List<GetWishListResponse>> getWishLists() {
+		Long userId = 1L;
+		List<GetWishListResponse> response = wishListService.getWishLists(userId);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
