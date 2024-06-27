@@ -1,7 +1,5 @@
 package com.nhnacademy.bookstoreback.review.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -29,17 +27,25 @@ public class ReviewController {
 	private final ReviewService reviewService;
 
 	@GetMapping("/reviews")
-	public ResponseEntity<List<GetReviewResponse>> getReviews() {
-		return ResponseEntity.status(HttpStatus.OK).body(reviewService.findAllReviews());
+	public ResponseEntity<Page<GetReviewResponse>> getReviews(Pageable pageable) {
+		return ResponseEntity.status(HttpStatus.OK).body(reviewService.findAllReviews(pageable));
 	}
 
 	@GetMapping("/books/{bookId}/reviews")
 	public ResponseEntity<Page<GetReviewResponse>> getReviewsByBookId(Pageable pageable,
 		@PathVariable Long bookId) {
 
-		Long userId = 1L;
+		Page<GetReviewResponse> reviews = reviewService.findReviewsByBookId(bookId, pageable);
 
-		Page<GetReviewResponse> reviews = reviewService.findReviewsByBookId(userId, bookId, pageable);
+		return ResponseEntity.status(HttpStatus.OK).body(reviews);
+	}
+
+	@GetMapping("/users/me/reviews")
+	public ResponseEntity<Page<GetReviewResponse>> getReviewsByUserId(Pageable pageable) {
+
+		Long userId = 2L;
+
+		Page<GetReviewResponse> reviews = reviewService.findReviewsByUserId(userId, pageable);
 
 		return ResponseEntity.status(HttpStatus.OK).body(reviews);
 	}
