@@ -29,3 +29,6 @@ logging:
         interceptor: trace
         security: debug
         web: debug
+
+remote-addr: 127.0.0.1
+#remote-addr: 0:0:0:0:0:0:0:1

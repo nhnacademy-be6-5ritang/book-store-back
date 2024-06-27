@@ -13,13 +13,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 
-import com.nhnacademy.bookstoreback.auth.jwt.filter.AppCustomLogoutFilter;
-import com.nhnacademy.bookstoreback.auth.jwt.filter.JwtFilter;
-import com.nhnacademy.bookstoreback.auth.jwt.filter.LoginFilter;
 import com.nhnacademy.bookstoreback.auth.jwt.service.AppCustomUserDetailsService;
 import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
+import com.nhnacademy.bookstoreback.global.filter.IpAddressFilter;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +30,7 @@ public class SecurityConfig {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final AppCustomUserDetailsService userDetailsService;
 	private final UserRepository userRepository;
+	private final IpAddressFilter ipAddressFilter;
 
 	@Value("${spring.jwt.access-token.expires-in}")
 	private Long accessTokenExpiresIn;
@@ -47,23 +45,25 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/", "/login", "/sign-up", "/auth/reissue", "/auth/info").permitAll()
+				.requestMatchers("/internal/users/info").permitAll()
 				.requestMatchers("/admin").hasRole("ADMIN")
 				.requestMatchers("/reissue").permitAll()
 				// .anyRequest().authenticated()
 				.anyRequest().permitAll()
 			)
-			.addFilterBefore(new JwtFilter(jwtUtils), LoginFilter.class)
-			.addFilterAt(
-				new LoginFilter(
-					authenticationManager(authenticationConfiguration),
-					jwtUtils,
-					redisTemplate,
-					accessTokenExpiresIn,
-					refreshTokenExpiresIn,
-					userRepository
-				),
-				UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(new AppCustomLogoutFilter(redisTemplate, jwtUtils), LogoutFilter.class)
+			// .addFilterBefore(new JwtFilter(jwtUtils), LoginFilter.class)
+			.addFilterBefore(ipAddressFilter, UsernamePasswordAuthenticationFilter.class)
+			// .addFilterAt(
+			// 	new LoginFilter(
+			// 		authenticationManager(authenticationConfiguration),
+			// 		jwtUtils,
+			// 		redisTemplate,
+			// 		accessTokenExpiresIn,
+			// 		refreshTokenExpiresIn,
+			// 		userRepository
+			// 	),
+			// 	UsernamePasswordAuthenticationFilter.class)
+			// .addFilterBefore(new AppCustomLogoutFilter(redisTemplate, jwtUtils), LogoutFilter.class)
 			.sessionManagement((session) -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
