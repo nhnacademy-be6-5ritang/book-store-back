@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +52,12 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> findReviewsByBookId(Long userId, Long bookId, Pageable pageable) {
-		Page<Review> reviews = reviewRepository.findAllByBookBookId(bookId, pageable);
+		int page = pageable.getPageNumber() - 1;
+		int pageSize = 5;
+
+		Page<Review> reviews = reviewRepository.findAllByBookBookId(bookId,
+			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
+		
 		return reviews
 			.map(review -> new GetReviewResponse(userId, bookId, review.getReviewScore(), review.getReviewComment(),
 				review.getReviewCreatedAt()));

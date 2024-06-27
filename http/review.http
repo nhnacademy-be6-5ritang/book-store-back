@@ -29,7 +29,7 @@ DELETE localhost:8080/books/1/reviews/2
 Content-Type: application/json
 
 ### 특정 책의 리뷰 리스트 가져오기
-GET localhost:8080/books/23/reviews?userId=2&page=0&size=10
+GET localhost:8080/books/125/reviews?page=0&size=10
 Content-Type: application/json
 
 ### 모든 책의 리뷰 리스트 가져오기
