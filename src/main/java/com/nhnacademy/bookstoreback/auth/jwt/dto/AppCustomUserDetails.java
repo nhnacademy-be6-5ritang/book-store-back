@@ -19,12 +19,7 @@ public class AppCustomUserDetails implements UserDetails {
 		Collection<GrantedAuthority> collection = new ArrayList<>();
 
 		collection.add(
-			new GrantedAuthority() {
-				@Override
-				public String getAuthority() {
-					return user.getRole().name();
-				}
-			}
+			(GrantedAuthority)() -> user.getRole().name()
 		);
 
 		return collection;
@@ -58,5 +53,9 @@ public class AppCustomUserDetails implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	public Long getUserId() {
+		return user.getId();
 	}
 }
