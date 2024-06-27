@@ -30,16 +30,22 @@ public class DeliveryPolicy {
 	@JoinColumn(name = "delivery_policy_content")
 	private String deliveryPolicyContent;
 
-	public DeliveryPolicy(String deliveryPolicyName, BigDecimal deliveryPolicyPrice, String deliveryPolicyContent) {
+	@JoinColumn(name = "delivery_policy_standard_price")
+	private BigDecimal deliveryPolicyStandardPrice;
+
+	public DeliveryPolicy(String deliveryPolicyName, BigDecimal deliveryPolicyPrice, String deliveryPolicyContent,
+		BigDecimal deliveryPolicyStandardPrice) {
 		this.deliveryPolicyName = deliveryPolicyName;
 		this.deliveryPolicyPrice = deliveryPolicyPrice;
 		this.deliveryPolicyContent = deliveryPolicyContent;
+		this.deliveryPolicyStandardPrice = deliveryPolicyStandardPrice;
 	}
 
 	public void updateDeliveryPolicy(String deliveryPolicyName, BigDecimal deliveryPolicyPrice,
-		String deliveryPolicyContent) {
+		String deliveryPolicyContent, BigDecimal deliveryPolicyStandardPrice) {
 		this.deliveryPolicyName = deliveryPolicyName;
 		this.deliveryPolicyPrice = deliveryPolicyPrice;
 		this.deliveryPolicyContent = deliveryPolicyContent;
+		this.deliveryPolicyStandardPrice = deliveryPolicyStandardPrice;
 	}
 }

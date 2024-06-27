@@ -30,10 +30,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	@Override
 	public List<GetDeliveryPoliciesResponse> getDeliveryPolicies() {
 		return deliveryPolicyRepository.findAll().stream()
-			.map(deliveryPolicy -> GetDeliveryPoliciesResponse.builder()
-				.deliveryPolicyId(deliveryPolicy.getDeliveryPolicyId())
-				.deliveryPolicyName(deliveryPolicy.getDeliveryPolicyName())
-				.build())
+			.map(GetDeliveryPoliciesResponse::fromEntity)
 			.toList();
 	}
 
@@ -45,27 +42,17 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 			return new NotFoundException(errorStatus);
 		});
 
-		return GetDeliveryPolicyResponse.builder()
-			.deliveryPolicyId(deliveryPolicy.getDeliveryPolicyId())
-			.deliveryPolicyName(deliveryPolicy.getDeliveryPolicyName())
-			.deliveryPolicyPrice(deliveryPolicy.getDeliveryPolicyPrice())
-			.deliveryPolicyContent(deliveryPolicy.getDeliveryPolicyContent())
-			.build();
+		return GetDeliveryPolicyResponse.fromEntity(deliveryPolicy);
 	}
 
 	@Override
 	public CreateDeliveryPolicyResponse createDeliveryPolicy(CreateDeliveryPolicyRequest request) {
 		DeliveryPolicy deliveryPolicy = new DeliveryPolicy(request.deliveryPolicyName(), request.deliveryPolicyPrice(),
-			request.deliveryPolicyContent());
+			request.deliveryPolicyContent(), request.deliveryPolicyStandardPrice());
 
 		deliveryPolicyRepository.save(deliveryPolicy);
 
-		return CreateDeliveryPolicyResponse.builder()
-			.deliveryPolicyId(deliveryPolicy.getDeliveryPolicyId())
-			.deliveryPolicyName(deliveryPolicy.getDeliveryPolicyName())
-			.deliveryPolicyPrice(deliveryPolicy.getDeliveryPolicyPrice())
-			.deliveryPolicyContent(deliveryPolicy.getDeliveryPolicyContent())
-			.build();
+		return CreateDeliveryPolicyResponse.fromEntity(deliveryPolicy);
 	}
 
 	@Override
@@ -78,16 +65,11 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 		});
 
 		deliveryPolicy.updateDeliveryPolicy(request.deliveryPolicyName(), request.deliveryPolicyPrice(),
-			request.deliveryPolicyContent());
+			request.deliveryPolicyContent(), request.deliveryPolicyStandardPrice());
 
 		deliveryPolicyRepository.save(deliveryPolicy);
 
-		return UpdateDeliveryPolicyResponse.builder()
-			.deliveryPolicyId(deliveryPolicy.getDeliveryPolicyId())
-			.deliveryPolicyName(deliveryPolicy.getDeliveryPolicyName())
-			.deliveryPolicyPrice(deliveryPolicy.getDeliveryPolicyPrice())
-			.deliveryPolicyContent(deliveryPolicy.getDeliveryPolicyContent())
-			.build();
+		return UpdateDeliveryPolicyResponse.fromEntity(deliveryPolicy);
 	}
 
 	@Override

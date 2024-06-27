@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 import lombok.Builder;
 
 @Builder
-public record CreateDeliveryPolicyRequest(String deliveryPolicyName,
-										  BigDecimal deliveryPolicyPrice, String deliveryPolicyContent) {
+public record CreateDeliveryPolicyRequest(
+	String deliveryPolicyName,
+	BigDecimal deliveryPolicyPrice,
+	String deliveryPolicyContent,
+	BigDecimal deliveryPolicyStandardPrice) {
 }
