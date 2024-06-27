@@ -9,13 +9,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.nhnacademy.bookstoreback.auth.jwt.client.TokenReissueClient;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.AppCustomUserDetails;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.response.ReissueTokensResponse;
 import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
 import com.nhnacademy.bookstoreback.user.domain.entity.Role;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 	private final JwtUtils jwtUtils;
+	private final TokenReissueClient tokenReissueClient;
 
 	@Override
 	protected void doFilterInternal(
@@ -32,15 +36,29 @@ public class JwtFilter extends OncePerRequestFilter {
 		@NonNull FilterChain filterChain
 	) throws ServletException, IOException {
 		String accessToken = request.getHeader("Authorization");
+		String refreshToken = null;
+		Cookie[] cookies = request.getCookies();
+		if (Objects.nonNull(cookies)) {
+			for (Cookie cookie : cookies) {
+				if ("Refresh-Token".equals(cookie.getName())) {
+					refreshToken = cookie.getValue();
+					break;
+				}
+			}
+		}
 
-		// 토큰이 없어도 일부 허용되는 기능이 있을 수 있음
 		if (Objects.isNull(accessToken)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		// 토큰 유효성 검증(만료, 변조, 빈 토큰 등)
 		String accessTokenErrorMessage = jwtUtils.validateToken(accessToken);
+		if ("만료된 토큰입니다.".equals(accessTokenErrorMessage)) {
+			ReissueTokensResponse reissuedTokens = tokenReissueClient.reissueTokensWithRefreshToken(refreshToken);
+			accessToken = reissuedTokens.accessToken();
+			refreshToken = reissuedTokens.refreshToken();
+			accessTokenErrorMessage = jwtUtils.validateToken(accessToken);
+		}
 		if (Objects.nonNull(accessTokenErrorMessage)) {
 			PrintWriter writer = response.getWriter();
 			writer.print(accessTokenErrorMessage);
@@ -48,22 +66,11 @@ public class JwtFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		// 토큰 타입이 access token인지 확인
-		String tokenType = jwtUtils.getTokenTypeFromToken(accessToken);
-		if (!"access".equals(tokenType)) {
-			PrintWriter writer = response.getWriter();
-			writer.print("Access token이 아닙니다.");
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return;
-		}
-
-		// TODO: IP 주소까지 확인할 것인가?
-
-		String userEmail = jwtUtils.getEmailFromToken(accessToken);
+		Long userId = jwtUtils.getUserIdFromToken(accessToken);
 		Role role = jwtUtils.getRoleFromToken(accessToken);
 
 		User user = User.builder()
-			.email(userEmail)
+			.id(userId)
 			.role(role)
 			.build();
 		AppCustomUserDetails userDetails = new AppCustomUserDetails(user);
@@ -72,6 +79,17 @@ public class JwtFilter extends OncePerRequestFilter {
 		);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
+		response.setHeader("Authorization", accessToken);
+		Cookie cookieWithRefreshToken = new Cookie("Refresh-Token", refreshToken);
+		cookieWithRefreshToken.setPath("/");
+		response.addCookie(cookieWithRefreshToken);
+
 		filterChain.doFilter(request, response);
+	}
+
+	@Override
+	@NonNull
+	protected String getAlreadyFilteredAttributeName() {
+		return this.getClass().getName() + ".FILTERED";
 	}
 }

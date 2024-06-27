@@ -1,9 +1,7 @@
 package com.nhnacademy.bookstoreback.global.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,10 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.nhnacademy.bookstoreback.auth.jwt.service.AppCustomUserDetailsService;
+import com.nhnacademy.bookstoreback.auth.jwt.client.TokenReissueClient;
+import com.nhnacademy.bookstoreback.auth.jwt.filter.JwtFilter;
 import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
 import com.nhnacademy.bookstoreback.global.filter.IpAddressFilter;
-import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,17 +23,9 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-	private final AuthenticationConfiguration authenticationConfiguration;
 	private final JwtUtils jwtUtils;
-	private final RedisTemplate<String, Object> redisTemplate;
-	private final AppCustomUserDetailsService userDetailsService;
-	private final UserRepository userRepository;
 	private final IpAddressFilter ipAddressFilter;
-
-	@Value("${spring.jwt.access-token.expires-in}")
-	private Long accessTokenExpiresIn;
-	@Value("${spring.jwt.refresh-token.expires-in}")
-	private Long refreshTokenExpiresIn;
+	private final TokenReissueClient tokenReissueClient;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,30 +34,17 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/", "/login", "/sign-up", "/auth/reissue", "/auth/info").permitAll()
+				.requestMatchers("/sign-up").permitAll()
+				.requestMatchers("/auth/info").authenticated()
 				.requestMatchers("/internal/users/info").permitAll()
 				.requestMatchers("/admin").hasRole("ADMIN")
-				.requestMatchers("/reissue").permitAll()
-				// .anyRequest().authenticated()
 				.anyRequest().permitAll()
 			)
-			// .addFilterBefore(new JwtFilter(jwtUtils), LoginFilter.class)
 			.addFilterBefore(ipAddressFilter, UsernamePasswordAuthenticationFilter.class)
-			// .addFilterAt(
-			// 	new LoginFilter(
-			// 		authenticationManager(authenticationConfiguration),
-			// 		jwtUtils,
-			// 		redisTemplate,
-			// 		accessTokenExpiresIn,
-			// 		refreshTokenExpiresIn,
-			// 		userRepository
-			// 	),
-			// 	UsernamePasswordAuthenticationFilter.class)
-			// .addFilterBefore(new AppCustomLogoutFilter(redisTemplate, jwtUtils), LogoutFilter.class)
+			.addFilterAfter(new JwtFilter(jwtUtils, tokenReissueClient), IpAddressFilter.class)
 			.sessionManagement((session) -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
-			.userDetailsService(userDetailsService)
 			.build();
 	}
 

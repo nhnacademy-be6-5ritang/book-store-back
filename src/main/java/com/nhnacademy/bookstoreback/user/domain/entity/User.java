@@ -80,6 +80,7 @@ public class User {
 
 	@Builder
 	public User(
+		Long id,
 		UserGrade userGrade,
 		String name,
 		String email,
@@ -94,6 +95,7 @@ public class User {
 		LocalDateTime updatedAt,
 		LocalDateTime lastLoginAt
 	) {
+		this.id = id;
 		this.userGrade = userGrade;
 		this.name = name;
 		this.email = email;
