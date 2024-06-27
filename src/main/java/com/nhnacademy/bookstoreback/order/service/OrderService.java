@@ -9,17 +9,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
+import com.nhnacademy.bookstoreback.cart.repository.CartRepository;
 import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.entity.Order;
 import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
-import com.nhnacademy.bookstoreback.order.repository.PaperTypeRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +35,7 @@ public class OrderService {
 
 	private final OrderStatusRepository orderStatusRepository;
 
-	private final PaperTypeRepository paperTypeRepository;
+	private final CartRepository cartRepository;
 
 	public static final String ERROR_STATUS_WAIT = "주문 상태를 대기로 지정할 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문을 가져올 수 없습니다";
@@ -44,6 +47,11 @@ public class OrderService {
 		for (OrderStatus orderStatus : orderStatuses) {
 			if (orderStatus.getOrderStatusName().equals("대기")) {
 				Order order = Order.toEntity(createOrderRequest, orderStatus);
+
+				// 테스트용으로 카트 고정으로 추가
+				Cart cart = cartRepository.getReferenceById(8L);
+				order.updateCart(cart);
+
 				orderRepository.save(order);
 				return CreateOrderResponse.from(order);
 			}
@@ -88,5 +96,20 @@ public class OrderService {
 		}
 		order.updateOrderStatus(orderStatus);
 		return GetOrderResponse.from(orderRepository.save(order));
+	}
+
+	@Transactional(readOnly = true)
+	public GetAllListOrderResponse findAll() {
+		return GetAllListOrderResponse.from(orderRepository.findAll());
+	}
+
+	public GetAllListOrderResponse findAllByCartId(Long cartId) {
+		List<Order> orders = orderRepository.findAllByCart_CartId(cartId);
+		return GetAllListOrderResponse.from(orders);
+	}
+
+	@Transactional(readOnly = true)
+	public GetOrderByInfoResponse findByOrderInfoId(String orderInfoId) {
+		return GetOrderByInfoResponse.from(orderRepository.findByOrderInfoId(orderInfoId));
 	}
 }

@@ -7,17 +7,17 @@ import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import lombok.Builder;
 
 @Builder
-public record GetBookOrderGetBookResponse(
+public record GetBookResponse(
 	String bookTitle,
+	String bookDeDescription,
 	BigDecimal bookPrice,
-	String bookDescription,
-	boolean bookPackaging
+	Boolean bookPackaging
 ) {
-	public static GetBookOrderGetBookResponse from(Book book) {
-		return GetBookOrderGetBookResponse.builder()
+	public static GetBookResponse from(Book book) {
+		return GetBookResponse.builder()
 			.bookTitle(book.getBookTitle())
+			.bookDeDescription(book.getBookDescription())
 			.bookPrice(book.getBookPrice())
-			.bookDescription(book.getBookDescription())
 			.bookPackaging(book.isBookPackaging())
 			.build();
 	}

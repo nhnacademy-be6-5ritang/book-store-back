@@ -74,4 +74,8 @@ public class Book {
 
 	@Column(name = "book_sale_price", nullable = false)
 	private BigDecimal bookSalePrice;
+
+	public void update(boolean result) {
+		this.bookPackaging = result;
+	}
 }

@@ -8,12 +8,14 @@ import lombok.Builder;
 
 @Builder
 public record GetPaperResponse(
+	Long paperId,
 	String paperName,
 	String paperContent,
 	BigDecimal paperPrice
 ) {
 	public static GetPaperResponse from(PaperType paperType) {
 		return GetPaperResponse.builder()
+			.paperId(paperType.getPaperTypeId())
 			.paperName(paperType.getPaperName())
 			.paperContent(paperType.getPaperContent())
 			.paperPrice(paperType.getPaperPrice())

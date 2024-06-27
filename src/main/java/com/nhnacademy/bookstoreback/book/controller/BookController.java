@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.book.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,5 +39,10 @@ public class BookController {
 		} catch (Exception e) {
 			return "Error while fetching and saving books: " + e.getMessage();
 		}
+	}
+
+	@GetMapping("/packaging/{book_id}")
+	public void packaging(@PathVariable("book_id") Long bookId) {
+		bookService.updateBookById(bookId);
 	}
 }
