@@ -1,0 +1,26 @@
+
+### book-cart 생성
+POST localhost:8080/carts/8/books-carts
+Content-Type: application/json
+
+{
+  "bookId": 128,
+  "cartId": 8,
+  "bookQuantity": 1
+}
+
+### book-cart 리스트 가져오기
+GET localhost:8080/carts/8/books-carts
+
+### book-cart 수량 수정하기
+PUT localhost:8080/carts/8/books-carts/2
+Content-Type: application/json
+
+{
+  "bookId": 128,
+  "cartId": 8,
+  "bookQuantity": 2
+}
+
+### book-cart 삭제하기
+DELETE localhost:8080/carts/8/books-carts/3

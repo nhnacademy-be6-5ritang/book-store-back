@@ -14,16 +14,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
+import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.CreateBookCartResponse;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
-import com.nhnacademy.bookstoreback.bookcart.domain.entity.BookCart;
+import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.UpdateBookCartResponse;
 import com.nhnacademy.bookstoreback.bookcart.service.BookCartService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/carts/{cartId}/book-carts")
+@RequestMapping("/carts/{cartId}/books-carts")
 public class BookCartController {
 	private final BookCartService bookCartService;
 
@@ -34,15 +35,16 @@ public class BookCartController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<GetBookCartResponse>> getAllBookCarts(@PathVariable Long cartId) {
+	public ResponseEntity<List<GetBookCartResponse>> getAllBookCarts(@PathVariable("cartId") Long cartId) {
 		List<GetBookCartResponse> bookCarts = bookCartService.getBookCarts(cartId);
 		return ResponseEntity.status(HttpStatus.OK).body(bookCarts);
 	}
 
 	@PutMapping("/{bookCartId}")
-	public ResponseEntity<BookCart> updateBookCart(@PathVariable Long bookCartId, @RequestBody BookCart bookCart) {
-		BookCart bookCart1 = bookCartService.updateBookCart(bookCartId, bookCart);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<UpdateBookCartResponse> updateBookCart(@PathVariable Long bookCartId,
+		@RequestBody UpdateBookCartRequest request) {
+		UpdateBookCartResponse response = bookCartService.updateBookCart(bookCartId, request);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	@DeleteMapping("/{bookCartId}")

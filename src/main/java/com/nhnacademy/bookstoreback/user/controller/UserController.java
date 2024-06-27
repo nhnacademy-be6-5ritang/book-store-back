@@ -12,7 +12,6 @@ import com.nhnacademy.bookstoreback.address.domain.dto.response.RegisterAddressR
 import com.nhnacademy.bookstoreback.address.service.AddressService;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
-import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 import com.nhnacademy.bookstoreback.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final UserService userService;
 	private final AddressService addressService;
-	private final UserRepository userRepository;
 
 	@PostMapping
 	public ResponseEntity<CreateUserResponse> signUpUser(@RequestBody CreateUserRequest createUserRequest) {
