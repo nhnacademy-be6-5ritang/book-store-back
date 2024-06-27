@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
@@ -26,16 +25,15 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/books/{bookId}/reviews")
 public class ReviewController {
 	private final ReviewService reviewService;
 
-	@GetMapping("/all")
-	public ResponseEntity<List<GetReviewResponse>> getReviews(@PathVariable Long bookId) {
+	@GetMapping("/reviews")
+	public ResponseEntity<List<GetReviewResponse>> getReviews() {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.findAllReviews());
 	}
 
-	@GetMapping
+	@GetMapping("/books/{bookId}/reviews")
 	public ResponseEntity<Page<GetReviewResponse>> getReviewsByBookId(Pageable pageable,
 		@PathVariable Long bookId) {
 
@@ -46,26 +44,24 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK).body(reviews);
 	}
 
-	@PostMapping
-	public ResponseEntity<CreateReviewResponse> createReview(@PathVariable Long bookId,
-		@RequestBody CreateReviewRequest request) {
+	@PostMapping("/reviews")
+	public ResponseEntity<CreateReviewResponse> createReview(@RequestBody CreateReviewRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.saveReview(request));
 	}
 
-	@GetMapping("/{reviewId}")
-	public ResponseEntity<GetReviewResponse> getReview(@PathVariable Long bookId, @PathVariable Long reviewId) {
+	@GetMapping("/reviews/{reviewId}")
+	public ResponseEntity<GetReviewResponse> getReview(@PathVariable Long reviewId) {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.findReviewById(reviewId));
 	}
 
-	@PutMapping("/{reviewId}")
-	public ResponseEntity<UpdateReviewResponse> updateReview(@PathVariable Long bookId,
-		@RequestBody UpdateReviewRequest request,
+	@PutMapping("/reviews/{reviewId}")
+	public ResponseEntity<UpdateReviewResponse> updateReview(@RequestBody UpdateReviewRequest request,
 		@PathVariable Long reviewId) {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.updateReview(reviewId, request));
 	}
 
-	@DeleteMapping("/{reviewId}")
-	public void deleteReview(@PathVariable Long bookId, @PathVariable Long reviewId) {
+	@DeleteMapping("/reviews/{reviewId}")
+	public void deleteReview(@PathVariable Long reviewId) {
 		reviewService.deleteReview(reviewId);
 	}
 

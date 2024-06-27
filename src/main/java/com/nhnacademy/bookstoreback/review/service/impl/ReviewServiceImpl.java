@@ -57,10 +57,16 @@ public class ReviewServiceImpl implements ReviewService {
 
 		Page<Review> reviews = reviewRepository.findAllByBookBookId(bookId,
 			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
-		
+
 		return reviews
-			.map(review -> new GetReviewResponse(userId, bookId, review.getReviewScore(), review.getReviewComment(),
-				review.getReviewCreatedAt()));
+			.map(review -> GetReviewResponse.builder()
+				.userId(review.getUser().getId())
+				.bookId(review.getBook().getBookId())
+				.reviewScore(review.getReviewScore())
+				.reviewComment(review.getReviewComment())
+				.reviewCreatedAt(review.getReviewCreatedAt())
+				.build()
+			);
 	}
 
 	@Override
