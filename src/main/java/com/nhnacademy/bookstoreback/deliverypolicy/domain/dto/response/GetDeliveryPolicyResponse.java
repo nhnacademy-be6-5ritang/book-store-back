@@ -11,7 +11,8 @@ public record GetDeliveryPolicyResponse(
 	Long deliveryPolicyId,
 	String deliveryPolicyName,
 	BigDecimal deliveryPolicyPrice,
-	String deliveryPolicyContent) {
+	String deliveryPolicyContent,
+	BigDecimal deliveryPolicyStandardPrice) {
 
 	public static GetDeliveryPolicyResponse fromEntity(DeliveryPolicy deliveryPolicy) {
 		return GetDeliveryPolicyResponse.builder()
@@ -19,6 +20,7 @@ public record GetDeliveryPolicyResponse(
 			.deliveryPolicyName(deliveryPolicy.getDeliveryPolicyName())
 			.deliveryPolicyPrice(deliveryPolicy.getDeliveryPolicyPrice())
 			.deliveryPolicyContent(deliveryPolicy.getDeliveryPolicyContent())
+			.deliveryPolicyStandardPrice(deliveryPolicy.getDeliveryPolicyStandardPrice())
 			.build();
 	}
 }

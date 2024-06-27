@@ -11,14 +11,16 @@ public record CreateDeliveryPolicyResponse(
 	Long deliveryPolicyId,
 	String deliveryPolicyName,
 	BigDecimal deliveryPolicyPrice,
-	String deliveryPolicyContent) {
+	String deliveryPolicyContent,
+	BigDecimal deliveryPolicyStandardPrice) {
 
 	public static CreateDeliveryPolicyResponse fromEntity(DeliveryPolicy deliveryPolicy) {
 		return CreateDeliveryPolicyResponse.builder()
 			.deliveryPolicyId(deliveryPolicy.getDeliveryPolicyId())
 			.deliveryPolicyName(deliveryPolicy.getDeliveryPolicyName())
-			.deliveryPolicyPrice(deliveryPolicy.getDeliveryPolicyPrice())
 			.deliveryPolicyContent(deliveryPolicy.getDeliveryPolicyContent())
+			.deliveryPolicyPrice(deliveryPolicy.getDeliveryPolicyPrice())
+			.deliveryPolicyStandardPrice(deliveryPolicy.getDeliveryPolicyStandardPrice())
 			.build();
 	}
 }
