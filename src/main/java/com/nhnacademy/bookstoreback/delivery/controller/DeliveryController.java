@@ -1,9 +1,7 @@
 package com.nhnacademy.bookstoreback.delivery.controller;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
@@ -36,26 +33,10 @@ import lombok.RequiredArgsConstructor;
 public class DeliveryController {
 	private final DeliveryService deliveryService;
 
-	/**
-	 * 주어진 조건에 따라 특정 사용자의 배송 목록을 페이지 단위로 조회합니다.
-	 *
-	 * @param page    조회할 페이지 번호 (0부터 시작)
-	 * @param size    페이지당 조회할 레코드 수
-	 * @param sort    정렬 기준 (옵션)
-	 * @param request 사용자의 배송 조회 요청 정보
-	 * @return 조회된 배송 목록 페이지
-	 */
 	@GetMapping
-	public ResponseEntity<Page<GetDeliveryResponse>> getDeliveriesByUserId(@RequestParam("page") int page,
-		@RequestParam("size") int size,
-		@RequestParam(required = false) String sort, @RequestBody GetDeliveriesRequest request) {
+	public ResponseEntity<Page<GetDeliveryResponse>> getDeliveriesByUserId(Pageable pageable,
+		@RequestBody GetDeliveriesRequest request) {
 
-		Pageable pageable;
-		if (sort != null) {
-			pageable = PageRequest.of(page, size, Sort.by(sort));
-		} else {
-			pageable = PageRequest.of(page, size);
-		}
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.getDeliveriesByUserId(request, pageable));
 	}
 

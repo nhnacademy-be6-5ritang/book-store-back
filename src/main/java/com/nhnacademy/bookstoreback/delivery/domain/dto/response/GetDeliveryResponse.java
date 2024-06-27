@@ -1,6 +1,9 @@
 package com.nhnacademy.bookstoreback.delivery.domain.dto.response;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 
 import lombok.Builder;
 
@@ -15,6 +18,23 @@ public record GetDeliveryResponse(
 	LocalDateTime deliveryReceiverDate,
 	String deliveryReceiverAddress,
 	Long orderId,
-	String deliveryStatusName
+	String deliveryStatusName,
+	BigDecimal deliveryPolicyStandardPrice
 ) {
+
+	public static GetDeliveryResponse fromEntity(Delivery delivery) {
+		return GetDeliveryResponse.builder()
+			.deliverySenderName(delivery.getDeliverySenderName())
+			.deliverySenderPhone(delivery.getDeliverySenderPhone())
+			.deliverySenderDate(delivery.getDeliverySenderDate())
+			.deliverySenderAddress(delivery.getDeliverySenderAddress())
+			.deliveryReceiver(delivery.getDeliveryReceiver())
+			.deliveryReceiverPhone(delivery.getDeliveryReceiverPhone())
+			.deliveryReceiverDate(delivery.getDeliveryReceiverDate())
+			.deliveryReceiverAddress(delivery.getDeliveryReceiverAddress())
+			.orderId(delivery.getOrder().getOrderId())
+			.deliveryStatusName(delivery.getDeliveryStatus().getDeliveryStatusName())
+			.deliveryPolicyStandardPrice(delivery.getDeliveryPolicy().getDeliveryPolicyPrice())
+			.build();
+	}
 }
