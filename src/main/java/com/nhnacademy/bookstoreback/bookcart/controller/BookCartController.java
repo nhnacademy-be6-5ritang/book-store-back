@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/carts/{cartId}/books-carts")
+@RequestMapping("/back/carts/{cartId}/books-carts")
 public class BookCartController {
 	private final BookCartService bookCartService;
 

@@ -14,7 +14,7 @@ import com.nhnacademy.bookstoreback.book.service.BookService;
  * @
  */
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/back/books")
 public class BookController {
 
 	private final BookService bookService;

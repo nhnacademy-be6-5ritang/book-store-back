@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 // authenticated test 를 위한 컨트롤러
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/back/auth")
 public class TokenController {
 	private final TokenService tokenService;
 

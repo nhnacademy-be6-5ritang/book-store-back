@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/reviews/{reviewId}/reviewImages")
+@RequestMapping("/back/reviews/{reviewId}/reviewImages")
 public class ReviewImageController {
 	private final ReviewImageService reviewImageService;
 

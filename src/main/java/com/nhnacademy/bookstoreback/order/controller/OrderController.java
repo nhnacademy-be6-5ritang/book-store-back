@@ -45,7 +45,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping
+@RequestMapping("/back")
 public class OrderController {
 
 	private final OrderService orderService;
