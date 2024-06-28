@@ -1,7 +1,6 @@
 package com.nhnacademy.bookstoreback.auth.jwt.utils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -42,23 +41,19 @@ public class JwtUtils {
 		return getClaims(token).get("userId", Long.class);
 	}
 
-	public String getEmailFromToken(String token) {
-		return getClaims(token).get("email", String.class);
-	}
-
 	public Role getRoleFromToken(String token) {
 		String roleName = getClaims(token).get("role", String.class);
 		return Role.valueOf(roleName);
 	}
 
-	public String getTokenTypeFromToken(String token) {
-		return getClaims(token).get("token-type", String.class);
-	}
-
 	public String validateToken(String token) {
 		String errorMessage = null;
 		try {
-			Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token.replace("Bearer ", ""));
+			Jwts.parser()
+				.verifyWith(secretKey)
+				.build()
+				.parseSignedClaims(
+					token.replace("Bearer ", ""));
 		} catch (SecurityException | MalformedJwtException e) {
 			errorMessage = "유효하지 않은 토큰입니다.";
 			log.info(errorMessage, e);
@@ -73,29 +68,5 @@ public class JwtUtils {
 			log.info(errorMessage, e);
 		}
 		return errorMessage;
-	}
-
-	public String generateAccessToken(String tokenType, Long userId, String userEmail, Role role, Long expiresIn) {
-		return "Bearer " + Jwts.builder()
-			.claim("token-type", tokenType)
-			.claim("userId", userId)
-			.claim("email", userEmail)
-			.claim("role", role.name())
-			.issuedAt(new Date(System.currentTimeMillis()))
-			.expiration(new Date(System.currentTimeMillis() + expiresIn * 1000))
-			.signWith(secretKey)
-			.compact();
-	}
-
-	public String generateRefreshToken(String tokenType, Long userId, String userEmail, Role role, Long expiresIn) {
-		return Jwts.builder()
-			.claim("token-type", tokenType)
-			.claim("userId", userId)
-			.claim("email", userEmail)
-			.claim("role", role.name())
-			.issuedAt(new Date(System.currentTimeMillis()))
-			.expiration(new Date(System.currentTimeMillis() + expiresIn * 1000))
-			.signWith(secretKey)
-			.compact();
 	}
 }

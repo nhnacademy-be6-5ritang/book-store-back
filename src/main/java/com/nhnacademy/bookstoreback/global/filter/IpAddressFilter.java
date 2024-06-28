@@ -30,4 +30,10 @@ public class IpAddressFilter extends OncePerRequestFilter {
 
 		filterChain.doFilter(request, response);
 	}
+
+	@Override
+	@NonNull
+	protected String getAlreadyFilteredAttributeName() {
+		return this.getClass().getName() + ".FILTERED";
+	}
 }
