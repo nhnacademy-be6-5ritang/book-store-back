@@ -8,9 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 /**
+ * 도서 태그 매핑 Entity
+ *
  * @author 김기욱
  * @version 1.0
  */
@@ -24,10 +27,12 @@ public class BookTag {
 	private Long bookTagId;
 
 	@ManyToOne
-	@JoinColumn(name = "book_id", nullable = false)
+	@NotNull
+	@JoinColumn(name = "book_id")
 	private Book book;
 
 	@ManyToOne
-	@JoinColumn(name = "tag_id", nullable = false)
+	@NotNull
+	@JoinColumn(name = "tag_id")
 	private Tag tag;
 }
