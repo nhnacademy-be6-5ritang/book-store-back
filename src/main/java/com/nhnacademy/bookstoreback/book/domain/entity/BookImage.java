@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.book.domain.entity;
 
+import com.nhnacademy.bookstoreback.image.domain.entity.Image;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,5 +33,8 @@ public class BookImage {
 	@NotNull
 	private Book book;
 
-	// TODO : 이미지 테이블 생성 및 매핑
+	@ManyToOne
+	@JoinColumn(name = "image_id")
+	@NotNull
+	private Image image;
 }
