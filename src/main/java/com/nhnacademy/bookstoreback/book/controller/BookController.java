@@ -110,4 +110,9 @@ public class BookController {
 	public BookDetailResponse updateBook(@PathVariable String isbn, @RequestBody BookUpdateRequest request) {
 		return bookService.updateBook(isbn, request);
 	}
+
+	@GetMapping("{/bookId}")
+	public BookDetailResponse getBook(@PathVariable Long bookId) {
+		return bookService.findBookById(bookId);
+	}
 }
