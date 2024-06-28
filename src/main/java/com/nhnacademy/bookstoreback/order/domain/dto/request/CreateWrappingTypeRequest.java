@@ -10,4 +10,5 @@ public record CreateWrappingTypeRequest(
 	String paperContent,
 	BigDecimal paperPrice
 ) {
+
 }

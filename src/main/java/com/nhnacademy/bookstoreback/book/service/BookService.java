@@ -17,6 +17,7 @@ import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.book.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
 
 /**
  * @author 김기욱
@@ -116,7 +117,19 @@ public class BookService {
 		}
 	}
 
-	public Book findBookById(Long bookId) {
-		return bookRepository.findById(bookId).orElse(null);
+	public GetBookResponse findBookById(Long bookId) {
+		Book book = bookRepository.findById(bookId).orElse(null);
+		if (book != null) {
+			return GetBookResponse.from(book);
+		}
+		return null;
+	}
+
+	public void updateBookById(Long bookId) {
+		Book book = bookRepository.findById(bookId).orElse(null);
+		if (book != null) {
+			book.update(true);
+			bookRepository.save(book);
+		}
 	}
 }

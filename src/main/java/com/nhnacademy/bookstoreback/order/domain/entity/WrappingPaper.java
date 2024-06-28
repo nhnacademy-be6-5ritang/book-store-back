@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "wrapping_paper")
+@Table(name = "wrapping_papers")
 public class WrappingPaper {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,25 +24,31 @@ public class WrappingPaper {
 	private Long wrappingPaperId;
 
 	@ManyToOne
-	@JoinColumn(name = "order_id")
-	private Order order;
+	@JoinColumn(name = "order_list_id")
+	private BookOrder bookOrder;
 
 	@ManyToOne
 	@JoinColumn(name = "paper_type_id")
 	private PaperType paperType;
 
+	@Column(name = "paper_quantity")
+	private Integer paperQuantity;
+
 	@Builder
 	public WrappingPaper(
-		Order order,
-		PaperType paperType) {
-		this.order = order;
+		BookOrder bookOrder,
+		PaperType paperType,
+		Integer paperQuantity) {
+		this.bookOrder = bookOrder;
 		this.paperType = paperType;
+		this.paperQuantity = paperQuantity;
 	}
 
-	public static WrappingPaper toEntity(Order order, PaperType paperType) {
+	public static WrappingPaper toEntity(BookOrder bookOrder, PaperType paperType, Integer paperQuantity) {
 		return WrappingPaper.builder()
-			.order(order)
+			.bookOrder(bookOrder)
 			.paperType(paperType)
+			.paperQuantity(paperQuantity)
 			.build();
 	}
 
