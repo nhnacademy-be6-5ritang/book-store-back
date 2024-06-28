@@ -12,6 +12,8 @@ import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
 import jakarta.persistence.EntityManager;
 
 /**
+ * 도서 상태 Service
+ *
  * @author 김기욱
  * @version 1.0
  */
@@ -24,6 +26,12 @@ public class BookStatusService {
 		this.entityManager = entityManager;
 	}
 
+	/**
+	 * 도서 상태 이름 기반 도서 조회
+	 *
+	 * @param bookStatusName 도서 상태 이름
+	 * @return 도서 상태 (Optional로 반환)
+	 */
 	public Optional<BookStatus> findByBookStatusName(String bookStatusName) {
 		List<BookStatus> results = entityManager
 			.createQuery("SELECT b FROM BookStatus b WHERE b.bookStatusName = :bookStatusName", BookStatus.class)
@@ -37,6 +45,12 @@ public class BookStatusService {
 		}
 	}
 
+	/**
+	 * 도서 상태 생성 또는 조회
+	 *
+	 * @param bookStatusName 도서 상태 이름
+	 * @return 도서 상태가 존재하면 도서 상태 정보, 없으면 생성된 도서 상태 정보
+	 */
 	@Transactional
 	public BookStatus findOrCreateBookStatus(String bookStatusName) {
 		Optional<BookStatus> optionalStatus = findByBookStatusName(bookStatusName);

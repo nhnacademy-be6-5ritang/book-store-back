@@ -8,6 +8,8 @@ import com.nhnacademy.bookstoreback.book.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.book.repository.PublisherRepository;
 
 /**
+ * 출판사 Service
+ *
  * @author 김기욱
  * @version 1.0
  */

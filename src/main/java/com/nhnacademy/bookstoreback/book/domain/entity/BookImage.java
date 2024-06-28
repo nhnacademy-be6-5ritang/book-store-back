@@ -1,7 +1,5 @@
 package com.nhnacademy.bookstoreback.book.domain.entity;
 
-import java.util.Date;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,11 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 /**
+ * 도서 이미지 Entity
+ *
  * @author 김기욱
  * @version 1.0
  */
@@ -28,16 +27,9 @@ public class BookImage {
 	private Long bookImageId;
 
 	@ManyToOne
-	@JoinColumn(name = "book_id", nullable = false)
+	@JoinColumn(name = "book_id")
+	@NotNull
 	private Book book;
 
-	@Column(name = "book_image_name", nullable = false, length = 100)
-	private String bookImageName;
-
-	@Column(name = "book_image_url", nullable = false, length = 100)
-	private String bookImageUrl;
-
-	@Column(name = "book_image_created_at", nullable = false)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date bookImageCreatedAt;
+	// TODO : 이미지 테이블 생성 및 매핑
 }
