@@ -9,6 +9,7 @@ import lombok.Builder;
 
 @Builder
 public record GetOrderByInfoResponse(
+	Long orderId,
 	String infoId,
 	String payername,
 	String payerEmail,
@@ -19,6 +20,7 @@ public record GetOrderByInfoResponse(
 ) {
 	public static GetOrderByInfoResponse from(Order order) {
 		return GetOrderByInfoResponse.builder()
+			.orderId(order.getOrderId())
 			.infoId(order.getOrderInfoId())
 			.payername(order.getOrderPayerName())
 			.payerEmail(order.getOrderPayerEmail())
