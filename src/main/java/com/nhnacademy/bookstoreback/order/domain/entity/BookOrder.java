@@ -34,7 +34,7 @@ public class BookOrder {
 	private Book book;
 
 	@OneToOne
-	@JoinColumn(name = "order_id", nullable = true)
+	@JoinColumn(name = "order_id")
 	private Order order;
 
 	@Builder
