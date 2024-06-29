@@ -237,6 +237,7 @@ public class BookService {
 		List<BookListResponse> bookListResponses = new ArrayList<>();
 		for (Book book : books) {
 			BookListResponse bookListResponse = BookListResponse.builder()
+				.bookId(book.getBookId())
 				.bookTitle(book.getBookTitle())
 				.bookIsbn(book.getBookIsbn())
 				.bookPrice(book.getBookPrice())
@@ -296,4 +297,5 @@ public class BookService {
 			.bookSalePercent(book.getBookSalePercent())
 			.build();
 	}
+
 }
