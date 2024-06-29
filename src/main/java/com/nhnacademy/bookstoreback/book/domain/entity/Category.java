@@ -8,9 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 /**
+ * 카테고리 Entity
+ *
  * @author 김기욱
  * @version 1.0
  */
@@ -27,6 +30,7 @@ public class Category {
 	@JoinColumn(name = "category_parent_id")
 	private Category parentCategory;
 
-	@Column(nullable = false, length = 20)
+	@NotNull
+	@Column(name = "category_name", length = 20)
 	private String categoryName;
 }
