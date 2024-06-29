@@ -13,16 +13,23 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
+ * Book Entity
+ *
  * @author 김기욱
  * @version 1.0
  */
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @Table(name = "books")
@@ -33,46 +40,58 @@ public class Book {
 	private Long bookId;
 
 	@ManyToOne
-	@JoinColumn(name = "author_id", nullable = false)
+	@NotNull
+	@JoinColumn(name = "author_id")
 	private Author author;
 
 	@ManyToOne
-	@JoinColumn(name = "publisher_id", nullable = false)
+	@NotNull
+	@JoinColumn(name = "publisher_id")
 	private Publisher publisher;
 
 	@ManyToOne
-	@JoinColumn(name = "book_status_id", nullable = false)
+	@NotNull
+	@JoinColumn(name = "book_status_id")
 	private BookStatus bookStatus;
 
-	@Column(name = "book_title", nullable = false, length = 100)
+	@NotNull
+	@Column(name = "book_title", length = 300)
 	private String bookTitle;
 
-	@Column(name = "book_index", nullable = false)
-	private String bookIndex;
+	@Column(name = "book_index")
+	private String bookIndex = "책 목차";
 
-	@Column(name = "book_description", nullable = false)
+	@NotNull
+	@Column(name = "book_description")
 	private String bookDescription;
 
-	@Column(name = "book_packaging", nullable = false)
+	@NotNull
+	@Column(name = "book_packaging")
 	private boolean bookPackaging = false;
 
-	@Column(name = "book_quantity", nullable = false)
+	@NotNull
+	@Column(name = "book_quantity")
 	private int bookQuantity = 100;
 
-	@Column(name = "book_publish_date", nullable = false)
+	@NotNull
+	@Column(name = "book_publish_date")
 	@Temporal(TemporalType.DATE)
 	private Date bookPublishDate;
 
-	@Column(name = "book_isbn", nullable = false, length = 17)
+	@NotNull
+	@Column(name = "book_isbn", length = 17)
 	private String bookIsbn;
 
-	@Column(name = "book_price", nullable = false)
+	@NotNull
+	@Column(name = "book_price")
 	private BigDecimal bookPrice;
 
-	@Column(name = "book_sale_percent", nullable = false)
+	@NotNull
+	@Column(name = "book_sale_percent")
 	private BigDecimal bookSalePercent;
 
-	@Column(name = "book_sale_price", nullable = false)
+	@NotNull
+	@Column(name = "book_sale_price")
 	private BigDecimal bookSalePrice;
 
 	public void update(boolean result) {

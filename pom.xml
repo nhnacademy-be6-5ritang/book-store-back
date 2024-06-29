@@ -198,6 +198,7 @@
     </dependencies>
 
     <build>
+        <finalName>BOOK-STORE-BACK</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
