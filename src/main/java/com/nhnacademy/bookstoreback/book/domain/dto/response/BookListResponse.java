@@ -11,8 +11,13 @@ import lombok.Builder;
  * @version 1.0
  */
 @Builder
-public record BookListResponse(String bookTitle, String bookIsbn, BigDecimal bookPrice, BigDecimal bookSalePrice,
-							   BigDecimal bookSalePercent) {
+public record BookListResponse(
+	Long bookId,
+	String bookTitle,
+	String bookIsbn,
+	BigDecimal bookPrice,
+	BigDecimal bookSalePrice,
+	BigDecimal bookSalePercent) {
 }
 
 // TODO : 이미지 추가
