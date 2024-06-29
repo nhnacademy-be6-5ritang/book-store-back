@@ -12,8 +12,18 @@ import lombok.Builder;
  * @version 1.0
  */
 @Builder
-public record BookDetailResponse(String authorName, String publisherName, String bookStatus, String bookTitle,
-								 String bookDescription, String bookIndex, boolean bookPackaging, int bookQuantity,
-								 Date bookPublishDate, String bookIsbn, BigDecimal bookPrice, BigDecimal bookSalePrice,
-								 BigDecimal bookSalePercent) {
+public record BookDetailResponse(
+	String authorName,
+	String publisherName,
+	String bookStatus,
+	String bookTitle,
+	String bookDescription,
+	String bookIndex,
+	boolean bookPackaging,
+	int bookQuantity,
+	Date bookPublishDate,
+	String bookIsbn,
+	BigDecimal bookPrice,
+	BigDecimal bookSalePrice,
+	BigDecimal bookSalePercent) {
 }

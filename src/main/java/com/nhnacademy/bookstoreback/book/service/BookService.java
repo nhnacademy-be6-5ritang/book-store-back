@@ -24,7 +24,6 @@ import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.book.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
 
 /**
  * 도서 Service
@@ -58,10 +57,10 @@ public class BookService {
 	 * @param bookId 도서 ID
 	 * @return 도서 상세 정보
 	 */
-	public GetBookResponse findBookById(Long bookId) {
+	public BookDetailResponse findBookById(Long bookId) {
 		Book book = bookRepository.findById(bookId).orElse(null);
 		if (book != null) {
-			return GetBookResponse.from(book);
+			return getBookDetailResponse(book);
 		}
 		return null;
 	}

@@ -26,7 +26,6 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderRes
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetListWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
@@ -154,11 +153,6 @@ public class OrderController {
 	}
 
 	// feign 클라이언트에 사용된 매핑
-
-	@GetMapping("/getBook/{book_id}")
-	public ResponseEntity<GetBookResponse> getBook(@PathVariable("book_id") Long bookId) {
-		return ResponseEntity.status(HttpStatus.OK).body(bookService.findBookById(bookId));
-	}
 
 	@GetMapping("/getBookOrder/{order_list_id}")
 	public ResponseEntity<GetBookOrderResponse> getBookOrder(@PathVariable("order_list_id") Long orderListId) {
