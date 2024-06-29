@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 import com.nhnacademy.bookstoreback.cart.repository.CartRepository;
 import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
@@ -16,6 +18,7 @@ import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
@@ -36,6 +39,8 @@ public class OrderService {
 	private final OrderStatusRepository orderStatusRepository;
 
 	private final CartRepository cartRepository;
+
+	private final BookRepository bookRepository;
 
 	public static final String ERROR_STATUS_WAIT = "주문 상태를 대기로 지정할 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문을 가져올 수 없습니다";
@@ -111,5 +116,14 @@ public class OrderService {
 	@Transactional(readOnly = true)
 	public GetOrderByInfoResponse findByOrderInfoId(String orderInfoId) {
 		return GetOrderByInfoResponse.from(orderRepository.findByOrderInfoId(orderInfoId));
+	}
+
+	@Transactional(readOnly = true)
+	public GetBookResponse findBookById(Long bookId) {
+		Book book = bookRepository.findById(bookId).orElse(null);
+		if (book != null) {
+			return GetBookResponse.from(book);
+		}
+		return null;
 	}
 }

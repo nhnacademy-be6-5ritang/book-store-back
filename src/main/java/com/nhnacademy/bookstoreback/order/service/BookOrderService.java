@@ -50,7 +50,8 @@ public class BookOrderService {
 	@Transactional(readOnly = true)
 	public GetBookOrderByInfoIdResponse findByOrderInfoId(String orderInfoId) {
 		BookOrder bookOrder = bookOrderRepository.findByOrder_OrderInfoId(orderInfoId);
-		return GetBookOrderByInfoIdResponse.from(FindByInfoIdBookOrderGetBookResponse.from(bookOrder.getBook()),
+		return GetBookOrderByInfoIdResponse.from(bookOrder.getOrderListId(),
+			FindByInfoIdBookOrderGetBookResponse.from(bookOrder.getBook()),
 			FindByInfoIdBookOrderGetOrderResponse.from(bookOrder.getOrder()), bookOrder.getBookQuantity());
 	}
 

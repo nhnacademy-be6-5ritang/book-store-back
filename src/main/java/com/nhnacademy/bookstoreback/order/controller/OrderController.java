@@ -68,7 +68,7 @@ public class OrderController {
 	}
 
 	//특정 상태의 주문 가져오기
-	@GetMapping("/getOrderByStatus/{order_status_id}")
+	@GetMapping("/OrderByStatus/{order_status_id}")
 	public ResponseEntity<GetOrderByStatusIdResponse> getOrderStatus(
 		@PathVariable("order_status_id") Long orderStatusId,
 		Pageable pageable) {
@@ -126,59 +126,53 @@ public class OrderController {
 	}
 
 	//포장지 종류 생성
-	@PostMapping("/createPaper")
+	@PostMapping("/papers")
 	public ResponseEntity<CreatePaperResponse> createPaper(
 		@RequestBody CreateWrappingTypeRequest createWrappingTypeRequest) {
 		return ResponseEntity.ok(paperTypeService.createPaper(createWrappingTypeRequest));
 	}
 
-	@PutMapping("/updatePaper/{paper_type_id}")
+	@PutMapping("/papers/{paper_type_id}")
 	public ResponseEntity<GetPaperResponse> updatePaper(
 		@ModelAttribute UpdateWrappingTypeRequest updateWrappingTypeRequest,
 		@PathVariable("paper_type_id") Long paperTypeId) {
 		return ResponseEntity.ok(paperTypeService.updatePaperTypeById(paperTypeId, updateWrappingTypeRequest));
 	}
 
-	@DeleteMapping("/deletePaper/{paper_type_id}")
+	@DeleteMapping("/papers/{paper_type_id}")
 	public void deletePaper(@PathVariable("paper_type_id") Long paperTypeId) {
 		paperTypeService.deletePaperTypeById(paperTypeId);
 	}
 
 	//TODO 도서 주문
 
-	//주문 보안 아이디로 주문리스트 가져오기
-	@GetMapping("/bookOrder/{order_info_id}")
-	public ResponseEntity<GetBookOrderByInfoIdResponse> bookOrder(@PathVariable("order_info_id") String orderInfoId) {
-		return ResponseEntity.ok(bookOrderService.findByOrderInfoId(orderInfoId));
-	}
-
 	// feign 클라이언트에 사용된 매핑
 
-	@GetMapping("/getBookOrder/{order_list_id}")
+	@GetMapping("/books-orders/{order_list_id}")
 	public ResponseEntity<GetBookOrderResponse> getBookOrder(@PathVariable("order_list_id") Long orderListId) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookOrderService.getBookOrder(orderListId));
 	}
 
 	//도서 주문 생성
-	@PostMapping("/bookOrder")
+	@PostMapping("/books-orders")
 	public ResponseEntity<CreateBookOrderResponse> createBookOrder(
 		@RequestBody CreateBookOrderRequest createBookOrderRequest) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookOrderService.createBookOrder(createBookOrderRequest));
 	}
 
-	@GetMapping("/wrapping")
+	@GetMapping("/wrappings")
 	public ResponseEntity<GetAllPaperResponse> getAllWrappingPapers() {
 		return ResponseEntity.status(HttpStatus.OK).body(paperTypeService.getAllPaperTypes());
 	}
 
-	@PostMapping("/createWrapping/{paper_id}/{book_order_id}/{quantity}")
+	@PostMapping("/wrappings/{paper_id}/{book_order_id}/{quantity}")
 	public ResponseEntity<GetWrappingResponse> createWrappingPapers(@PathVariable("paper_id") Long paperId,
 		@PathVariable("book_order_id") long bookOrderId, @PathVariable("quantity") int quantity) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(wrappingPaperService.createWrappingPapers(paperId, bookOrderId, quantity));
 	}
 
-	@GetMapping("/getWrappingPaperByOrderListId/{order_list_id}")
+	@GetMapping("/books-orders/{order_list_id}/wrapping-papers")
 	public ResponseEntity<GetListWrappingResponse> getWrappingPaperByOrderListId(
 		@PathVariable("order_list_id") Long orderListId) {
 		return ResponseEntity.status(HttpStatus.OK)
@@ -186,26 +180,32 @@ public class OrderController {
 	}
 
 	//주문 만들기 (도서 주문)
-	@PostMapping("/createOrder")
+	@PostMapping("/orders")
 	public ResponseEntity<CreateOrderResponse> createOrder(@RequestBody CreateOrderRequest createOrderRequest
 	) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.createOrder(createOrderRequest));
 	}
 
-	@PutMapping("/bookOrderUpdate/{book_list_id}/{order_id}")
+	@PutMapping("/books-orders/{book_list_id}/{order_id}")
 	public ResponseEntity<UpdateBookOrderResponse> updateBookOrder(@PathVariable("book_list_id") Long bookListId,
 		@PathVariable("order_id") Long orderId) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookOrderService.updateOrder(bookListId, orderId));
 	}
 
-	@GetMapping("/findAllByCartId/{cart_id}")
+	@GetMapping("/carts/{cart_id}/orders/all")
 	public ResponseEntity<GetAllListOrderResponse> findAllByCartId(@PathVariable("cart_id") Long cartId) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findAllByCartId(cartId));
 	}
 
-	@GetMapping("/findByOrderInfoId/{order_info_id}")
+	@GetMapping("/order-info/{order_info_id}")
 	public ResponseEntity<GetOrderByInfoResponse> findByOrderInfoId(@PathVariable("order_info_id") String orderInfoId) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findByOrderInfoId(orderInfoId));
+	}
+
+	//주문 보안 아이디로 주문리스트 가져오기
+	@GetMapping("/books-orders/{order_info_id}")
+	public ResponseEntity<GetBookOrderByInfoIdResponse> bookOrder(@PathVariable("order_info_id") String orderInfoId) {
+		return ResponseEntity.status(HttpStatus.OK).body(bookOrderService.findByOrderInfoId(orderInfoId));
 	}
 
 }
