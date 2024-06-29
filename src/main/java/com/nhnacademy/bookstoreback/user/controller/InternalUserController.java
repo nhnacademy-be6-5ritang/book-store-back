@@ -13,7 +13,7 @@ import com.nhnacademy.bookstoreback.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/back/internal/users")
+@RequestMapping("/internal/users")
 @RequiredArgsConstructor
 public class InternalUserController {
 	private final UserService userService;

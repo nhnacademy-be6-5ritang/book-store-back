@@ -26,7 +26,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
  * @version 1.0
  */
 @RestController
-@RequestMapping("/back/books")
+@RequestMapping("/books")
 public class BookController {
 
 	private final BookService bookService;

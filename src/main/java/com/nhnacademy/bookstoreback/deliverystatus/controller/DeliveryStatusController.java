@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/deliveries-statuses")
+@RequestMapping("/deliveries-statuses")
 public class DeliveryStatusController {
 	private final DeliveryStatusService deliveryStatusService;
 

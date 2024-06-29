@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/wishLists")
+@RequestMapping("/wishLists")
 public class WishListController {
 	private final WishListService wishListService;
 

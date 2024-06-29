@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/carts")
+@RequestMapping("/carts")
 public class CartController {
 	private final CartService cartService;
 
