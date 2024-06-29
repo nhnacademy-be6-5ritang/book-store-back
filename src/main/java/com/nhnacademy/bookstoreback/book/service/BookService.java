@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -25,6 +24,8 @@ import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.book.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * 도서 Service
  *
@@ -33,23 +34,13 @@ import com.nhnacademy.bookstoreback.book.repository.BookRepository;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class BookService {
-
 	private final RestTemplate restTemplate;
 	private final BookRepository bookRepository;
 	private final AuthorService authorService;
 	private final PublisherService publisherService;
 	private final BookStatusService bookStatusService;
-
-	@Autowired
-	public BookService(RestTemplate restTemplate, BookRepository bookRepository, AuthorService authorService,
-		PublisherService publisherService, BookStatusService bookStatusService) {
-		this.restTemplate = restTemplate;
-		this.bookRepository = bookRepository;
-		this.authorService = authorService;
-		this.publisherService = publisherService;
-		this.bookStatusService = bookStatusService;
-	}
 
 	/**
 	 * 도서 ID를 기준으로 도서 조회

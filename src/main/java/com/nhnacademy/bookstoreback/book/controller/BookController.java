@@ -2,7 +2,6 @@ package com.nhnacademy.bookstoreback.book.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,8 @@ import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookListResponse;
 import com.nhnacademy.bookstoreback.book.service.BookService;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Book Controller
@@ -26,16 +26,11 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
  * @version 1.0
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/books")
 public class BookController {
-
 	private final BookService bookService;
-
-	@Autowired
-	public BookController(BookService bookService) {
-		this.bookService = bookService;
-	}
-
+	
 	/**
 	 * 도서 포장 여부 업데이트
 	 *
@@ -114,8 +109,8 @@ public class BookController {
 		return bookService.updateBook(isbn, request);
 	}
 
-	@GetMapping("/books/{book_id}")
-	public ResponseEntity<GetBookResponse> getBook(@PathVariable("book_id") Long bookId) {
+	@GetMapping("/{bookId}")
+	public ResponseEntity<BookDetailResponse> getBook(@PathVariable Long bookId) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.findBookById(bookId));
 	}
 }

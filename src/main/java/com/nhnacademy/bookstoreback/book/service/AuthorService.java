@@ -2,12 +2,13 @@ package com.nhnacademy.bookstoreback.book.service;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.book.domain.entity.Author;
 import com.nhnacademy.bookstoreback.book.repository.AuthorRepository;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * 작가 Service
@@ -16,14 +17,9 @@ import com.nhnacademy.bookstoreback.book.repository.AuthorRepository;
  * @version 1.0
  */
 @Service
+@RequiredArgsConstructor
 public class AuthorService {
-
 	private final AuthorRepository authorRepository;
-
-	@Autowired
-	public AuthorService(AuthorRepository authorRepository) {
-		this.authorRepository = authorRepository;
-	}
 
 	/**
 	 * 작가 이름 기반 도서 조회.

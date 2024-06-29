@@ -1,11 +1,12 @@
 package com.nhnacademy.bookstoreback.book.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.book.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.book.repository.PublisherRepository;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * 출판사 Service
@@ -14,14 +15,9 @@ import com.nhnacademy.bookstoreback.book.repository.PublisherRepository;
  * @version 1.0
  */
 @Service
+@RequiredArgsConstructor
 public class PublisherService {
-
 	private final PublisherRepository publisherRepository;
-
-	@Autowired
-	public PublisherService(PublisherRepository publisherRepository) {
-		this.publisherRepository = publisherRepository;
-	}
 
 	@Transactional
 	public Publisher findOrCreatePublisher(String publisherName) {

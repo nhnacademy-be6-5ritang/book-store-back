@@ -3,13 +3,13 @@ package com.nhnacademy.bookstoreback.book.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
 
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 도서 상태 Service
@@ -18,13 +18,9 @@ import jakarta.persistence.EntityManager;
  * @version 1.0
  */
 @Service
+@RequiredArgsConstructor
 public class BookStatusService {
 	private final EntityManager entityManager;
-
-	@Autowired
-	public BookStatusService(EntityManager entityManager) {
-		this.entityManager = entityManager;
-	}
 
 	/**
 	 * 도서 상태 이름 기반 도서 조회
