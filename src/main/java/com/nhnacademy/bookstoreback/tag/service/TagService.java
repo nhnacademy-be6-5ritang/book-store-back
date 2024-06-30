@@ -30,7 +30,7 @@ public class TagService {
 	@Transactional(readOnly = true)
 	public TagDto getTag(Long tagId) {
 		Tag tag = tagRepository.findById(tagId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 태그 '%d'는 존재하지 않는 테그 입니다.", tagId);
+			String errorMessage = String.format("해당 태그 '%d'는 존재하지 않는 태그 입니다.", tagId);
 			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			return new NotFoundException(errorStatus);
 		});
@@ -40,7 +40,7 @@ public class TagService {
 
 	public TagDto createTag(TagDto request) {
 		if (tagRepository.existsByTagName(request.tagName())) {
-			String errorMessage = String.format("해당 태그 '%s'는 이미 존재 하는 테그 입니다.", request.tagName());
+			String errorMessage = String.format("해당 태그 '%s'는 이미 존재 하는 태그 입니다.", request.tagName());
 			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			throw new AlreadyExistsException(errorStatus);
 		}
@@ -50,13 +50,13 @@ public class TagService {
 
 	public TagDto updateTag(Long tagId, TagDto request) {
 		Tag tag = tagRepository.findById(tagId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 태그 '%d'는 존재하지 않는 테그 입니다.", tagId);
+			String errorMessage = String.format("해당 태그 '%d'는 존재하지 않는 태그 입니다.", tagId);
 			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			return new NotFoundException(errorStatus);
 		});
 
 		if (tagRepository.existsByTagName(request.tagName())) {
-			String errorMessage = String.format("해당 태그 '%s'는 이미 존재 하는 테그 입니다.", request.tagName());
+			String errorMessage = String.format("해당 태그 '%s'는 이미 존재 하는 태그 입니다.", request.tagName());
 			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			throw new AlreadyExistsException(errorStatus);
 		}
@@ -70,7 +70,7 @@ public class TagService {
 
 	public void deleteTag(Long tagId) {
 		tagRepository.findById(tagId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 태그 '%d'는 존재하지 않는 테그 입니다.", tagId);
+			String errorMessage = String.format("해당 태그 '%d'는 존재하지 않는 태그 입니다.", tagId);
 			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			return new NotFoundException(errorStatus);
 		});
