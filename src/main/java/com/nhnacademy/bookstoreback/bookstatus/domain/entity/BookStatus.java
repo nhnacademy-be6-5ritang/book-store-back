@@ -1,4 +1,6 @@
-package com.nhnacademy.bookstoreback.book.domain.entity;
+package com.nhnacademy.bookstoreback.bookstatus.domain.entity;
+
+import com.nhnacademy.bookstoreback.bookstatus.domain.dto.respnse.BookStatusDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,4 +36,19 @@ public class BookStatus {
 	@NotNull
 	@Column(name = "book_status_name", length = 10)    // ON_SALE, SOLD_OUT, DELETED, UNKNOWN
 	private String bookStatusName;
+
+	@Builder
+	public BookStatus(String bookStatusName) {
+		this.bookStatusName = bookStatusName;
+	}
+
+	public static BookStatus toEntity(BookStatusDto request) {
+		return BookStatus.builder()
+			.bookStatusName(request.bookStatusName())
+			.build();
+	}
+
+	public void updateBookStatusName(String bookStatusName) {
+		this.bookStatusName = bookStatusName;
+	}
 }

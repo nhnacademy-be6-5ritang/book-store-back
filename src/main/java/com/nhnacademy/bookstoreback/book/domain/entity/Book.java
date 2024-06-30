@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
+import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 
 import jakarta.persistence.Column;

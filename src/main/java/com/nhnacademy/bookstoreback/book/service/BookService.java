@@ -21,8 +21,9 @@ import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookListResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
-import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
+import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
+import com.nhnacademy.bookstoreback.bookstatus.service.BookStatusService;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.publisher.service.PublisherService;
 

@@ -1,9 +1,9 @@
-package com.nhnacademy.bookstoreback.book.repository;
+package com.nhnacademy.bookstoreback.bookstatus.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
+import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
 
 /**
  * 도서 상태 Repository
@@ -13,4 +13,5 @@ import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
  */
 @Repository
 public interface BookStatusRepository extends JpaRepository<BookStatus, Long> {
+	boolean existsByBookStatusName(String bookStatusName);
 }
