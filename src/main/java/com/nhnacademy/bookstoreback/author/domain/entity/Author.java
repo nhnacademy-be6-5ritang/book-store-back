@@ -1,4 +1,6 @@
-package com.nhnacademy.bookstoreback.book.domain.entity;
+package com.nhnacademy.bookstoreback.author.domain.entity;
+
+import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,4 +37,19 @@ public class Author {
 	@NotNull
 	@Column(name = "author_name", length = 200)
 	private String authorName;
+
+	@Builder
+	public Author(String authorName) {
+		this.authorName = authorName;
+	}
+
+	public static Author toEntity(AuthorDto request) {
+		return Author.builder()
+			.authorName(request.authorName())
+			.build();
+	}
+
+	public void updateAuthorName(String authorName) {
+		this.authorName = authorName;
+	}
 }

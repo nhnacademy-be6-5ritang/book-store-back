@@ -15,10 +15,11 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.bookstoreback.author.domain.entity.Author;
+import com.nhnacademy.bookstoreback.author.service.AuthorService;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookListResponse;
-import com.nhnacademy.bookstoreback.book.domain.entity.Author;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;

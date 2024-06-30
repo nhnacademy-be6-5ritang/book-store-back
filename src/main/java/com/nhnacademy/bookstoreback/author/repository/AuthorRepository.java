@@ -1,11 +1,11 @@
-package com.nhnacademy.bookstoreback.book.repository;
+package com.nhnacademy.bookstoreback.author.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Author;
+import com.nhnacademy.bookstoreback.author.domain.entity.Author;
 
 /**
  * 작가 Repository
@@ -22,4 +22,6 @@ public interface AuthorRepository extends JpaRepository<Author, Long> {
 	 * @return 작가
 	 */
 	Optional<Author> findByAuthorName(String authorName);
+
+	boolean existsByAuthorName(String authorName);
 }
