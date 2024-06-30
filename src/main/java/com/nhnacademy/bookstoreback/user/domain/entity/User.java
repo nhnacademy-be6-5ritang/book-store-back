@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.Check;
 
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
+import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
 import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
 
 import jakarta.persistence.Column;
@@ -109,6 +110,14 @@ public class User {
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.lastLoginAt = lastLoginAt;
+	}
+
+	public void update(UpdateUserInfoRequest updateUserInfoRequest) {
+		this.name = updateUserInfoRequest.name();
+		this.email = updateUserInfoRequest.email();
+		this.birth = updateUserInfoRequest.birth();
+		this.contact = updateUserInfoRequest.contact();
+		this.updatedAt = LocalDateTime.now();
 	}
 
 	public static User toEntity(CreateUserRequest createUserRequest, String encodedPassword) {
