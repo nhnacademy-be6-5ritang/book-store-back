@@ -15,7 +15,9 @@ public record GetAllPaperResponse(
 	public static GetAllPaperResponse from(List<PaperType> all) {
 		List<GetPaperResponse> papers = new ArrayList<>();
 		for (PaperType paperType : all) {
-			papers.add(GetPaperResponse.from(paperType));
+			if (paperType.getPaperName() != null && !paperType.getPaperName().equals("포장불가")) {
+				papers.add(GetPaperResponse.from(paperType));
+			}
 		}
 		return GetAllPaperResponse.builder()
 			.papers(papers)

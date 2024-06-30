@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,8 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryR
 import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 import com.nhnacademy.bookstoreback.delivery.repository.DeliveryRepository;
 import com.nhnacademy.bookstoreback.delivery.service.DeliveryService;
+import com.nhnacademy.bookstoreback.deliverypolicy.domain.entity.DeliveryPolicy;
+import com.nhnacademy.bookstoreback.deliverypolicy.repository.DeliveryPolicyRepository;
 import com.nhnacademy.bookstoreback.deliverystatus.domain.entity.DeliveryStatus;
 import com.nhnacademy.bookstoreback.deliverystatus.repository.DeliveryStatusRepository;
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
@@ -28,6 +32,7 @@ import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
+ * @author 이경헌
  * 배달 서비스의 구현 클래스입니다.
  * 배달 생성, 조회, 업데이트, 삭제 기능을 제공합니다.
  */
@@ -38,41 +43,34 @@ public class DeliveryServiceImpl implements DeliveryService {
 	private final DeliveryRepository deliveryRepository;
 	private final OrderRepository orderRepository;
 	private final DeliveryStatusRepository deliveryStatusRepository;
+	private final DeliveryPolicyRepository deliveryPolicyRepository;
 	private final String NOT_FOUND_MESSAGE_DELIVERY_STATUS = "존재하지 않는 배달 상태입니다.";
 	private final String INIT_DELIVERY_STATUS = "발송준비중";
 
 	/**
-	 * 특정 사용자 ID와 연관된 배송 목록을 페이지 단위로 가져옵니다.
+	 * 사용자의 배송 목록을 페이지로 반환합니다.
 	 *
-	 * @param request  사용자의 배송 조회 요청 정보를 포함하는 객체
-	 * @param pageable 페이지네이션 정보로 페이지 크기, 정렬 등을 제어합니다.
-	 * @return {@link GetDeliveryResponse} 객체들이 포함된 페이지. 각 배송의 세부 정보를 포함합니다.
+	 * @param request  사용자의 배송 요청 정보.
+	 * @param pageable 페이지 정보.
+	 * @return 페이지로 반환된 사용자의 배송 목록.
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetDeliveryResponse> getDeliveriesByUserId(GetDeliveriesRequest request, Pageable pageable) {
-		return deliveryRepository.findAllByOrder_Cart_User_Id(request.userId(), pageable)
-			.map(delivery -> GetDeliveryResponse.builder()
-				.deliverySenderName(delivery.getDeliverySenderName())
-				.deliverySenderPhone(delivery.getDeliverySenderPhone())
-				.deliverySenderDate(delivery.getDeliverySenderDate())
-				.deliverySenderAddress(delivery.getDeliverySenderAddress())
-				.deliveryReceiver(delivery.getDeliveryReceiver())
-				.deliveryReceiverPhone(delivery.getDeliveryReceiverPhone())
-				.deliveryReceiverDate(delivery.getDeliveryReceiverDate())
-				.deliveryReceiverAddress(delivery.getDeliveryReceiverAddress())
-				.orderId(delivery.getOrder().getOrderId())
-				.deliveryStatusName(delivery.getDeliveryStatus().getDeliveryStatusName())
-				.build()
-			);
+		int page = pageable.getPageNumber() - 1;
+		int pageSize = 10;
+
+		return deliveryRepository.findAllByOrder_Cart_User_Id(request.userId(),
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "delivery_sender_date")))
+			.map(GetDeliveryResponse::fromEntity);
 	}
 
 	/**
-	 * 주어진 배송 ID에 해당하는 배송 정보를 조회합니다.
+	 * 특정 배송 ID에 대한 배송 정보를 반환합니다.
 	 *
-	 * @param deliveryId 조회할 배송의 ID
-	 * @return 주어진 배송 ID에 해당하는 배송 정보를 포함하는 {@link GetDeliveryResponse} 객체
-	 * @throws NotFoundException 주어진 ID에 해당하는 배송이 없을 경우 발생하는 예외
+	 * @param deliveryId 배송 ID.
+	 * @return 배송 정보.
+	 * @throws NotFoundException 배송이 존재하지 않는 경우 발생.
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -83,26 +81,15 @@ public class DeliveryServiceImpl implements DeliveryService {
 			return new NotFoundException(errorStatus);
 		});
 
-		return GetDeliveryResponse.builder()
-			.deliverySenderName(delivery.getDeliverySenderName())
-			.deliverySenderPhone(delivery.getDeliverySenderPhone())
-			.deliverySenderDate(delivery.getDeliverySenderDate())
-			.deliverySenderAddress(delivery.getDeliverySenderAddress())
-			.deliveryReceiver(delivery.getDeliveryReceiver())
-			.deliveryReceiverPhone(delivery.getDeliveryReceiverPhone())
-			.deliveryReceiverDate(delivery.getDeliveryReceiverDate())
-			.deliveryReceiverAddress(delivery.getDeliveryReceiverAddress())
-			.orderId(delivery.getOrder().getOrderId())
-			.deliveryStatusName(delivery.getDeliveryStatus().getDeliveryStatusName())
-			.build();
+		return GetDeliveryResponse.fromEntity(delivery);
 	}
 
 	/**
-	 * 새로운 배달을 생성합니다.
+	 * 새로운 배송을 생성합니다.
 	 *
-	 * @param request 배달 생성 요청의 세부 사항을 포함하는 객체
-	 * @return 생성된 배달 정보를 포함하는 {@link CreateDeliveryResponse} 객체
-	 * @throws NotFoundException 주문 또는 배달 상태가 존재하지 않는 경우 예외를 발생시킵니다.
+	 * @param request 배송 생성 요청 정보.
+	 * @return 생성된 배송 정보.
+	 * @throws NotFoundException 주문 또는 배송 상태가 존재하지 않는 경우 발생.
 	 */
 	@Override
 	public CreateDeliveryResponse createDelivery(CreateDeliveryRequest request) {
@@ -118,43 +105,23 @@ public class DeliveryServiceImpl implements DeliveryService {
 				() -> new NotFoundException(ErrorStatus.from(NOT_FOUND_MESSAGE_DELIVERY_STATUS, HttpStatus.NOT_FOUND,
 					LocalDateTime.now())));
 
-		Delivery delivery = Delivery.builder()
-			.deliverySenderName(request.deliverySenderName())
-			.deliverySenderPhone(request.deliverySenderPhone())
-			.deliverySenderDate(request.deliverySenderDate())
-			.deliverySenderAddress(request.deliverySenderAddress())
-			.deliveryReceiver(request.deliveryReceiver())
-			.deliveryReceiverPhone(request.deliveryReceiverPhone())
-			.deliveryReceiverDate(request.deliveryReceiverDate())
-			.deliveryReceiverAddress(request.deliveryReceiverAddress())
-			.order(order)
-			.deliveryStatus(deliveryStatus)
-			.build();
+		DeliveryPolicy deliveryPolicy = deliveryPolicyRepository.findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
+			order.getOrderPrice());
+
+		Delivery delivery = Delivery.toEntity(request, order, deliveryStatus, deliveryPolicy);
 
 		deliveryRepository.save(delivery);
 
-		return CreateDeliveryResponse.builder()
-			.deliveryId(delivery.getDeliveryId())
-			.deliverySenderName(delivery.getDeliverySenderName())
-			.deliverySenderPhone(delivery.getDeliverySenderPhone())
-			.deliverySenderDate(delivery.getDeliverySenderDate())
-			.deliverySenderAddress(delivery.getDeliverySenderAddress())
-			.deliveryReceiver(delivery.getDeliveryReceiver())
-			.deliveryReceiverPhone(delivery.getDeliveryReceiverPhone())
-			.deliveryReceiverDate(delivery.getDeliveryReceiverDate())
-			.deliveryReceiverAddress(delivery.getDeliveryReceiverAddress())
-			.orderId(delivery.getOrder().getOrderId())
-			.deliveryStatusId(delivery.getDeliveryStatus().getDeliveryStatusId())
-			.build();
+		return CreateDeliveryResponse.fromEntity(delivery);
 	}
 
 	/**
-	 * 지정된 배달 ID에 대한 배달 정보를 업데이트합니다.
+	 * 특정 배송 ID에 대한 배송 상태를 업데이트합니다.
 	 *
-	 * @param deliveryId 업데이트할 배달의 ID
-	 * @param request 새로운 배달 정보를 포함하는 업데이트 요청의 세부 사항
-	 * @return 업데이트된 배달 정보를 포함하는 {@link UpdateDeliveryResponse} 객체
-	 * @throws NotFoundException 배달 또는 배달 상태가 존재하지 않는 경우 예외를 발생시킵니다.
+	 * @param deliveryId 배송 ID.
+	 * @param request    배송 업데이트 요청 정보.
+	 * @return 업데이트된 배송 정보.
+	 * @throws NotFoundException 배송 또는 주문 상태가 존재하지 않는 경우 발생.
 	 */
 	@Override
 	public UpdateDeliveryResponse updateDelivery(Long deliveryId, UpdateDeliveryRequest request) {
@@ -174,11 +141,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 		delivery.updateDeliveryStatus(deliveryStatus);
 		deliveryRepository.save(delivery);
 
-		return UpdateDeliveryResponse.builder()
-			.deliveryId(delivery.getDeliveryId())
-			.orderId(delivery.getOrder().getOrderId())
-			.deliveryStatusName(delivery.getDeliveryStatus().getDeliveryStatusName())
-			.build();
+		return UpdateDeliveryResponse.fromEntity(delivery);
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package com.nhnacademy.bookstoreback.reviewimage.domain.entity;
 
-import java.time.LocalDateTime;
-
+import com.nhnacademy.bookstoreback.image.domain.entity.Image;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 
 import jakarta.persistence.Entity;
@@ -25,14 +24,9 @@ public class ReviewImage {
 	@JoinColumn(name = "review_image_id")
 	private Long reviewImageId;
 
-	@JoinColumn(name = "review_iamge_name")
-	private String reviewImageName;
-
-	@JoinColumn(name = "review_image_url")
-	private String reviewImageUrl;
-
-	@JoinColumn(name = "review_image_created_at")
-	private LocalDateTime reviewImageCreatedAt;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "image_id")
+	private Image image;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "review_id")

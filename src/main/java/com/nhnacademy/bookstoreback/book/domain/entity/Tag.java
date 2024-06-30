@@ -6,9 +6,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 /**
+ * 태그 Entity
+ *
  * @author 김기욱
  * @version 1.0
  */
@@ -21,6 +24,7 @@ public class Tag {
 	@Column(name = "tag_id")
 	private Long tagId;
 
-	@Column(nullable = false, length = 20)
+	@NotNull
+	@Column(name = "tag_name", length = 20)
 	private String tagName;
 }

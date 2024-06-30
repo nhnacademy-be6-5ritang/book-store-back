@@ -1,20 +1,24 @@
 package com.nhnacademy.bookstoreback.order.domain.dto.response;
 
-import com.nhnacademy.bookstoreback.order.domain.entity.Order;
-import com.nhnacademy.bookstoreback.order.domain.entity.PaperType;
+import java.math.BigDecimal;
+
 import com.nhnacademy.bookstoreback.order.domain.entity.WrappingPaper;
 
 import lombok.Builder;
 
 @Builder
 public record GetWrappingResponse(
-	Order order,
-	PaperType paperType
+	Long wrappingId,
+	String name,
+	BigDecimal price,
+	Integer quantity
 ) {
 	public static GetWrappingResponse from(WrappingPaper wrappingPaper) {
 		return GetWrappingResponse.builder()
-			.order(wrappingPaper.getOrder())
-			.paperType(wrappingPaper.getPaperType())
+			.wrappingId(wrappingPaper.getWrappingPaperId())
+			.name(wrappingPaper.getPaperType().getPaperName())
+			.price(wrappingPaper.getPaperType().getPaperPrice())
+			.quantity(wrappingPaper.getPaperQuantity())
 			.build();
 	}
 }

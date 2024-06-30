@@ -39,9 +39,6 @@ GET localhost:8080/getOrderByStatus/1
 ### 주문의 상태 업데이트
 PUT localhost:8080/1/orderStatus/1
 
-### 포장지 확인
-GET localhost:8080/1/wrapping
-
 ### 주문상태 업데이트
 PUT localhost:8080/orderStatus/2
 Content-Type: application/json
@@ -57,10 +54,10 @@ DELETE localhost:8080/orderStatus/2
 GET localhost:8080/orderStatus/1
 
 ### 포장지 전부 가져오기 -> 포장지 종류로 수정 예정
-#GET localhost:8080/wrapping
+GET localhost:8080/wrapping
 
 ### 특정 포장지 가져오기 -> 포장지 종류로 수정 예정
-#GET localhost:8080/wrapping/1
+GET localhost:8080/wrapping/1
 
 ### 포장지 삭제
 DELETE localhost:8080/wrapping/2
@@ -82,3 +79,16 @@ GET localhost:8080/bookOrder/f5d3f2de-5a40-4fc5-bfa7-c5c18005f975
 
 ### 테스트
 GET localhost:8080/test
+
+### 포장지 종류 생성
+POST localhost:8080/createPaper
+Content-Type: application/json
+
+{
+  "paperName": "테스트 포장지3",
+  "paperContent": "포장지3",
+  "paperPrice": 11
+}
+
+### 북 패키지 설정
+GET localhost:8080/books/packaging/126
