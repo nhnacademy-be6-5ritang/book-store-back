@@ -36,6 +36,16 @@ public class TagService {
 		return TagDto.fromEntity(tag);
 	}
 
+	public TagDto createTag(TagDto request) {
+		if (tagRepository.existsByTagName(request.tagName())) {
+			String errorMessage = String.format("해당 태그 '%s'는 이미 존재 하는 테그 입니다.", request.tagName());
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new AlreadyExistsException(errorStatus);
+		}
+
+		return TagDto.fromEntity(tagRepository.save(Tag.toEntity(request)));
+	}
+
 	public TagDto updateTag(Long tagId, TagDto request) {
 		Tag tag = tagRepository.findById(tagId).orElseThrow(() -> {
 			String errorMessage = String.format("해당 태그 '%s'는 존재하지 않는 테그 입니다.", request.tagName());
@@ -54,16 +64,6 @@ public class TagService {
 		tagRepository.save(tag);
 
 		return TagDto.fromEntity(tag);
-	}
-
-	public TagDto createTag(TagDto request) {
-		if (tagRepository.existsByTagName(request.tagName())) {
-			String errorMessage = String.format("해당 태그 '%s'는 이미 존재 하는 테그 입니다.", request.tagName());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new AlreadyExistsException(errorStatus);
-		}
-
-		return TagDto.fromEntity(tagRepository.save(Tag.toEntity(request)));
 	}
 
 	public void deleteTag(Long tagId) {
