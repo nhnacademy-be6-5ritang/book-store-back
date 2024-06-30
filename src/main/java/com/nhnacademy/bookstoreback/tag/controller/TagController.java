@@ -35,19 +35,19 @@ public class TagController {
 	}
 
 	@PostMapping
-	public ResponseEntity<TagDto> createDeliveryStatus(
+	public ResponseEntity<TagDto> createTag(
 		@RequestBody TagDto request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(tagService.createTag(request));
 	}
 
 	@PutMapping("/{tagId}")
-	public ResponseEntity<TagDto> updateDeliveryStatus(@PathVariable Long tagId,
+	public ResponseEntity<TagDto> updateTag(@PathVariable Long tagId,
 		@RequestBody TagDto request) {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.updateTag(tagId, request));
 	}
 
 	@DeleteMapping("/{tagId}")
-	public ResponseEntity<Void> deleteDeliveryStatus(@PathVariable Long tagId) {
+	public ResponseEntity<Void> deleteTag(@PathVariable Long tagId) {
 		tagService.deleteTag(tagId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
