@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.book.domain.dto.response;
+package com.nhnacademy.bookstoreback.book.domain.dto.request;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,29 +14,23 @@ import lombok.Builder;
  * @version 1.0
  */
 @Builder
-public record BookDetailResponse(
+public record CreateBookRequest(
 	String authorName,
 	String publisherName,
 	String bookStatusName,
 	String bookTitle,
-	String bookDescription,
 	String bookIndex,
-	boolean bookPackaging,
+	String bookDescription,
 	int bookQuantity,
+	boolean bookPackaging,
 	Date bookPublishDate,
 	String bookIsbn,
 	BigDecimal bookPrice,
 	BigDecimal bookSalePrice,
 	BigDecimal bookSalePercent) {
 
-	/**
-	 * Book 엔티티를 BookDetailResponse DTO로 변환하는 메소드
-	 *
-	 * @param book Book 엔티티
-	 * @return BookDetailResponse DTO
-	 */
-	public static BookDetailResponse fromEntity(Book book) {
-		return BookDetailResponse.builder()
+	public static CreateBookRequest fromEntity(Book book) {
+		return CreateBookRequest.builder()
 			.authorName(book.getAuthor().getAuthorName())
 			.publisherName(book.getPublisher().getPublisherName())
 			.bookStatusName(book.getBookStatus().getBookStatusName())

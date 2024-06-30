@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/books")
 public class BookController {
 	private final BookService bookService;
-	
+
 	/**
 	 * 도서 포장 여부 업데이트
 	 *
@@ -113,4 +113,7 @@ public class BookController {
 	public ResponseEntity<BookDetailResponse> getBook(@PathVariable Long bookId) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.findBookById(bookId));
 	}
+
+	// @PostMapping
+	// public ResponseEntity<Create>
 }

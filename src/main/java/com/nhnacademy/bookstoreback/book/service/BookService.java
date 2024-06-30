@@ -51,7 +51,7 @@ public class BookService {
 	public BookDetailResponse findBookById(Long bookId) {
 		Book book = bookRepository.findById(bookId).orElse(null);
 		if (book != null) {
-			return getBookDetailResponse(book);
+			return BookDetailResponse.fromEntity(book);
 		}
 		return null;
 	}
@@ -210,7 +210,7 @@ public class BookService {
 		bookRepository.save(book);
 
 		// 4. 업데이트된 책의 정보를 BookDetailResponse DTO로 변환하여 반환합니다.
-		return getBookDetailResponse(book);
+		return BookDetailResponse.fromEntity(book);
 	}
 
 	/**
@@ -261,31 +261,14 @@ public class BookService {
 		// 조회된 책을 BookDetailResponse DTO로 변환합니다.
 
 		// 변환된 DTO를 반환합니다.
-		return getBookDetailResponse(book);
+		return BookDetailResponse.fromEntity(book);
 	}
 
-	/**
-	 * Book 엔티티를 BookDetailResponse DTO로 변환하는 메소드
-	 *
-	 * @param book Book 엔티티
-	 * @return BookDetailResponse DTO
-	 */
-	private BookDetailResponse getBookDetailResponse(Book book) {
-		return BookDetailResponse.builder()
-			.authorName(book.getAuthor().getAuthorName())
-			.publisherName(book.getPublisher().getPublisherName())
-			.bookStatus(book.getBookStatus().getBookStatusName())
-			.bookTitle(book.getBookTitle())
-			.bookDescription(book.getBookDescription())
-			.bookIndex(book.getBookIndex())
-			.bookPackaging(book.isBookPackaging())
-			.bookQuantity(book.getBookQuantity())
-			.bookPublishDate(book.getBookPublishDate())
-			.bookIsbn(book.getBookIsbn())
-			.bookPrice(book.getBookPrice())
-			.bookSalePrice(book.getBookSalePrice())
-			.bookSalePercent(book.getBookSalePercent())
-			.build();
-	}
+	// public ResponseEntity<CreateBookResponse> createBook(CreateBookRequest request) {
+	// 	Author author = authorService.findOrCreateAuthor(request.authorName());
+	//
+	// 	Book book = Book.toEntity(request,)
+	// 	bookRepository.save(request)
+	// }
 
 }

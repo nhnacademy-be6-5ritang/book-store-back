@@ -1,4 +1,6 @@
-package com.nhnacademy.bookstoreback.book.domain.entity;
+package com.nhnacademy.bookstoreback.tag.domain.entity;
+
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
