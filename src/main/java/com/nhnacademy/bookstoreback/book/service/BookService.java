@@ -21,8 +21,9 @@ import com.nhnacademy.bookstoreback.book.domain.dto.response.BookListResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Author;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.domain.entity.BookStatus;
-import com.nhnacademy.bookstoreback.book.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
+import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
+import com.nhnacademy.bookstoreback.publisher.service.PublisherService;
 
 import lombok.RequiredArgsConstructor;
 

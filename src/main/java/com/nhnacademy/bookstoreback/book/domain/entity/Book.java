@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
+import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -22,10 +22,12 @@ import lombok.RequiredArgsConstructor;
 public class TagService {
 	private final TagRepository tagRepository;
 
+	@Transactional(readOnly = true)
 	public List<TagDto> getTags() {
 		return tagRepository.findAll().stream().map(TagDto::fromEntity).toList();
 	}
 
+	@Transactional(readOnly = true)
 	public TagDto getTag(Long tagId) {
 		Tag tag = tagRepository.findById(tagId).orElseThrow(() -> {
 			String errorMessage = String.format("해당 태그 '%d'는 존재하지 않는 테그 입니다.", tagId);

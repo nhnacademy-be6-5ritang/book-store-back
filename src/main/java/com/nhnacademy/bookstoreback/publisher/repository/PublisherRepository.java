@@ -1,11 +1,11 @@
-package com.nhnacademy.bookstoreback.book.repository;
+package com.nhnacademy.bookstoreback.publisher.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Publisher;
+import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 
 /**
  * 출판사 Repository
@@ -22,4 +22,6 @@ public interface PublisherRepository extends JpaRepository<Publisher, Long> {
 	 * @return 도서 정보 (Optional로 반환)
 	 */
 	Optional<Publisher> findByPublisherName(String publisherName);
+
+	boolean existsByPublisherName(String publisherName);
 }
