@@ -50,7 +50,7 @@ public class TagService {
 
 	public TagDto updateTag(Long tagId, TagDto request) {
 		Tag tag = tagRepository.findById(tagId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 태그 '%s'는 존재하지 않는 테그 입니다.", request.tagName());
+			String errorMessage = String.format("해당 태그 '%d'는 존재하지 않는 테그 입니다.", tagId);
 			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			return new NotFoundException(errorStatus);
 		});
