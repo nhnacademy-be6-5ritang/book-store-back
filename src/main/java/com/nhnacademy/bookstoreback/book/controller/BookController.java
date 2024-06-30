@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.BookDetailResponse;
+import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookListResponse;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.service.BookService;
 
 import lombok.RequiredArgsConstructor;
@@ -93,7 +96,7 @@ public class BookController {
 	 * @return 도서 상세페이지
 	 */
 	@GetMapping("/details/{isbn}")
-	public BookDetailResponse findBookByIsbn(@PathVariable String isbn) {
+	public GetBookDetailResponse findBookByIsbn(@PathVariable String isbn) {
 		return bookService.findBookByIsbn(isbn);
 	}
 
@@ -105,15 +108,30 @@ public class BookController {
 	 * @return 수정된 도서 상세페이지
 	 */
 	@PatchMapping("/update/{isbn}")
-	public BookDetailResponse updateBook(@PathVariable String isbn, @RequestBody BookUpdateRequest request) {
+	public GetBookDetailResponse updateBook(@PathVariable String isbn, @RequestBody BookUpdateRequest request) {
 		return bookService.updateBook(isbn, request);
 	}
 
 	@GetMapping("/{bookId}")
-	public ResponseEntity<BookDetailResponse> getBook(@PathVariable Long bookId) {
+	public ResponseEntity<GetBookDetailResponse> getBook(@PathVariable Long bookId) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.findBookById(bookId));
 	}
 
-	// @PostMapping
-	// public ResponseEntity<Create>
+	@PostMapping
+	public ResponseEntity<CreateBookResponse> createBook(
+		@RequestBody CreateBookRequest request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(request));
+	}
+
+	// @PutMapping("/{bookId}")
+	// public ResponseEntity<BookDetailResponse> updateBookByBookId(@PathVariable Long bookId,
+	// 	@RequestBody BookUpdateRequest request) {
+	// 	return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBook(bookId, request));
+	// }
+
+	@DeleteMapping("/{bookId}")
+	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId) {
+		bookService.deleteBook(bookId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
 }

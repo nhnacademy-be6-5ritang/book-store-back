@@ -3,12 +3,14 @@ package com.nhnacademy.bookstoreback.book.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -16,15 +18,23 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
+import com.nhnacademy.bookstoreback.author.repository.AuthorRepository;
 import com.nhnacademy.bookstoreback.author.service.AuthorService;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.BookDetailResponse;
+import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookListResponse;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
+import com.nhnacademy.bookstoreback.bookstatus.repository.BookStatusRepository;
 import com.nhnacademy.bookstoreback.bookstatus.service.BookStatusService;
+import com.nhnacademy.bookstoreback.global.exception.AlreadyExistsException;
+import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
+import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
+import com.nhnacademy.bookstoreback.publisher.repository.PublisherRepository;
 import com.nhnacademy.bookstoreback.publisher.service.PublisherService;
 
 import lombok.RequiredArgsConstructor;
@@ -41,6 +51,9 @@ import lombok.RequiredArgsConstructor;
 public class BookService {
 	private final RestTemplate restTemplate;
 	private final BookRepository bookRepository;
+	private final AuthorRepository authorRepository;
+	private final PublisherRepository publisherRepository;
+	private final BookStatusRepository bookStatusRepository;
 	private final AuthorService authorService;
 	private final PublisherService publisherService;
 	private final BookStatusService bookStatusService;
@@ -51,10 +64,10 @@ public class BookService {
 	 * @param bookId 도서 ID
 	 * @return 도서 상세 정보
 	 */
-	public BookDetailResponse findBookById(Long bookId) {
+	public GetBookDetailResponse findBookById(Long bookId) {
 		Book book = bookRepository.findById(bookId).orElse(null);
 		if (book != null) {
-			return BookDetailResponse.fromEntity(book);
+			return GetBookDetailResponse.fromEntity(book);
 		}
 		return null;
 	}
@@ -185,7 +198,7 @@ public class BookService {
 	 *
 	 * @param isbn ISBN
 	 */
-	public BookDetailResponse updateBook(String isbn, BookUpdateRequest request) {
+	public GetBookDetailResponse updateBook(String isbn, BookUpdateRequest request) {
 		// 1. ISBN으로 책을 찾습니다.
 		Optional<Book> optionalBook = bookRepository.findByBookIsbn(isbn);
 		if (optionalBook.isEmpty()) {
@@ -213,7 +226,7 @@ public class BookService {
 		bookRepository.save(book);
 
 		// 4. 업데이트된 책의 정보를 BookDetailResponse DTO로 변환하여 반환합니다.
-		return BookDetailResponse.fromEntity(book);
+		return GetBookDetailResponse.fromEntity(book);
 	}
 
 	/**
@@ -251,7 +264,7 @@ public class BookService {
 	 * @return 도서 상세 정보
 	 */
 	@Transactional(readOnly = true)
-	public BookDetailResponse findBookByIsbn(String isbn) {
+	public GetBookDetailResponse findBookByIsbn(String isbn) {
 		// ISBN을 기준으로 책을 조회합니다.
 		Optional<Book> optionalBook = bookRepository.findByBookIsbn(isbn);
 
@@ -264,14 +277,45 @@ public class BookService {
 		// 조회된 책을 BookDetailResponse DTO로 변환합니다.
 
 		// 변환된 DTO를 반환합니다.
-		return BookDetailResponse.fromEntity(book);
+		return GetBookDetailResponse.fromEntity(book);
 	}
 
-	// public ResponseEntity<CreateBookResponse> createBook(CreateBookRequest request) {
-	// 	Author author = authorService.findOrCreateAuthor(request.authorName());
-	//
-	// 	Book book = Book.toEntity(request,)
-	// 	bookRepository.save(request)
-	// }
+	public CreateBookResponse createBook(CreateBookRequest request) {
+		if (bookRepository.existsByBookTitle(request.bookTitle())) {
+			String errorMessage = String.format("해당 도서 '%s'는 이미 존재 하는 도서 입니다.", request.bookTitle());
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new AlreadyExistsException(errorStatus);
+		}
 
+		Author author = authorRepository.findByAuthorName(request.authorName()).orElseThrow(() -> {
+			String errorMessage = String.format("해당 작가 '%s'는 존재하지 않는 작가 입니다.", request.authorName());
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+
+		Publisher publisher = publisherRepository.findByPublisherName(request.publisherName()).orElseThrow(() -> {
+			String errorMessage = String.format("해당 출판사 '%s'는 존재하지 않는 출판사 입니다.", request.publisherName());
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+
+		BookStatus bookStatus = bookStatusRepository.findByBookStatusName(request.bookStatusName()).orElseThrow(() -> {
+			String errorMessage = String.format("해당 도서상태 '%s'는 존재하지 않는 도서상태 입니다.", request.bookStatusName());
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+
+		return CreateBookResponse.fromEntity(
+			bookRepository.save(Book.toEntity(request, author, publisher, bookStatus)));
+	}
+
+	public void deleteBook(Long bookId) {
+		bookRepository.findById(bookId).orElseThrow(() -> {
+			String errorMessage = String.format("해당 도서 '%d'는 존재하지 않는 도서 입니다.", bookId);
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+
+		bookRepository.deleteById(bookId);
+	}
 }

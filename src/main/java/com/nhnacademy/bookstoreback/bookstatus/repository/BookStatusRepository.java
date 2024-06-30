@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.bookstatus.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +16,6 @@ import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
 @Repository
 public interface BookStatusRepository extends JpaRepository<BookStatus, Long> {
 	boolean existsByBookStatusName(String bookStatusName);
+
+	Optional<BookStatus> findByBookStatusName(String bookStatusName);
 }

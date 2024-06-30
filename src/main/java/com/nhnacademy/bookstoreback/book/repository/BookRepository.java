@@ -23,4 +23,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 	 * @return 도서 정보 (단일 정보 반환하므로 Optional 사용)
 	 */
 	Optional<Book> findByBookIsbn(String bookIsbn);
+	
+	boolean existsByBookTitle(String bookTitle);
 }

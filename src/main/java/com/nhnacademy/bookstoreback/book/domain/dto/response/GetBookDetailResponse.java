@@ -14,7 +14,7 @@ import lombok.Builder;
  * @version 1.0
  */
 @Builder
-public record BookDetailResponse(
+public record GetBookDetailResponse(
 	String authorName,
 	String publisherName,
 	String bookStatusName,
@@ -35,8 +35,8 @@ public record BookDetailResponse(
 	 * @param book Book 엔티티
 	 * @return BookDetailResponse DTO
 	 */
-	public static BookDetailResponse fromEntity(Book book) {
-		return BookDetailResponse.builder()
+	public static GetBookDetailResponse fromEntity(Book book) {
+		return GetBookDetailResponse.builder()
 			.authorName(book.getAuthor().getAuthorName())
 			.publisherName(book.getPublisher().getPublisherName())
 			.bookStatusName(book.getBookStatus().getBookStatusName())
