@@ -11,7 +11,9 @@ import com.nhnacademy.bookstoreback.global.exception.AlreadyExistsException;
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.tag.domain.dto.respnse.TagDto;
+import com.nhnacademy.bookstoreback.tag.domain.entity.BookTag;
 import com.nhnacademy.bookstoreback.tag.domain.entity.Tag;
+import com.nhnacademy.bookstoreback.tag.repository.BookTagRepository;
 import com.nhnacademy.bookstoreback.tag.repository.TagRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,10 +23,18 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class TagService {
 	private final TagRepository tagRepository;
+	private final BookTagRepository bookTagRepository;
 
 	@Transactional(readOnly = true)
 	public List<TagDto> getTags() {
 		return tagRepository.findAll().stream().map(TagDto::fromEntity).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<TagDto> getTagsByTagId(Long bookId) {
+		List<BookTag> bookTags = bookTagRepository.findAllByBookBookId(bookId);
+		List<Tag> tags = bookTags.stream().map(BookTag::getTag).toList();
+		return tags.stream().map(TagDto::fromEntity).toList();
 	}
 
 	@Transactional(readOnly = true)
