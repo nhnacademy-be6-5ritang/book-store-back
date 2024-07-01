@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.usergrade.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,19 +32,19 @@ public class UserGradeController {
 	public ResponseEntity<CreateUserGradeResponse> createUserGrade(
 		@RequestBody CreateUserGradeRequest createUserGradeRequest) {
 		CreateUserGradeResponse createUserGradeResponse = userGradeService.createUserGrade(createUserGradeRequest);
-		return ResponseEntity.ok(createUserGradeResponse);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createUserGradeResponse);
 	}
 
 	@GetMapping
 	public ResponseEntity<List<GetUserGradeResponse>> getUserGrades() {
 		List<GetUserGradeResponse> getUserGradeResponses = userGradeService.getUserGrades();
-		return ResponseEntity.ok(getUserGradeResponses);
+		return ResponseEntity.status(HttpStatus.OK).body(getUserGradeResponses);
 	}
 
 	@GetMapping("/{userGradeName}")
 	public ResponseEntity<GetUserGradeResponse> getUserGrade(@PathVariable String userGradeName) {
 		GetUserGradeResponse getUserGradeResponse = userGradeService.getUserGrade(userGradeName);
-		return ResponseEntity.ok(getUserGradeResponse);
+		return ResponseEntity.status(HttpStatus.OK).body(getUserGradeResponse);
 	}
 
 	@PutMapping("/{userGradeName}")
@@ -53,12 +54,12 @@ public class UserGradeController {
 		UpdateUserGradeResponse updateUserGradeResponse
 			= userGradeService.updateUserGrade(userGradeName, updateUserGradeRequest);
 
-		return ResponseEntity.ok(updateUserGradeResponse);
+		return ResponseEntity.status(HttpStatus.OK).body(updateUserGradeResponse);
 	}
 
 	@DeleteMapping("/{userGradeName}")
 	public ResponseEntity<Void> deleteUserGrade(@PathVariable String userGradeName) {
 		userGradeService.deleteUserGrade(userGradeName);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
