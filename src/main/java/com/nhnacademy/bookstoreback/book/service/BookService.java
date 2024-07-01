@@ -64,7 +64,7 @@ public class BookService {
 	 * @param bookId 도서 ID
 	 * @return 도서 상세 정보
 	 */
-	public GetBookDetailResponse findBookById(Long bookId) {
+	public GetBookDetailResponse getBook(Long bookId) {
 		Book book = bookRepository.findById(bookId).orElse(null);
 		if (book != null) {
 			return GetBookDetailResponse.fromEntity(book);
