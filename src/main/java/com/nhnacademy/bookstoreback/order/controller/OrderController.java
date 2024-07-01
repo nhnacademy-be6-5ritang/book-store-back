@@ -23,8 +23,8 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderRespons
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetListWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
@@ -200,10 +200,9 @@ public class OrderController {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findByOrderInfoId(orderInfoId));
 	}
 
-	//주문 보안 아이디로 주문리스트 가져오기
-	@GetMapping("/books-orders/{order_info_id}")
-	public ResponseEntity<GetBookOrderByInfoIdResponse> bookOrder(@PathVariable("order_info_id") String orderInfoId) {
-		return ResponseEntity.status(HttpStatus.OK).body(bookOrderService.findByOrderInfoId(orderInfoId));
+	@GetMapping("/books/{book_id}")
+	public ResponseEntity<GetBookResponse> getBook(@PathVariable("book_id") Long bookId) {
+		return ResponseEntity.status(HttpStatus.OK).body(bookService.findBookById(bookId));
 	}
 
 }
