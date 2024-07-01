@@ -357,8 +357,9 @@ public class BookService {
 			return new NotFoundException(errorStatus);
 		});
 
-		bookCategoryRepository.deleteByBookBookId(bookId);
+		bookCategoryRepository.deleteAllByBookBookId(bookId);
 		bookTagRepository.deleteAllByBookBookId(bookId);
+
 		bookRepository.deleteById(bookId);
 	}
 }

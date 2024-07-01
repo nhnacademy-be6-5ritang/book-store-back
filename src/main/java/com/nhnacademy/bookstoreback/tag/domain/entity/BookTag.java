@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 도서 태그 매핑 Entity
@@ -21,6 +22,7 @@ import lombok.Getter;
  */
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "books_and_tags")
 public class BookTag {
 	@Id
@@ -28,12 +30,12 @@ public class BookTag {
 	@Column(name = "book_tag_id")
 	private Long bookTagId;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@NotNull
 	@JoinColumn(name = "book_id")
 	private Book book;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@NotNull
 	@JoinColumn(name = "tag_id")
 	private Tag tag;
