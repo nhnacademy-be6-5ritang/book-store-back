@@ -1,12 +1,14 @@
 package com.nhnacademy.bookstoreback.auth.jwt.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import com.nhnacademy.bookstoreback.auth.jwt.dto.AppCustomUserDetails;
-import com.nhnacademy.bookstoreback.user.domain.entity.Role;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,16 +16,15 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class TokenService {
-	public Map<String, Object> getUserInfo(AppCustomUserDetails currentUser) {
+	public Map<String, Object> getUserInfo(CurrentUserDetails currentUser) {
 		Long id = currentUser.getUserId();
-		Role role = currentUser.getAuthorities().stream()
-			.findFirst()
-			.map(authority -> Role.valueOf(authority.getAuthority()))
-			.orElse(null);
+		List<String> roles = currentUser.getAuthorities().stream()
+			.map(GrantedAuthority::getAuthority)
+			.collect(Collectors.toList());
 
 		Map<String, Object> userInfo = new HashMap<>();
 		userInfo.put("id", id);
-		userInfo.put("role", role);
+		userInfo.put("roles", roles);
 
 		return userInfo;
 	}

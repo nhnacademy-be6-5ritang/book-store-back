@@ -3,22 +3,24 @@ package com.nhnacademy.bookstoreback.user.domain.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import org.hibernate.annotations.Check;
-
+import com.nhnacademy.bookstoreback.address.domain.entity.Address;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
 import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
+import com.nhnacademy.bookstoreback.userrole.domain.entity.UserRole;
+import com.nhnacademy.bookstoreback.userstatus.domain.entity.UserStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,7 +31,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "users")
-@Check(constraints = "user_role IN ('ADMIN', 'MEMBER') AND user_status IN ('ACTIVE', 'DORMANT', 'WITHDRAW')")
 public class User {
 
 	@Id
@@ -38,8 +39,18 @@ public class User {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "user_grade_id")
+	@JoinColumn(name = "user_grade_name")
 	private UserGrade userGrade;
+
+	@ManyToOne
+	@JoinColumn(name = "user_status_name")
+	private UserStatus status;
+
+	@OneToMany(mappedBy = "user")
+	private List<UserRole> userRoles;
+
+	@OneToMany(mappedBy = "user")
+	private List<Address> addresses;
 
 	@Column(name = "user_name")
 	private String name;
@@ -59,14 +70,6 @@ public class User {
 	@Column(name = "user_point")
 	private BigDecimal points;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "user_role")
-	private Role role;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "user_status")
-	private UserStatus status;
-
 	@Column(name = "user_sso_id")
 	private String ssoId;
 
@@ -83,14 +86,15 @@ public class User {
 	public User(
 		Long id,
 		UserGrade userGrade,
+		UserStatus status,
+		List<UserRole> userRoles,
+		List<Address> addresses,
 		String name,
 		String email,
 		String password,
 		LocalDate birth,
 		String contact,
 		BigDecimal points,
-		Role role,
-		UserStatus status,
 		String ssoId,
 		LocalDateTime createdAt,
 		LocalDateTime updatedAt,
@@ -98,14 +102,15 @@ public class User {
 	) {
 		this.id = id;
 		this.userGrade = userGrade;
+		this.status = status;
+		this.userRoles = userRoles;
+		this.addresses = addresses;
 		this.name = name;
 		this.email = email;
 		this.password = password;
 		this.birth = birth;
 		this.contact = contact;
 		this.points = points;
-		this.role = role;
-		this.status = status;
 		this.ssoId = ssoId;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
@@ -128,12 +133,16 @@ public class User {
 			.birth(createUserRequest.birth())
 			.contact(createUserRequest.contact())
 			.points(BigDecimal.ZERO)
-			.role(Role.MEMBER)
-			.status(UserStatus.ACTIVE)
-			.ssoId(null)
 			.createdAt(LocalDateTime.now())
 			.updatedAt(LocalDateTime.now())
-			.lastLoginAt(null)
+			.lastLoginAt(LocalDateTime.now())
 			.build();
+	}
+
+	// role의 name만 가져오기
+	public List<String> getAllRoles() {
+		return userRoles.stream()
+			.map(UserRole::getRoleName)
+			.collect(Collectors.toList());
 	}
 }

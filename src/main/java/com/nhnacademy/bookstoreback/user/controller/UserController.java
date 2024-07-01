@@ -2,18 +2,19 @@ package com.nhnacademy.bookstoreback.user.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nhnacademy.bookstoreback.address.service.AddressService;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
-import com.nhnacademy.bookstoreback.auth.jwt.dto.AppCustomUserDetails;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.service.UserService;
 
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
-	private final AddressService addressService;
+	// private final AddressService addressService;
 
 	@PostMapping
 	public ResponseEntity<CreateUserResponse> signUpUser(@RequestBody CreateUserRequest createUserRequest) {
@@ -32,9 +33,15 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserResponse);
 	}
 
+	@GetMapping("/self")
+	public ResponseEntity<GetMyUserInfoResponse> getMyUserInfo(@CurrentUser CurrentUserDetails currentUser) {
+		GetMyUserInfoResponse getMyUserInfoResponse = userService.getMyUserInfo(currentUser);
+		return ResponseEntity.status(HttpStatus.OK).body(getMyUserInfoResponse);
+	}
+
 	@PutMapping
 	public ResponseEntity<UpdateUserInfoResponse> updateUser(
-		@CurrentUser AppCustomUserDetails currentUser, @RequestBody UpdateUserInfoRequest updateUserInfoRequest
+		@CurrentUser CurrentUserDetails currentUser, @RequestBody UpdateUserInfoRequest updateUserInfoRequest
 	) {
 		UpdateUserInfoResponse updateUserInfoResponse = userService.updateUserInfo(currentUser, updateUserInfoRequest);
 		return ResponseEntity.status(HttpStatus.OK).body(updateUserInfoResponse);

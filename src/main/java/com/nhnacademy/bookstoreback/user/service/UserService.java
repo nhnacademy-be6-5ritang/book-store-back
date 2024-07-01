@@ -1,16 +1,19 @@
 package com.nhnacademy.bookstoreback.user.service;
 
+import java.util.Objects;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
-import com.nhnacademy.bookstoreback.auth.jwt.dto.AppCustomUserDetails;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
-import com.nhnacademy.bookstoreback.user.domain.dto.response.GetUserInfoResponse;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.exception.UserAlreadyExistsException;
 import com.nhnacademy.bookstoreback.user.exception.UserNotFoundException;
@@ -24,23 +27,6 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-
-	/**
-	 * 테스트용 API
-	 * 이메일을 기준으로 사용자 정보를 조회합니다.
-	 *
-	 * @param email 사용자 이메일
-	 * @return 사용자 정보 응답
-	 */
-	public GetUserInfoResponse getUserInfoByEmail(String email) {
-		User user = userRepository.findByEmail(email);
-
-		if (user == null) {
-			return null;
-		}
-
-		return GetUserInfoResponse.fromEntity(user);
-	}
 
 	/**
 	 * 사용자 정보를 생성합니다.
@@ -60,6 +46,13 @@ public class UserService {
 		return CreateUserResponse.fromEntity(savedUser);
 	}
 
+	public GetMyUserInfoResponse getMyUserInfo(@CurrentUser CurrentUserDetails currentUser) {
+		User user = userRepository.findById(currentUser.getUserId())
+			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
+
+		return GetMyUserInfoResponse.fromEntity(user);
+	}
+
 	/**
 	 * 사용자 정보를 수정합니다.
 	 *
@@ -68,7 +61,7 @@ public class UserService {
 	 * @return 수정된 사용자 정보 응답
 	 */
 	public UpdateUserInfoResponse updateUserInfo(
-		@CurrentUser AppCustomUserDetails currentUser,
+		@CurrentUser CurrentUserDetails currentUser,
 		UpdateUserInfoRequest updateUserInfoRequest
 	) {
 		User user = userRepository.findById(updateUserInfoRequest.id())
@@ -84,5 +77,15 @@ public class UserService {
 		User updatedUser = userRepository.save(user);
 
 		return UpdateUserInfoResponse.fromEntity(updatedUser);
+	}
+
+	public UserTokenInfo getUserTokenInfoByEmail(String userEmail) {
+		User user = userRepository.findByEmail(userEmail);
+
+		if (Objects.isNull(user)) {
+			return null;
+		}
+
+		return UserTokenInfo.fromEntity(user);
 	}
 }
