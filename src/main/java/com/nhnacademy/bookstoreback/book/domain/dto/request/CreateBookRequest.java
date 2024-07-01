@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.book.domain.dto.request;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 
@@ -15,32 +16,34 @@ import lombok.Builder;
  */
 @Builder
 public record CreateBookRequest(
+	String bookIsbn,
+	List<Long> categories,
+	List<Long> tags,
+	String bookTitle,
 	String authorName,
 	String publisherName,
+	Date bookPublishDate,
 	String bookStatusName,
-	String bookTitle,
 	String bookIndex,
 	String bookDescription,
 	int bookQuantity,
 	boolean bookPackaging,
-	Date bookPublishDate,
-	String bookIsbn,
 	BigDecimal bookPrice,
 	BigDecimal bookSalePrice,
 	BigDecimal bookSalePercent) {
 
 	public static CreateBookRequest fromEntity(Book book) {
 		return CreateBookRequest.builder()
+			.bookIsbn(book.getBookIsbn())
+			.bookTitle(book.getBookTitle())
 			.authorName(book.getAuthor().getAuthorName())
 			.publisherName(book.getPublisher().getPublisherName())
-			.bookStatusName(book.getBookStatus().getBookStatusName())
-			.bookTitle(book.getBookTitle())
-			.bookDescription(book.getBookDescription())
-			.bookIndex(book.getBookIndex())
-			.bookPackaging(book.isBookPackaging())
-			.bookQuantity(book.getBookQuantity())
 			.bookPublishDate(book.getBookPublishDate())
-			.bookIsbn(book.getBookIsbn())
+			.bookStatusName(book.getBookStatus().getBookStatusName())
+			.bookIndex(book.getBookIndex())
+			.bookDescription(book.getBookDescription())
+			.bookQuantity(book.getBookQuantity())
+			.bookPackaging(book.isBookPackaging())
 			.bookPrice(book.getBookPrice())
 			.bookSalePrice(book.getBookSalePrice())
 			.bookSalePercent(book.getBookSalePercent())

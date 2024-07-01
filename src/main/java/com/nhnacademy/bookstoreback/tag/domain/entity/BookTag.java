@@ -37,4 +37,9 @@ public class BookTag {
 	@NotNull
 	@JoinColumn(name = "tag_id")
 	private Tag tag;
+
+	public BookTag(Book book, Tag tag) {
+		this.book = book;
+		this.tag = tag;
+	}
 }

@@ -30,12 +30,19 @@ import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.bookstatus.repository.BookStatusRepository;
 import com.nhnacademy.bookstoreback.bookstatus.service.BookStatusService;
+import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
+import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
+import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
+import com.nhnacademy.bookstoreback.category.service.CategoryService;
 import com.nhnacademy.bookstoreback.global.exception.AlreadyExistsException;
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.publisher.repository.PublisherRepository;
 import com.nhnacademy.bookstoreback.publisher.service.PublisherService;
+import com.nhnacademy.bookstoreback.tag.domain.entity.BookTag;
+import com.nhnacademy.bookstoreback.tag.repository.BookTagRepository;
+import com.nhnacademy.bookstoreback.tag.repository.TagRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -54,9 +61,14 @@ public class BookService {
 	private final AuthorRepository authorRepository;
 	private final PublisherRepository publisherRepository;
 	private final BookStatusRepository bookStatusRepository;
+	private final CategoryRepository categoryRepository;
+	private final BookCategoryRepository bookCategoryRepository;
 	private final AuthorService authorService;
 	private final PublisherService publisherService;
 	private final BookStatusService bookStatusService;
+	private final CategoryService categoryService;
+	private final TagRepository tagRepository;
+	private final BookTagRepository bookTagRepository;
 
 	/**
 	 * 도서 ID를 기준으로 도서 조회
@@ -305,8 +317,37 @@ public class BookService {
 			return new NotFoundException(errorStatus);
 		});
 
+		Book book = bookRepository.save(Book.toEntity(request, author, publisher, bookStatus));
+
+		List<Long> categories = request.categories();
+		List<Long> tags = request.tags();
+
+		if (categories != null) {
+			categories.forEach(categoryId -> {
+				categoryRepository.findById(categoryId).orElseThrow(() -> {
+					String errorMessage = String.format("해당 카테고리 '%d'는 존재하지 않는 카테고리 입니다.", categoryId);
+					ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+					return new NotFoundException(errorStatus);
+				});
+				bookCategoryRepository.save(
+					new BookCategory(book, categoryRepository.findById(categoryId).orElse(null)));
+			});
+		}
+
+		if (tags != null) {
+			tags.forEach(tagId -> {
+				tagRepository.findById(tagId).orElseThrow(() -> {
+					String errorMessage = String.format("해당 태그 '%d'는 존재하지 않는 태그 입니다.", tagId);
+					ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+					return new NotFoundException(errorStatus);
+				});
+				bookTagRepository.save(
+					new BookTag(book, tagRepository.findById(tagId).orElse(null)));
+			});
+		}
+
 		return CreateBookResponse.fromEntity(
-			bookRepository.save(Book.toEntity(request, author, publisher, bookStatus)));
+			bookRepository.save(book));
 	}
 
 	public void deleteBook(Long bookId) {
@@ -316,6 +357,8 @@ public class BookService {
 			return new NotFoundException(errorStatus);
 		});
 
+		bookCategoryRepository.deleteByBookBookId(bookId);
+		bookTagRepository.deleteAllByBookBookId(bookId);
 		bookRepository.deleteById(bookId);
 	}
 }
