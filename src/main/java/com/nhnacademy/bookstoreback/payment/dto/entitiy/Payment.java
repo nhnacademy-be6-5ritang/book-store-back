@@ -67,5 +67,4 @@ public class Payment {
 	public void updateStatus(String status) {
 		this.status = status;
 	}
-
 }
