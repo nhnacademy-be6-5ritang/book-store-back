@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 도서 카테고리 매핑 Entity
@@ -21,6 +22,7 @@ import lombok.Getter;
  */
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "books_and_categories")
 public class BookCategory {
 	@Id
@@ -28,12 +30,12 @@ public class BookCategory {
 	@Column(name = "book_category_id")
 	private Long bookCategoryId;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@NotNull
 	@JoinColumn(name = "book_id")
 	private Book book;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@NotNull
 	@JoinColumn(name = "category_id")
 	private Category category;

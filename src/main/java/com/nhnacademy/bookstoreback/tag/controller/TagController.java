@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.tag.domain.dto.respnse.TagDto;
@@ -20,33 +19,37 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/tags")
 public class TagController {
 	private final TagService tagService;
 
-	@GetMapping
+	@GetMapping("/tags")
 	public ResponseEntity<List<TagDto>> getTags() {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.getTags());
 	}
 
-	@GetMapping("/{tagId}")
+	@GetMapping("/books/{bookId}/tags")
+	public ResponseEntity<List<TagDto>> getTagsByTagId(@PathVariable Long bookId) {
+		return ResponseEntity.status(HttpStatus.OK).body(tagService.getTagsByTagId(bookId));
+	}
+
+	@GetMapping("/tags/{tagId}")
 	public ResponseEntity<TagDto> getTag(@PathVariable Long tagId) {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.getTag(tagId));
 	}
 
-	@PostMapping
+	@PostMapping("/tags")
 	public ResponseEntity<TagDto> createTag(
 		@RequestBody TagDto request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(tagService.createTag(request));
 	}
 
-	@PutMapping("/{tagId}")
+	@PutMapping("/tags/{tagId}")
 	public ResponseEntity<TagDto> updateTag(@PathVariable Long tagId,
 		@RequestBody TagDto request) {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.updateTag(tagId, request));
 	}
 
-	@DeleteMapping("/{tagId}")
+	@DeleteMapping("/tags/{tagId}")
 	public ResponseEntity<Void> deleteTag(@PathVariable Long tagId) {
 		tagService.deleteTag(tagId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

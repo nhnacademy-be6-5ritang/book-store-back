@@ -24,33 +24,38 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/categories")
+@RequestMapping
 public class CategoryController {
 	private final CategoryService categoryService;
 
-	@GetMapping
+	@GetMapping("/categories")
 	public ResponseEntity<List<GetCategoryResponse>> getCategories() {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategories());
 	}
 
-	@GetMapping("/{categoryId}")
+	@GetMapping("/books/{bookId}/categories")
+	public ResponseEntity<List<GetCategoryResponse>> getCategoriesByBookId(@PathVariable Long bookId) {
+		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategoriesByBookId(bookId));
+	}
+
+	@GetMapping("/categories/{categoryId}")
 	public ResponseEntity<GetCategoryResponse> getCategory(@PathVariable Long categoryId) {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategory(categoryId));
 	}
 
-	@PostMapping
+	@PostMapping("/categories")
 	public ResponseEntity<CreateCategoryResponse> createCategory(
 		@RequestBody CreateCategoryRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(request));
 	}
 
-	@PutMapping("/{categoryId}")
+	@PutMapping("/categories/{categoryId}")
 	public ResponseEntity<UpdateCategoryResponse> updateCategory(@PathVariable Long categoryId,
 		@RequestBody UpdateCategoryRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategory(categoryId, request));
 	}
 
-	@DeleteMapping("/{categoryId}")
+	@DeleteMapping("/categories/{categoryId}")
 	public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
 		categoryService.deleteCategory(categoryId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
