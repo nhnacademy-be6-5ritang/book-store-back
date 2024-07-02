@@ -12,7 +12,9 @@ import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRe
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
+import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
 import com.nhnacademy.bookstoreback.category.domain.entity.Category;
+import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
 import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
 import com.nhnacademy.bookstoreback.global.exception.AlreadyExistsException;
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
@@ -25,10 +27,18 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class CategoryService {
 	private final CategoryRepository categoryRepository;
+	private final BookCategoryRepository bookCategoryRepository;
 
 	@Transactional(readOnly = true)
 	public List<GetCategoryResponse> getCategories() {
 		return categoryRepository.findAll().stream().map(GetCategoryResponse::fromEntity).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<GetCategoryResponse> getCategoriesByBookId(Long bookId) {
+		List<BookCategory> bookCategories = bookCategoryRepository.findAllByBookBookId(bookId);
+		List<Category> categories = bookCategories.stream().map(BookCategory::getCategory).toList();
+		return categories.stream().map(GetCategoryResponse::fromEntity).toList();
 	}
 
 	@Transactional(readOnly = true)
