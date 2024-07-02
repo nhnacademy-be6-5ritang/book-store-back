@@ -9,7 +9,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
-import com.nhnacademy.bookstoreback.auth.jwt.dto.AppCustomUserDetails;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 
 import lombok.NonNull;
 
@@ -17,7 +17,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return parameter.getParameterAnnotation(CurrentUser.class) != null
-			&& AppCustomUserDetails.class.isAssignableFrom(parameter.getParameterType());
+			&& CurrentUserDetails.class.isAssignableFrom(parameter.getParameterType());
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 		@NonNull NativeWebRequest webRequest,
 		WebDataBinderFactory binderFactory) throws Exception {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.getPrincipal() instanceof AppCustomUserDetails) {
+		if (authentication != null && authentication.getPrincipal() instanceof CurrentUserDetails) {
 			return authentication.getPrincipal();
 		}
 		return null;

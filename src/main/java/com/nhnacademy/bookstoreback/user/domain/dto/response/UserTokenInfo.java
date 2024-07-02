@@ -1,20 +1,22 @@
 package com.nhnacademy.bookstoreback.user.domain.dto.response;
 
+import java.util.List;
+
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
 import lombok.Builder;
 
 @Builder
-public record GetUserInfoResponse(
+public record UserTokenInfo(
 	Long id,
 	String password,
-	String role
+	List<String> roles
 ) {
-	public static GetUserInfoResponse fromEntity(User user) {
-		return GetUserInfoResponse.builder()
+	public static UserTokenInfo fromEntity(User user) {
+		return UserTokenInfo.builder()
 			.id(user.getId())
 			.password(user.getPassword())
-			.role(String.valueOf(user.getRole()))
+			.roles(user.getAllRoles())
 			.build();
 	}
 }

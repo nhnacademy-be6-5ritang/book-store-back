@@ -1,14 +1,14 @@
 package com.nhnacademy.bookstoreback.auth.jwt.utils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import com.nhnacademy.bookstoreback.user.domain.entity.Role;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -41,9 +41,11 @@ public class JwtUtils {
 		return getClaims(token).get("userId", Long.class);
 	}
 
-	public Role getRoleFromToken(String token) {
-		String roleName = getClaims(token).get("role", String.class);
-		return Role.valueOf(roleName);
+	public List<String> getUserRolesFromToken(String token) {
+		Claims claims = getClaims(token);
+		return ((List<?>)claims.get("roles")).stream()
+			.map(Object::toString)
+			.collect(Collectors.toList());
 	}
 
 	public String validateToken(String token) {
