@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
-import com.nhnacademy.bookstoreback.auth.jwt.dto.AppCustomUserDetails;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.auth.jwt.service.TokenService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class TokenController {
 	private final TokenService tokenService;
 
 	@GetMapping("/info")
-	public ResponseEntity<Map<String, Object>> getUserInfo(@CurrentUser AppCustomUserDetails user) {
+	public ResponseEntity<Map<String, Object>> getUserInfo(@CurrentUser CurrentUserDetails user) {
 		return ResponseEntity.status(HttpStatus.OK).body(tokenService.getUserInfo(user));
 	}
 }

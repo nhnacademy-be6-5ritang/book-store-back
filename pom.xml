@@ -14,22 +14,22 @@
     <name>book-store-back</name>
     <description>book-store-back</description>
 
-        <properties>
-            <java.version>21</java.version>
-            <spring-cloud.version>2023.0.2</spring-cloud.version>
-        </properties>
+    <properties>
+        <java.version>21</java.version>
+        <spring-cloud.version>2023.0.2</spring-cloud.version>
+    </properties>
 
-        <dependencyManagement>
-            <dependencies>
-                <dependency>
-                    <groupId>org.springframework.cloud</groupId>
-                    <artifactId>spring-cloud-dependencies</artifactId>
-                    <version>${spring-cloud.version}</version>
-                    <type>pom</type>
-                    <scope>import</scope>
-                </dependency>
-            </dependencies>
-        </dependencyManagement>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Lombok Dependencies -->
@@ -88,13 +88,6 @@
             <artifactId>h2</artifactId>
             <version>2.2.224</version>
             <scope>test</scope>
-        </dependency>
-
-
-        <!-- Redis Dependency -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
         <!-- Elasticsearch Dependency -->
