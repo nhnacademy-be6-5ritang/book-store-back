@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
@@ -27,12 +26,12 @@ import lombok.RequiredArgsConstructor;
 public class ReviewController {
 	private final ReviewService reviewService;
 
-	@GetMapping("/reviews")
+	@GetMapping("/reviews/page")
 	public ResponseEntity<Page<GetReviewResponse>> getReviews(Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.findAllReviews(pageable));
 	}
 
-	@GetMapping("/books/{bookId}/reviews")
+	@GetMapping("/books/{bookId}/reviews/page")
 	public ResponseEntity<Page<GetReviewResponse>> getReviewsByBookId(Pageable pageable,
 		@PathVariable Long bookId) {
 
@@ -41,7 +40,7 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK).body(reviews);
 	}
 
-	@GetMapping("/users/me/reviews")
+	@GetMapping("/users/me/reviews/page")
 	public ResponseEntity<Page<GetReviewResponse>> getReviewsByUserId(Pageable pageable) {
 
 		Long userId = 2L;
