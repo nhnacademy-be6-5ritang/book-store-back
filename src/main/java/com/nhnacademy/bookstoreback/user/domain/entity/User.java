@@ -3,6 +3,7 @@ package com.nhnacademy.bookstoreback.user.domain.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
 import com.nhnacademy.bookstoreback.userrole.domain.entity.UserRole;
 import com.nhnacademy.bookstoreback.userstatus.domain.entity.UserStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,19 +40,19 @@ public class User {
 	@Column(name = "user_id")
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_grade_name")
 	private UserGrade userGrade;
 
-	@ManyToOne
-	@JoinColumn(name = "user_status_name")
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "user_status_id")
 	private UserStatus status;
 
-	@OneToMany(mappedBy = "user")
-	private List<UserRole> userRoles;
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<UserRole> userRoles = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
-	private List<Address> addresses;
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<Address> addresses = new ArrayList<>();
 
 	@Column(name = "user_name")
 	private String name;
@@ -103,8 +105,8 @@ public class User {
 		this.id = id;
 		this.userGrade = userGrade;
 		this.status = status;
-		this.userRoles = userRoles;
-		this.addresses = addresses;
+		this.userRoles = userRoles != null ? userRoles : new ArrayList<>();
+		this.addresses = addresses != null ? addresses : new ArrayList<>();
 		this.name = name;
 		this.email = email;
 		this.password = password;
@@ -115,14 +117,6 @@ public class User {
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.lastLoginAt = lastLoginAt;
-	}
-
-	public void update(UpdateUserInfoRequest updateUserInfoRequest) {
-		this.name = updateUserInfoRequest.name();
-		this.email = updateUserInfoRequest.email();
-		this.birth = updateUserInfoRequest.birth();
-		this.contact = updateUserInfoRequest.contact();
-		this.updatedAt = LocalDateTime.now();
 	}
 
 	public static User toEntity(CreateUserRequest createUserRequest, String encodedPassword) {
@@ -139,10 +133,29 @@ public class User {
 			.build();
 	}
 
-	// role의 name만 가져오기
+	public void update(UpdateUserInfoRequest updateUserInfoRequest) {
+		this.name = updateUserInfoRequest.name();
+		this.email = updateUserInfoRequest.email();
+		this.birth = updateUserInfoRequest.birth();
+		this.contact = updateUserInfoRequest.contact();
+		this.updatedAt = LocalDateTime.now();
+	}
+
 	public List<String> getAllRoles() {
 		return userRoles.stream()
 			.map(UserRole::getRoleName)
 			.collect(Collectors.toList());
+	}
+
+	public void updateUserStatus(UserStatus userStatus) {
+		this.status = userStatus;
+	}
+
+	public void updateUserGrade(UserGrade userGrade) {
+		this.userGrade = userGrade;
+	}
+
+	public void addUserRole(UserRole userRole) {
+		userRoles.add(userRole);
 	}
 }

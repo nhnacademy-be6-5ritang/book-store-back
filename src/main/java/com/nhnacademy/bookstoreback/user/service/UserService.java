@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.role.domain.entity.Role;
+import com.nhnacademy.bookstoreback.role.exception.RoleNotFoundException;
+import com.nhnacademy.bookstoreback.role.repository.RoleRepository;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
@@ -18,6 +21,14 @@ import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.exception.UserAlreadyExistsException;
 import com.nhnacademy.bookstoreback.user.exception.UserNotFoundException;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
+import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
+import com.nhnacademy.bookstoreback.usergrade.repository.UserGradeRepository;
+import com.nhnacademy.bookstoreback.userrole.domain.entity.UserRole;
+import com.nhnacademy.bookstoreback.userrole.domain.repository.UserRoleRepository;
+import com.nhnacademy.bookstoreback.userrole.exception.UserHasRoleAlreadyException;
+import com.nhnacademy.bookstoreback.userstatus.domain.entity.UserStatus;
+import com.nhnacademy.bookstoreback.userstatus.exception.UserStatusNotFoundException;
+import com.nhnacademy.bookstoreback.userstatus.repository.UserStatusRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,10 +37,15 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class UserService {
 	private final UserRepository userRepository;
+	private final RoleRepository roleRepository;
+	private final UserRoleRepository userRoleRepository;
+	private final UserStatusRepository userStatusRepository;
+	private final UserGradeRepository userGradeRepository;
+
 	private final PasswordEncoder passwordEncoder;
 
 	/**
-	 * 사용자 정보를 생성합니다.
+	 * 회원가입; 사용자 정보를 생성합니다.
 	 *
 	 * @param createUserRequest 사용자 정보: [이름, 이메일, 비밀번호, 생년월일, 연락처]
 	 * @return 생성된 사용자 정보 응답
@@ -41,9 +57,38 @@ public class UserService {
 
 		String encodedPassword = passwordEncoder.encode(createUserRequest.password());
 		User user = User.toEntity(createUserRequest, encodedPassword);
+
 		User savedUser = userRepository.save(user);
 
+		addUserRoleByRoleName(savedUser, "MEMBER");
+
+		UserStatus defaultUserStatus = userStatusRepository.findByUserStatusName("ACTIVE")
+			.orElseThrow(() -> new UserStatusNotFoundException("ACTIVE"));
+		savedUser.updateUserStatus(defaultUserStatus);
+
+		UserGrade defaultUserGrade = userGradeRepository.findByUserGradeName("REGULAR")
+			.orElseThrow(() -> new UserStatusNotFoundException("REGULAR"));
+		savedUser.updateUserGrade(defaultUserGrade);
+
+		savedUser = userRepository.save(savedUser);
+
 		return CreateUserResponse.fromEntity(savedUser);
+	}
+
+	public void addUserRoleByRoleName(User user, String roleName) {
+		Role role = roleRepository.findByRoleName(roleName)
+			.orElseThrow(() -> new RoleNotFoundException(roleName));
+
+		UserRole userRole = UserRole.builder()
+			.user(user)
+			.role(role)
+			.build();
+
+		if (userRoleRepository.existsByUserAndRole(user, role)) {
+			throw new UserHasRoleAlreadyException(user.getId(), role.getRoleName());
+		}
+
+		userRoleRepository.save(userRole);
 	}
 
 	public GetMyUserInfoResponse getMyUserInfo(@CurrentUser CurrentUserDetails currentUser) {

@@ -3,6 +3,7 @@ package com.nhnacademy.bookstoreback.user.domain.dto.response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
@@ -14,17 +15,32 @@ public record GetMyUserInfoResponse(
 	LocalDate birth,
 	String contact,
 	LocalDateTime createdAt,
-	List<UserRole> roles,
+	List<UserRoleResponse> roles,
 	UserGrade userGrade
 ) {
+	private record UserRoleResponse(
+		Long id,
+		String roleName
+	) {
+		public static UserRoleResponse fromEntity(UserRole userRole) {
+			return new UserRoleResponse(
+				userRole.getId(),
+				userRole.getRoleName()
+			);
+		}
+	}
+
 	public static GetMyUserInfoResponse fromEntity(User user) {
+		List<UserRoleResponse> roles = user.getUserRoles().stream()
+			.map(UserRoleResponse::fromEntity)
+			.collect(Collectors.toList());
 		return new GetMyUserInfoResponse(
 			user.getName(),
 			user.getEmail(),
 			user.getBirth(),
 			user.getContact(),
 			user.getCreatedAt(),
-			user.getUserRoles(),
+			roles,
 			user.getUserGrade()
 		);
 	}
