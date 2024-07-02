@@ -1,19 +1,16 @@
 package com.nhnacademy.bookstoreback.author.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
+import com.nhnacademy.bookstoreback.author.exception.AuthorAlreadyExistsException;
+import com.nhnacademy.bookstoreback.author.exception.AuthorNotFoundException;
 import com.nhnacademy.bookstoreback.author.repository.AuthorRepository;
-import com.nhnacademy.bookstoreback.global.exception.AlreadyExistsException;
-import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
-import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,52 +44,31 @@ public class AuthorService {
 
 	@Transactional(readOnly = true)
 	public AuthorDto getAuthor(Long authorId) {
-		Author author = authorRepository.findById(authorId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 작가 '%d'는 존재하지 않는 작가 입니다.", authorId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
+		Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(authorId));
 		return AuthorDto.fromEntity(author);
 	}
 
 	public AuthorDto createAuthor(AuthorDto request) {
 		if (authorRepository.existsByAuthorName(request.authorName())) {
-			String errorMessage = String.format("해당 작가 '%s'는 이미 존재 하는 작가 입니다.", request.authorName());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new AlreadyExistsException(errorStatus);
+			throw new AuthorAlreadyExistsException(request.authorName());
 		}
 
 		return AuthorDto.fromEntity(authorRepository.save(Author.toEntity(request)));
 	}
 
 	public AuthorDto updateAuthor(Long authorId, AuthorDto request) {
-		Author author = authorRepository.findById(authorId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 작가 '%d'는 존재하지 않는 작가 입니다.", authorId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+		Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(authorId));
 
 		if (authorRepository.existsByAuthorName(request.authorName())) {
-			String errorMessage = String.format("해당 작가 '%s'는 이미 존재 하는 작가 입니다.", request.authorName());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new AlreadyExistsException(errorStatus);
+			throw new AuthorAlreadyExistsException(request.authorName());
 		}
 
 		author.updateAuthorName(request.authorName());
-
-		authorRepository.save(author);
-
 		return AuthorDto.fromEntity(author);
 	}
 
 	public void deleteAuthor(Long authorId) {
-		authorRepository.findById(authorId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 작가 '%d'는 존재하지 않는 작가 입니다.", authorId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
+		authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(authorId));
 		authorRepository.deleteById(authorId);
 	}
 }

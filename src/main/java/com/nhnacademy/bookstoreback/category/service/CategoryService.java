@@ -1,9 +1,7 @@
 package com.nhnacademy.bookstoreback.category.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +12,10 @@ import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryRespo
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
 import com.nhnacademy.bookstoreback.category.domain.entity.Category;
+import com.nhnacademy.bookstoreback.category.exception.CategoryAlreadyExistsException;
+import com.nhnacademy.bookstoreback.category.exception.CategoryNotFoundException;
 import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
 import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
-import com.nhnacademy.bookstoreback.global.exception.AlreadyExistsException;
-import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
-import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,75 +40,48 @@ public class CategoryService {
 
 	@Transactional(readOnly = true)
 	public GetCategoryResponse getCategory(Long categoryId) {
-		Category category = categoryRepository.findById(categoryId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 카테고리 '%d'는 존재하지 않는 카테고리 입니다.", categoryId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
+		Category category = categoryRepository.findById(categoryId)
+			.orElseThrow(() -> new CategoryNotFoundException(categoryId));
 		return GetCategoryResponse.fromEntity(category);
 	}
 
 	public CreateCategoryResponse createCategory(CreateCategoryRequest request) {
 		if (categoryRepository.existsByCategoryName(request.categoryName())) {
-			String errorMessage = String.format("해당 카테고리 '%s'는 이미 존재 하는 카테고리 입니다.", request.categoryName());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new AlreadyExistsException(errorStatus);
+			throw new CategoryAlreadyExistsException(request.categoryName());
 		}
 
 		Category parentCategory = null;
 		if (request.parentCategoryId() != null) {
-			parentCategory = categoryRepository.findById(request.parentCategoryId()).orElseThrow(() -> {
-				String errorMessage = String.format("해당 카테고리 '%d'는 존재하지 않는 카테고리 입니다.", request.parentCategoryId());
-				ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-				return new NotFoundException(errorStatus);
-			});
+			parentCategory = categoryRepository.findById(request.parentCategoryId())
+				.orElseThrow(() -> new CategoryNotFoundException(request.parentCategoryId()));
 		}
-
 		return CreateCategoryResponse.fromEntity(categoryRepository.save(Category.toEntity(request, parentCategory)));
 	}
 
 	public UpdateCategoryResponse updateCategory(Long categoryId, UpdateCategoryRequest request) {
-		Category category = categoryRepository.findById(categoryId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 카테고리 '%d'는 존재하지 않는 카테고리 입니다.", categoryId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+		Category category = categoryRepository.findById(categoryId)
+			.orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
 		List<Category> categories = categoryRepository.findAllByCategoryNameNot(category.getCategoryName());
 
 		for (Category cat : categories) {
 			if (cat.getCategoryName().equals(request.categoryName())) {
-				String errorMessage = String.format("해당 카테고리 '%s'는 이미 존재 하는 카테고리 입니다.", request.categoryName());
-				ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-				throw new AlreadyExistsException(errorStatus);
+				throw new CategoryAlreadyExistsException(request.categoryName());
 			}
 		}
 
 		// 상위 카테고리 요청이 null 인 경우와 상위 카테고리가 자신의 카테고리와 같을 경우 예외처리
 		Category parentCategory = null;
 		if (request.parentCategoryId() != null && !categoryId.equals(request.parentCategoryId())) {
-			parentCategory = categoryRepository.findById(request.parentCategoryId()).orElseThrow(() -> {
-				String errorMessage = String.format("해당 카테고리 '%d'는 존재하지 않는 카테고리 입니다.", categoryId);
-				ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-				return new NotFoundException(errorStatus);
-			});
+			parentCategory = categoryRepository.findById(request.parentCategoryId())
+				.orElseThrow(() -> new CategoryNotFoundException(categoryId));
 		}
-
 		category.updateCategoryName(request.categoryName(), parentCategory);
-
-		categoryRepository.save(category);
-
 		return UpdateCategoryResponse.fromEntity(category);
 	}
 
 	public void deleteCategory(Long categoryId) {
-		categoryRepository.findById(categoryId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 카테고리 '%d'는 존재하지 않는 카테고리 입니다.", categoryId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
+		categoryRepository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException(categoryId));
 		categoryRepository.deleteById(categoryId);
 	}
 }

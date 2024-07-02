@@ -1,19 +1,16 @@
 package com.nhnacademy.bookstoreback.bookstatus.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.bookstatus.domain.dto.respnse.BookStatusDto;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
+import com.nhnacademy.bookstoreback.bookstatus.exception.BookStatusAlreadyExistsException;
+import com.nhnacademy.bookstoreback.bookstatus.exception.BookStatusNotFoundException;
 import com.nhnacademy.bookstoreback.bookstatus.repository.BookStatusRepository;
-import com.nhnacademy.bookstoreback.global.exception.AlreadyExistsException;
-import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
-import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -74,52 +71,31 @@ public class BookStatusService {
 
 	@Transactional(readOnly = true)
 	public BookStatusDto getBookStatus(Long bookStatusId) {
-		BookStatus bookStatus = bookStatusRepository.findById(bookStatusId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 도서상태 '%d'는 존재하지 않는 도서상태 입니다.", bookStatusId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
+		BookStatus bookStatus = bookStatusRepository.findById(bookStatusId)
+			.orElseThrow(() -> new BookStatusNotFoundException(bookStatusId));
 		return BookStatusDto.fromEntity(bookStatus);
 	}
 
 	public BookStatusDto createBookStatus(BookStatusDto request) {
 		if (bookStatusRepository.existsByBookStatusName(request.bookStatusName())) {
-			String errorMessage = String.format("해당 도서상태 '%s'는 이미 존재 하는 도서상태 입니다.", request.bookStatusName());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new AlreadyExistsException(errorStatus);
+			throw new BookStatusAlreadyExistsException(request.bookStatusName());
 		}
-
 		return BookStatusDto.fromEntity(bookStatusRepository.save(BookStatus.toEntity(request)));
 	}
 
 	public BookStatusDto updateBookStatus(Long bookStatusId, BookStatusDto request) {
-		BookStatus bookStatus = bookStatusRepository.findById(bookStatusId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 도서상태 '%d'는 존재하지 않는 도서상태 입니다.", bookStatusId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+		BookStatus bookStatus = bookStatusRepository.findById(bookStatusId)
+			.orElseThrow(() -> new BookStatusNotFoundException(bookStatusId));
 
 		if (bookStatusRepository.existsByBookStatusName(request.bookStatusName())) {
-			String errorMessage = String.format("해당 도서상태 '%s'는 이미 존재 하는 도서상태 입니다.", request.bookStatusName());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new AlreadyExistsException(errorStatus);
+			throw new BookStatusAlreadyExistsException(request.bookStatusName());
 		}
-
 		bookStatus.updateBookStatusName(request.bookStatusName());
-
-		bookStatusRepository.save(bookStatus);
-
 		return BookStatusDto.fromEntity(bookStatus);
 	}
 
 	public void deleteBookStatus(Long bookStatusId) {
-		bookStatusRepository.findById(bookStatusId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 도서상태 '%d'는 존재하지 않는 도서상태 입니다.", bookStatusId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
+		bookStatusRepository.findById(bookStatusId).orElseThrow(() -> new BookStatusNotFoundException(bookStatusId));
 		bookStatusRepository.deleteById(bookStatusId);
 	}
 }

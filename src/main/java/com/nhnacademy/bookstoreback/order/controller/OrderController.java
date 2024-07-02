@@ -24,7 +24,6 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperRespons
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetListWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
@@ -199,10 +198,4 @@ public class OrderController {
 	public ResponseEntity<GetOrderByInfoResponse> findByOrderInfoId(@PathVariable("order_info_id") String orderInfoId) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findByOrderInfoId(orderInfoId));
 	}
-
-	@GetMapping("/books/{book_id}")
-	public ResponseEntity<GetBookResponse> getBook(@PathVariable("book_id") Long bookId) {
-		return ResponseEntity.status(HttpStatus.OK).body(bookService.findBookById(bookId));
-	}
-
 }
