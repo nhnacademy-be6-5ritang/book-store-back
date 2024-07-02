@@ -3,12 +3,15 @@ package com.nhnacademy.bookstoreback.book.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +25,6 @@ import com.nhnacademy.bookstoreback.author.service.AuthorService;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.BookListResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
@@ -246,31 +248,19 @@ public class BookService {
 	}
 
 	/**
-	 * 모든 도서 조회
+	 * 모든 도서를 페이지네이션하여 조회
 	 *
-	 * @return 도서 리스트
+	 * @param pageable 페이지네이션 정보를 포함하는 객체
+	 * @return 페이지네이션된 도서 리스트를 포함하는 Page 객체
 	 */
 	@Transactional(readOnly = true)
-	public List<BookListResponse> findAllBooks() {
-		// 1. 모든 책을 조회합니다.
-		List<Book> books = bookRepository.findAll();
+	public Page<GetBookDetailResponse> findAllBooks(Pageable pageable) {
+		int page = pageable.getPageNumber() - 1;
+		int pageSize = 10;
 
-		// 2. 조회된 책들을 BookListResponse DTO로 변환합니다.
-		List<BookListResponse> bookListResponses = new ArrayList<>();
-		for (Book book : books) {
-			BookListResponse bookListResponse = BookListResponse.builder()
-				.bookId(book.getBookId())
-				.bookTitle(book.getBookTitle())
-				.bookIsbn(book.getBookIsbn())
-				.bookPrice(book.getBookPrice())
-				.bookSalePrice(book.getBookSalePrice())
-				.bookSalePercent(book.getBookSalePercent())
-				.build();
-			bookListResponses.add(bookListResponse);
-		}
-
-		// 3. 변환된 DTO 리스트를 반환합니다.
-		return bookListResponses;
+		return bookRepository.findAll(
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "bookTitle")))
+			.map(GetBookDetailResponse::fromEntity);
 	}
 
 	/**
