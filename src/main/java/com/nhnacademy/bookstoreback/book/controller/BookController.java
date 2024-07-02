@@ -3,8 +3,6 @@ package com.nhnacademy.bookstoreback.book.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +15,6 @@ import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookListResponse;
 import com.nhnacademy.bookstoreback.book.service.BookService;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
 
 /**
  * Book Controller
@@ -112,10 +109,5 @@ public class BookController {
 	@PatchMapping("/update/{isbn}")
 	public BookDetailResponse updateBook(@PathVariable String isbn, @RequestBody BookUpdateRequest request) {
 		return bookService.updateBook(isbn, request);
-	}
-
-	@GetMapping("/books/{book_id}")
-	public ResponseEntity<GetBookResponse> getBook(@PathVariable("book_id") Long bookId) {
-		return ResponseEntity.status(HttpStatus.OK).body(bookService.findBookById(bookId));
 	}
 }

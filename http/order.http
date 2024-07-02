@@ -23,7 +23,7 @@ Content-Type: application/json
 }
 
 ### 주문 상태 생성
-POST localhost:8080/orderStatus
+POST localhost:8083/orderStatus
 Content-Type: application/json
 
 {
@@ -81,14 +81,17 @@ GET localhost:8080/bookOrder/f5d3f2de-5a40-4fc5-bfa7-c5c18005f975
 GET localhost:8080/test
 
 ### 포장지 종류 생성
-POST localhost:8080/createPaper
+POST localhost:8083/papers
 Content-Type: application/json
 
 {
-  "paperName": "테스트 포장지3",
-  "paperContent": "포장지3",
-  "paperPrice": 11
+  "paperName": "포장지 선택 X",
+  "paperContent": "포장지 선택 X",
+  "paperPrice": 0
 }
 
 ### 북 패키지 설정
-GET localhost:8080/books/packaging/126
+GET localhost:8083/books/packaging/1
+
+### 테스트
+GET localhost:8083/payment/books-orders/a871d365-c308-4313-9f29-f95f3f736559

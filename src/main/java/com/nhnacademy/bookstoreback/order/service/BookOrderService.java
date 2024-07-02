@@ -9,9 +9,6 @@ import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequ
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderGetBookResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderGetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.FindByInfoIdBookOrderGetBookResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.FindByInfoIdBookOrderGetOrderResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderGetBookResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.UpdateBookOrderResponse;
@@ -46,14 +43,14 @@ public class BookOrderService {
 			createBookOrderRequest.quantity(), bookOrder.getOrderListId());
 	}
 
-	//주문 보안 아이디로 주문리스트 가져오는 JPA
-	@Transactional(readOnly = true)
-	public GetBookOrderByInfoIdResponse findByOrderInfoId(String orderInfoId) {
-		BookOrder bookOrder = bookOrderRepository.findByOrder_OrderInfoId(orderInfoId);
-		return GetBookOrderByInfoIdResponse.from(bookOrder.getOrderListId(),
-			FindByInfoIdBookOrderGetBookResponse.from(bookOrder.getBook()),
-			FindByInfoIdBookOrderGetOrderResponse.from(bookOrder.getOrder()), bookOrder.getBookQuantity());
-	}
+	// //주문 보안 아이디로 주문리스트 가져오는 JPA
+	// @Transactional(readOnly = true)
+	// public GetBookOrderByInfoIdResponse findByOrderInfoId(String orderInfoId) {
+	// 	BookOrder bookOrder = bookOrderRepository.findByOrder_OrderInfoId(orderInfoId);
+	// 	return GetBookOrderByInfoIdResponse.from(bookOrder.getOrderListId(),
+	// 		FindByInfoIdBookOrderGetBookResponse.from(bookOrder.getBook()),
+	// 		FindByInfoIdBookOrderGetOrderResponse.from(bookOrder.getOrder()), bookOrder.getBookQuantity());
+	// }
 
 	// 주문 생성시 업데이트
 	public UpdateBookOrderResponse updateOrder(Long bookOrderId, Long orderId) {
