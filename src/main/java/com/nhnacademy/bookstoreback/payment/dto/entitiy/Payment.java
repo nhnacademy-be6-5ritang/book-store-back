@@ -64,4 +64,8 @@ public class Payment {
 			.build();
 	}
 
+	public void updateStatus(String status) {
+		this.status = status;
+	}
+
 }

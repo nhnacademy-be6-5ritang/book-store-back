@@ -18,10 +18,13 @@ import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
 import com.nhnacademy.bookstoreback.order.domain.entity.Order;
 import com.nhnacademy.bookstoreback.order.repository.BookOrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
+import com.nhnacademy.bookstoreback.order.service.OrderService;
 import com.nhnacademy.bookstoreback.payment.dto.entitiy.Payment;
+import com.nhnacademy.bookstoreback.payment.dto.response.CancelResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.PaymentResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.PaymentSaveResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.TransactionsResponse;
+import com.nhnacademy.bookstoreback.payment.dto.response.UpdatePaymentResponse;
 import com.nhnacademy.bookstoreback.payment.repository.PaymentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,10 +36,12 @@ public class PaymentService {
 	private final PaymentRepository paymentRepository;
 	private final OrderRepository orderRepository;
 	private final BookOrderRepository bookOrderRepository;
+	private final OrderService orderService;
 
 	public PaymentSaveResponse savePaymentResponse(String paymentResponseJson) {
 		PaymentResponse paymentResponse = parsePaymentResponse(paymentResponseJson);
 		Order order = orderRepository.findByOrderInfoId(paymentResponse.orderId());
+		orderService.updateOrderStatus(order.getOrderId(), 1L);
 		return PaymentSaveResponse.from(paymentRepository.save(
 			Payment.toEntity(paymentResponse.paymentKey(), order, paymentResponse.amount(), paymentResponse.status(),
 				paymentResponse.date())));
@@ -95,4 +100,27 @@ public class PaymentService {
 	public GetOrderByInfoResponse findByOrder(String orderInfoId) {
 		return GetOrderByInfoResponse.from(orderRepository.findByOrderInfoId(orderInfoId));
 	}
+
+	@Transactional(readOnly = true)
+	public CancelResponse paymentFindByOrderInfoId(String orderInfoId) {
+		Payment payment = paymentRepository.findByOrder_OrderInfoId(orderInfoId);
+		return CancelResponse.from(payment.getPaymentKey(), payment.getPaymentId());
+	}
+
+	public UpdatePaymentResponse updatePayment(String paymentResponseJson, Long paymentId) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			JsonNode rootNode = objectMapper.readTree(paymentResponseJson);
+			String status = rootNode.path("status").asText();
+			Payment payment = paymentRepository.getReferenceById(paymentId);
+			payment.updateStatus(status);
+			Order order = orderRepository.getReferenceById(payment.getOrder().getOrderId());
+			orderService.updateOrderStatus(order.getOrderId(), 3L);
+			return UpdatePaymentResponse.from(status);
+		} catch (JsonProcessingException e) {
+			//에러 메세지 변경 예정
+			throw new IllegalArgumentException("Invalid payment response JSON", e);
+		}
+	}
+
 }
