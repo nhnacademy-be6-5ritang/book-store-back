@@ -9,15 +9,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
+import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookListResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
 import com.nhnacademy.bookstoreback.book.service.BookService;
 
 import lombok.RequiredArgsConstructor;
@@ -39,9 +42,9 @@ public class BookController {
 	 *
 	 * @param bookId 도서 ID
 	 */
-	@GetMapping("/packaging/{book_id}")
-	public void packaging(@PathVariable("book_id") Long bookId) {
-		bookService.updateBookById(bookId);
+	@GetMapping("/packaging/{bookId}")
+	public void packaging(@PathVariable Long bookId) {
+		bookService.updateBookPackagingById(bookId);
 	}
 
 	/**
@@ -103,13 +106,13 @@ public class BookController {
 	/**
 	 * ISBN을 통한 도서정보 수정
 	 *
-	 * @param isbn 도서 ISBN
+	 * @param bookId 도서 ISBN
 	 * @param request 수정할 도서 정보
 	 * @return 수정된 도서 상세페이지
 	 */
-	@PatchMapping("/update/{isbn}")
-	public GetBookDetailResponse updateBook(@PathVariable String isbn, @RequestBody BookUpdateRequest request) {
-		return bookService.updateBook(isbn, request);
+	@PatchMapping("/{bookId}")
+	public GetBookDetailResponse updateBook(@PathVariable String bookId, @RequestBody BookUpdateRequest request) {
+		return bookService.updateBook(bookId, request);
 	}
 
 	@GetMapping("/{bookId}")
@@ -123,11 +126,11 @@ public class BookController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(request));
 	}
 
-	// @PutMapping("/{bookId}")
-	// public ResponseEntity<BookDetailResponse> updateBookByBookId(@PathVariable Long bookId,
-	// 	@RequestBody BookUpdateRequest request) {
-	// 	return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBook(bookId, request));
-	// }
+	@PutMapping("/{bookId}")
+	public ResponseEntity<UpdateBookResponse> updateBookByBookId(@PathVariable Long bookId,
+		@RequestBody UpdateBookRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBookById(bookId, request));
+	}
 
 	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId) {

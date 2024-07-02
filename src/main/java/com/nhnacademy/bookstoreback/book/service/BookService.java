@@ -22,9 +22,11 @@ import com.nhnacademy.bookstoreback.author.repository.AuthorRepository;
 import com.nhnacademy.bookstoreback.author.service.AuthorService;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
+import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookListResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
@@ -89,7 +91,7 @@ public class BookService {
 	 *
 	 * @param bookId 도서 ID
 	 */
-	public void updateBookById(Long bookId) {
+	public void updateBookPackagingById(Long bookId) {
 		Book book = bookRepository.findById(bookId).orElse(null);
 		if (book != null) {
 			book.update(true);
@@ -350,6 +352,72 @@ public class BookService {
 			bookRepository.save(book));
 	}
 
+	public UpdateBookResponse updateBookById(Long bookId, UpdateBookRequest request) {
+		Author author = authorRepository.findByAuthorName(request.authorName()).orElseThrow(() -> {
+			String errorMessage = String.format("해당 작가 '%s'는 존재하지 않는 작가 입니다.", request.authorName());
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+
+		Publisher publisher = publisherRepository.findByPublisherName(request.publisherName()).orElseThrow(() -> {
+			String errorMessage = String.format("해당 출판사 '%s'는 존재하지 않는 출판사 입니다.", request.publisherName());
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+
+		BookStatus bookStatus = bookStatusRepository.findByBookStatusName(request.bookStatusName()).orElseThrow(() -> {
+			String errorMessage = String.format("해당 도서상태 '%s'는 존재하지 않는 도서상태 입니다.", request.bookStatusName());
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+
+		Book book = bookRepository.findById(bookId).orElseThrow(() -> {
+			String errorMessage = String.format("해당 도서 '%d'는 존재하지 않는 도서 입니다.", bookId);
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+
+		// 책 내용 수정
+		book.updateBook(author, publisher, bookStatus, request.bookTitle(), request.bookIndex(),
+			request.bookDescription(), request.bookQuantity(), request.bookPackaging(), request.bookPublishDate(),
+			request.bookIsbn(), request.bookPrice(), request.bookSalePercent(), request.bookSalePrice());
+
+		List<Long> categories = request.categories();
+		List<Long> tags = request.tags();
+
+		// 기존 카테고리, 태그 매핑 제거
+		bookCategoryRepository.deleteAllByBookBookId(bookId);
+		bookTagRepository.deleteAllByBookBookId(bookId);
+
+		// 수정된 카테고리, 태그 매핑 추가
+		if (categories != null) {
+			categories.forEach(categoryId -> {
+				categoryRepository.findById(categoryId).orElseThrow(() -> {
+					String errorMessage = String.format("해당 카테고리 '%d'는 존재하지 않는 카테고리 입니다.", categoryId);
+					ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+					return new NotFoundException(errorStatus);
+				});
+				bookCategoryRepository.save(
+					new BookCategory(book, categoryRepository.findById(categoryId).orElse(null)));
+			});
+		}
+
+		if (tags != null) {
+			tags.forEach(tagId -> {
+				tagRepository.findById(tagId).orElseThrow(() -> {
+					String errorMessage = String.format("해당 태그 '%d'는 존재하지 않는 태그 입니다.", tagId);
+					ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+					return new NotFoundException(errorStatus);
+				});
+				bookTagRepository.save(
+					new BookTag(book, tagRepository.findById(tagId).orElse(null)));
+			});
+		}
+
+		return UpdateBookResponse.fromEntity(
+			bookRepository.save(book));
+	}
+
 	public void deleteBook(Long bookId) {
 		bookRepository.findById(bookId).orElseThrow(() -> {
 			String errorMessage = String.format("해당 도서 '%d'는 존재하지 않는 도서 입니다.", bookId);
@@ -357,6 +425,7 @@ public class BookService {
 			return new NotFoundException(errorStatus);
 		});
 
+		// 도서에 연관된 카테고리, 태그 매핑 모두 제거
 		bookCategoryRepository.deleteAllByBookBookId(bookId);
 		bookTagRepository.deleteAllByBookBookId(bookId);
 

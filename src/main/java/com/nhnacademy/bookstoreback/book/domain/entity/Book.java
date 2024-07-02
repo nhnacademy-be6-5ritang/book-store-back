@@ -149,4 +149,23 @@ public class Book {
 			.bookSalePrice(request.bookSalePrice())
 			.build();
 	}
+
+	public void updateBook(Author author, Publisher publisher, BookStatus bookStatus, String bookTitle,
+		String bookIndex, String bookDescription, int bookQuantity, boolean bookPackaging, Date bookPublishDate,
+		String bookIsbn, BigDecimal bookPrice, BigDecimal bookSalePercent, BigDecimal bookSalePrice) {
+		this.author = author;
+		this.publisher = publisher;
+		this.bookStatus = bookStatus;
+		this.bookTitle = bookTitle;
+		this.bookIndex = bookIndex;
+		this.bookDescription = bookDescription;
+		this.bookPackaging = bookPackaging;
+		this.bookQuantity = bookQuantity;
+		this.bookPublishDate = bookPublishDate;
+		this.bookIsbn = bookIsbn;
+		this.bookPrice = bookPrice;
+		this.bookSalePercent = bookSalePercent;
+		this.bookSalePrice = bookSalePrice;
+
+	}
 }
