@@ -216,7 +216,7 @@ public class BookService {
 	 *
 	 * @param isbn ISBN
 	 */
-	public GetBookDetailResponse updateBook(String isbn, BookUpdateRequest request) {
+	public GetBookDetailResponse updateBookByIsbn(String isbn, BookUpdateRequest request) {
 		// 1. ISBN으로 책을 찾습니다.
 		Optional<Book> optionalBook = bookRepository.findByBookIsbn(isbn);
 		if (optionalBook.isEmpty()) {
@@ -245,6 +245,16 @@ public class BookService {
 
 		// 4. 업데이트된 책의 정보를 BookDetailResponse DTO로 변환하여 반환합니다.
 		return GetBookDetailResponse.fromEntity(book);
+	}
+
+	/**
+	 * 모든 도서를 조회
+	 *
+	 * @return 도서 리스트를 포함하는 List 객체
+	 */
+	@Transactional(readOnly = true)
+	public List<GetBookDetailResponse> findAllBooks() {
+		return bookRepository.findAll().stream().map(GetBookDetailResponse::fromEntity).toList();
 	}
 
 	/**

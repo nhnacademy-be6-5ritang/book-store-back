@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.book.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -82,12 +84,22 @@ public class BookController {
 	}
 
 	/**
+	 * 모든 도서의 리스트를  조회
+	 *
+	 * @return 도서 리스트를 포함하는 ResponseEntity 객체
+	 */
+	@GetMapping
+	public ResponseEntity<List<GetBookDetailResponse>> findAllBooks() {
+		return ResponseEntity.status(HttpStatus.OK).body(bookService.findAllBooks());
+	}
+
+	/**
 	 * 모든 도서의 리스트를 페이지 형태로 조회
 	 *
 	 * @param pageable 페이지네이션 정보를 포함하는 객체
 	 * @return 페이지네이션 된 도서 리스트를 포함하는 ResponseEntity 객체
 	 */
-	@GetMapping
+	@GetMapping("/page")
 	public ResponseEntity<Page<GetBookDetailResponse>> findAllBooks(Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.findAllBooks(pageable));
 	}
@@ -104,34 +116,60 @@ public class BookController {
 	}
 
 	/**
-	 * ISBN을 통한 도서정보 수정
+	 * 특정 도서를 조회합니다.
 	 *
-	 * @param bookId 도서 ISBN
-	 * @param request 수정할 도서 정보
-	 * @return 수정된 도서 상세페이지
+	 * @param bookId 조회할 도서의 ID
+	 * @return 도서의 상세 정보
 	 */
-	@PatchMapping("/{bookId}")
-	public GetBookDetailResponse updateBook(@PathVariable String bookId, @RequestBody BookUpdateRequest request) {
-		return bookService.updateBook(bookId, request);
-	}
-
 	@GetMapping("/{bookId}")
 	public ResponseEntity<GetBookDetailResponse> getBook(@PathVariable Long bookId) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.getBook(bookId));
 	}
 
+	/**
+	 * 새로운 도서를 생성합니다.
+	 *
+	 * @param request 생성할 도서의 정보
+	 * @return 생성된 도서의 응답 정보
+	 */
 	@PostMapping
 	public ResponseEntity<CreateBookResponse> createBook(
 		@RequestBody CreateBookRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(request));
 	}
 
+	/**
+	 * 특정 도서를 수정합니다.
+	 *
+	 * @param bookId 수정할 도서의 ID
+	 * @param request 수정할 도서의 정보
+	 * @return 수정된 도서의 응답 정보
+	 */
 	@PutMapping("/{bookId}")
 	public ResponseEntity<UpdateBookResponse> updateBookByBookId(@PathVariable Long bookId,
 		@RequestBody UpdateBookRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBookById(bookId, request));
 	}
 
+	/**
+	 * ISBN을 통한 도서정보 수정
+	 *
+	 * @param isbn 도서의 ISBN
+	 * @param request 수정할 도서 정보
+	 * @return 수정된 도서의 상세 정보
+	 */
+	@PatchMapping("/{isbn}")
+	public ResponseEntity<GetBookDetailResponse> updateBookByIsbn(@PathVariable String isbn,
+		@RequestBody BookUpdateRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBookByIsbn(isbn, request));
+	}
+
+	/**
+	 * 특정 도서를 삭제합니다.
+	 *
+	 * @param bookId 삭제할 도서의 ID
+	 * @return 응답 상태 코드 (204 No Content)
+	 */
 	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId) {
 		bookService.deleteBook(bookId);
