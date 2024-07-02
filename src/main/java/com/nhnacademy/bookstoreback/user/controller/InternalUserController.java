@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nhnacademy.bookstoreback.user.domain.dto.response.GetUserInfoResponse;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 import com.nhnacademy.bookstoreback.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,9 @@ public class InternalUserController {
 	private final UserService userService;
 
 	@GetMapping("/info")
-	public ResponseEntity<GetUserInfoResponse> getUserInfoByEmail(@RequestHeader("X-User-Email") String userEmail) {
-		GetUserInfoResponse user = userService.getUserInfoByEmail(userEmail);
+	public ResponseEntity<UserTokenInfo> getUserInfoByEmail(
+		@RequestHeader("X-User-Email") String userEmail) {
+		UserTokenInfo user = userService.getUserTokenInfoByEmail(userEmail);
 
 		if (user == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

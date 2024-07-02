@@ -14,9 +14,9 @@ import com.nhnacademy.bookstoreback.cart.repository.CartRepository;
 import com.nhnacademy.bookstoreback.cart.service.CartService;
 import com.nhnacademy.bookstoreback.global.exception.AlreadyExistsException;
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
-import com.nhnacademy.bookstoreback.global.exception.UserNotFoundException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.exception.UserNotFoundException;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
 import jakarta.servlet.http.Cookie;
@@ -65,11 +65,7 @@ public class CartServiceImpl implements CartService {
 
 		} else if (!cartRepository.existsByUserId(userId)) {
 			// userId가 null이 아닌 경우 userId로 Cart 생성
-			User user = userRepository.findById(userId).orElseThrow(() -> {
-				String errorMessage = String.format("해당 사용자 '%s'는 존재하지 않는 사용자입니다.", userId);
-				ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-				return new UserNotFoundException(errorStatus);
-			});
+			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
 			cart = cartRepository.save(new Cart(user));
 		} else {

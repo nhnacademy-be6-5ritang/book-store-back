@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.auth.jwt.filter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,11 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.nhnacademy.bookstoreback.auth.jwt.client.TokenReissueClient;
-import com.nhnacademy.bookstoreback.auth.jwt.dto.AppCustomUserDetails;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.response.ReissueTokensResponse;
 import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
-import com.nhnacademy.bookstoreback.user.domain.entity.Role;
-import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -67,13 +67,13 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 
 		Long userId = jwtUtils.getUserIdFromToken(accessToken);
-		Role role = jwtUtils.getRoleFromToken(accessToken);
+		List<String> userRoles = jwtUtils.getUserRolesFromToken(accessToken);
 
-		User user = User.builder()
+		UserTokenInfo user = UserTokenInfo.builder()
 			.id(userId)
-			.role(role)
+			.roles(userRoles)
 			.build();
-		AppCustomUserDetails userDetails = new AppCustomUserDetails(user);
+		CurrentUserDetails userDetails = new CurrentUserDetails(user);
 		Authentication authentication = new UsernamePasswordAuthenticationToken(
 			userDetails, null, userDetails.getAuthorities()
 		);
