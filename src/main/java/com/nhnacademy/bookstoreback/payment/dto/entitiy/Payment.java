@@ -1,6 +1,7 @@
 package com.nhnacademy.bookstoreback.payment.dto.entitiy;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import com.nhnacademy.bookstoreback.order.domain.entity.Order;
 
@@ -40,20 +41,26 @@ public class Payment {
 	@Column(name = "payemnt_amount")
 	private BigDecimal amount;
 
+	@Column(name = "payment_date")
+	private LocalDateTime paymentDate;
+
 	@Builder
-	public Payment(String paymentKey, Order order, BigDecimal amount, String status) {
+	public Payment(String paymentKey, Order order, BigDecimal amount, String status, LocalDateTime paymentDate) {
 		this.paymentKey = paymentKey;
 		this.order = order;
 		this.amount = amount;
 		this.status = status;
+		this.paymentDate = paymentDate;
 	}
 
-	public static Payment toEntity(String paymentKey, Order order, BigDecimal amount, String status) {
+	public static Payment toEntity(String paymentKey, Order order, BigDecimal amount, String status,
+		LocalDateTime paymentDate) {
 		return Payment.builder()
 			.paymentKey(paymentKey)
 			.order(order)
 			.amount(amount)
 			.status(status)
+			.paymentDate(paymentDate)
 			.build();
 	}
 

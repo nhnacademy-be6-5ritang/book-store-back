@@ -1,6 +1,8 @@
 package com.nhnacademy.bookstoreback.payment.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +38,8 @@ public class PaymentService {
 		PaymentResponse paymentResponse = parsePaymentResponse(paymentResponseJson);
 		Order order = orderRepository.findByOrderInfoId(paymentResponse.orderId());
 		return PaymentSaveResponse.from(paymentRepository.save(
-			Payment.toEntity(paymentResponse.paymentKey(), order, paymentResponse.amount(), paymentResponse.status())));
+			Payment.toEntity(paymentResponse.paymentKey(), order, paymentResponse.amount(), paymentResponse.status(),
+				paymentResponse.date())));
 	}
 
 	public PaymentResponse parsePaymentResponse(String paymentResponseJson) {
@@ -48,7 +51,10 @@ public class PaymentService {
 			String orderId = rootNode.path("orderId").asText();
 			BigDecimal amount = new BigDecimal(rootNode.path("easyPay").path("amount").asInt());
 			String status = rootNode.path("status").asText();
-			return PaymentResponse.from(paymentKey, orderId, amount, status);
+			String requestedAtStr = rootNode.path("requestedAt").asText();
+			OffsetDateTime offsetDateTime = OffsetDateTime.parse(requestedAtStr);
+			LocalDateTime date = offsetDateTime.toLocalDateTime();
+			return PaymentResponse.from(paymentKey, orderId, amount, status, date);
 		} catch (JsonProcessingException e) {
 			//에러 메세지 변경 예정
 			throw new IllegalArgumentException("Invalid payment response JSON", e);
@@ -66,7 +72,10 @@ public class PaymentService {
 			String status = rootNode.path("status").asText();
 			String orderName = rootNode.path("orderName").asText();
 			String provider = rootNode.path("easyPay").path("provider").asText();
-			return TransactionsResponse.from(orderId, amount, status, provider, orderName);
+			String requestedAtStr = rootNode.path("requestedAt").asText();
+			OffsetDateTime offsetDateTime = OffsetDateTime.parse(requestedAtStr);
+			LocalDateTime date = offsetDateTime.toLocalDateTime();
+			return TransactionsResponse.from(orderId, amount, status, provider, orderName, date);
 		} catch (JsonProcessingException e) {
 			//에러 메세지 변경 예정
 			throw new IllegalArgumentException("Invalid payment response JSON", e);
