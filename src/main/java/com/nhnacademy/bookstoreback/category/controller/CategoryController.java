@@ -2,6 +2,8 @@ package com.nhnacademy.bookstoreback.category.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,6 +33,11 @@ public class CategoryController {
 	@GetMapping("/categories")
 	public ResponseEntity<List<GetCategoryResponse>> getCategories() {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategories());
+	}
+
+	@GetMapping("/categories/page")
+	public ResponseEntity<Page<GetCategoryResponse>> getCategories(Pageable pageable) {
+		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategories(pageable));
 	}
 
 	@GetMapping("/books/{bookId}/categories")
