@@ -259,7 +259,7 @@ public class BookService {
 		int pageSize = 10;
 
 		return bookRepository.findAll(
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "bookTitle")))
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookId")))
 			.map(GetBookDetailResponse::fromEntity);
 	}
 

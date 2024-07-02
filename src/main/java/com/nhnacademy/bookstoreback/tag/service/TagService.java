@@ -2,6 +2,10 @@ package com.nhnacademy.bookstoreback.tag.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,14 @@ public class TagService {
 	@Transactional(readOnly = true)
 	public List<TagDto> getTags() {
 		return tagRepository.findAll().stream().map(TagDto::fromEntity).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public Page<TagDto> getTags(Pageable pageable) {
+		int page = pageable.getPageNumber() - 1;
+		int pageSize = 10;
+		return tagRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "tagId")))
+			.map(TagDto::fromEntity);
 	}
 
 	@Transactional(readOnly = true)

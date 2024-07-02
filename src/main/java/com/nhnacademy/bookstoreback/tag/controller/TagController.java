@@ -2,6 +2,8 @@ package com.nhnacademy.bookstoreback.tag.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +27,11 @@ public class TagController {
 	@GetMapping("/tags")
 	public ResponseEntity<List<TagDto>> getTags() {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.getTags());
+	}
+
+	@GetMapping("/tags/page")
+	public ResponseEntity<Page<TagDto>> getTags(Pageable pageable) {
+		return ResponseEntity.status(HttpStatus.OK).body(tagService.getTags(pageable));
 	}
 
 	@GetMapping("/books/{bookId}/tags")
