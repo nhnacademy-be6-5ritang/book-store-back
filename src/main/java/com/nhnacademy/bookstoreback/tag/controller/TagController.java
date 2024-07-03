@@ -20,44 +20,92 @@ import com.nhnacademy.bookstoreback.tag.service.impl.TagServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 태그 관리 HTTP 요청을 처리하는 컨트롤러입니다.
+ * 이 컨트롤러는 태그의 CRUD 기능을 제공합니다.
+ *
+ * @version 1.0
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class TagController {
 	private final TagServiceImpl tagService;
 
+	/**
+	 * 모든 태그 정보를 조회합니다.
+	 *
+	 * @return 모든 태그 정보 리스트
+	 */
 	@GetMapping("/tags")
 	public ResponseEntity<List<TagDto>> getTags() {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.getTags());
 	}
 
+	/**
+	 * 페이징 처리된 태그 정보를 조회합니다.
+	 *
+	 * @param pageable 페이지 정보
+	 * @return 페이징 처리된 태그 정보 페이지
+	 */
 	@GetMapping("/tags/page")
 	public ResponseEntity<Page<TagDto>> getTags(Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.getTags(pageable));
 	}
 
+	/**
+	 * 주어진 책 ID에 해당하는 태그 정보를 조회합니다.
+	 *
+	 * @param bookId 책 ID
+	 * @return 해당 책에 속한 태그 정보 리스트
+	 */
 	@GetMapping("/books/{bookId}/tags")
 	public ResponseEntity<List<TagDto>> getTagsByTagId(@PathVariable Long bookId) {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.getTagsByTagId(bookId));
 	}
 
+	/**
+	 * 주어진 태그 ID에 해당하는 태그 정보를 조회합니다.
+	 *
+	 * @param tagId 태그 ID
+	 * @return 해당 태그 정보
+	 */
 	@GetMapping("/tags/{tagId}")
 	public ResponseEntity<TagDto> getTag(@PathVariable Long tagId) {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.getTag(tagId));
 	}
 
+	/**
+	 * 새로운 태그를 생성합니다.
+	 *
+	 * @param request 생성할 태그 정보 DTO
+	 * @return 생성된 태그 정보
+	 */
 	@PostMapping("/tags")
 	public ResponseEntity<TagDto> createTag(
 		@RequestBody TagDto request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(tagService.createTag(request));
 	}
 
+	/**
+	 * 주어진 태그 ID에 해당하는 태그 정보를 업데이트합니다.
+	 *
+	 * @param tagId   업데이트할 태그 ID
+	 * @param request 업데이트할 태그 정보 DTO
+	 * @return 업데이트된 태그 정보
+	 */
 	@PutMapping("/tags/{tagId}")
 	public ResponseEntity<TagDto> updateTag(@PathVariable Long tagId,
 		@RequestBody TagDto request) {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.updateTag(tagId, request));
 	}
 
+	/**
+	 * 주어진 태그 ID에 해당하는 태그를 삭제합니다.
+	 *
+	 * @param tagId 삭제할 태그 ID
+	 * @return 응답 상태 코드 (204 NO CONTENT)
+	 */
 	@DeleteMapping("/tags/{tagId}")
 	public ResponseEntity<Void> deleteTag(@PathVariable Long tagId) {
 		tagService.deleteTag(tagId);
