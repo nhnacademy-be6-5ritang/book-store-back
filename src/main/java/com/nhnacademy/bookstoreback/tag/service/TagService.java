@@ -3,74 +3,70 @@ package com.nhnacademy.bookstoreback.tag.service;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.tag.domain.dto.respnse.TagDto;
-import com.nhnacademy.bookstoreback.tag.domain.entity.BookTag;
-import com.nhnacademy.bookstoreback.tag.domain.entity.Tag;
-import com.nhnacademy.bookstoreback.tag.exception.TagAlreadyExistsException;
-import com.nhnacademy.bookstoreback.tag.exception.TagNotFoundException;
-import com.nhnacademy.bookstoreback.tag.repository.BookTagRepository;
-import com.nhnacademy.bookstoreback.tag.repository.TagRepository;
 
-import lombok.RequiredArgsConstructor;
+/**
+ * 태그 관리 서비스 인터페이스입니다.
+ * 이 인터페이스는 도서의 태그 관련 기능을 제공합니다.
+ *
+ * @version 1.0
+ */
+public interface TagService {
 
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class TagService {
-	private final TagRepository tagRepository;
-	private final BookTagRepository bookTagRepository;
+	/**
+	 * 모든 태그를 조회합니다.
+	 *
+	 * @return 모든 태그의 목록
+	 */
+	List<TagDto> getTags();
 
-	@Transactional(readOnly = true)
-	public List<TagDto> getTags() {
-		return tagRepository.findAll().stream().map(TagDto::fromEntity).toList();
-	}
+	/**
+	 * 페이징된 형식으로 모든 태그를 조회합니다.
+	 *
+	 * @param pageable 페이징 정보
+	 * @return 페이징된 태그의 페이지
+	 */
+	Page<TagDto> getTags(Pageable pageable);
 
-	@Transactional(readOnly = true)
-	public Page<TagDto> getTags(Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
-		int pageSize = 10;
-		return tagRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "tagId")))
-			.map(TagDto::fromEntity);
-	}
+	/**
+	 * 주어진 도서 ID에 해당하는 태그들을 조회합니다.
+	 *
+	 * @param bookId 도서 ID
+	 * @return 해당 도서의 모든 태그의 목록
+	 */
+	List<TagDto> getTagsByTagId(Long bookId);
 
-	@Transactional(readOnly = true)
-	public List<TagDto> getTagsByTagId(Long bookId) {
-		List<BookTag> bookTags = bookTagRepository.findAllByBookBookId(bookId);
-		List<Tag> tags = bookTags.stream().map(BookTag::getTag).toList();
-		return tags.stream().map(TagDto::fromEntity).toList();
-	}
+	/**
+	 * 주어진 태그 ID에 해당하는 태그를 조회합니다.
+	 *
+	 * @param tagId 태그 ID
+	 * @return 해당 태그의 정보
+	 */
+	TagDto getTag(Long tagId);
 
-	@Transactional(readOnly = true)
-	public TagDto getTag(Long tagId) {
-		Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new TagNotFoundException(tagId));
-		return TagDto.fromEntity(tag);
-	}
+	/**
+	 * 새로운 태그를 생성합니다.
+	 *
+	 * @param request 생성할 태그 정보 DTO
+	 * @return 생성된 태그의 정보 DTO
+	 */
+	TagDto createTag(TagDto request);
 
-	public TagDto createTag(TagDto request) {
-		if (tagRepository.existsByTagName(request.tagName())) {
-			throw new TagAlreadyExistsException(request.tagName());
-		}
-		return TagDto.fromEntity(tagRepository.save(Tag.toEntity(request)));
-	}
+	/**
+	 * 주어진 태그 ID에 해당하는 태그 정보를 업데이트합니다.
+	 *
+	 * @param tagId   업데이트할 태그 ID
+	 * @param request 업데이트할 태그 정보 DTO
+	 * @return 업데이트된 태그의 정보 DTO
+	 */
+	TagDto updateTag(Long tagId, TagDto request);
 
-	public TagDto updateTag(Long tagId, TagDto request) {
-		Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new TagNotFoundException(tagId));
-
-		if (tagRepository.existsByTagName(request.tagName())) {
-			throw new TagAlreadyExistsException(request.tagName());
-		}
-		tag.updateTagName(request.tagName());
-		return TagDto.fromEntity(tag);
-	}
-
-	public void deleteTag(Long tagId) {
-		tagRepository.findById(tagId).orElseThrow(() -> new TagNotFoundException(tagId));
-		tagRepository.deleteById(tagId);
-	}
+	/**
+	 * 주어진 태그 ID에 해당하는 태그를 삭제합니다.
+	 *
+	 * @param tagId 삭제할 태그의 ID
+	 */
+	void deleteTag(Long tagId);
 }

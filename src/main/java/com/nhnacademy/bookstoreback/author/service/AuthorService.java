@@ -1,30 +1,18 @@
 package com.nhnacademy.bookstoreback.author.service;
 
 import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
-import com.nhnacademy.bookstoreback.author.exception.AuthorAlreadyExistsException;
-import com.nhnacademy.bookstoreback.author.exception.AuthorNotFoundException;
-import com.nhnacademy.bookstoreback.author.repository.AuthorRepository;
-
-import lombok.RequiredArgsConstructor;
 
 /**
- * 작가 Service
+ * AuthorService 인터페이스
  *
- * @author 김기욱
+ * 작가 관련 서비스를 제공하는 인터페이스입니다.
+ *
  * @version 1.0
  */
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class AuthorService {
-	private final AuthorRepository authorRepository;
+public interface AuthorService {
 
 	/**
 	 * 작가 이름 기반 도서 조회.
@@ -32,43 +20,44 @@ public class AuthorService {
 	 * @param authorName 작가 이름
 	 * @return 작가가 존재하면 작가 정보, 없으면 null
 	 */
-	public Author findOrCreateAuthor(String authorName) {
-		Optional<Author> optionalAuthor = authorRepository.findByAuthorName(authorName);
-		return optionalAuthor.orElseGet(() -> authorRepository.save(Author.builder().authorName(authorName).build()));
-	}
+	Author findOrCreateAuthor(String authorName);
 
-	@Transactional(readOnly = true)
-	public List<AuthorDto> getAuthors() {
-		return authorRepository.findAll().stream().map(AuthorDto::fromEntity).toList();
-	}
+	/**
+	 * 모든 작가 조회.
+	 *
+	 * @return 모든 작가의 리스트
+	 */
+	List<AuthorDto> getAuthors();
 
-	@Transactional(readOnly = true)
-	public AuthorDto getAuthor(Long authorId) {
-		Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(authorId));
-		return AuthorDto.fromEntity(author);
-	}
+	/**
+	 * 특정 작가 조회.
+	 *
+	 * @param authorId 작가 ID
+	 * @return 작가 정보
+	 */
+	AuthorDto getAuthor(Long authorId);
 
-	public AuthorDto createAuthor(AuthorDto request) {
-		if (authorRepository.existsByAuthorName(request.authorName())) {
-			throw new AuthorAlreadyExistsException(request.authorName());
-		}
+	/**
+	 * 작가 생성.
+	 *
+	 * @param request 생성할 작가 정보
+	 * @return 생성된 작가 정보
+	 */
+	AuthorDto createAuthor(AuthorDto request);
 
-		return AuthorDto.fromEntity(authorRepository.save(Author.toEntity(request)));
-	}
+	/**
+	 * 작가 정보 수정.
+	 *
+	 * @param authorId 수정할 작가 ID
+	 * @param request 수정할 작가 정보
+	 * @return 수정된 작가 정보
+	 */
+	AuthorDto updateAuthor(Long authorId, AuthorDto request);
 
-	public AuthorDto updateAuthor(Long authorId, AuthorDto request) {
-		Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(authorId));
-
-		if (authorRepository.existsByAuthorName(request.authorName())) {
-			throw new AuthorAlreadyExistsException(request.authorName());
-		}
-
-		author.updateAuthorName(request.authorName());
-		return AuthorDto.fromEntity(author);
-	}
-
-	public void deleteAuthor(Long authorId) {
-		authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(authorId));
-		authorRepository.deleteById(authorId);
-	}
+	/**
+	 * 작가 삭제.
+	 *
+	 * @param authorId 삭제할 작가 ID
+	 */
+	void deleteAuthor(Long authorId);
 }

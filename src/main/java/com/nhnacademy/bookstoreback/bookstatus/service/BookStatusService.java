@@ -3,30 +3,16 @@ package com.nhnacademy.bookstoreback.bookstatus.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.nhnacademy.bookstoreback.bookstatus.domain.dto.respnse.BookStatusDto;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
-import com.nhnacademy.bookstoreback.bookstatus.exception.BookStatusAlreadyExistsException;
-import com.nhnacademy.bookstoreback.bookstatus.exception.BookStatusNotFoundException;
-import com.nhnacademy.bookstoreback.bookstatus.repository.BookStatusRepository;
-
-import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 
 /**
- * 도서 상태 Service
+ * BookStatusService 인터페이스
+ * 도서 상태 관련 서비스를 제공하는 인터페이스입니다.
  *
- * @author 김기욱
  * @version 1.0
  */
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class BookStatusService {
-	private final EntityManager entityManager;
-	private final BookStatusRepository bookStatusRepository;
+public interface BookStatusService {
 
 	/**
 	 * 도서 상태 이름 기반 도서 조회
@@ -34,18 +20,7 @@ public class BookStatusService {
 	 * @param bookStatusName 도서 상태 이름
 	 * @return 도서 상태 (Optional로 반환)
 	 */
-	public Optional<BookStatus> findByBookStatusName(String bookStatusName) {
-		List<BookStatus> results = entityManager
-			.createQuery("SELECT b FROM BookStatus b WHERE b.bookStatusName = :bookStatusName", BookStatus.class)
-			.setParameter("bookStatusName", bookStatusName)
-			.getResultList();
-
-		if (results.isEmpty()) {
-			return Optional.empty();
-		} else {
-			return Optional.of(results.get(0));
-		}
-	}
+	Optional<BookStatus> findByBookStatusName(String bookStatusName);
 
 	/**
 	 * 도서 상태 생성 또는 조회
@@ -53,49 +28,44 @@ public class BookStatusService {
 	 * @param bookStatusName 도서 상태 이름
 	 * @return 도서 상태가 존재하면 도서 상태 정보, 없으면 생성된 도서 상태 정보
 	 */
-	public BookStatus findOrCreateBookStatus(String bookStatusName) {
-		Optional<BookStatus> optionalStatus = findByBookStatusName(bookStatusName);
+	BookStatus findOrCreateBookStatus(String bookStatusName);
 
-		return optionalStatus.orElseGet(() -> {
-			BookStatus newStatus = new BookStatus();
-			newStatus.setBookStatusName(bookStatusName);
-			entityManager.persist(newStatus);
-			return newStatus;
-		});
-	}
+	/**
+	 * 모든 도서 상태 조회
+	 *
+	 * @return 도서 상태 리스트
+	 */
+	List<BookStatusDto> getBookStatuses();
 
-	@Transactional(readOnly = true)
-	public List<BookStatusDto> getBookStatuses() {
-		return bookStatusRepository.findAll().stream().map(BookStatusDto::fromEntity).toList();
-	}
+	/**
+	 * 도서 상태 ID 기반 도서 상태 조회
+	 *
+	 * @param bookStatusId 도서 상태 ID
+	 * @return 도서 상태 정보
+	 */
+	BookStatusDto getBookStatus(Long bookStatusId);
 
-	@Transactional(readOnly = true)
-	public BookStatusDto getBookStatus(Long bookStatusId) {
-		BookStatus bookStatus = bookStatusRepository.findById(bookStatusId)
-			.orElseThrow(() -> new BookStatusNotFoundException(bookStatusId));
-		return BookStatusDto.fromEntity(bookStatus);
-	}
+	/**
+	 * 새로운 도서 상태 생성
+	 *
+	 * @param request 도서 상태 정보
+	 * @return 생성된 도서 상태 정보
+	 */
+	BookStatusDto createBookStatus(BookStatusDto request);
 
-	public BookStatusDto createBookStatus(BookStatusDto request) {
-		if (bookStatusRepository.existsByBookStatusName(request.bookStatusName())) {
-			throw new BookStatusAlreadyExistsException(request.bookStatusName());
-		}
-		return BookStatusDto.fromEntity(bookStatusRepository.save(BookStatus.toEntity(request)));
-	}
+	/**
+	 * 도서 상태 업데이트
+	 *
+	 * @param bookStatusId 도서 상태 ID
+	 * @param request 도서 상태 정보
+	 * @return 업데이트된 도서 상태 정보
+	 */
+	BookStatusDto updateBookStatus(Long bookStatusId, BookStatusDto request);
 
-	public BookStatusDto updateBookStatus(Long bookStatusId, BookStatusDto request) {
-		BookStatus bookStatus = bookStatusRepository.findById(bookStatusId)
-			.orElseThrow(() -> new BookStatusNotFoundException(bookStatusId));
-
-		if (bookStatusRepository.existsByBookStatusName(request.bookStatusName())) {
-			throw new BookStatusAlreadyExistsException(request.bookStatusName());
-		}
-		bookStatus.updateBookStatusName(request.bookStatusName());
-		return BookStatusDto.fromEntity(bookStatus);
-	}
-
-	public void deleteBookStatus(Long bookStatusId) {
-		bookStatusRepository.findById(bookStatusId).orElseThrow(() -> new BookStatusNotFoundException(bookStatusId));
-		bookStatusRepository.deleteById(bookStatusId);
-	}
+	/**
+	 * 도서 상태 삭제
+	 *
+	 * @param bookStatusId 도서 상태 ID
+	 */
+	void deleteBookStatus(Long bookStatusId);
 }

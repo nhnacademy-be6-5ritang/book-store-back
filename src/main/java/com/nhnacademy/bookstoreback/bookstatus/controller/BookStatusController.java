@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.bookstatus.domain.dto.respnse.BookStatusDto;
-import com.nhnacademy.bookstoreback.bookstatus.service.BookStatusService;
+import com.nhnacademy.bookstoreback.bookstatus.service.impl.BookStatusServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/bookStatuses")
 public class BookStatusController {
-	private final BookStatusService bookStatusService;
+	private final BookStatusServiceImpl bookStatusService;
 
 	@GetMapping
 	public ResponseEntity<List<BookStatusDto>> getBookStatuses() {
