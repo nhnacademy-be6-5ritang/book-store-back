@@ -1,47 +1,28 @@
 package com.nhnacademy.bookstoreback.order.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetListWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetWrappingResponse;
-import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
-import com.nhnacademy.bookstoreback.order.domain.entity.PaperType;
-import com.nhnacademy.bookstoreback.order.domain.entity.WrappingPaper;
-import com.nhnacademy.bookstoreback.order.repository.BookOrderRepository;
-import com.nhnacademy.bookstoreback.order.repository.PaperTypeRepository;
-import com.nhnacademy.bookstoreback.order.repository.WrappingPaperRepository;
 
-import lombok.RequiredArgsConstructor;
+public interface WrappingPaperService {
+	/**
+	 * 주문 리스트 포장지 설정
+	 * @param paperId 포장지 아이디
+	 * @param bookOrderId 주문 리스트 아이디
+	 * @param quantity 책 개수
+	 * @return 저장한 해당 정보 리턴
+	 */
+	GetWrappingResponse createWrappingPapers(Long paperId, Long bookOrderId, Integer quantity);
 
-@RequiredArgsConstructor
-@Service
-@Transactional
-public class WrappingPaperService {
+	/**
+	 * 주문리스트 포장지 설정 삭제
+	 * @param id 주문리스트 포장지 아이디 삭제
+	 */
+	void deleteWrappingPapers(Long id);
 
-	private final WrappingPaperRepository wrappingPaperRepository;
-	private final PaperTypeRepository paperTypeRepository;
-	private final BookOrderRepository bookOrderRepository;
-
-	public GetWrappingResponse createWrappingPapers(Long paperId, Long bookOrderId, Integer quantity) {
-		BookOrder bookOrder = null;
-		if (bookOrderId != null) {
-			bookOrder = bookOrderRepository.getReferenceById(bookOrderId);
-		}
-		PaperType paperType = paperTypeRepository.findById(paperId).orElse(null);
-		if (quantity != null) {
-			return GetWrappingResponse.from(
-				wrappingPaperRepository.save(WrappingPaper.toEntity(bookOrder, paperType, quantity)));
-		}
-		return GetWrappingResponse.from(
-			wrappingPaperRepository.save(WrappingPaper.toEntity(bookOrder, paperType, null)));
-	}
-
-	public void deleteWrappingPapers(Long id) {
-		wrappingPaperRepository.deleteById(id);
-	}
-
-	public GetListWrappingResponse getWrappingPaperByOrderListId(Long id) {
-		return GetListWrappingResponse.from(wrappingPaperRepository.findAllByBookOrder_OrderListId(id));
-	}
+	/**
+	 * 주문리스트 아이디로 설정된 포장지 찾기
+	 * @param id 주문리스트 아이디
+	 * @return 주문 리스트 아이디를 가지고 있는 포장지 설정 전부 리턴
+	 */
+	GetListWrappingResponse getWrappingPaperByOrderListId(Long id);
 }

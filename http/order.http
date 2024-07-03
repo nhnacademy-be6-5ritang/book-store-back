@@ -1,5 +1,5 @@
 ### 포장지 종류 생성
-POST localhost:8080/wrapping/1
+POST localhost:8080/api/orders/wrapping/1
 Content-Type: application/json
 
 {
@@ -23,11 +23,11 @@ Content-Type: application/json
 }
 
 ### 주문 상태 생성
-POST localhost:8083/orderStatus
+POST localhost:8083/api/orders/orderStatus
 Content-Type: application/json
 
 {
-  "orderStatusName": "주문 취소"
+  "orderStatusName": "결제 취소"
 }
 
 ### 특정 주문 가져오기
@@ -81,7 +81,27 @@ GET localhost:8080/bookOrder/f5d3f2de-5a40-4fc5-bfa7-c5c18005f975
 GET localhost:8080/test
 
 ### 포장지 종류 생성
-POST localhost:8083/papers
+POST localhost:8083/api/orders/papers
+Content-Type: application/json
+
+{
+  "paperName": "포장지 선택 X",
+  "paperContent": "포장지 선택 X",
+  "paperPrice": 0
+}
+
+### 포장지 종류 생성2
+POST localhost:8083/api/orders/papers
+Content-Type: application/json
+
+{
+  "paperName": "포장 불가",
+  "paperContent": "포장 불가",
+  "paperPrice": 0
+}
+
+### 포장지 종류 생성3
+POST localhost:8083/api/orders/papers
 Content-Type: application/json
 
 {
