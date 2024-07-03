@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
+import com.nhnacademy.bookstoreback.payment.dto.response.CancelResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.PaymentSaveResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.TransactionsResponse;
+import com.nhnacademy.bookstoreback.payment.dto.response.UpdatePaymentResponse;
 import com.nhnacademy.bookstoreback.payment.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/payments")
+@RequestMapping("/api/payments")
 @RequiredArgsConstructor
 public class PaymentController {
 
@@ -46,4 +48,16 @@ public class PaymentController {
 	public ResponseEntity<TransactionsResponse> transactions(@RequestBody String paymentResponseJson) {
 		return ResponseEntity.status(HttpStatus.OK).body(paymentService.transactions(paymentResponseJson));
 	}
+
+	@GetMapping("/cancel/{order_info_id}")
+	public ResponseEntity<CancelResponse> cancel(@PathVariable("order_info_id") String orderInfoId) {
+		return ResponseEntity.status(HttpStatus.OK).body(paymentService.paymentFindByOrderInfoId(orderInfoId));
+	}
+
+	@PostMapping("/cancel/test/{payment_id}")
+	public ResponseEntity<UpdatePaymentResponse> cancel(@RequestBody String paymentResponseJson,
+		@PathVariable("payment_id") Long paymentId) {
+		return ResponseEntity.status(HttpStatus.OK).body(paymentService.updatePayment(paymentResponseJson, paymentId));
+	}
+
 }
