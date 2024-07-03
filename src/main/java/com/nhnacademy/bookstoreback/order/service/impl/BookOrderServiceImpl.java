@@ -46,11 +46,6 @@ public class BookOrderServiceImpl implements BookOrderService {
 		if (createBookOrderRequest.orderId() != null) {
 			order = orderRepository.getReferenceById(createBookOrderRequest.orderId());
 		}
-		if (order == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
-				LocalDateTime.now());
-			throw new OrderFailException(errorStatus);
-		}
 		BookOrder bookOrder = bookOrderRepository.save(
 			BookOrder.toEntity(createBookOrderRequest.quantity(), book, order));
 
