@@ -2,6 +2,10 @@ package com.nhnacademy.bookstoreback.publisher.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +43,15 @@ public class PublisherServiceImpl implements PublisherService {
 	@Override
 	public List<PublisherDto> getPublishers() {
 		return publisherRepository.findAll().stream().map(PublisherDto::fromEntity).toList();
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public Page<PublisherDto> getPublishers(Pageable pageable) {
+		int page = pageable.getPageNumber() - 1;
+		int pageSize = 10;
+		return publisherRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "publisherId")))
+			.map(PublisherDto::fromEntity);
 	}
 
 	@Transactional(readOnly = true)

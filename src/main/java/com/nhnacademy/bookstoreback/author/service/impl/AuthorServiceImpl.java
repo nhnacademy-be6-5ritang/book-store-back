@@ -3,6 +3,10 @@ package com.nhnacademy.bookstoreback.author.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +47,15 @@ public class AuthorServiceImpl implements AuthorService {
 	@Override
 	public List<AuthorDto> getAuthors() {
 		return authorRepository.findAll().stream().map(AuthorDto::fromEntity).toList();
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public Page<AuthorDto> getAuthors(Pageable pageable) {
+		int page = pageable.getPageNumber() - 1;
+		int pageSize = 10;
+		return authorRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "authorId")))
+			.map(AuthorDto::fromEntity);
 	}
 
 	@Transactional(readOnly = true)

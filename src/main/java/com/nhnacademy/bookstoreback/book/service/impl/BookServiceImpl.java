@@ -198,7 +198,7 @@ public class BookServiceImpl implements BookService {
 			statusName = "UNKNOWN";  // 추가적으로 필요에 따라 상태를 정의할 수 있습니다.
 		}
 		BookStatus bookStatus = bookStatusService.findOrCreateBookStatus(statusName);
-
+		
 		// 새로운 Book 엔티티 생성 및 저장
 		Book book = new Book();
 		book.setBookTitle(bookTitle);

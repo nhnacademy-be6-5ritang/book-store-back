@@ -2,6 +2,9 @@ package com.nhnacademy.bookstoreback.publisher.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.nhnacademy.bookstoreback.publisher.domain.dto.respnse.PublisherDto;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 
@@ -28,6 +31,14 @@ public interface PublisherService {
 	 * @return 모든 출판사 리스트
 	 */
 	List<PublisherDto> getPublishers();
+
+	/**
+	 * 페이징된 형식으로 모든 출판사를 조회합니다.
+	 *
+	 * @param pageable 페이징 정보
+	 * @return 페이징된 출판사의 페이지
+	 */
+	Page<PublisherDto> getPublishers(Pageable pageable);
 
 	/**
 	 * 주어진 출판사 ID에 해당하는 출판사를 조회합니다.

@@ -2,6 +2,9 @@ package com.nhnacademy.bookstoreback.author.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
 
@@ -28,6 +31,14 @@ public interface AuthorService {
 	 * @return 모든 작가의 리스트
 	 */
 	List<AuthorDto> getAuthors();
+
+	/**
+	 * 페이징된 형식으로 모든 저자를 조회합니다.
+	 *
+	 * @param pageable 페이징 정보
+	 * @return 페이징된 저자의 페이지
+	 */
+	Page<AuthorDto> getAuthors(Pageable pageable);
 
 	/**
 	 * 특정 작가 조회.
