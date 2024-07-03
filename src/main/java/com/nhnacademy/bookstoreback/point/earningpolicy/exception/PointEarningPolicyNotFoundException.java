@@ -15,4 +15,12 @@ public class PointEarningPolicyNotFoundException extends AlreadyExistsException 
 			LocalDateTime.now()
 		));
 	}
+
+	public PointEarningPolicyNotFoundException(String pointEarningPolicyType) {
+		super(ErrorStatus.from(
+			String.format("해당 포인트 적립 정책 %s가 존재하지 않습니다.", pointEarningPolicyType),
+			HttpStatus.NOT_FOUND,
+			LocalDateTime.now()
+		));
+	}
 }

@@ -158,4 +158,8 @@ public class User {
 	public void addUserRole(UserRole userRole) {
 		userRoles.add(userRole);
 	}
+
+	public void updatePoints(BigDecimal incomingPoints) {
+		this.points = this.points.add(incomingPoints);
+	}
 }

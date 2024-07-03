@@ -18,7 +18,7 @@ public class RoleNotFoundException extends AlreadyExistsException {
 
 	public RoleNotFoundException(String roleName) {
 		super(ErrorStatus.from(
-			String.format("해당 권한 '%s'는 이미 존재하는 권한입니다.", roleName),
+			String.format("해당 권한 '%s'는 존재하지 않는 권한입니다.", roleName),
 			HttpStatus.CONFLICT,
 			LocalDateTime.now()
 		));

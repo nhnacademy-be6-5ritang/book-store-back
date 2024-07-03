@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.point.transaction.service.PointTransactionService;
 import com.nhnacademy.bookstoreback.role.domain.entity.Role;
 import com.nhnacademy.bookstoreback.role.exception.RoleNotFoundException;
 import com.nhnacademy.bookstoreback.role.repository.RoleRepository;
@@ -24,8 +25,8 @@ import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
 import com.nhnacademy.bookstoreback.usergrade.repository.UserGradeRepository;
 import com.nhnacademy.bookstoreback.userrole.domain.entity.UserRole;
-import com.nhnacademy.bookstoreback.userrole.domain.repository.UserRoleRepository;
 import com.nhnacademy.bookstoreback.userrole.exception.UserHasRoleAlreadyException;
+import com.nhnacademy.bookstoreback.userrole.repository.UserRoleRepository;
 import com.nhnacademy.bookstoreback.userstatus.domain.entity.UserStatus;
 import com.nhnacademy.bookstoreback.userstatus.exception.UserStatusNotFoundException;
 import com.nhnacademy.bookstoreback.userstatus.repository.UserStatusRepository;
@@ -41,6 +42,8 @@ public class UserService {
 	private final UserRoleRepository userRoleRepository;
 	private final UserStatusRepository userStatusRepository;
 	private final UserGradeRepository userGradeRepository;
+
+	private final PointTransactionService pointTransactionService;
 
 	private final PasswordEncoder passwordEncoder;
 
@@ -69,6 +72,8 @@ public class UserService {
 		UserGrade defaultUserGrade = userGradeRepository.findByUserGradeName("REGULAR")
 			.orElseThrow(() -> new UserStatusNotFoundException("REGULAR"));
 		savedUser.updateUserGrade(defaultUserGrade);
+
+		pointTransactionService.signUpPointTransaction(savedUser);
 
 		savedUser = userRepository.save(savedUser);
 
