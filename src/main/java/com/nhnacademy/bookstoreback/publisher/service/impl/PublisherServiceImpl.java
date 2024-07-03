@@ -49,7 +49,7 @@ public class PublisherServiceImpl implements PublisherService {
 	@Override
 	public Page<PublisherDto> getPublishers(Pageable pageable) {
 		int page = pageable.getPageNumber() - 1;
-		int pageSize = 10;
+		int pageSize = pageable.getPageSize();
 		return publisherRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "publisherId")))
 			.map(PublisherDto::fromEntity);
 	}

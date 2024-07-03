@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -100,7 +101,8 @@ public class BookController {
 	 * @return 페이지네이션 된 도서 리스트를 포함하는 ResponseEntity 객체
 	 */
 	@GetMapping("/page")
-	public ResponseEntity<Page<GetBookDetailResponse>> findAllBooks(Pageable pageable) {
+	public ResponseEntity<Page<GetBookDetailResponse>> findAllBooks(
+		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.findAllBooks(pageable));
 	}
 

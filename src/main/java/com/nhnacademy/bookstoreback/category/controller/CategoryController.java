@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,7 +54,8 @@ public class CategoryController {
 	 * @return 페이징된 카테고리 정보
 	 */
 	@GetMapping("/page")
-	public ResponseEntity<Page<GetCategoryResponse>> getCategories(Pageable pageable) {
+	public ResponseEntity<Page<GetCategoryResponse>> getCategories(
+		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategories(pageable));
 	}
 

@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public Page<GetCategoryResponse> getCategories(Pageable pageable) {
 		int page = pageable.getPageNumber() - 1;
-		int pageSize = 10;
+		int pageSize = pageable.getPageSize();
 
 		return categoryRepository.findAll(
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "categoryId")))

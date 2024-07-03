@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.review.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,12 +30,13 @@ public class ReviewController {
 	private final ReviewService reviewService;
 
 	@GetMapping("/reviews/page")
-	public ResponseEntity<Page<GetReviewResponse>> getReviews(Pageable pageable) {
+	public ResponseEntity<Page<GetReviewResponse>> getReviews(@PageableDefault(page = 1, size = 5) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.findAllReviews(pageable));
 	}
 
 	@GetMapping("/books/{bookId}/reviews/page")
-	public ResponseEntity<Page<GetReviewResponse>> getReviewsByBookId(Pageable pageable,
+	public ResponseEntity<Page<GetReviewResponse>> getReviewsByBookId(
+		@PageableDefault(page = 1, size = 5) Pageable pageable,
 		@PathVariable Long bookId) {
 
 		Page<GetReviewResponse> reviews = reviewService.findReviewsByBookId(bookId, pageable);
@@ -43,7 +45,8 @@ public class ReviewController {
 	}
 
 	@GetMapping("/users/me/reviews/page")
-	public ResponseEntity<Page<GetReviewResponse>> getReviewsByUserId(Pageable pageable) {
+	public ResponseEntity<Page<GetReviewResponse>> getReviewsByUserId(
+		@PageableDefault(page = 1, size = 5) Pageable pageable) {
 
 		Long userId = 2L;
 
