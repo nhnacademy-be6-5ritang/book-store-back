@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/publishers")
+@RequestMapping("/api/publishers")
 public class PublisherController {
 	private final PublisherService publisherService;
 
@@ -29,9 +29,9 @@ public class PublisherController {
 		return ResponseEntity.status(HttpStatus.OK).body(publisherService.getPublishers());
 	}
 
-	@GetMapping("/{tagId}")
-	public ResponseEntity<PublisherDto> getPublisher(@PathVariable Long tagId) {
-		return ResponseEntity.status(HttpStatus.OK).body(publisherService.getPublisher(tagId));
+	@GetMapping("/{publisherId}")
+	public ResponseEntity<PublisherDto> getPublisher(@PathVariable Long publisherId) {
+		return ResponseEntity.status(HttpStatus.OK).body(publisherService.getPublisher(publisherId));
 	}
 
 	@PostMapping
@@ -39,15 +39,15 @@ public class PublisherController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(publisherService.createPublisher(request));
 	}
 
-	@PutMapping("/{tagId}")
-	public ResponseEntity<PublisherDto> updatePublisher(@PathVariable Long tagId,
+	@PutMapping("/{publisherId}")
+	public ResponseEntity<PublisherDto> updatePublisher(@PathVariable Long publisherId,
 		@RequestBody PublisherDto request) {
-		return ResponseEntity.status(HttpStatus.OK).body(publisherService.updatePublisher(tagId, request));
+		return ResponseEntity.status(HttpStatus.OK).body(publisherService.updatePublisher(publisherId, request));
 	}
 
-	@DeleteMapping("/{tagId}")
-	public ResponseEntity<Void> deletePublisher(@PathVariable Long tagId) {
-		publisherService.deletePublisher(tagId);
+	@DeleteMapping("/{publisherId}")
+	public ResponseEntity<Void> deletePublisher(@PathVariable Long publisherId) {
+		publisherService.deletePublisher(publisherId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

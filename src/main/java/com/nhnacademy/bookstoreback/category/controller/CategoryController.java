@@ -26,43 +26,43 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/api/categories")
 public class CategoryController {
 	private final CategoryService categoryService;
 
-	@GetMapping("/categories")
+	@GetMapping
 	public ResponseEntity<List<GetCategoryResponse>> getCategories() {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategories());
 	}
 
-	@GetMapping("/categories/page")
+	@GetMapping("/page")
 	public ResponseEntity<Page<GetCategoryResponse>> getCategories(Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategories(pageable));
 	}
 
-	@GetMapping("/books/{bookId}/categories")
+	@GetMapping("/books/{bookId}")
 	public ResponseEntity<List<GetCategoryResponse>> getCategoriesByBookId(@PathVariable Long bookId) {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategoriesByBookId(bookId));
 	}
 
-	@GetMapping("/categories/{categoryId}")
+	@GetMapping("/{categoryId}")
 	public ResponseEntity<GetCategoryResponse> getCategory(@PathVariable Long categoryId) {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategory(categoryId));
 	}
 
-	@PostMapping("/categories")
+	@PostMapping
 	public ResponseEntity<CreateCategoryResponse> createCategory(
 		@RequestBody CreateCategoryRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(request));
 	}
 
-	@PutMapping("/categories/{categoryId}")
+	@PutMapping("/{categoryId}")
 	public ResponseEntity<UpdateCategoryResponse> updateCategory(@PathVariable Long categoryId,
 		@RequestBody UpdateCategoryRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategory(categoryId, request));
 	}
 
-	@DeleteMapping("/categories/{categoryId}")
+	@DeleteMapping("/{categoryId}")
 	public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
 		categoryService.deleteCategory(categoryId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
