@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nhnacademy.bookstoreback.book.service.BookService;
+import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
@@ -25,7 +25,6 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperRespons
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetListWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
@@ -57,7 +56,7 @@ public class OrderController {
 
 	private final PaperTypeServiceImpl paperTypeServiceImpl;
 
-	private final BookService bookService;
+	private final BookServiceImpl bookService;
 
 	//TODO 주문
 
@@ -309,15 +308,4 @@ public class OrderController {
 	public ResponseEntity<GetOrderByInfoResponse> findByOrderInfoId(@PathVariable("order_info_id") String orderInfoId) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findByOrderInfoId(orderInfoId));
 	}
-
-	/**
-	 * 책 가져오가
-	 * @param bookId 책 아이디
-	 * @return 책 정보
-	 */
-	@GetMapping("/books/{book_id}")
-	public ResponseEntity<GetBookResponse> getBook(@PathVariable("book_id") Long bookId) {
-		return ResponseEntity.status(HttpStatus.OK).body(bookService.findBookById(bookId));
-	}
-
 }

@@ -3,6 +3,11 @@ package com.nhnacademy.bookstoreback.book.domain.entity;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.nhnacademy.bookstoreback.author.domain.entity.Author;
+import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
+import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
+import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +34,6 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
 @Getter
 @Setter
 @Table(name = "books")
@@ -96,5 +100,72 @@ public class Book {
 
 	public void update(boolean result) {
 		this.bookPackaging = result;
+	}
+
+	@Builder
+	public Book(
+		Author author,
+		Publisher publisher,
+		BookStatus bookStatus,
+		String bookTitle,
+		String bookIndex,
+		String bookDescription,
+		boolean bookPackaging,
+		int bookQuantity,
+		Date bookPublishDate,
+		String bookIsbn,
+		BigDecimal bookPrice,
+		BigDecimal bookSalePercent,
+		BigDecimal bookSalePrice) {
+		this.author = author;
+		this.publisher = publisher;
+		this.bookStatus = bookStatus;
+		this.bookTitle = bookTitle;
+		this.bookIndex = bookIndex;
+		this.bookDescription = bookDescription;
+		this.bookPackaging = bookPackaging;
+		this.bookQuantity = bookQuantity;
+		this.bookPublishDate = bookPublishDate;
+		this.bookIsbn = bookIsbn;
+		this.bookPrice = bookPrice;
+		this.bookSalePercent = bookSalePercent;
+		this.bookSalePrice = bookSalePrice;
+	}
+
+	public static Book toEntity(CreateBookRequest request, Author author, Publisher publisher, BookStatus bookStatus) {
+		return Book.builder()
+			.author(author)
+			.publisher(publisher)
+			.bookStatus(bookStatus)
+			.bookTitle(request.bookTitle())
+			.bookIndex(request.bookIndex())
+			.bookDescription(request.bookDescription())
+			.bookPackaging(request.bookPackaging())
+			.bookQuantity(request.bookQuantity())
+			.bookPublishDate(request.bookPublishDate())
+			.bookIsbn(request.bookIsbn())
+			.bookPrice(request.bookPrice())
+			.bookSalePercent(request.bookSalePercent())
+			.bookSalePrice(request.bookSalePrice())
+			.build();
+	}
+
+	public void updateBook(Author author, Publisher publisher, BookStatus bookStatus, String bookTitle,
+		String bookIndex, String bookDescription, int bookQuantity, boolean bookPackaging, Date bookPublishDate,
+		String bookIsbn, BigDecimal bookPrice, BigDecimal bookSalePercent, BigDecimal bookSalePrice) {
+		this.author = author;
+		this.publisher = publisher;
+		this.bookStatus = bookStatus;
+		this.bookTitle = bookTitle;
+		this.bookIndex = bookIndex;
+		this.bookDescription = bookDescription;
+		this.bookPackaging = bookPackaging;
+		this.bookQuantity = bookQuantity;
+		this.bookPublishDate = bookPublishDate;
+		this.bookIsbn = bookIsbn;
+		this.bookPrice = bookPrice;
+		this.bookSalePercent = bookSalePercent;
+		this.bookSalePrice = bookSalePrice;
+
 	}
 }
