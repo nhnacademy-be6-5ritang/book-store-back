@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.tag.domain.dto.respnse.TagDto;
-import com.nhnacademy.bookstoreback.tag.service.TagService;
+import com.nhnacademy.bookstoreback.tag.service.impl.TagServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class TagController {
-	private final TagService tagService;
+	private final TagServiceImpl tagService;
 
 	@GetMapping("/tags")
 	public ResponseEntity<List<TagDto>> getTags() {

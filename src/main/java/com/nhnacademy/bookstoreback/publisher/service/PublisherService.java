@@ -2,70 +2,62 @@ package com.nhnacademy.bookstoreback.publisher.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.nhnacademy.bookstoreback.publisher.domain.dto.respnse.PublisherDto;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
-import com.nhnacademy.bookstoreback.publisher.exception.PublisherAlreadyExistsException;
-import com.nhnacademy.bookstoreback.publisher.exception.PublisherNotFoundException;
-import com.nhnacademy.bookstoreback.publisher.repository.PublisherRepository;
-
-import lombok.RequiredArgsConstructor;
 
 /**
- * 출판사 Service
+ * 출판사 관리 서비스 인터페이스입니다.
  *
- * @author 김기욱
+ * 이 인터페이스는 출판사 관련 기능을 제공합니다.
+ *
  * @version 1.0
  */
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class PublisherService {
-	private final PublisherRepository publisherRepository;
+public interface PublisherService {
 
-	public Publisher findOrCreatePublisher(String publisherName) {
-		return publisherRepository.findByPublisherName(publisherName).orElseGet(() -> {
-			Publisher newPublisher = new Publisher();
-			newPublisher.setPublisherName(publisherName);
-			return publisherRepository.save(newPublisher);
-		});
-	}
+	/**
+	 * 출판사 이름을 기반으로 출판사를 조회하거나 새로 생성합니다.
+	 *
+	 * @param publisherName 출판사 이름
+	 * @return 해당 출판사 정보
+	 */
+	Publisher findOrCreatePublisher(String publisherName);
 
-	@Transactional(readOnly = true)
-	public List<PublisherDto> getPublishers() {
-		return publisherRepository.findAll().stream().map(PublisherDto::fromEntity).toList();
-	}
+	/**
+	 * 모든 출판사를 조회합니다.
+	 *
+	 * @return 모든 출판사 리스트
+	 */
+	List<PublisherDto> getPublishers();
 
-	@Transactional(readOnly = true)
-	public PublisherDto getPublisher(Long publisherId) {
-		Publisher publisher = publisherRepository.findById(publisherId)
-			.orElseThrow(() -> new PublisherNotFoundException(publisherId));
-		return PublisherDto.fromEntity(publisher);
-	}
+	/**
+	 * 주어진 출판사 ID에 해당하는 출판사를 조회합니다.
+	 *
+	 * @param publisherId 출판사 ID
+	 * @return 해당 출판사 정보
+	 */
+	PublisherDto getPublisher(Long publisherId);
 
-	public PublisherDto createPublisher(PublisherDto request) {
-		if (publisherRepository.existsByPublisherName(request.publisherName())) {
-			throw new PublisherAlreadyExistsException(request.publisherName());
-		}
-		return PublisherDto.fromEntity(publisherRepository.save(Publisher.toEntity(request)));
-	}
+	/**
+	 * 새로운 출판사를 생성합니다.
+	 *
+	 * @param request 생성할 출판사 정보
+	 * @return 생성된 출판사 정보
+	 */
+	PublisherDto createPublisher(PublisherDto request);
 
-	public PublisherDto updatePublisher(Long publisherId, PublisherDto request) {
-		Publisher publisher = publisherRepository.findById(publisherId)
-			.orElseThrow(() -> new PublisherNotFoundException(publisherId));
+	/**
+	 * 주어진 출판사 ID에 해당하는 출판사 정보를 업데이트합니다.
+	 *
+	 * @param publisherId 업데이트할 출판사 ID
+	 * @param request 업데이트할 출판사 정보
+	 * @return 업데이트된 출판사 정보
+	 */
+	PublisherDto updatePublisher(Long publisherId, PublisherDto request);
 
-		if (publisherRepository.existsByPublisherName(request.publisherName())) {
-			throw new PublisherAlreadyExistsException(request.publisherName());
-		}
-		publisher.updatePublisherName(request.publisherName());
-		return PublisherDto.fromEntity(publisher);
-	}
-
-	public void deletePublisher(Long publisherId) {
-		publisherRepository.findById(publisherId).orElseThrow(() -> new PublisherNotFoundException(publisherId));
-		publisherRepository.deleteById(publisherId);
-	}
-
+	/**
+	 * 주어진 출판사 ID에 해당하는 출판사를 삭제합니다.
+	 *
+	 * @param publisherId 삭제할 출판사 ID
+	 */
+	void deletePublisher(Long publisherId);
 }

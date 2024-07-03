@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nhnacademy.bookstoreback.book.service.BookService;
+import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
@@ -54,7 +54,7 @@ public class OrderController {
 
 	private final PaperTypeService paperTypeService;
 
-	private final BookService bookService;
+	private final BookServiceImpl bookService;
 
 	//TODO 주문
 

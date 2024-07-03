@@ -20,7 +20,7 @@ import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRe
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
-import com.nhnacademy.bookstoreback.category.service.CategoryService;
+import com.nhnacademy.bookstoreback.category.service.impl.CategoryServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/categories")
 public class CategoryController {
-	private final CategoryService categoryService;
+	private final CategoryServiceImpl categoryService;
 
 	@GetMapping
 	public ResponseEntity<List<GetCategoryResponse>> getCategories() {

@@ -3,99 +3,74 @@ package com.nhnacademy.bookstoreback.category.service;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
-import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
-import com.nhnacademy.bookstoreback.category.domain.entity.Category;
-import com.nhnacademy.bookstoreback.category.exception.CategoryAlreadyExistsException;
-import com.nhnacademy.bookstoreback.category.exception.CategoryNotFoundException;
-import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
-import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
 
-import lombok.RequiredArgsConstructor;
+/**
+ * CategoryService 인터페이스
+ * 카테고리 관련 서비스를 제공하는 인터페이스입니다.
+ *
+ * @version 1.0
+ */
+public interface CategoryService {
 
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class CategoryService {
-	private final CategoryRepository categoryRepository;
-	private final BookCategoryRepository bookCategoryRepository;
+	/**
+	 * 모든 카테고리 조회
+	 *
+	 * @return 카테고리 리스트
+	 */
+	List<GetCategoryResponse> getCategories();
 
-	@Transactional(readOnly = true)
-	public List<GetCategoryResponse> getCategories() {
-		return categoryRepository.findAll().stream().map(GetCategoryResponse::fromEntity).toList();
-	}
+	/**
+	 * 페이징 처리된 카테고리 조회
+	 *
+	 * @param pageable 페이지 요청 정보
+	 * @return 페이징 처리된 카테고리 리스트
+	 */
+	Page<GetCategoryResponse> getCategories(Pageable pageable);
 
-	@Transactional(readOnly = true)
-	public Page<GetCategoryResponse> getCategories(Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
-		int pageSize = 10;
+	/**
+	 * 특정 도서의 카테고리 조회
+	 *
+	 * @param bookId 도서 ID
+	 * @return 도서의 카테고리 리스트
+	 */
+	List<GetCategoryResponse> getCategoriesByBookId(Long bookId);
 
-		return categoryRepository.findAll(
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "categoryId")))
-			.map(GetCategoryResponse::fromEntity);
-	}
+	/**
+	 * 카테고리 ID 기반 카테고리 조회
+	 *
+	 * @param categoryId 카테고리 ID
+	 * @return 카테고리 정보
+	 */
+	GetCategoryResponse getCategory(Long categoryId);
 
-	@Transactional(readOnly = true)
-	public List<GetCategoryResponse> getCategoriesByBookId(Long bookId) {
-		List<BookCategory> bookCategories = bookCategoryRepository.findAllByBookBookId(bookId);
-		List<Category> categories = bookCategories.stream().map(BookCategory::getCategory).toList();
-		return categories.stream().map(GetCategoryResponse::fromEntity).toList();
-	}
+	/**
+	 * 새로운 카테고리 생성
+	 *
+	 * @param request 카테고리 생성 요청 정보
+	 * @return 생성된 카테고리 정보
+	 */
+	CreateCategoryResponse createCategory(CreateCategoryRequest request);
 
-	@Transactional(readOnly = true)
-	public GetCategoryResponse getCategory(Long categoryId) {
-		Category category = categoryRepository.findById(categoryId)
-			.orElseThrow(() -> new CategoryNotFoundException(categoryId));
-		return GetCategoryResponse.fromEntity(category);
-	}
+	/**
+	 * 카테고리 업데이트
+	 *
+	 * @param categoryId 카테고리 ID
+	 * @param request 카테고리 업데이트 요청 정보
+	 * @return 업데이트된 카테고리 정보
+	 */
+	UpdateCategoryResponse updateCategory(Long categoryId, UpdateCategoryRequest request);
 
-	public CreateCategoryResponse createCategory(CreateCategoryRequest request) {
-		if (categoryRepository.existsByCategoryName(request.categoryName())) {
-			throw new CategoryAlreadyExistsException(request.categoryName());
-		}
-
-		Category parentCategory = null;
-		if (request.parentCategoryId() != null) {
-			parentCategory = categoryRepository.findById(request.parentCategoryId())
-				.orElseThrow(() -> new CategoryNotFoundException(request.parentCategoryId()));
-		}
-		return CreateCategoryResponse.fromEntity(categoryRepository.save(Category.toEntity(request, parentCategory)));
-	}
-
-	public UpdateCategoryResponse updateCategory(Long categoryId, UpdateCategoryRequest request) {
-		Category category = categoryRepository.findById(categoryId)
-			.orElseThrow(() -> new CategoryNotFoundException(categoryId));
-
-		List<Category> categories = categoryRepository.findAllByCategoryNameNot(category.getCategoryName());
-
-		for (Category cat : categories) {
-			if (cat.getCategoryName().equals(request.categoryName())) {
-				throw new CategoryAlreadyExistsException(request.categoryName());
-			}
-		}
-
-		// 상위 카테고리 요청이 null 인 경우와 상위 카테고리가 자신의 카테고리와 같을 경우 예외처리
-		Category parentCategory = null;
-		if (request.parentCategoryId() != null && !categoryId.equals(request.parentCategoryId())) {
-			parentCategory = categoryRepository.findById(request.parentCategoryId())
-				.orElseThrow(() -> new CategoryNotFoundException(categoryId));
-		}
-		category.updateCategoryName(request.categoryName(), parentCategory);
-		return UpdateCategoryResponse.fromEntity(category);
-	}
-
-	public void deleteCategory(Long categoryId) {
-		categoryRepository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException(categoryId));
-		categoryRepository.deleteById(categoryId);
-	}
+	/**
+	 * 카테고리 삭제
+	 *
+	 * @param categoryId 카테고리 ID
+	 */
+	void deleteCategory(Long categoryId);
 }

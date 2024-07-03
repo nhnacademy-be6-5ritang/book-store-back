@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
-import com.nhnacademy.bookstoreback.author.service.AuthorService;
+import com.nhnacademy.bookstoreback.author.service.impl.AuthorServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/authors")
 public class AuthorController {
-	private final AuthorService authorService;
+	private final AuthorServiceImpl authorService;
 
 	@GetMapping
 	public ResponseEntity<List<AuthorDto>> getAuthors() {

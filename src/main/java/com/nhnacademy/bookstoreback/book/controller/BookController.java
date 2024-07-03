@@ -22,7 +22,7 @@ import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
-import com.nhnacademy.bookstoreback.book.service.BookService;
+import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/books")
 public class BookController {
-	private final BookService bookService;
+	private final BookServiceImpl bookService;
 
 	/**
 	 * 도서 포장 여부 업데이트
