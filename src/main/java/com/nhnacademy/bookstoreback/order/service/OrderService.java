@@ -45,11 +45,11 @@ public class OrderService {
 		List<OrderStatus> orderStatuses = orderStatusRepository.findAll();
 
 		for (OrderStatus orderStatus : orderStatuses) {
-			if (orderStatus.getOrderStatusName().equals("대기")) {
+			if (orderStatus.getOrderStatusName().equals("결제 대기")) {
 				Order order = Order.toEntity(createOrderRequest, orderStatus);
 
 				// 테스트용으로 카트 고정으로 추가
-				Cart cart = cartRepository.getReferenceById(8L);
+				Cart cart = cartRepository.getReferenceById(1L);
 				order.updateCart(cart);
 
 				orderRepository.save(order);

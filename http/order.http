@@ -27,7 +27,7 @@ POST localhost:8083/orderStatus
 Content-Type: application/json
 
 {
-  "orderStatusName": "대기"
+  "orderStatusName": "주문 취소"
 }
 
 ### 특정 주문 가져오기
