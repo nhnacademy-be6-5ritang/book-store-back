@@ -23,5 +23,14 @@ spring:
   jwt:
     secret: 33085d3cf14717d13f122979944e1e886636cc19e0f749dfbce423bb0031beae8b8758243ce109259c32a83a9325ef2c64433bc0339321d9540036a11884f8fc
 
+nhncloud:
+  appkey: vyiy4M85i8mJ5mgP
+  secretkey: ffpUQvzkmH8RsQDTuvpZD7U9tWlqExe4
+
+naver:
+  client:
+    id: FqTcItBuNIlp3v3oMKdQ
+    secret: WQxeHO8nj5
+
 server:
   port: 8083
