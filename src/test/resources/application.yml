@@ -36,3 +36,12 @@ spring:
       expires-in: 86400000
 
 remote-addr: 127.0.0.1
+
+nhncloud:
+  appkey: vyiy4M85i8mJ5mgP
+  secretkey: ffpUQvzkmH8RsQDTuvpZD7U9tWlqExe4
+
+naver:
+  client:
+    id: FqTcItBuNIlp3v3oMKdQ
+    secret: WQxeHO8nj5
