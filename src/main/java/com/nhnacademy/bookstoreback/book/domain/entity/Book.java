@@ -62,16 +62,9 @@ public class Book {
 	@Column(name = "book_title", length = 300)
 	private String bookTitle;
 
-	@Column(name = "book_index")
-	private String bookIndex = "책 목차";
-
 	@NotNull
 	@Column(name = "book_description")
 	private String bookDescription;
-
-	@NotNull
-	@Column(name = "book_packaging")
-	private boolean bookPackaging = false;
 
 	@NotNull
 	@Column(name = "book_quantity")
@@ -98,10 +91,6 @@ public class Book {
 	@Column(name = "book_sale_price")
 	private BigDecimal bookSalePrice;
 
-	public void update(boolean result) {
-		this.bookPackaging = result;
-	}
-
 	@Builder
 	public Book(
 		Author author,
@@ -121,9 +110,7 @@ public class Book {
 		this.publisher = publisher;
 		this.bookStatus = bookStatus;
 		this.bookTitle = bookTitle;
-		this.bookIndex = bookIndex;
 		this.bookDescription = bookDescription;
-		this.bookPackaging = bookPackaging;
 		this.bookQuantity = bookQuantity;
 		this.bookPublishDate = bookPublishDate;
 		this.bookIsbn = bookIsbn;
@@ -138,9 +125,7 @@ public class Book {
 			.publisher(publisher)
 			.bookStatus(bookStatus)
 			.bookTitle(request.bookTitle())
-			.bookIndex(request.bookIndex())
 			.bookDescription(request.bookDescription())
-			.bookPackaging(request.bookPackaging())
 			.bookQuantity(request.bookQuantity())
 			.bookPublishDate(request.bookPublishDate())
 			.bookIsbn(request.bookIsbn())
@@ -151,15 +136,13 @@ public class Book {
 	}
 
 	public void updateBook(Author author, Publisher publisher, BookStatus bookStatus, String bookTitle,
-		String bookIndex, String bookDescription, int bookQuantity, boolean bookPackaging, Date bookPublishDate,
+		String bookDescription, int bookQuantity, Date bookPublishDate,
 		String bookIsbn, BigDecimal bookPrice, BigDecimal bookSalePercent, BigDecimal bookSalePrice) {
 		this.author = author;
 		this.publisher = publisher;
 		this.bookStatus = bookStatus;
 		this.bookTitle = bookTitle;
-		this.bookIndex = bookIndex;
 		this.bookDescription = bookDescription;
-		this.bookPackaging = bookPackaging;
 		this.bookQuantity = bookQuantity;
 		this.bookPublishDate = bookPublishDate;
 		this.bookIsbn = bookIsbn;

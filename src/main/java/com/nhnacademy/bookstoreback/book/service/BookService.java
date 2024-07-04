@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
@@ -30,13 +29,6 @@ public interface BookService {
 	GetBookDetailResponse getBook(Long bookId);
 
 	/**
-	 * 도서 ID를 기준으로 도서 패키징 여부 업데이트
-	 *
-	 * @param bookId 도서 ID
-	 */
-	void updateBookPackagingById(Long bookId);
-
-	/**
 	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
 	 *
 	 * @param apiUrl 도서 정보 API URL
@@ -56,13 +48,6 @@ public interface BookService {
 	 * @param item 도서 정보
 	 */
 	void saveBook(JsonNode item) throws Exception;
-
-	/**
-	 * ISBN을 기준으로 도서 업데이트
-	 *
-	 * @param isbn ISBN
-	 */
-	GetBookDetailResponse updateBookByIsbn(String isbn, BookUpdateRequest request);
 
 	/**
 	 * 모든 도서를 조회
@@ -103,11 +88,4 @@ public interface BookService {
 	 * @return 수정된 도서 정보
 	 */
 	UpdateBookResponse updateBookById(Long bookId, UpdateBookRequest request);
-
-	/**
-	 * 도서 삭제
-	 *
-	 * @param bookId 삭제할 도서 ID
-	 */
-	void deleteBook(Long bookId);
 }

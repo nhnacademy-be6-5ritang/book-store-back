@@ -21,8 +21,6 @@ public record GetBookDetailResponse(
 	String bookStatusName,
 	String bookTitle,
 	String bookDescription,
-	String bookIndex,
-	boolean bookPackaging,
 	int bookQuantity,
 	Date bookPublishDate,
 	String bookIsbn,
@@ -44,8 +42,6 @@ public record GetBookDetailResponse(
 			.bookStatusName(book.getBookStatus().getBookStatusName())
 			.bookTitle(book.getBookTitle())
 			.bookDescription(book.getBookDescription())
-			.bookIndex(book.getBookIndex())
-			.bookPackaging(book.isBookPackaging())
 			.bookQuantity(book.getBookQuantity())
 			.bookPublishDate(book.getBookPublishDate())
 			.bookIsbn(book.getBookIsbn())
