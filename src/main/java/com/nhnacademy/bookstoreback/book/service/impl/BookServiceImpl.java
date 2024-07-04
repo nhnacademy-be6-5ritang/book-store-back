@@ -37,9 +37,12 @@ import com.nhnacademy.bookstoreback.bookstatus.exception.BookStatusNotFoundExcep
 import com.nhnacademy.bookstoreback.bookstatus.repository.BookStatusRepository;
 import com.nhnacademy.bookstoreback.bookstatus.service.BookStatusService;
 import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
+import com.nhnacademy.bookstoreback.category.domain.entity.Category;
 import com.nhnacademy.bookstoreback.category.exception.CategoryNotFoundException;
 import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
 import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
+import com.nhnacademy.bookstoreback.category.service.BookCategoryService;
+import com.nhnacademy.bookstoreback.category.service.CategoryService;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.publisher.exception.PublisherNotFoundException;
 import com.nhnacademy.bookstoreback.publisher.repository.PublisherRepository;
@@ -73,6 +76,8 @@ public class BookServiceImpl implements BookService {
 	private final BookStatusService bookStatusService;
 	private final TagRepository tagRepository;
 	private final BookTagRepository bookTagRepository;
+	private final CategoryService categoryService;
+	private final BookCategoryService bookCategoryService;
 
 	/**
 	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
@@ -165,6 +170,15 @@ public class BookServiceImpl implements BookService {
 		}
 		BookStatus bookStatus = bookStatusService.findOrCreateBookStatus(statusName);
 
+		// Category 정보 파싱 및 저장
+		String categoryNameString = item.path("categoryName").asText();
+		String[] categoryParts = categoryNameString.split(">");
+		String parentCategoryName = categoryParts[0].trim();
+		String categoryName = categoryParts[1].trim();
+
+		Long parentCategoryId = parentCategoryName.equals("국내도서") ? 56L : 57L;
+		Category category = categoryService.findOrCreateCategory(categoryName, parentCategoryId);
+
 		// 새로운 Book 엔티티 생성 및 저장
 		Book book = new Book();
 		book.setBookTitle(bookTitle);
@@ -179,6 +193,9 @@ public class BookServiceImpl implements BookService {
 		book.setBookStatus(bookStatus);
 
 		bookRepository.save(book);
+
+		// BookCategory 엔티티 생성 및 저장
+		bookCategoryService.saveBookCategory(book, category);
 	}
 
 	/**

@@ -10,6 +10,7 @@ import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRe
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
+import com.nhnacademy.bookstoreback.category.domain.entity.Category;
 
 /**
  * CategoryService 인터페이스
@@ -73,4 +74,13 @@ public interface CategoryService {
 	 * @param categoryId 카테고리 ID
 	 */
 	void deleteCategory(Long categoryId);
+
+	/**
+	 * 카테고리 생성 또는 조회
+	 *
+	 * @param categoryName 카테고리 이름
+	 * @param parentCategoryId 부모 카테고리 ID
+	 * @return 생성 또는 조회된 카테고리
+	 */
+	Category findOrCreateCategory(String categoryName, Long parentCategoryId);
 }
