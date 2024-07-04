@@ -8,31 +8,29 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nhnacademy.bookstoreback.cart.domain.dto.response.CreateCartResponse;
-import com.nhnacademy.bookstoreback.cart.domain.dto.response.GetCartResponse;
+import com.nhnacademy.bookstoreback.cart.domain.dto.CartDto;
+import com.nhnacademy.bookstoreback.cart.domain.dto.request.CreateCartRequest;
 import com.nhnacademy.bookstoreback.cart.service.CartService;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/carts")
+@RequestMapping("/api/carts")
 public class CartController {
 	private final CartService cartService;
 
-	@PostMapping()
-	public ResponseEntity<CreateCartResponse> createCart(HttpServletRequest req, HttpServletResponse resp) {
-		Long userId = null;
-
-		CreateCartResponse response = cartService.createCart(req, resp, userId);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	@GetMapping("/{cartId}")
+	public ResponseEntity<CartDto> getCart(@PathVariable Long cartId) {
+		CartDto cart = cartService.getCart(cartId);
+		return ResponseEntity.ok(cart);
 	}
 
-	@GetMapping("/{cartId}")
-	public ResponseEntity<GetCartResponse> getCart(@PathVariable Long cartId) {
-		GetCartResponse cart = cartService.getCart(cartId);
-		return ResponseEntity.ok(cart);
+	@PostMapping
+	public ResponseEntity<CartDto> createCart(CreateCartRequest request) {
+		Long userId = null;
+
+		CartDto response = cartService.createCart(userId, request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 }

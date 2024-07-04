@@ -24,10 +24,8 @@ public record CreateBookRequest(
 	String publisherName,
 	Date bookPublishDate,
 	String bookStatusName,
-	String bookIndex,
 	String bookDescription,
 	int bookQuantity,
-	boolean bookPackaging,
 	BigDecimal bookPrice,
 	BigDecimal bookSalePrice,
 	BigDecimal bookSalePercent) {
@@ -40,10 +38,8 @@ public record CreateBookRequest(
 			.publisherName(book.getPublisher().getPublisherName())
 			.bookPublishDate(book.getBookPublishDate())
 			.bookStatusName(book.getBookStatus().getBookStatusName())
-			.bookIndex(book.getBookIndex())
 			.bookDescription(book.getBookDescription())
 			.bookQuantity(book.getBookQuantity())
-			.bookPackaging(book.isBookPackaging())
 			.bookPrice(book.getBookPrice())
 			.bookSalePrice(book.getBookSalePrice())
 			.bookSalePercent(book.getBookSalePercent())

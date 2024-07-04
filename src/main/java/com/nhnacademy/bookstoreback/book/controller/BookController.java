@@ -9,15 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
@@ -40,29 +39,20 @@ public class BookController {
 	private final BookServiceImpl bookService;
 
 	/**
-	 * 도서 포장 여부 업데이트
-	 *
-	 * @param bookId 도서 ID
-	 */
-	@GetMapping("/packaging/{bookId}")
-	public void packaging(@PathVariable Long bookId) {
-		bookService.updateBookPackagingById(bookId);
-	}
-
-	/**
 	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
 	 *
 	 * @return 도서저장결과
 	 */
 	@PostMapping("/fetch/book-lists")
-	public String fetchAndSaveBooks() {
+	public ResponseEntity<String> fetchAndSaveBooks(@RequestParam Long count) {
 		try {
 			String apiUrl =
-				"http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttb2897robo0933001&QueryType=BlogBest&MaxResults=20&start=1&SearchTarget=Book&output=js&Version=20131101";
+				"http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttb2897robo0933001&QueryType=BlogBest&MaxResults="
+					+ count + "&start=1&SearchTarget=Book&output=js&Version=20131101";
 			bookService.fetchAndSaveBooks(apiUrl);
-			return "도서들 목록이 성공적으로 저장되었습니다.";
+			return ResponseEntity.status(HttpStatus.OK).body("도서들 목록이 성공적으로 저장되었습니다.");
 		} catch (Exception e) {
-			return "도서들 목록 저장 중 에러 발생 : " + e.getMessage();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 
@@ -113,8 +103,8 @@ public class BookController {
 	 * @return 도서 상세페이지
 	 */
 	@GetMapping("/details/{isbn}")
-	public GetBookDetailResponse findBookByIsbn(@PathVariable String isbn) {
-		return bookService.findBookByIsbn(isbn);
+	public ResponseEntity<GetBookDetailResponse> findBookByIsbn(@PathVariable String isbn) {
+		return ResponseEntity.status(HttpStatus.OK).body(bookService.findBookByIsbn(isbn));
 	}
 
 	/**
@@ -153,25 +143,6 @@ public class BookController {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBookById(bookId, request));
 	}
 
-	/**
-	 * ISBN을 통한 도서정보 수정
-	 *
-	 * @param isbn 도서의 ISBN
-	 * @param request 수정할 도서 정보
-	 * @return 수정된 도서의 상세 정보
-	 */
-	@PatchMapping("/{isbn}")
-	public ResponseEntity<GetBookDetailResponse> updateBookByIsbn(@PathVariable String isbn,
-		@RequestBody BookUpdateRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBookByIsbn(isbn, request));
-	}
-
-	/**
-	 * 특정 도서를 삭제합니다.
-	 *
-	 * @param bookId 삭제할 도서의 ID
-	 * @return 응답 상태 코드 (204 No Content)
-	 */
 	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId) {
 		bookService.deleteBook(bookId);

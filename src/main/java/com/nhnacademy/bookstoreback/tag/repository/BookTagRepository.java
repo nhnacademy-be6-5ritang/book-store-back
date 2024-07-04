@@ -9,5 +9,7 @@ import com.nhnacademy.bookstoreback.tag.domain.entity.BookTag;
 public interface BookTagRepository extends JpaRepository<BookTag, Long> {
 	void deleteAllByBookBookId(Long bookId);
 
+	void deleteAllByTagTagId(Long tagId);
+
 	List<BookTag> findAllByBookBookId(Long bookId);
 }

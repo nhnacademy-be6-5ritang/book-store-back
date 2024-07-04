@@ -1,13 +1,10 @@
 package com.nhnacademy.bookstoreback.cart.service;
 
-import com.nhnacademy.bookstoreback.cart.domain.dto.response.CreateCartResponse;
-import com.nhnacademy.bookstoreback.cart.domain.dto.response.GetCartResponse;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.nhnacademy.bookstoreback.cart.domain.dto.CartDto;
+import com.nhnacademy.bookstoreback.cart.domain.dto.request.CreateCartRequest;
 
 public interface CartService {
-	CreateCartResponse createCart(HttpServletRequest req, HttpServletResponse resp, Long userId);
+	CartDto createCart(Long userId, CreateCartRequest request);
 
-	GetCartResponse getCart(Long cardId);
+	CartDto getCart(Long cardId);
 }
