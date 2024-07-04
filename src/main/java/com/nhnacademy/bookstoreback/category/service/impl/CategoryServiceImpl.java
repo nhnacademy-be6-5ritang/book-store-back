@@ -108,6 +108,7 @@ public class CategoryServiceImpl implements CategoryService {
 		categoryRepository.deleteById(categoryId);
 	}
 
+	@Override
 	@Transactional
 	public Category findOrCreateCategory(String categoryName, Long parentCategoryId) {
 		return categoryRepository.findByCategoryName(categoryName)
