@@ -49,7 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> findAllReviews(Pageable pageable) {
 		int page = pageable.getPageNumber() - 1;
-		int pageSize = 5;
+		int pageSize = pageable.getPageSize();
 
 		return reviewRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
 			.map(GetReviewResponse::fromEntity);
@@ -66,7 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> findReviewsByBookId(Long bookId, Pageable pageable) {
 		int page = pageable.getPageNumber() - 1;
-		int pageSize = 5;
+		int pageSize = pageable.getPageSize();
 
 		Page<Review> reviews = reviewRepository.findAllByBookBookId(bookId,
 			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
@@ -86,7 +86,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> findReviewsByUserId(Long userId, Pageable pageable) {
 		int page = pageable.getPageNumber() - 1;
-		int pageSize = 5;
+		int pageSize = pageable.getPageSize();
 
 		Page<Review> reviews = reviewRepository.findAllByUserId(userId,
 			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
