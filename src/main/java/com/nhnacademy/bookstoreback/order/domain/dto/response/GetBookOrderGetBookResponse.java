@@ -16,7 +16,7 @@ public record GetBookOrderGetBookResponse(
 	public static GetBookOrderGetBookResponse from(Book book) {
 		return GetBookOrderGetBookResponse.builder()
 			.bookTitle(book.getBookTitle())
-			.bookPrice(book.getBookPrice())
+			.bookPrice(book.getBookSalePrice())
 			.bookDescription(book.getBookDescription())
 			.bookPackaging(book.isBookPackaging())
 			.build();
