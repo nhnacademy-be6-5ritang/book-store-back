@@ -11,7 +11,9 @@ public record CreateUserResponse(
 	String name,
 	String email,
 	LocalDate birth,
-	String contact
+	String contact,
+	String userStatus,
+	String userGrade
 ) {
 	public static CreateUserResponse fromEntity(User savedUser) {
 		return CreateUserResponse.builder()
@@ -19,6 +21,8 @@ public record CreateUserResponse(
 			.email(savedUser.getEmail())
 			.birth(savedUser.getBirth())
 			.contact(savedUser.getContact())
+			.userStatus(savedUser.getStatus().getUserStatusName())
+			.userGrade(savedUser.getUserGrade().getUserGradeName())
 			.build();
 	}
 }

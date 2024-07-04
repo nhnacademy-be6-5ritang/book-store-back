@@ -3,7 +3,7 @@ spring:
     name: "book-store-back"
 
   datasource:
-    url: jdbc:h2:mem:test
+    url: jdbc:h2:mem:testdb;MODE=MYSQL;
     driver-class-name: org.h2.Driver
     username: sa
 
@@ -15,11 +15,13 @@ spring:
       min-idle: 50    # 유휴 상태로 유지할 최소 연결 수를 설정합니다.
       test-on-borrow: true    # 풀에서 연결을 빌릴 때마다 해당 연결이 유효한지 검증할지 여부를 설정합니다.
       validation-query: SELECT 1    # 연결 유효성을 검사하기 위해 실행할 SQL 쿼리를 설정합니다.
+  h2:
+    console:
+      enabled: true
 
   jpa:
     hibernate:
       ddl-auto: create-drop
-
 
   data:
     redis:

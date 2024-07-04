@@ -17,11 +17,11 @@ import lombok.RequiredArgsConstructor;
 // authenticated test 를 위한 컨트롤러
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/auth/info")
 public class TokenController {
 	private final TokenService tokenService;
 
-	@GetMapping("/info")
+	@GetMapping
 	public ResponseEntity<Map<String, Object>> getUserInfo(@CurrentUser CurrentUserDetails user) {
 		return ResponseEntity.status(HttpStatus.OK).body(tokenService.getUserInfo(user));
 	}
