@@ -16,6 +16,7 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesReq
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryAddOrderPolicyResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 import com.nhnacademy.bookstoreback.delivery.repository.DeliveryRepository;
@@ -89,26 +90,17 @@ public class DeliveryServiceImpl implements DeliveryService {
 	 *
 	 * @param request 배송 생성 요청 정보.
 	 * @return 생성된 배송 정보.
-	 * @throws NotFoundException 주문 또는 배송 상태가 존재하지 않는 경우 발생.
+	 * @throws NotFoundException 배송 상태가 존재하지 않는 경우 발생.
 	 */
 	@Override
 	public CreateDeliveryResponse createDelivery(CreateDeliveryRequest request) {
-		Order order = orderRepository.findById(request.orderId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 주문 '%d'은 존재하지 않는 주문입니다.", request.orderId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
 		DeliveryStatus deliveryStatus = Optional.of(deliveryStatusRepository.findDeliveryStatusByDeliveryStatusName(
 				INIT_DELIVERY_STATUS))
 			.orElseThrow(
 				() -> new NotFoundException(ErrorStatus.from(NOT_FOUND_MESSAGE_DELIVERY_STATUS, HttpStatus.NOT_FOUND,
 					LocalDateTime.now())));
 
-		DeliveryPolicy deliveryPolicy = deliveryPolicyRepository.findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
-			order.getOrderPrice());
-
-		Delivery delivery = Delivery.toEntity(request, order, deliveryStatus, deliveryPolicy);
+		Delivery delivery = Delivery.toEntity(request, deliveryStatus);
 
 		deliveryRepository.save(delivery);
 
@@ -142,6 +134,23 @@ public class DeliveryServiceImpl implements DeliveryService {
 		deliveryRepository.save(delivery);
 
 		return UpdateDeliveryResponse.fromEntity(delivery);
+	}
+
+	@Override
+	public UpdateDeliveryAddOrderPolicyResponse updateDeliveryAddOrderPolicy(Long deliveryId, Long orderId) {
+		Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() -> {
+			String errorMessage = String.format("해당 배송 '%s'은 존재하지 않는 배송입니다.", deliveryId);
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+		Order order = orderRepository.getReferenceById(orderId);
+
+		DeliveryPolicy deliveryPolicy = deliveryPolicyRepository.findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
+			order.getOrderPrice());
+
+		delivery.updateDeliveryAddOrderPolicy(deliveryPolicy, order);
+		deliveryRepository.save(delivery);
+		return UpdateDeliveryAddOrderPolicyResponse.fromEntity(delivery);
 	}
 
 	/**
