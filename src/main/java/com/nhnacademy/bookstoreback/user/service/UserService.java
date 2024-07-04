@@ -80,6 +80,10 @@ public class UserService {
 		return CreateUserResponse.fromEntity(savedUser);
 	}
 
+	public boolean isEmailExist(String email) {
+		return userRepository.existsByEmail(email);
+	}
+
 	public void addUserRoleByRoleName(User user, String roleName) {
 		Role role = roleRepository.findByRoleName(roleName)
 			.orElseThrow(() -> new RoleNotFoundException(roleName));

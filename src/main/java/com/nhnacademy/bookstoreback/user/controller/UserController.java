@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
@@ -25,12 +26,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
-	// private final AddressService addressService;
 
 	@PostMapping
 	public ResponseEntity<CreateUserResponse> signUpUser(@RequestBody CreateUserRequest createUserRequest) {
 		CreateUserResponse createUserResponse = userService.createUser(createUserRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserResponse);
+	}
+
+	@GetMapping("/check-email")
+	public ResponseEntity<Boolean> isEmailExist(@RequestParam String email) {
+		Boolean isEmailExist = userService.isEmailExist(email);
+		return ResponseEntity.status(HttpStatus.OK).body(isEmailExist);
 	}
 
 	@GetMapping("/self")
