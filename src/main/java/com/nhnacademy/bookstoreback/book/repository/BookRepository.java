@@ -23,6 +23,12 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 	 * @return 도서 정보 (단일 정보 반환하므로 Optional 사용)
 	 */
 	Optional<Book> findByBookIsbn(String bookIsbn);
-	
+
+	/**
+	 * 주어진 제목을 가진 도서가 존재하는지 확인합니다.
+	 *
+	 * @param bookTitle 확인할 도서의 제목
+	 * @return 도서가 존재하면 true, 그렇지 않으면 false
+	 */
 	boolean existsByBookTitle(String bookTitle);
 }

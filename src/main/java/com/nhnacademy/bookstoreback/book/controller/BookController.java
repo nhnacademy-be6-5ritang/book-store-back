@@ -7,12 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
@@ -42,14 +44,15 @@ public class BookController {
 	 * @return 도서저장결과
 	 */
 	@PostMapping("/fetch/book-lists")
-	public String fetchAndSaveBooks() {
+	public ResponseEntity<String> fetchAndSaveBooks(@RequestParam Long count) {
 		try {
 			String apiUrl =
-				"http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttb2897robo0933001&QueryType=BlogBest&MaxResults=20&start=1&SearchTarget=Book&output=js&Version=20131101";
+				"http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttb2897robo0933001&QueryType=BlogBest&MaxResults="
+					+ count + "&start=1&SearchTarget=Book&output=js&Version=20131101";
 			bookService.fetchAndSaveBooks(apiUrl);
-			return "도서들 목록이 성공적으로 저장되었습니다.";
+			return ResponseEntity.status(HttpStatus.OK).body("도서들 목록이 성공적으로 저장되었습니다.");
 		} catch (Exception e) {
-			return "도서들 목록 저장 중 에러 발생 : " + e.getMessage();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 
@@ -100,8 +103,8 @@ public class BookController {
 	 * @return 도서 상세페이지
 	 */
 	@GetMapping("/details/{isbn}")
-	public GetBookDetailResponse findBookByIsbn(@PathVariable String isbn) {
-		return bookService.findBookByIsbn(isbn);
+	public ResponseEntity<GetBookDetailResponse> findBookByIsbn(@PathVariable String isbn) {
+		return ResponseEntity.status(HttpStatus.OK).body(bookService.findBookByIsbn(isbn));
 	}
 
 	/**
@@ -138,5 +141,11 @@ public class BookController {
 	public ResponseEntity<UpdateBookResponse> updateBookByBookId(@PathVariable Long bookId,
 		@RequestBody UpdateBookRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBookById(bookId, request));
+	}
+
+	@DeleteMapping("/{bookId}")
+	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId) {
+		bookService.deleteBook(bookId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

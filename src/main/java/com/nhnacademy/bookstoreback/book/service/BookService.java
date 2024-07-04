@@ -21,14 +21,6 @@ import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
 public interface BookService {
 
 	/**
-	 * 도서 ID를 기준으로 도서 조회
-	 *
-	 * @param bookId 도서 ID
-	 * @return 도서 상세 정보
-	 */
-	GetBookDetailResponse getBook(Long bookId);
-
-	/**
 	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
 	 *
 	 * @param apiUrl 도서 정보 API URL
@@ -65,6 +57,14 @@ public interface BookService {
 	Page<GetBookDetailResponse> findAllBooks(Pageable pageable);
 
 	/**
+	 * 도서 ID를 기준으로 도서 조회
+	 *
+	 * @param bookId 도서 ID
+	 * @return 도서 상세 정보
+	 */
+	GetBookDetailResponse getBook(Long bookId);
+
+	/**
 	 * ISBN을 기준으로 도서 조회
 	 *
 	 * @param isbn ISBN
@@ -88,4 +88,15 @@ public interface BookService {
 	 * @return 수정된 도서 정보
 	 */
 	UpdateBookResponse updateBookById(Long bookId, UpdateBookRequest request);
+
+	/**
+	 * 주어진 ID를 가진 도서를 삭제합니다.
+	 * <p>
+	 * 도서가 도서 주문과 연관되어 있지 않으면 삭제가 가능하며,
+	 * 연관이 있을 경우 삭제가 불가능합니다.
+	 * </p>
+	 *
+	 * @param bookId 삭제할 도서의 ID
+	 */
+	void deleteBook(Long bookId);
 }
