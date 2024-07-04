@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.userrole.domain.repository;
+package com.nhnacademy.bookstoreback.userrole.repository;
 
 import java.util.List;
 

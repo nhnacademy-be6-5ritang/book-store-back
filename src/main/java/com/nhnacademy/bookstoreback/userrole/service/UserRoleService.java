@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.userrole.domain.service;
+package com.nhnacademy.bookstoreback.userrole.service;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 import com.nhnacademy.bookstoreback.userrole.domain.dto.response.AddUserRoleResponse;
 import com.nhnacademy.bookstoreback.userrole.domain.dto.response.GetUserRoleResponse;
 import com.nhnacademy.bookstoreback.userrole.domain.entity.UserRole;
-import com.nhnacademy.bookstoreback.userrole.domain.repository.UserRoleRepository;
 import com.nhnacademy.bookstoreback.userrole.exception.UserHasRoleAlreadyException;
+import com.nhnacademy.bookstoreback.userrole.repository.UserRoleRepository;
 
 import lombok.RequiredArgsConstructor;
 

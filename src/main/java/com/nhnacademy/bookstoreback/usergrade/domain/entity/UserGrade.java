@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
-@Table(name = "user_grades")
+@Table(name = "users_grades")
 public class UserGrade {
 	@Id
 	@Column(name = "user_grade_name")

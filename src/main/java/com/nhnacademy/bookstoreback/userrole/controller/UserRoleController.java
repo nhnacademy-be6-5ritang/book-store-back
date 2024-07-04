@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.userrole.domain.controller;
+package com.nhnacademy.bookstoreback.userrole.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.userrole.domain.dto.response.AddUserRoleResponse;
 import com.nhnacademy.bookstoreback.userrole.domain.dto.response.GetUserRoleResponse;
-import com.nhnacademy.bookstoreback.userrole.domain.service.UserRoleService;
+import com.nhnacademy.bookstoreback.userrole.service.UserRoleService;
 
 import lombok.RequiredArgsConstructor;
 
