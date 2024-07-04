@@ -9,5 +9,7 @@ import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
 public interface BookCategoryRepository extends JpaRepository<BookCategory, Long> {
 	void deleteAllByBookBookId(Long bookId);
 
+	void deleteALlByCategoryCategoryId(Long categoryId);
+
 	List<BookCategory> findAllByBookBookId(Long bookId);
 }

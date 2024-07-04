@@ -22,7 +22,6 @@ import com.nhnacademy.bookstoreback.author.domain.entity.Author;
 import com.nhnacademy.bookstoreback.author.exception.AuthorNotFoundException;
 import com.nhnacademy.bookstoreback.author.repository.AuthorRepository;
 import com.nhnacademy.bookstoreback.author.service.AuthorService;
-import com.nhnacademy.bookstoreback.book.domain.dto.request.BookUpdateRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
@@ -41,7 +40,6 @@ import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
 import com.nhnacademy.bookstoreback.category.exception.CategoryNotFoundException;
 import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
 import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
-import com.nhnacademy.bookstoreback.category.service.CategoryService;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.publisher.exception.PublisherNotFoundException;
 import com.nhnacademy.bookstoreback.publisher.repository.PublisherRepository;
@@ -73,38 +71,8 @@ public class BookServiceImpl implements BookService {
 	private final AuthorService authorService;
 	private final PublisherService publisherService;
 	private final BookStatusService bookStatusService;
-	private final CategoryService categoryService;
 	private final TagRepository tagRepository;
 	private final BookTagRepository bookTagRepository;
-
-	/**
-	 * 도서 ID를 기준으로 도서 조회
-	 *
-	 * @param bookId 도서 ID
-	 * @return 도서 상세 정보
-	 */
-	@Override
-	public GetBookDetailResponse getBook(Long bookId) {
-		Book book = bookRepository.findById(bookId).orElse(null);
-		if (book != null) {
-			return GetBookDetailResponse.fromEntity(book);
-		}
-		return null;
-	}
-
-	/**
-	 * 도서 ID를 기준으로 도서 패키징 여부 업데이트
-	 *
-	 * @param bookId 도서 ID
-	 */
-	@Override
-	public void updateBookPackagingById(Long bookId) {
-		Book book = bookRepository.findById(bookId).orElse(null);
-		if (book != null) {
-			book.update(true);
-			bookRepository.save(book);
-		}
-	}
 
 	/**
 	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
@@ -165,9 +133,7 @@ public class BookServiceImpl implements BookService {
 		}
 
 		String bookTitle = item.path("title").asText();
-		String bookIndex = "";
 		String bookDescription = item.path("description").asText("");
-		boolean bookPackaging = false;  // Default value as there is no packaging info in JSON
 		String dateString = item.path("pubDate").asText();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date bookPublishDate = sdf.parse(dateString);
@@ -189,22 +155,20 @@ public class BookServiceImpl implements BookService {
 		String stockStatus = item.path("stockStatus").asText("");
 		String statusName;
 		if (stockStatus.isEmpty()) {
-			statusName = "ON_SALE";
+			statusName = "판매중";
 		} else if (stockStatus.contains("품절")) {
-			statusName = "SOLD_OUT";
+			statusName = "품절";
 		} else if (stockStatus.contains("절판")) {
-			statusName = "DELETED";
+			statusName = "절판";
 		} else {
-			statusName = "UNKNOWN";  // 추가적으로 필요에 따라 상태를 정의할 수 있습니다.
+			statusName = "판매중";  // 추가적으로 필요에 따라 상태를 정의할 수 있습니다.
 		}
 		BookStatus bookStatus = bookStatusService.findOrCreateBookStatus(statusName);
 
 		// 새로운 Book 엔티티 생성 및 저장
 		Book book = new Book();
 		book.setBookTitle(bookTitle);
-		book.setBookIndex(bookIndex);
 		book.setBookDescription(bookDescription);
-		book.setBookPackaging(bookPackaging);
 		book.setBookPublishDate(bookPublishDate);
 		book.setBookIsbn(bookIsbn);
 		book.setBookPrice(bookPrice);
@@ -215,43 +179,6 @@ public class BookServiceImpl implements BookService {
 		book.setBookStatus(bookStatus);
 
 		bookRepository.save(book);
-	}
-
-	/**
-	 * ISBN을 기준으로 도서 업데이트
-	 *
-	 * @param isbn ISBN
-	 */
-	@Override
-	public GetBookDetailResponse updateBookByIsbn(String isbn, BookUpdateRequest request) {
-		// 1. ISBN으로 책을 찾습니다.
-		Optional<Book> optionalBook = bookRepository.findByBookIsbn(isbn);
-		if (optionalBook.isEmpty()) {
-			throw new NoSuchElementException("No book found with ISBN: " + isbn);
-		}
-
-		Book book = optionalBook.get();
-
-		// 2. 책의 정보를 업데이트합니다.
-		BookStatus bookStatus = bookStatusService.findOrCreateBookStatus(request.statusName());
-		book.setBookStatus(bookStatus);
-		book.setBookDescription(request.description());
-		book.setBookIndex(request.index());
-		book.setBookQuantity(request.quantity());
-		book.setBookPrice(request.price());
-		book.setBookSalePrice(request.salePrice());
-
-		// 새로운 할인율을 계산합니다.
-		BigDecimal bookSalePercent = request.price().subtract(request.salePrice())
-			.divide(request.price(), 4, RoundingMode.HALF_UP)
-			.multiply(BigDecimal.valueOf(100));
-		book.setBookSalePercent(bookSalePercent);
-
-		// 3. 변경된 책을 저장합니다.
-		bookRepository.save(book);
-
-		// 4. 업데이트된 책의 정보를 BookDetailResponse DTO로 변환하여 반환합니다.
-		return GetBookDetailResponse.fromEntity(book);
 	}
 
 	/**
@@ -280,6 +207,21 @@ public class BookServiceImpl implements BookService {
 		return bookRepository.findAll(
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookId")))
 			.map(GetBookDetailResponse::fromEntity);
+	}
+
+	/**
+	 * 도서 ID를 기준으로 도서 조회
+	 *
+	 * @param bookId 도서 ID
+	 * @return 도서 상세 정보
+	 */
+	@Override
+	public GetBookDetailResponse getBook(Long bookId) {
+		Book book = bookRepository.findById(bookId).orElse(null);
+		if (book != null) {
+			return GetBookDetailResponse.fromEntity(book);
+		}
+		return null;
 	}
 
 	/**
@@ -312,11 +254,9 @@ public class BookServiceImpl implements BookService {
 			throw new BookAlreadyExistsException(request.bookTitle());
 		}
 
-		Author author = authorRepository.findByAuthorName(request.authorName())
-			.orElseThrow(() -> new AuthorNotFoundException(request.authorName()));
+		Author author = authorService.findOrCreateAuthor(request.authorName());
 
-		Publisher publisher = publisherRepository.findByPublisherName(request.publisherName())
-			.orElseThrow(() -> new PublisherNotFoundException(request.publisherName()));
+		Publisher publisher = publisherService.findOrCreatePublisher(request.publisherName());
 
 		BookStatus bookStatus = bookStatusRepository.findByBookStatusName(request.bookStatusName())
 			.orElseThrow(() -> new BookStatusNotFoundException(request.bookStatusName()));
@@ -360,8 +300,8 @@ public class BookServiceImpl implements BookService {
 			.orElseThrow(() -> new BookStatusNotFoundException(request.bookStatusName()));
 
 		// 책 내용 수정
-		book.updateBook(author, publisher, bookStatus, request.bookTitle(), request.bookIndex(),
-			request.bookDescription(), request.bookQuantity(), request.bookPackaging(), request.bookPublishDate(),
+		book.updateBook(author, publisher, bookStatus, request.bookTitle(),
+			request.bookDescription(), request.bookQuantity(), request.bookPublishDate(),
 			request.bookIsbn(), request.bookPrice(), request.bookSalePercent(), request.bookSalePrice());
 
 		List<Long> categories = request.categories();
@@ -394,12 +334,13 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public void deleteBook(Long bookId) {
-		bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
+		if (!bookRepository.existsById(bookId)) {
+			throw new BookNotFoundException(bookId);
+		}
 
-		// 도서에 연관된 카테고리, 태그 매핑 모두 제거
+		// 해당 도서가 가지고 있는 카테고리, 태그 매핑 정보도 같이 삭제
 		bookCategoryRepository.deleteAllByBookBookId(bookId);
 		bookTagRepository.deleteAllByBookBookId(bookId);
-
 		bookRepository.deleteById(bookId);
 	}
 }

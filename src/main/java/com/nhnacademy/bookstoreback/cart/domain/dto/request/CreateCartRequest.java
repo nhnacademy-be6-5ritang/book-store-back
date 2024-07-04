@@ -1,7 +1,7 @@
 package com.nhnacademy.bookstoreback.cart.domain.dto.request;
 
-import lombok.Builder;
+import jakarta.servlet.http.Cookie;
 
-@Builder
-public record CreateCartRequest(Long userId) {
+public record CreateCartRequest(
+	Cookie[] cookies) {
 }

@@ -20,10 +20,8 @@ public record CreateBookResponse(
 	String publisherName,
 	String bookStatusName,
 	String bookTitle,
-	String bookIndex,
 	String bookDescription,
 	int bookQuantity,
-	boolean bookPackaging,
 	Date bookPublishDate,
 	String bookIsbn,
 	BigDecimal bookPrice,
@@ -38,8 +36,6 @@ public record CreateBookResponse(
 			.bookStatusName(book.getBookStatus().getBookStatusName())
 			.bookTitle(book.getBookTitle())
 			.bookDescription(book.getBookDescription())
-			.bookIndex(book.getBookIndex())
-			.bookPackaging(book.isBookPackaging())
 			.bookQuantity(book.getBookQuantity())
 			.bookPublishDate(book.getBookPublishDate())
 			.bookIsbn(book.getBookIsbn())

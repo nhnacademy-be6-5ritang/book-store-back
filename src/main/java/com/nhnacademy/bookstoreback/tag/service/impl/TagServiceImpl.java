@@ -79,6 +79,7 @@ public class TagServiceImpl implements TagService {
 	@Override
 	public void deleteTag(Long tagId) {
 		tagRepository.findById(tagId).orElseThrow(() -> new TagNotFoundException(tagId));
+		bookTagRepository.deleteAllByTagTagId(tagId);
 		tagRepository.deleteById(tagId);
 	}
 }

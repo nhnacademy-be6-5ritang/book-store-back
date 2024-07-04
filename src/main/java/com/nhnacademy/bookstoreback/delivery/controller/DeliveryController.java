@@ -18,6 +18,7 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesReq
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryAddOrderPolicyResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.service.DeliveryService;
 
@@ -73,6 +74,13 @@ public class DeliveryController {
 	public ResponseEntity<UpdateDeliveryResponse> updateDelivery(@PathVariable Long deliveryId,
 		@RequestBody UpdateDeliveryRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.updateDelivery(deliveryId, request));
+	}
+
+	@PutMapping("/{deliveryId}/{orderId}/Order-Policy")
+	ResponseEntity<UpdateDeliveryAddOrderPolicyResponse> addOrderPolicy(@PathVariable Long deliveryId,
+		@PathVariable Long orderId) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(deliveryService.updateDeliveryAddOrderPolicy(deliveryId, orderId));
 	}
 
 	/**

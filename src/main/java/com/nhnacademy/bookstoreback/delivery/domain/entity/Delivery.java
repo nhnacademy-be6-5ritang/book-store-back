@@ -53,7 +53,7 @@ public class Delivery {
 	@Column(name = "delivery_receiver_address")
 	private String deliveryReceiverAddress;
 
-	@ManyToOne(optional = false)
+	@ManyToOne
 	@JoinColumn(name = "order_id")
 	private Order order;
 
@@ -61,7 +61,7 @@ public class Delivery {
 	@JoinColumn(name = "delivery_status_id")
 	private DeliveryStatus deliveryStatus;
 
-	@ManyToOne(optional = false)
+	@ManyToOne
 	@JoinColumn(name = "delivery_policy_id")
 	private DeliveryPolicy deliveryPolicy;
 
@@ -83,20 +83,13 @@ public class Delivery {
 		this.deliveryPolicy = deliveryPolicy;
 	}
 
-	public static Delivery toEntity(CreateDeliveryRequest request, Order order, DeliveryStatus deliveryStatus,
-		DeliveryPolicy deliveryPolicy) {
+	public static Delivery toEntity(CreateDeliveryRequest request, DeliveryStatus deliveryStatus) {
 		return Delivery.builder()
-			.deliverySenderName(request.deliverySenderName())
-			.deliverySenderPhone(request.deliverySenderPhone())
-			.deliverySenderDate(request.deliverySenderDate())
-			.deliverySenderAddress(request.deliverySenderAddress())
 			.deliveryReceiver(request.deliveryReceiver())
 			.deliveryReceiverPhone(request.deliveryReceiverPhone())
 			.deliveryReceiverDate(request.deliveryReceiverDate())
-			.deliveryReceiverAddress(request.deliveryReceiverAddress())
-			.order(order)
+			.deliveryReceiverAddress(request.deliveryReceiverAddress() + " " + request.deliveryReceiverAddress2())
 			.deliveryStatus(deliveryStatus)
-			.deliveryPolicy(deliveryPolicy)
 			.build();
 	}
 
@@ -106,5 +99,10 @@ public class Delivery {
 
 	public void updateDeliveryReceiverDate(LocalDateTime deliveryReceiverDate) {
 		this.deliveryReceiverDate = deliveryReceiverDate;
+	}
+
+	public void updateDeliveryAddOrderPolicy(DeliveryPolicy deliveryPolicy, Order order) {
+		this.deliveryPolicy = deliveryPolicy;
+		this.order = order;
 	}
 }

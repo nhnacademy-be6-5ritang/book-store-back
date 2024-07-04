@@ -8,6 +8,7 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesReq
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryAddOrderPolicyResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
 
 /**
@@ -55,4 +56,6 @@ public interface DeliveryService {
 	 * @param deliveryId 삭제할 배달 ID
 	 */
 	void deleteDelivery(Long deliveryId);
+
+	UpdateDeliveryAddOrderPolicyResponse updateDeliveryAddOrderPolicy(Long deliveryId, Long orderId);
 }
