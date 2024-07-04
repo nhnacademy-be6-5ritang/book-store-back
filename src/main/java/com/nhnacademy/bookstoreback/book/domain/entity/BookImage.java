@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 도서 이미지 Entity
@@ -21,6 +22,7 @@ import lombok.Getter;
  */
 @Entity
 @Getter
+@Setter
 @Table(name = "books_images")
 public class BookImage {
 	@Id

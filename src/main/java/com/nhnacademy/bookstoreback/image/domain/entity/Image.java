@@ -10,21 +10,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity
 @Table(name = "images")
+@Setter
 public class Image {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@JoinColumn(name = "image_id")
 	private Long imageId;
 
-	@Column(name = "image_name", length = 100)
+	@Column(name = "image_name", length = 300)
 	@NotNull
 	private String imageName;
 
@@ -34,5 +35,10 @@ public class Image {
 
 	@Column(name = "image_created_at")
 	@NotNull
-	private LocalDateTime imageCreatedAt;
+	private LocalDateTime imageCreatedAt = LocalDateTime.now();
+
+	public Image(String fileName, String imageUrl) {
+		this.imageName = fileName;
+		this.imageUrl = imageUrl;
+	}
 }
