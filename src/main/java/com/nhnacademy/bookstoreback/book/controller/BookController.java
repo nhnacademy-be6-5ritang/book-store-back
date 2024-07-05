@@ -148,4 +148,10 @@ public class BookController {
 		bookService.deleteBook(bookId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
+
+	@PutMapping("/{bookId}/{quantity}")
+	public ResponseEntity<Void> updateQuantity(@PathVariable Long bookId, @PathVariable int quantity) {
+		bookService.updateQuantity(bookId, quantity);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
 }

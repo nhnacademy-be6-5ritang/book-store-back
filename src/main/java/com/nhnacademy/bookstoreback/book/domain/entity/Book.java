@@ -149,4 +149,8 @@ public class Book {
 		this.bookSalePrice = bookSalePrice;
 
 	}
+
+	public void updateQuantitiy(int bookQuantity) {
+		this.bookQuantity -= bookQuantity;
+	}
 }

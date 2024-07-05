@@ -14,7 +14,8 @@ public record UpdateBookOrderResponse(
 	BigDecimal totalPrice,
 	String bookTitle,
 	BigDecimal bookPrice,
-	Integer quantity
+	Integer quantity,
+	Long bookId
 ) {
 	public static UpdateBookOrderResponse from(BookOrder bookOrder) {
 		return UpdateBookOrderResponse.builder()
@@ -24,6 +25,7 @@ public record UpdateBookOrderResponse(
 			.bookTitle(bookOrder.getBook().getBookTitle())
 			.bookPrice(bookOrder.getBook().getBookPrice())
 			.quantity(bookOrder.getBookQuantity())
+			.bookId(bookOrder.getBook().getBookId())
 			.build();
 	}
 }
