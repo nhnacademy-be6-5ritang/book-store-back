@@ -94,5 +94,4 @@ public class DeliveryController {
 		deliveryService.deleteDelivery(deliveryId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
-
 }
