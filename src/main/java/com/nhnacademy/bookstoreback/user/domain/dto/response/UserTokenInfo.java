@@ -10,13 +10,15 @@ import lombok.Builder;
 public record UserTokenInfo(
 	Long id,
 	String password,
-	List<String> roles
+	List<String> roles,
+	String status
 ) {
 	public static UserTokenInfo fromEntity(User user) {
 		return UserTokenInfo.builder()
 			.id(user.getId())
 			.password(user.getPassword())
 			.roles(user.getAllRoles())
+			.status(user.getStatus().getUserStatusName())
 			.build();
 	}
 }
