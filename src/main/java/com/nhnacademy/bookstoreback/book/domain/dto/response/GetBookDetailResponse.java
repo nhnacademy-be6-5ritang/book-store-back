@@ -26,7 +26,8 @@ public record GetBookDetailResponse(
 	String bookIsbn,
 	BigDecimal bookPrice,
 	BigDecimal bookSalePrice,
-	BigDecimal bookSalePercent) {
+	BigDecimal bookSalePercent,
+	String bookImageUrl) {
 
 	/**
 	 * Book 엔티티를 BookDetailResponse DTO로 변환하는 메소드
@@ -35,6 +36,11 @@ public record GetBookDetailResponse(
 	 * @return BookDetailResponse DTO
 	 */
 	public static GetBookDetailResponse fromEntity(Book book) {
+		String imageUrl = book.getBookImages().stream()
+			.map(bookImage -> bookImage.getImage().getImageUrl())
+			.findFirst()
+			.orElse(null); // 이미지가 없는 경우 null 반환
+
 		return GetBookDetailResponse.builder()
 			.bookId(book.getBookId())
 			.authorName(book.getAuthor().getAuthorName())
@@ -48,6 +54,7 @@ public record GetBookDetailResponse(
 			.bookPrice(book.getBookPrice())
 			.bookSalePrice(book.getBookSalePrice())
 			.bookSalePercent(book.getBookSalePercent())
+			.bookImageUrl(imageUrl)
 			.build();
 	}
 }

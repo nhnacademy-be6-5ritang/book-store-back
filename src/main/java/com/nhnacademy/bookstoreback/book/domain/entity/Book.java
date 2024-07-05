@@ -2,19 +2,23 @@ package com.nhnacademy.bookstoreback.book.domain.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -90,6 +94,9 @@ public class Book {
 	@NotNull
 	@Column(name = "book_sale_price")
 	private BigDecimal bookSalePrice;
+
+	@OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<BookImage> bookImages;
 
 	@Builder
 	public Book(
