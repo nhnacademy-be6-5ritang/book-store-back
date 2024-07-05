@@ -3,10 +3,12 @@ package com.nhnacademy.bookstoreback.user.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
@@ -25,12 +27,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
-	// private final AddressService addressService;
 
 	@PostMapping
 	public ResponseEntity<CreateUserResponse> signUpUser(@RequestBody CreateUserRequest createUserRequest) {
 		CreateUserResponse createUserResponse = userService.createUser(createUserRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserResponse);
+	}
+
+	@GetMapping("/check-email")
+	public ResponseEntity<Boolean> isEmailExist(@RequestParam String email) {
+		Boolean isEmailExist = userService.isEmailExist(email);
+		return ResponseEntity.status(HttpStatus.OK).body(isEmailExist);
 	}
 
 	@GetMapping("/self")
@@ -45,6 +52,12 @@ public class UserController {
 	) {
 		UpdateUserInfoResponse updateUserInfoResponse = userService.updateUserInfo(currentUser, updateUserInfoRequest);
 		return ResponseEntity.status(HttpStatus.OK).body(updateUserInfoResponse);
+	}
+
+	@PatchMapping("/dormant")
+	public ResponseEntity<Void> dormantUser(@CurrentUser CurrentUserDetails currentUser) {
+		userService.dormantUser(currentUser);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	// 주소

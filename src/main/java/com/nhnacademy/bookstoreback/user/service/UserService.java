@@ -80,6 +80,10 @@ public class UserService {
 		return CreateUserResponse.fromEntity(savedUser);
 	}
 
+	public boolean isEmailExist(String email) {
+		return userRepository.existsByEmail(email);
+	}
+
 	public void addUserRoleByRoleName(User user, String roleName) {
 		Role role = roleRepository.findByRoleName(roleName)
 			.orElseThrow(() -> new RoleNotFoundException(roleName));
@@ -127,6 +131,17 @@ public class UserService {
 		User updatedUser = userRepository.save(user);
 
 		return UpdateUserInfoResponse.fromEntity(updatedUser);
+	}
+
+	public void dormantUser(@CurrentUser CurrentUserDetails currentUser) {
+		User user = userRepository.findById(currentUser.getUserId())
+			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
+
+		UserStatus dormantUserStatus = userStatusRepository.findByUserStatusName("DORMANT")
+			.orElseThrow(() -> new UserStatusNotFoundException("DORMANT"));
+		user.updateUserStatus(dormantUserStatus);
+
+		userRepository.save(user);
 	}
 
 	public UserTokenInfo getUserTokenInfoByEmail(String userEmail) {
