@@ -147,7 +147,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 
 		DeliveryPolicy deliveryPolicy = deliveryPolicyRepository.findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
 			order.getOrderPrice());
-
 		delivery.updateDeliveryAddOrderPolicy(deliveryPolicy, order);
 		deliveryRepository.save(delivery);
 		return UpdateDeliveryAddOrderPolicyResponse.fromEntity(delivery);
