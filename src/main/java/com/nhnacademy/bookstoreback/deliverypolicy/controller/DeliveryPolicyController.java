@@ -1,5 +1,6 @@
 package com.nhnacademy.bookstoreback.deliverypolicy.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -56,5 +57,15 @@ public class DeliveryPolicyController {
 	public ResponseEntity<Void> deleteDeliveryPolicy(@PathVariable Long deliveryPolicyId) {
 		deliveryPolicyService.deleteDeliveryPolicy(deliveryPolicyId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@PutMapping("/{deliveryId}/{price}/addPolicies")
+	public ResponseEntity<GetDeliveryPolicyResponse> addPolicy(@PathVariable Long deliveryId,
+		@PathVariable BigDecimal price) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(
+				deliveryPolicyService
+					.findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(deliveryId,
+						price));
 	}
 }

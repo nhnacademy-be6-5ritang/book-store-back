@@ -1,5 +1,6 @@
 package com.nhnacademy.bookstoreback.deliverypolicy.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -7,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
+import com.nhnacademy.bookstoreback.delivery.repository.DeliveryRepository;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.CreateDeliveryPolicyRequest;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.UpdateDeliveryPolicyRequest;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.CreateDeliveryPolicyResponse;
@@ -31,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	private final DeliveryPolicyRepository deliveryPolicyRepository;
+	private final DeliveryRepository deliveryRepository;
 
 	/**
 	 * 모든 배송비 정책을 조회합니다.
@@ -112,5 +116,20 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	@Override
 	public void deleteDeliveryPolicy(Long deliveryPolicyId) {
 		deliveryPolicyRepository.deleteById(deliveryPolicyId);
+	}
+
+	@Override
+	public GetDeliveryPolicyResponse findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
+		Long deliveryId, BigDecimal price) {
+		Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() -> {
+			String errorMessage = String.format("해당 배송 '%s'은 존재하지 않는 배송입니다.", deliveryId);
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			return new NotFoundException(errorStatus);
+		});
+		List<DeliveryPolicy> deliveryPolicy = deliveryPolicyRepository
+			.findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(price);
+		delivery.updateDeliveryAddPolicy(deliveryPolicy.getFirst());
+		deliveryRepository.save(delivery);
+		return GetDeliveryPolicyResponse.fromEntity(deliveryPolicy.getFirst());
 	}
 }
