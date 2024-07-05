@@ -360,4 +360,10 @@ public class BookServiceImpl implements BookService {
 		bookTagRepository.deleteAllByBookBookId(bookId);
 		bookRepository.deleteById(bookId);
 	}
+
+	public void updateQuantity(Long bookId, int quantity) {
+		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
+		book.updateQuantitiy(quantity);
+		bookRepository.save(book);
+	}
 }
