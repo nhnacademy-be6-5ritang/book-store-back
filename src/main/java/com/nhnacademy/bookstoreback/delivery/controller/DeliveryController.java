@@ -76,7 +76,7 @@ public class DeliveryController {
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.updateDelivery(deliveryId, request));
 	}
 
-	@PutMapping("/{deliveryId}/{orderId}/Order-Policy")
+	@GetMapping("/{deliveryId}/{orderId}/Order-Policy")
 	ResponseEntity<UpdateDeliveryAddOrderPolicyResponse> addOrderPolicy(@PathVariable Long deliveryId,
 		@PathVariable Long orderId) {
 		return ResponseEntity.status(HttpStatus.OK)
