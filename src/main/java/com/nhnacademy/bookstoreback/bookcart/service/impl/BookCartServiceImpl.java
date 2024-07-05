@@ -52,8 +52,8 @@ public class BookCartServiceImpl implements BookCartService {
 	}
 
 	@Override
-	public List<GetBookCartResponse> getBookCarts(Long cartId) {
-		List<BookCart> bookCarts = bookCartRepository.findAllByCartCartId(cartId);
+	public List<GetBookCartResponse> getBookCartsByUserId(Long userId) {
+		List<BookCart> bookCarts = bookCartRepository.findAllByCart_UserId(userId);
 		return bookCarts.stream()
 			.map(bookCart -> GetBookCartResponse.builder()
 				.bookQuantity(bookCart.getBookQuantity())

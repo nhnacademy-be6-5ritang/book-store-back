@@ -6,13 +6,13 @@ import jakarta.servlet.http.Cookie;
 import lombok.Builder;
 
 @Builder
-public record CreateCartResponse(
+public record GetCartResponse(
 	Cookie cookie,
 	Long cardId,
 	Long userId) {
 
-	public static CreateCartResponse fromEntity(Cookie cookie, Cart cart) {
-		return CreateCartResponse.builder()
+	public static GetCartResponse fromEntity(Cookie cookie, Cart cart) {
+		return GetCartResponse.builder()
 			.cookie(cookie)
 			.cardId(cart.getCartId())
 			.userId(cart.getCartId())

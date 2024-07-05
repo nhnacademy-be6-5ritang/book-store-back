@@ -1,10 +1,13 @@
 package com.nhnacademy.bookstoreback.cart.service;
 
-import com.nhnacademy.bookstoreback.cart.domain.dto.CartDto;
 import com.nhnacademy.bookstoreback.cart.domain.dto.request.CreateCartRequest;
+import com.nhnacademy.bookstoreback.cart.domain.dto.request.GetCartRequest;
+import com.nhnacademy.bookstoreback.cart.domain.dto.response.CreateCartResponse;
+import com.nhnacademy.bookstoreback.cart.domain.dto.response.GetCartResponse;
 
 public interface CartService {
-	CartDto createCart(Long userId, CreateCartRequest request);
+	GetCartResponse getCart(Long userId, GetCartRequest request);
 
-	CartDto getCart(Long cardId);
+	CreateCartResponse createCart(Long userId, CreateCartRequest request);
+
 }

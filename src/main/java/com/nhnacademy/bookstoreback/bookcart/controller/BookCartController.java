@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.CreateBookCartResponse;
@@ -24,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/carts/{cartId}/books-carts")
+@RequestMapping("/api/carts/me")
 public class BookCartController {
 	private final BookCartService bookCartService;
 
@@ -35,8 +37,10 @@ public class BookCartController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<GetBookCartResponse>> getAllBookCarts(@PathVariable("cartId") Long cartId) {
-		List<GetBookCartResponse> bookCarts = bookCartService.getBookCarts(cartId);
+	public ResponseEntity<List<GetBookCartResponse>> getBookCartsByUserId(
+		@CurrentUser CurrentUserDetails currentUserDetails) {
+		Long userId = currentUserDetails.getUserId();
+		List<GetBookCartResponse> bookCarts = bookCartService.getBookCartsByUserId(userId);
 		return ResponseEntity.status(HttpStatus.OK).body(bookCarts);
 	}
 
