@@ -1,6 +1,7 @@
 package com.nhnacademy.bookstoreback.deliverypolicy.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -17,6 +18,6 @@ public interface DeliveryPolicyRepository extends JpaRepository<DeliveryPolicy, 
 	 * @param orderPrice 주문 가격.
 	 * @return 주문 가격에 맞는 가장 높은 표준 가격을 가진 배송비 정책.
 	 */
-	DeliveryPolicy findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
+	List<DeliveryPolicy> findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
 		BigDecimal orderPrice);
 }

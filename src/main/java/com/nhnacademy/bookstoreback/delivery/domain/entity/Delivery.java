@@ -101,8 +101,11 @@ public class Delivery {
 		this.deliveryReceiverDate = deliveryReceiverDate;
 	}
 
-	public void updateDeliveryAddOrderPolicy(DeliveryPolicy deliveryPolicy, Order order) {
-		this.deliveryPolicy = deliveryPolicy;
+	public void updateDeliveryAddOrder(Order order) {
 		this.order = order;
+	}
+
+	public void updateDeliveryAddPolicy(DeliveryPolicy deliveryPolicy) {
+		this.deliveryPolicy = deliveryPolicy;
 	}
 }

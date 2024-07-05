@@ -76,11 +76,11 @@ public class DeliveryController {
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.updateDelivery(deliveryId, request));
 	}
 
-	@PutMapping("/{deliveryId}/{orderId}/Order-Policy")
-	ResponseEntity<UpdateDeliveryAddOrderPolicyResponse> addOrderPolicy(@PathVariable Long deliveryId,
+	@PutMapping("/{deliveryId}/{orderId}/orders")
+	ResponseEntity<UpdateDeliveryAddOrderPolicyResponse> addOrder(@PathVariable Long deliveryId,
 		@PathVariable Long orderId) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(deliveryService.updateDeliveryAddOrderPolicy(deliveryId, orderId));
+			.body(deliveryService.updateDeliveryAddOrder(deliveryId, orderId));
 	}
 
 	/**
@@ -95,4 +95,8 @@ public class DeliveryController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
+	@GetMapping("/{orderId}/orders")
+	public ResponseEntity<GetDeliveryResponse> getDeliveryByOrder(@PathVariable Long orderId) {
+		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.getDeliveryByOrderId(orderId));
+	}
 }
