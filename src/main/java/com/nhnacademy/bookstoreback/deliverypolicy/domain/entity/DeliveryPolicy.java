@@ -2,11 +2,11 @@ package com.nhnacademy.bookstoreback.deliverypolicy.domain.entity;
 
 import java.math.BigDecimal;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,19 +18,19 @@ import lombok.NoArgsConstructor;
 public class DeliveryPolicy {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JoinColumn(name = "delivery_policy_id")
+	@Column(name = "delivery_policy_id")
 	private Long deliveryPolicyId;
 
-	@JoinColumn(name = "delivery_policy_name")
+	@Column(name = "delivery_policy_name")
 	private String deliveryPolicyName;
 
-	@JoinColumn(name = "delivery_policy_price")
+	@Column(name = "delivery_policy_price")
 	private BigDecimal deliveryPolicyPrice;
 
-	@JoinColumn(name = "delivery_policy_content")
+	@Column(name = "delivery_policy_content")
 	private String deliveryPolicyContent;
 
-	@JoinColumn(name = "delivery_policy_standard_price")
+	@Column(name = "delivery_policy_standard_price")
 	private BigDecimal deliveryPolicyStandardPrice;
 
 	public DeliveryPolicy(String deliveryPolicyName, BigDecimal deliveryPolicyPrice, String deliveryPolicyContent,
