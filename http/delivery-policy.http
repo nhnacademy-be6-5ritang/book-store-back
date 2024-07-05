@@ -23,13 +23,13 @@ GET localhost:8080/deliveries-policies/1
 Content-Type: application/json
 
 ### 배달 정책 업데이트
-PUT localhost:8080/deliveries-policies/1
+PUT localhost:8083/api/deliveryPolicies/1
 Content-Type: application/json
 
 {
   "deliveryPolicyName": "기본 배송비",
   "deliveryPolicyContent": "주문 금액이 5만원 이하",
-  "deliveryPolicyPrice": 5000.00
+  "deliveryPolicyPrice": 30000.00
 }
 
 ### 배달 정책 삭제

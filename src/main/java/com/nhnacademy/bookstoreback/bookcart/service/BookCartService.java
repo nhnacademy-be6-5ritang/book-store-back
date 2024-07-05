@@ -11,7 +11,7 @@ import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.UpdateBookCartR
 public interface BookCartService {
 	CreateBookCartResponse createBookCart(CreateBookCartRequest request);
 
-	List<GetBookCartResponse> getBookCarts(Long cartId);
+	List<GetBookCartResponse> getBookCartsByUserId(Long cartId);
 
 	UpdateBookCartResponse updateBookCart(Long bookCartId, UpdateBookCartRequest request);
 

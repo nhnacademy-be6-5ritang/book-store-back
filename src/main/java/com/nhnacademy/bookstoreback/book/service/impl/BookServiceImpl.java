@@ -43,6 +43,7 @@ import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
 import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
 import com.nhnacademy.bookstoreback.category.service.BookCategoryService;
 import com.nhnacademy.bookstoreback.category.service.CategoryService;
+import com.nhnacademy.bookstoreback.image.repository.BookImageRepository;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.publisher.exception.PublisherNotFoundException;
 import com.nhnacademy.bookstoreback.publisher.repository.PublisherRepository;
@@ -78,6 +79,7 @@ public class BookServiceImpl implements BookService {
 	private final BookTagRepository bookTagRepository;
 	private final CategoryService categoryService;
 	private final BookCategoryService bookCategoryService;
+	private final BookImageRepository bookImageRepository;
 
 	/**
 	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
@@ -358,6 +360,7 @@ public class BookServiceImpl implements BookService {
 		// 해당 도서가 가지고 있는 카테고리, 태그 매핑 정보도 같이 삭제
 		bookCategoryRepository.deleteAllByBookBookId(bookId);
 		bookTagRepository.deleteAllByBookBookId(bookId);
+		bookImageRepository.deleteAllByBookBookId(bookId);
 		bookRepository.deleteById(bookId);
 	}
 
