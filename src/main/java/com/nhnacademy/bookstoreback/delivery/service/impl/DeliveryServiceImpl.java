@@ -143,7 +143,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			return new NotFoundException(errorStatus);
 		});
-		Order order = orderRepository.getReferenceById(orderId);
+		Order order = orderRepository.findByOrderId(orderId);
 
 		DeliveryPolicy deliveryPolicy = deliveryPolicyRepository.findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
 			order.getOrderPrice());

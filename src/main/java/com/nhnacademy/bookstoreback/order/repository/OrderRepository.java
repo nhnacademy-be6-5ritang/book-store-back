@@ -16,4 +16,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	Order findByOrderInfoId(String orderInfoId);
 
+	Order findByOrderId(Long orderId);
 }
