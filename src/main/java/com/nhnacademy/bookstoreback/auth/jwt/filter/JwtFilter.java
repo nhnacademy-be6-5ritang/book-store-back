@@ -36,16 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		@NonNull FilterChain filterChain
 	) throws ServletException, IOException {
 		String accessToken = request.getHeader("Authorization");
-		String refreshToken = null;
-		Cookie[] cookies = request.getCookies();
-		if (Objects.nonNull(cookies)) {
-			for (Cookie cookie : cookies) {
-				if ("Refresh-Token".equals(cookie.getName())) {
-					refreshToken = cookie.getValue();
-					break;
-				}
-			}
-		}
+		String refreshToken = request.getHeader("Refresh-Token");
 
 		if (Objects.isNull(accessToken)) {
 			filterChain.doFilter(request, response);
