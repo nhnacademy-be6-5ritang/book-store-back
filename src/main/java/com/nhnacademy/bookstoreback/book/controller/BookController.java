@@ -47,8 +47,12 @@ public class BookController {
 	public ResponseEntity<String> fetchAndSaveBooks(@RequestParam Long count) {
 		try {
 			String apiUrl =
-				"http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttb2897robo0933001&QueryType=BlogBest&MaxResults="
+				"http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttb2897robo0933001&QueryType=Bestseller&MaxResults="
 					+ count + "&start=1&SearchTarget=Book&output=js&Version=20131101";
+			bookService.fetchAndSaveBooks(apiUrl);
+			apiUrl =
+				"http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttb2897robo0933001&QueryType=Bestseller&MaxResults="
+					+ count + "&start=1&SearchTarget=Foreign&CategoryId=90838&output=js&Version=20131101";
 			bookService.fetchAndSaveBooks(apiUrl);
 			return ResponseEntity.status(HttpStatus.OK).body("도서들 목록이 성공적으로 저장되었습니다.");
 		} catch (Exception e) {

@@ -107,4 +107,19 @@ public class CategoryServiceImpl implements CategoryService {
 		bookCategoryRepository.deleteALlByCategoryCategoryId(categoryId);
 		categoryRepository.deleteById(categoryId);
 	}
+
+	@Override
+	@Transactional
+	public Category findOrCreateCategory(String categoryName, Long parentCategoryId) {
+		return categoryRepository.findByCategoryName(categoryName)
+			.orElseGet(() -> {
+				Category parentCategory = categoryRepository.findById(parentCategoryId)
+					.orElseThrow(() -> new CategoryNotFoundException(parentCategoryId));
+				Category newCategory = Category.builder()
+					.categoryName(categoryName)
+					.parentCategory(parentCategory)
+					.build();
+				return categoryRepository.save(newCategory);
+			});
+	}
 }
