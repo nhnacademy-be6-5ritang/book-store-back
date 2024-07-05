@@ -21,8 +21,6 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryR
 import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 import com.nhnacademy.bookstoreback.delivery.repository.DeliveryRepository;
 import com.nhnacademy.bookstoreback.delivery.service.DeliveryService;
-import com.nhnacademy.bookstoreback.deliverypolicy.domain.entity.DeliveryPolicy;
-import com.nhnacademy.bookstoreback.deliverypolicy.repository.DeliveryPolicyRepository;
 import com.nhnacademy.bookstoreback.deliverystatus.domain.entity.DeliveryStatus;
 import com.nhnacademy.bookstoreback.deliverystatus.repository.DeliveryStatusRepository;
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
@@ -44,7 +42,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 	private final DeliveryRepository deliveryRepository;
 	private final OrderRepository orderRepository;
 	private final DeliveryStatusRepository deliveryStatusRepository;
-	private final DeliveryPolicyRepository deliveryPolicyRepository;
 	private final String NOT_FOUND_MESSAGE_DELIVERY_STATUS = "존재하지 않는 배달 상태입니다.";
 	private final String INIT_DELIVERY_STATUS = "발송준비중";
 
@@ -137,7 +134,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 	}
 
 	@Override
-	public UpdateDeliveryAddOrderPolicyResponse updateDeliveryAddOrderPolicy(Long deliveryId, Long orderId) {
+	public UpdateDeliveryAddOrderPolicyResponse updateDeliveryAddOrder(Long deliveryId, Long orderId) {
 		Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() -> {
 			String errorMessage = String.format("해당 배송 '%s'은 존재하지 않는 배송입니다.", deliveryId);
 			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
@@ -145,9 +142,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 		});
 		Order order = orderRepository.findByOrderId(orderId);
 
-		DeliveryPolicy deliveryPolicy = deliveryPolicyRepository.findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
-			order.getOrderPrice());
-		delivery.updateDeliveryAddOrderPolicy(deliveryPolicy, order);
+		delivery.updateDeliveryAddOrder(order);
 		deliveryRepository.save(delivery);
 		return UpdateDeliveryAddOrderPolicyResponse.fromEntity(delivery);
 	}
@@ -160,5 +155,11 @@ public class DeliveryServiceImpl implements DeliveryService {
 	@Override
 	public void deleteDelivery(Long deliveryId) {
 		deliveryRepository.deleteById(deliveryId);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetDeliveryResponse getDeliveryByOrderId(Long orderId) {
+		return GetDeliveryResponse.fromEntity(deliveryRepository.findByOrder_OrderId(orderId));
 	}
 }

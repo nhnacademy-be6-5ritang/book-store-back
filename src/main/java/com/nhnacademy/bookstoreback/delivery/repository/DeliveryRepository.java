@@ -19,4 +19,6 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
 	 * @return 특정 사용자의 배송 목록 페이지
 	 */
 	Page<Delivery> findAllByOrder_Cart_User_Id(Long userId, Pageable pageable);
+
+	Delivery findByOrder_OrderId(Long orderId);
 }

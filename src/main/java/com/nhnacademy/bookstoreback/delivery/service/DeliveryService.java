@@ -57,5 +57,7 @@ public interface DeliveryService {
 	 */
 	void deleteDelivery(Long deliveryId);
 
-	UpdateDeliveryAddOrderPolicyResponse updateDeliveryAddOrderPolicy(Long deliveryId, Long orderId);
+	UpdateDeliveryAddOrderPolicyResponse updateDeliveryAddOrder(Long deliveryId, Long orderId);
+
+	GetDeliveryResponse getDeliveryByOrderId(Long orderId);
 }

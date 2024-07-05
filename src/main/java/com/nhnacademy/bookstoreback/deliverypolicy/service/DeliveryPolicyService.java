@@ -1,5 +1,6 @@
 package com.nhnacademy.bookstoreback.deliverypolicy.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.CreateDeliveryPolicyRequest;
@@ -54,4 +55,6 @@ public interface DeliveryPolicyService {
 	 */
 	void deleteDeliveryPolicy(Long deliveryPolicyId);
 
+	GetDeliveryPolicyResponse findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
+		Long deliveryId, BigDecimal price);
 }
