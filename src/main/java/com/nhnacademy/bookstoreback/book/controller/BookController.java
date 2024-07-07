@@ -163,8 +163,8 @@ public class BookController {
 
 
 	/**
-	 * 도서쿠폰을 찾기위한 테스트용 컨트롤러
-	 *
+	 * @author 이기훈
+	 * 테스트용 컨트롤러 (차후 리팩토링 예정)
 	 */
 
 	@GetMapping("/search/test")

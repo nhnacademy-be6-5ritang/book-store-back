@@ -86,9 +86,8 @@ public interface CategoryService {
 	Category findOrCreateCategory(String categoryName, Long parentCategoryId);
 
 	/**
-	 * 테스트용 서비스
-	 *
-	 *
+	 * @author 이기훈
+	 * 테스트용 서비스 (차후 리팩토링 예정)
 	 */
 	List<CategorySearchResult> searchCategories(String query);
 

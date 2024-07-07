@@ -36,12 +36,12 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 	boolean existsByBookTitle(String bookTitle);
 
 
-
 	/**
-	 * 쿠폰 테스트용
-	 *
+	 * @author 이기훈
+	 * 쿠폰 테스트용 / 차후 querydsl로 바꿀예정
 	 *
 	 */
+
 	@Query(value = "SELECT * FROM books WHERE lower(book_title) LIKE lower(concat('%', :title, '%'))", nativeQuery = true)
 	List<Book> findByBookTitleContainingIgnoreCaseCustom(@Param("title") String title);
 

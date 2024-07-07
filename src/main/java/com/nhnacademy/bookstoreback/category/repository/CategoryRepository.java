@@ -21,7 +21,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
 
 	/**
-	 * 쿠폰 테스트용
+	 * @author 이기훈
+	 * 쿠폰 테스트용 / 차후 querydsl로 바꿀예정
 	 *
 	 */
 
