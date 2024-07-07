@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRequest;
+import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CategorySearchResult;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
@@ -83,4 +84,12 @@ public interface CategoryService {
 	 * @return 생성 또는 조회된 카테고리
 	 */
 	Category findOrCreateCategory(String categoryName, Long parentCategoryId);
+
+	/**
+	 * 테스트용 서비스
+	 *
+	 *
+	 */
+	List<CategorySearchResult> searchCategories(String query);
+
 }

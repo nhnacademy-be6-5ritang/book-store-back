@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
@@ -157,5 +158,18 @@ public class BookController {
 	public ResponseEntity<Void> updateQuantity(@PathVariable Long bookId, @PathVariable int quantity) {
 		bookService.updateQuantity(bookId, quantity);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+
+
+	/**
+	 * 도서쿠폰을 찾기위한 테스트용 컨트롤러
+	 *
+	 */
+
+	@GetMapping("/search/test")
+	public ResponseEntity<List<BookSearchResult>> searchBooks(@RequestParam("key") String search) {
+		List<BookSearchResult> results = bookService.searchBooks(search);
+		return ResponseEntity.ok(results);
 	}
 }
