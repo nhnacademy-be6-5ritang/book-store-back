@@ -3,7 +3,6 @@ package com.nhnacademy.bookstoreback.wishlist.service;
 import java.util.List;
 
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.CreateWishListRequest;
-import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.CreateWishListResponse;
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.GetWishListResponse;
 
 public interface WishListService {
@@ -19,9 +18,8 @@ public interface WishListService {
 	 * 새로운 위시리스트를 생성합니다.
 	 *
 	 * @param request 생성할 위시리스트의 정보를 담은 CreateWishListRequest 객체
-	 * @return 생성된 위시리스트의 정보를 담은 CreateWishListResponse 객체
 	 */
-	CreateWishListResponse createWishList(CreateWishListRequest request);
+	void createWishList(Long userId, CreateWishListRequest request);
 
 	/**
 	 * 특정 위시리스트를 삭제합니다.
