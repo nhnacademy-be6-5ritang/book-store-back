@@ -76,9 +76,8 @@ public class UserController {
 
 	/**
 	 * @author 이기훈
-	 *
-	 * 생일쿠폰을 발급할때 생일 정보를 얻기 위한 controller
-	 *
+	 * @param date 유저 생일
+	 * @return 해당 날짜가 생일인 유저의 생일리스트를 리턴
 	 */
 
 	@GetMapping("/birthday")
