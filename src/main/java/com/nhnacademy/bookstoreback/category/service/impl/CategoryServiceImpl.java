@@ -1,6 +1,7 @@
 package com.nhnacademy.bookstoreback.category.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRequest;
+import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CategorySearchResult;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
@@ -121,5 +123,17 @@ public class CategoryServiceImpl implements CategoryService {
 					.build();
 				return categoryRepository.save(newCategory);
 			});
+	}
+
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<CategorySearchResult> searchCategories(String query) {
+		List<Category> categories = categoryRepository.findCategoriesByPartialName(query);
+		return categories.stream()
+			.map(category -> new CategorySearchResult(
+				category.getCategoryId(),
+				category.getCategoryName() ))
+			.collect(Collectors.toList());
 	}
 }

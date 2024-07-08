@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
@@ -99,4 +100,12 @@ public interface BookService {
 	 * @param bookId 삭제할 도서의 ID
 	 */
 	void deleteBook(Long bookId);
+
+
+
+	/**
+	 * @author 이기훈
+	 * 테스트용 서비스 (차후 리팩토링 예정)
+	 */
+	 List<BookSearchResult> searchBooks(String query);
 }

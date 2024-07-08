@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import com.nhnacademy.bookstoreback.author.repository.AuthorRepository;
 import com.nhnacademy.bookstoreback.author.service.AuthorService;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
@@ -368,5 +370,16 @@ public class BookServiceImpl implements BookService {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
 		book.updateQuantitiy(quantity);
 		bookRepository.save(book);
+	}
+
+
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<BookSearchResult> searchBooks(String title) {
+		List<Book> books = bookRepository.findByBookTitleContainingIgnoreCaseCustom(title);
+		return books.stream()
+			.map(book -> new BookSearchResult(book.getBookId(), book.getBookTitle()))
+			.collect(Collectors.toList());
 	}
 }

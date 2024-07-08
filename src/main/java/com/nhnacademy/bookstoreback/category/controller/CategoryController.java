@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRequest;
+import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CategorySearchResult;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
@@ -116,5 +118,16 @@ public class CategoryController {
 	public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
 		categoryService.deleteCategory(categoryId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	/**
+	 * @author 이기훈
+	 * 테스트용 컨트롤러 (차후 리팩토링 예정)
+	 */
+
+	@GetMapping("/search/test")
+	public ResponseEntity<List<CategorySearchResult>> searchCategories(@RequestParam("key") String search) {
+		List<CategorySearchResult> results = categoryService.searchCategories(search);
+		return ResponseEntity.ok(results);
 	}
 }
