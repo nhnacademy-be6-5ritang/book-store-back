@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
 				Order order = Order.toEntity(createOrderRequest, orderStatus);
 
 				// 테스트용으로 카트 고정으로 추가
-				Cart cart = cartRepository.findByUserId(currentUser.getUserId());
+				Cart cart = cartRepository.findByUser_Id(currentUser.getUserId());
 				order.updateCart(cart);
 
 				orderRepository.save(order);
