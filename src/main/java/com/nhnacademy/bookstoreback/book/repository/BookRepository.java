@@ -1,11 +1,8 @@
 package com.nhnacademy.bookstoreback.book.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
@@ -18,7 +15,7 @@ import com.nhnacademy.bookstoreback.book.domain.entity.Book;
  */
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, Long> {
+public interface BookRepository extends JpaRepository<Book, Long> , CustomBookRepository {
 	/**
 	 * ISBN 기반 도서 조회
 	 *
@@ -34,17 +31,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 	 * @return 도서가 존재하면 true, 그렇지 않으면 false
 	 */
 	boolean existsByBookTitle(String bookTitle);
-
-
-	/**
-	 * @author 이기훈
-	 * 쿠폰 테스트용 / 차후 querydsl로 바꿀예정
-	 *
-	 */
-
-	@Query(value = "SELECT * FROM books WHERE lower(book_title) LIKE lower(concat('%', :title, '%'))", nativeQuery = true)
-	List<Book> findByBookTitleContainingIgnoreCaseCustom(@Param("title") String title);
-
 
 
 }
