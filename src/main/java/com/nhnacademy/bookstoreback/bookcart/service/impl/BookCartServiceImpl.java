@@ -8,13 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
-import com.nhnacademy.bookstoreback.book.exception.BookAlreadyExistsException;
 import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
 import com.nhnacademy.bookstoreback.bookcart.domain.entity.BookCart;
+import com.nhnacademy.bookstoreback.bookcart.exception.BookCartAlreadyExistsException;
 import com.nhnacademy.bookstoreback.bookcart.exception.BookCartNotFoundException;
 import com.nhnacademy.bookstoreback.bookcart.repository.BookCartRepository;
 import com.nhnacademy.bookstoreback.bookcart.service.BookCartService;
@@ -68,7 +68,7 @@ public class BookCartServiceImpl implements BookCartService {
 			.orElseThrow(() -> new BookNotFoundException(request.bookId()));
 
 		if (bookCartRepository.existsByCartCartIdAndBookBookId(cart.getCartId(), request.bookId())) {
-			throw new BookAlreadyExistsException(request.bookId());
+			throw new BookCartAlreadyExistsException(request.bookId());
 		}
 
 		BookCart bookCart = new BookCart(book, cart, request.bookQuantity());

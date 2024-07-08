@@ -9,6 +9,7 @@ import lombok.Builder;
 @Builder
 public record GetWishListResponse(
 	Long wishListId,
+	Long bookId,
 	String bookImageUrl,
 	String bookTitle,
 	String authorName,
@@ -24,6 +25,7 @@ public record GetWishListResponse(
 
 		return GetWishListResponse.builder()
 			.wishListId(wishList.getWishListId())
+			.bookId(wishList.getBook().getBookId())
 			.bookImageUrl(imageUrl)
 			.bookTitle(wishList.getBook().getBookTitle())
 			.authorName(wishList.getBook().getAuthor().getAuthorName())
