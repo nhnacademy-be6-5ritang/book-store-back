@@ -1,6 +1,8 @@
 package com.nhnacademy.bookstoreback.delivery.service.impl;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -8,11 +10,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesRequest;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryByOrderIdRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
@@ -26,7 +30,10 @@ import com.nhnacademy.bookstoreback.deliverystatus.repository.DeliveryStatusRepo
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.order.domain.entity.Order;
+import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
+import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
+import com.nhnacademy.bookstoreback.order.service.impl.OrderServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,8 +49,19 @@ public class DeliveryServiceImpl implements DeliveryService {
 	private final DeliveryRepository deliveryRepository;
 	private final OrderRepository orderRepository;
 	private final DeliveryStatusRepository deliveryStatusRepository;
+	private final OrderServiceImpl orderServiceImpl;
+	private final OrderStatusRepository orderStatusRepository;
+	private final TaskScheduler taskScheduler;
 	private final String NOT_FOUND_MESSAGE_DELIVERY_STATUS = "존재하지 않는 배달 상태입니다.";
 	private final String INIT_DELIVERY_STATUS = "발송준비중";
+
+	public void scheduleDeliveries(Delivery delivery) {
+		if (delivery.getDeliverySenderDate() != null && delivery.getDeliveryStatus().getDeliveryStatusId() == 2L) {
+			LocalDateTime senderDate = delivery.getDeliverySenderDate().plusMinutes(2);
+			Instant instant = senderDate.atZone(ZoneId.systemDefault()).toInstant();
+			taskScheduler.schedule(() -> completeDelivery(delivery.getOrder().getOrderId()), instant);
+		}
+	}
 
 	/**
 	 * 사용자의 배송 목록을 페이지로 반환합니다.
@@ -161,5 +179,27 @@ public class DeliveryServiceImpl implements DeliveryService {
 	@Transactional(readOnly = true)
 	public GetDeliveryResponse getDeliveryByOrderId(Long orderId) {
 		return GetDeliveryResponse.fromEntity(deliveryRepository.findByOrder_OrderId(orderId));
+	}
+
+	@Override
+	public void updateDeliveryByOrderId(Long orderId, UpdateDeliveryByOrderIdRequest request) {
+		Delivery delivery = deliveryRepository.findByOrder_OrderId(orderId);
+		DeliveryStatus deliveryStatus = deliveryStatusRepository.getReferenceById(2L);
+		delivery.updateDeliverySender(request.senderName(), request.senderPhone(),
+			request.senderAddress() + " " + request.senderAddress2(), deliveryStatus);
+		orderServiceImpl.updateOrderStatus(orderId, 4L);
+		deliveryRepository.save(delivery);
+		scheduleDeliveries(delivery);
+	}
+
+	public void completeDelivery(Long orderId) {
+		Delivery delivery = deliveryRepository.findByOrder_OrderId(orderId);
+		Order order = orderRepository.findByOrderId(orderId);
+		OrderStatus orderStatus = orderStatusRepository.getReferenceById(5L);
+		DeliveryStatus deliveryStatus = deliveryStatusRepository.getReferenceById(4L);
+		delivery.updateDeliveryStatus(deliveryStatus);
+		order.updateOrderStatus(orderStatus);
+		orderRepository.save(order);
+		deliveryRepository.save(delivery);
 	}
 }

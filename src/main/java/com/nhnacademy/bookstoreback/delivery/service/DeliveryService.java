@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesRequest;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryByOrderIdRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
@@ -60,4 +61,6 @@ public interface DeliveryService {
 	UpdateDeliveryAddOrderPolicyResponse updateDeliveryAddOrder(Long deliveryId, Long orderId);
 
 	GetDeliveryResponse getDeliveryByOrderId(Long orderId);
+
+	void updateDeliveryByOrderId(Long orderId, UpdateDeliveryByOrderIdRequest request);
 }
