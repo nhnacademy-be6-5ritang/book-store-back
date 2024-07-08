@@ -9,12 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
-import com.nhnacademy.bookstoreback.cart.domain.dto.request.CreateCartRequest;
-import com.nhnacademy.bookstoreback.cart.domain.dto.request.GetCartRequest;
-import com.nhnacademy.bookstoreback.cart.domain.dto.response.CreateCartResponse;
 import com.nhnacademy.bookstoreback.cart.domain.dto.response.GetCartResponse;
 import com.nhnacademy.bookstoreback.cart.service.CartService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,19 +23,15 @@ public class CartController {
 	private final CartService cartService;
 
 	@GetMapping
-	public ResponseEntity<GetCartResponse> getCart(@CurrentUser CurrentUserDetails currentUserDetails,
-		GetCartRequest request) {
-		Long userId = currentUserDetails.getUserId();
-		GetCartResponse cart = cartService.getCart(userId, request);
-		return ResponseEntity.ok(cart);
+	public ResponseEntity<GetCartResponse> getCart(@CurrentUser CurrentUserDetails currentUser,
+		HttpServletRequest req) {
+		return ResponseEntity.ok(cartService.getCart(currentUser.getUserId(), req));
 	}
 
 	@PostMapping
-	public ResponseEntity<CreateCartResponse> createCart(@CurrentUser CurrentUserDetails currentUserDetails,
-		CreateCartRequest request) {
-		Long userId = currentUserDetails.getUserId();
-
-		CreateCartResponse response = cartService.createCart(userId, request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	public ResponseEntity<Void> createCart(@CurrentUser CurrentUserDetails currentUser,
+		HttpServletResponse response) {
+		cartService.createCart(currentUser.getUserId(), response);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 }

@@ -14,8 +14,7 @@ public record GetWishListResponse(
 	String authorName,
 	String publisherName,
 	BigDecimal bookSalePrice,
-	BigDecimal bookSalePercent,
-	int bookQuantity
+	BigDecimal bookSalePercent
 ) {
 	public static GetWishListResponse fromEntity(WishList wishList) {
 		String imageUrl = wishList.getBook().getBookImages().stream()

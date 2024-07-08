@@ -2,18 +2,20 @@ package com.nhnacademy.bookstoreback.bookcart.service;
 
 import java.util.List;
 
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
-import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.CreateBookCartResponse;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
-import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.UpdateBookCartResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface BookCartService {
-	CreateBookCartResponse createBookCart(CreateBookCartRequest request);
+	List<GetBookCartResponse> getBookCartsByCartId(CurrentUserDetails currentUser, HttpServletRequest request);
 
-	List<GetBookCartResponse> getBookCartsByUserId(Long cartId);
+	void createBookCart(CurrentUserDetails currentUser, HttpServletRequest req, CreateBookCartRequest request);
 
-	UpdateBookCartResponse updateBookCart(Long bookCartId, UpdateBookCartRequest request);
+	void updateBookCart(Long bookCartId, CurrentUserDetails currentUser, UpdateBookCartRequest request,
+		HttpServletRequest req);
 
-	void deleteBookCart(Long bookCartId);
+	void deleteBookCart(Long bookCartId, CurrentUserDetails currentUser, HttpServletRequest req);
 }
