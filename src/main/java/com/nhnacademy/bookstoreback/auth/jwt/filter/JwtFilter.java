@@ -57,6 +57,8 @@ public class JwtFilter extends OncePerRequestFilter {
 			if (!reissueTokensResponse.getStatusCode().is2xxSuccessful()) {
 				PrintWriter writer = response.getWriter();
 				writer.print("토큰 재발급에 실패했습니다. 다시 로그인해주세요.");
+				writer.flush();
+				writer.close();
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				return;
 			}
@@ -66,6 +68,8 @@ public class JwtFilter extends OncePerRequestFilter {
 		} else if (Objects.nonNull(accessTokenErrorMessage)) {
 			PrintWriter writer = response.getWriter();
 			writer.print(accessTokenErrorMessage);
+			writer.flush();
+			writer.close();
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			return;
 		}
