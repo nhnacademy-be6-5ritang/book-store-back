@@ -8,6 +8,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetNonOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
@@ -74,4 +75,12 @@ public interface OrderService {
 	 * @return 주문 상태가 대기인 주문 리턴
 	 */
 	GetAllListOrderByStatusResponse findByOrderStatus(Long orderStatusId);
+
+	/**
+	 * 비회원 주문 확인
+	 * @param orderInfoId 주문 보안 아이디
+	 * @param email 결제자 이메일
+	 * @return 조회된 주문 정보
+	 */
+	GetNonOrderByInfoResponse findByOrderInfoIdByEmail(String orderInfoId, String email);
 }
