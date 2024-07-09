@@ -9,12 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 import com.nhnacademy.bookstoreback.cart.repository.CartRepository;
 import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
@@ -41,10 +44,12 @@ public class OrderServiceImpl implements OrderService {
 	public static final String ERROR_STATUS_WAIT = "주문 상태를 대기로 지정할 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문을 가져올 수 없습니다";
 	public static final String ERROR_ORDERS_EXITS = "주문 내역을 가져올 수 없습니다";
+	public static final String ERROR_STATUS_EXITS = "주문 상태를 가져올 수 없습니다";
 
 	//카트 아이디를 가지고 있다면 그걸 사용해서 정보 추가로 가져오는 코드 추가 예정
 	@Override
-	public CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest) {
+	public CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest,
+		@CurrentUser CurrentUserDetails currentUser) {
 		List<OrderStatus> orderStatuses = orderStatusRepository.findAll();
 
 		for (OrderStatus orderStatus : orderStatuses) {
@@ -52,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
 				Order order = Order.toEntity(createOrderRequest, orderStatus);
 
 				// 테스트용으로 카트 고정으로 추가
-				Cart cart = cartRepository.getReferenceById(1L);
+				Cart cart = cartRepository.findByUser_Id(currentUser.getUserId());
 				order.updateCart(cart);
 
 				orderRepository.save(order);
@@ -88,6 +93,18 @@ public class OrderServiceImpl implements OrderService {
 		return GetOrderByStatusIdResponse.from(order);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public GetAllListOrderByStatusResponse findByOrderStatus(Long orderStatusId) {
+		OrderStatus orderStatus = orderStatusRepository.findById(orderStatusId).orElse(null);
+		if (orderStatus == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
+		List<Order> orders = orderRepository.findAllByOrderStatus_OrderStatusId(orderStatusId);
+		return GetAllListOrderByStatusResponse.from(orders);
+	}
+
 	// 주문의 상태 변경
 	@Override
 	@Transactional(readOnly = true)
@@ -109,6 +126,18 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional(readOnly = true)
 	public GetAllListOrderResponse findAllByCartId(Long cartId) {
 		List<Order> orders = orderRepository.findAllByCart_CartId(cartId);
+		if (orders == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDERS_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
+		return GetAllListOrderResponse.from(orders);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetAllListOrderResponse findAllUserId(@CurrentUser CurrentUserDetails currentUserDetails) {
+
+		List<Order> orders = orderRepository.findAllByCart_UserId(currentUserDetails.getUserId());
 		if (orders == null) {
 			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDERS_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			throw new OrderFailException(errorStatus);

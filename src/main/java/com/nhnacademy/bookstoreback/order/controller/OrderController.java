@@ -1,6 +1,5 @@
 package com.nhnacademy.bookstoreback.order.controller;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
@@ -22,12 +23,12 @@ import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateWrappingTypeR
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetListWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetPaperResponse;
@@ -68,19 +69,6 @@ public class OrderController {
 	@GetMapping("/{order_id}")
 	public ResponseEntity<GetOrderResponse> getOrder(@PathVariable("order_id") Long orderId) {
 		return ResponseEntity.ok().body(orderServiceImpl.getOrder(orderId));
-	}
-
-	/**
-	 * 특정 상태의 주문 가져오기
-	 * @param orderStatusId 주문 상태 아이디
-	 * @param pageable 페이징 처리
-	 * @return 주문 정보와 페이징 정보 리턴
-	 */
-	@GetMapping("/OrderByStatus/{order_status_id}")
-	public ResponseEntity<GetOrderByStatusIdResponse> getOrderStatus(
-		@PathVariable("order_status_id") Long orderStatusId,
-		Pageable pageable) {
-		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus_OrderStatusId(orderStatusId, pageable));
 	}
 
 	/**
@@ -271,9 +259,10 @@ public class OrderController {
 	 * @return 주문 정보
 	 */
 	@PostMapping("/orders")
-	public ResponseEntity<CreateOrderResponse> createOrder(@RequestBody CreateOrderRequest createOrderRequest
-	) {
-		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.createOrder(createOrderRequest));
+	public ResponseEntity<CreateOrderResponse> createOrder(@RequestBody CreateOrderRequest createOrderRequest,
+		@CurrentUser CurrentUserDetails currentUserDetails) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(orderServiceImpl.createOrder(createOrderRequest, currentUserDetails));
 	}
 
 	/**
@@ -291,12 +280,12 @@ public class OrderController {
 	/**
 	 * 카트아이디로 주문 전부 가져오기
 	 * 페이징 처리 예정
-	 * @param cartId 카트 아이디
+	 * @param currentUserDetails 로그인된 사용자 아이디
 	 * @return 카트아이디를 가지고 있는 주문 전부 가져오기
 	 */
-	@GetMapping("/carts/{cart_id}/orders/all")
-	public ResponseEntity<GetAllListOrderResponse> findAllByCartId(@PathVariable("cart_id") Long cartId) {
-		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findAllByCartId(cartId));
+	@GetMapping("/carts/orders/all")
+	public ResponseEntity<GetAllListOrderResponse> findAllByCartId(@CurrentUser CurrentUserDetails currentUserDetails) {
+		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findAllUserId(currentUserDetails));
 	}
 
 	/**
@@ -307,5 +296,15 @@ public class OrderController {
 	@GetMapping("/order-info/{order_info_id}")
 	public ResponseEntity<GetOrderByInfoResponse> findByOrderInfoId(@PathVariable("order_info_id") String orderInfoId) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findByOrderInfoId(orderInfoId));
+	}
+
+	@GetMapping("/order-status/wait")
+	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusWait() {
+		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(1L));
+	}
+
+	@GetMapping("/order-status/going")
+	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusGoing() {
+		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(4L));
 	}
 }
