@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +18,7 @@ import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
-import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.CreateBookCartResponse;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
-import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.UpdateBookCartResponse;
 import com.nhnacademy.bookstoreback.bookcart.service.BookCartService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,30 +29,32 @@ import lombok.RequiredArgsConstructor;
 public class BookCartController {
 	private final BookCartService bookCartService;
 
-	@PostMapping
-	public ResponseEntity<CreateBookCartResponse> createBookCart(@RequestBody CreateBookCartRequest request) {
-		CreateBookCartResponse response = bookCartService.createBookCart(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	@GetMapping
+	public ResponseEntity<List<GetBookCartResponse>> getBookCarts(
+		@CurrentUser CurrentUserDetails currentUser, @CookieValue(name = "cartId", required = false) Long cartId) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(bookCartService.getBookCartsByCartId(currentUser, cartId));
 	}
 
-	@GetMapping
-	public ResponseEntity<List<GetBookCartResponse>> getBookCartsByUserId(
-		@CurrentUser CurrentUserDetails currentUserDetails) {
-		Long userId = currentUserDetails.getUserId();
-		List<GetBookCartResponse> bookCarts = bookCartService.getBookCartsByUserId(userId);
-		return ResponseEntity.status(HttpStatus.OK).body(bookCarts);
+	@PostMapping
+	public ResponseEntity<Void> createBookCart(@CurrentUser CurrentUserDetails currentUser,
+		@RequestBody CreateBookCartRequest request, @CookieValue(name = "cartId", required = false) Long cartId) {
+		bookCartService.createBookCart(currentUser, request, cartId);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PutMapping("/{bookCartId}")
-	public ResponseEntity<UpdateBookCartResponse> updateBookCart(@PathVariable Long bookCartId,
-		@RequestBody UpdateBookCartRequest request) {
-		UpdateBookCartResponse response = bookCartService.updateBookCart(bookCartId, request);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+	public ResponseEntity<Void> updateBookCart(@CurrentUser CurrentUserDetails currentUser,
+		@PathVariable Long bookCartId, @RequestBody UpdateBookCartRequest request,
+		@CookieValue(name = "cartId", required = false) Long cartId) {
+		bookCartService.updateBookCart(bookCartId, currentUser, request, cartId);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@DeleteMapping("/{bookCartId}")
-	public ResponseEntity<Void> deleteBookCart(@PathVariable Long bookCartId) {
-		bookCartService.deleteBookCart(bookCartId);
+	public ResponseEntity<Void> deleteBookCart(@CurrentUser CurrentUserDetails currentUser,
+		@PathVariable Long bookCartId, @CookieValue(name = "cartId", required = false) Long cartId) {
+		bookCartService.deleteBookCart(bookCartId, currentUser, cartId);
 		return ResponseEntity.noContent().build();
 	}
 }

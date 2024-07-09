@@ -19,6 +19,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequ
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateWrappingTypeRequest;
+import com.nhnacademy.bookstoreback.order.domain.dto.request.OrderCheckNonRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateWrappingTypeRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
@@ -28,6 +29,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderRes
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetListWrappingResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetNonOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderStatusResponse;
@@ -306,5 +308,12 @@ public class OrderController {
 	@GetMapping("/order-status/going")
 	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusGoing() {
 		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(4L));
+	}
+
+	@PostMapping("order-info/Non")
+	public ResponseEntity<GetNonOrderByInfoResponse> getOrderByInfoNon(
+		@RequestBody OrderCheckNonRequest orderCheckNonRequest) {
+		return ResponseEntity.ok(orderServiceImpl.findByOrderInfoIdByEmail(orderCheckNonRequest.orderInfoId(),
+			orderCheckNonRequest.payerEmail()));
 	}
 }

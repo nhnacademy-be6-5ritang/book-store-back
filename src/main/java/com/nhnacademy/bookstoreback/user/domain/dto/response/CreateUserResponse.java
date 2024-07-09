@@ -8,6 +8,7 @@ import lombok.Builder;
 
 @Builder
 public record CreateUserResponse(
+	Long id,
 	String name,
 	String email,
 	LocalDate birth,
@@ -17,6 +18,7 @@ public record CreateUserResponse(
 ) {
 	public static CreateUserResponse fromEntity(User savedUser) {
 		return CreateUserResponse.builder()
+			.id(savedUser.getId())
 			.name(savedUser.getName())
 			.email(savedUser.getEmail())
 			.birth(savedUser.getBirth())
