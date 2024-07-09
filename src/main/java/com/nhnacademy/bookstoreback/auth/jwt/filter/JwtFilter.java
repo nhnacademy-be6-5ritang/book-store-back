@@ -63,8 +63,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 			accessToken = Objects.requireNonNull(reissueTokensResponse.getBody()).accessToken();
 			refreshToken = reissueTokensResponse.getBody().refreshToken();
-		}
-		if (Objects.nonNull(accessTokenErrorMessage)) {
+		} else if (Objects.nonNull(accessTokenErrorMessage)) {
 			PrintWriter writer = response.getWriter();
 			writer.print(accessTokenErrorMessage);
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
