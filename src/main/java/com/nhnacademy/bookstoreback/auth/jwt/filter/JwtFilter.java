@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.nhnacademy.bookstoreback.auth.jwt.client.TokenReissueClient;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.request.ReissueTokenRequest;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.response.ReissueTokensResponse;
 import com.nhnacademy.bookstoreback.auth.jwt.utils.JwtUtils;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
@@ -45,14 +47,29 @@ public class JwtFilter extends OncePerRequestFilter {
 
 		String accessTokenErrorMessage = jwtUtils.validateToken(accessToken);
 		if ("만료된 토큰입니다.".equals(accessTokenErrorMessage)) {
-			ReissueTokensResponse reissuedTokens = tokenReissueClient.reissueTokensWithRefreshToken(refreshToken);
-			accessToken = reissuedTokens.accessToken();
-			refreshToken = reissuedTokens.refreshToken();
-			accessTokenErrorMessage = jwtUtils.validateToken(accessToken);
-		}
-		if (Objects.nonNull(accessTokenErrorMessage)) {
+			ResponseEntity<ReissueTokensResponse> reissueTokensResponse
+				= tokenReissueClient.reissueTokensWithRefreshToken(
+				ReissueTokenRequest.builder()
+					.refreshToken(refreshToken)
+					.build()
+			);
+
+			if (!reissueTokensResponse.getStatusCode().is2xxSuccessful()) {
+				PrintWriter writer = response.getWriter();
+				writer.print("토큰 재발급에 실패했습니다. 다시 로그인해주세요.");
+				writer.flush();
+				writer.close();
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return;
+			}
+
+			accessToken = Objects.requireNonNull(reissueTokensResponse.getBody()).accessToken();
+			refreshToken = reissueTokensResponse.getBody().refreshToken();
+		} else if (Objects.nonNull(accessTokenErrorMessage)) {
 			PrintWriter writer = response.getWriter();
 			writer.print(accessTokenErrorMessage);
+			writer.flush();
+			writer.close();
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			return;
 		}

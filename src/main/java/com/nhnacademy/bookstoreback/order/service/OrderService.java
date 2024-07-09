@@ -2,9 +2,13 @@ package com.nhnacademy.bookstoreback.order.service;
 
 import org.springframework.data.domain.Pageable;
 
+import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetNonOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
@@ -16,7 +20,8 @@ public interface OrderService {
 	 * @param createOrderRequest 입력 받은 주문 정보
 	 * @return 일부 주문 정보 리턴
 	 */
-	CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest);
+	CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest,
+		@CurrentUser CurrentUserDetails currentUserDetails);
 
 	/**
 	 * 주문 가져오기
@@ -56,4 +61,26 @@ public interface OrderService {
 	 * @return 일부 주문 정보 리턴
 	 */
 	GetOrderByInfoResponse findByOrderInfoId(String orderInfoId);
+
+	/**
+	 * 로그인 된 회원 아이디로 모든 주문 가져오기
+	 * @param currentUserDetails 로그인 된 회원 정보
+	 * @return 일부 주문 정보 리스트 리턴
+	 */
+	GetAllListOrderResponse findAllUserId(@CurrentUser CurrentUserDetails currentUserDetails);
+
+	/**
+	 * 주문 상태가 대기인 모든 주문 가져오기
+	 * @param orderStatusId 주문 상태 아이디
+	 * @return 주문 상태가 대기인 주문 리턴
+	 */
+	GetAllListOrderByStatusResponse findByOrderStatus(Long orderStatusId);
+
+	/**
+	 * 비회원 주문 확인
+	 * @param orderInfoId 주문 보안 아이디
+	 * @param email 결제자 이메일
+	 * @return 조회된 주문 정보
+	 */
+	GetNonOrderByInfoResponse findByOrderInfoIdByEmail(String orderInfoId, String email);
 }

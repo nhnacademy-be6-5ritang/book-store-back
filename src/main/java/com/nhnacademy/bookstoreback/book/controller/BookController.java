@@ -164,7 +164,8 @@ public class BookController {
 
 	/**
 	 * @author 이기훈
-	 * 테스트용 컨트롤러 (차후 리팩토링 예정)
+	 * @param search 검색키워드
+	 * @return 도서 검색결과
 	 */
 
 	@GetMapping("/search/test")

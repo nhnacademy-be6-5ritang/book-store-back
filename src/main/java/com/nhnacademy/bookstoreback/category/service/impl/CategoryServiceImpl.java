@@ -1,7 +1,6 @@
 package com.nhnacademy.bookstoreback.category.service.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -129,11 +128,6 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<CategorySearchResult> searchCategories(String query) {
-		List<Category> categories = categoryRepository.findCategoriesByPartialName(query);
-		return categories.stream()
-			.map(category -> new CategorySearchResult(
-				category.getCategoryId(),
-				category.getCategoryName() ))
-			.collect(Collectors.toList());
+	return categoryRepository.findCategoriesByPartialName(query);
 	}
 }

@@ -1,5 +1,8 @@
 package com.nhnacademy.bookstoreback.user.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,7 @@ import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
@@ -67,5 +71,20 @@ public class UserController {
 	// 	RegisterAddressResponse registerAddressResponse = addressService.registerAddress(registerAddressRequest);
 	// 	return ResponseEntity.status(HttpStatus.CREATED).body(registerAddressResponse);
 	// }
+
+
+
+	/**
+	 * @author 이기훈
+	 * @param date 유저 생일
+	 * @return 해당 날짜가 생일인 유저의 생일리스트를 리턴
+	 */
+
+	@GetMapping("/birthday")
+	public ResponseEntity<List<BirthdayCouponTargetResponse>> getUsersWithBirthday(
+		@RequestParam("date") LocalDate date) {
+		List<BirthdayCouponTargetResponse> users = userService.getUsersWithBirthday(date);
+		return ResponseEntity.ok(users);
+	}
 
 }

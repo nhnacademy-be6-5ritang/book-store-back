@@ -1,104 +1,107 @@
 package com.nhnacademy.bookstoreback.bookcart.service.impl;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
-import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.CreateBookCartResponse;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
-import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.UpdateBookCartResponse;
 import com.nhnacademy.bookstoreback.bookcart.domain.entity.BookCart;
+import com.nhnacademy.bookstoreback.bookcart.exception.BookCartAlreadyExistsException;
+import com.nhnacademy.bookstoreback.bookcart.exception.BookCartNotFoundException;
 import com.nhnacademy.bookstoreback.bookcart.repository.BookCartRepository;
 import com.nhnacademy.bookstoreback.bookcart.service.BookCartService;
 import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
+import com.nhnacademy.bookstoreback.cart.exception.UserCartNotFoundException;
 import com.nhnacademy.bookstoreback.cart.repository.CartRepository;
-import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
-import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
+import com.nhnacademy.bookstoreback.cart.service.CartService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class BookCartServiceImpl implements BookCartService {
 	private final BookCartRepository bookCartRepository;
 	private final BookRepository bookRepository;
 	private final CartRepository cartRepository;
+	private final CartService cartService;
+	private final HttpServletResponse resp;
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<GetBookCartResponse> getBookCartsByCartId(CurrentUserDetails currentUser, Long cartId) {
+		cartId = setupCart(currentUser, cartId, resp).getCartId();
+
+		return bookCartRepository.findAllByCartCartId(cartId).stream().map(GetBookCartResponse::fromEntity).toList();
+	}
 
 	@Override
-	public CreateBookCartResponse createBookCart(CreateBookCartRequest request) {
-		Book book = bookRepository.findById(request.bookId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 도서 '%d'은 존재하지 않는 도서입니다.", request.bookId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+	public void createBookCart(CurrentUserDetails currentUser, CreateBookCartRequest request, Long cartId) {
+		Cart cart = setupCart(currentUser, cartId, resp);
 
-		Cart cart = cartRepository.findById(request.cartId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 카트 '%d'은 존재하지 않는 카트입니다.", request.cartId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+		Book book = bookRepository.findById(request.bookId())
+			.orElseThrow(() -> new BookNotFoundException(request.bookId()));
+
+		if (bookCartRepository.existsByCartCartIdAndBookBookId(cart.getCartId(), request.bookId())) {
+			throw new BookCartAlreadyExistsException(request.bookId());
+		}
 
 		BookCart bookCart = new BookCart(book, cart, request.bookQuantity());
 
 		bookCartRepository.save(bookCart);
-
-		return new CreateBookCartResponse(book.getBookId(), bookCart.getBookQuantity());
 	}
 
 	@Override
-	public List<GetBookCartResponse> getBookCartsByUserId(Long userId) {
-		List<BookCart> bookCarts = bookCartRepository.findAllByCart_UserId(userId);
-		return bookCarts.stream()
-			.map(bookCart -> GetBookCartResponse.builder()
-				.bookQuantity(bookCart.getBookQuantity())
-				.bookId(bookCart.getBook().getBookId())
-				.cartId(bookCart.getCart().getCartId())
-				.build())
-			.toList();
-	}
+	public void updateBookCart(Long bookCartId, CurrentUserDetails currentUser, UpdateBookCartRequest request,
+		Long cartId) {
+		setupCart(currentUser, cartId, resp);
 
-	@Override
-	public UpdateBookCartResponse updateBookCart(Long bookCartId, UpdateBookCartRequest request) {
-		BookCart bookCart = bookCartRepository.findById(bookCartId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 도서카트 '%d'은 존재하지 않는 도서카트입니다.", bookCartId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+		bookCartRepository.findById(bookCartId).orElseThrow(() -> new BookCartNotFoundException(bookCartId));
 
-		bookRepository.findById(request.bookId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 도서 '%d'은 존재하지 않는 도서입니다.", request.bookId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
-		cartRepository.findById(request.cartId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 카트 '%d'은 존재하지 않는 카트입니다.", request.cartId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+		BookCart bookCart = bookCartRepository.findById(bookCartId)
+			.orElseThrow(() -> new BookCartNotFoundException(bookCartId));
 
 		bookCart.updateBookQuantity(request.bookQuantity());
-
-		bookCartRepository.save(bookCart);
-
-		return UpdateBookCartResponse.builder()
-			.bookCartId(bookCart.getBookCartId())
-			.bookQuantity(bookCart.getBookQuantity())
-			.bookId(bookCart.getBook().getBookId())
-			.cartId(bookCart.getCart().getCartId())
-			.build();
-
 	}
 
 	@Override
-	public void deleteBookCart(Long bookCartId) {
-		bookCartRepository.deleteById(bookCartId);
+	public void deleteBookCart(Long bookCartId, CurrentUserDetails currentUser, Long cartId) {
+		cartId = setupCart(currentUser, cartId, resp).getCartId();
+
+		BookCart bookCart = bookCartRepository.findById(bookCartId)
+			.orElseThrow(() -> new BookCartNotFoundException(bookCartId));
+
+		// 해당 카트아이디와 실제 카트아이디가 일치할 경우만 삭제되도록
+		if (bookCart.getCart().getCartId().equals(cartId)) {
+			bookCartRepository.deleteById(bookCartId);
+		}
+
+	}
+
+	public Cart setupCart(CurrentUserDetails currentUser, Long cartId, HttpServletResponse resp) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+
+		// 비회원인데 카트가 없는 경우
+		if (userId == null && cartId == null) {
+			return cartService.createCart(null, resp);
+			// 비회원인데 카트가 있는 경우
+		} else if (userId == null) {
+			return cartRepository.findById(cartId).orElseThrow(() -> new UserCartNotFoundException(cartId));
+			// 회원인데 카트가 없는 경우
+		} else if (!cartRepository.existsByUserId(userId)) {
+			return cartService.createCart(currentUser, resp);
+			// 회원인데 카트가 있는 경우
+		} else {
+			return cartRepository.findByUserId(userId).orElseThrow(() -> new UserCartNotFoundException(userId));
+		}
 	}
 
 }

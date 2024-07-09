@@ -4,8 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
 	boolean existsByEmail(String email);
 
 	User findByEmail(String userEmail);
+
+
+
 }

@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -386,9 +385,7 @@ public class BookServiceImpl implements BookService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<BookSearchResult> searchBooks(String title) {
-		List<Book> books = bookRepository.findByBookTitleContainingIgnoreCaseCustom(title);
-		return books.stream()
-			.map(book -> new BookSearchResult(book.getBookId(), book.getBookTitle()))
-			.collect(Collectors.toList());
+		return bookRepository.findByBookTitleContainingIgnoreCaseCustom(title);
+
 	}
 }
