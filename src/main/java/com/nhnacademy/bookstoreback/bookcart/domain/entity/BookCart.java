@@ -3,6 +3,7 @@ package com.nhnacademy.bookstoreback.bookcart.domain.entity;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,10 +22,10 @@ import lombok.NoArgsConstructor;
 public class BookCart {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JoinColumn(name = "book_cart_id")
+	@Column(name = "book_cart_id")
 	private Long bookCartId;
 
-	@JoinColumn(name = "book_quantity", nullable = false)
+	@Column(name = "book_quantity", nullable = false)
 	private int bookQuantity;
 
 	@ManyToOne(optional = false)

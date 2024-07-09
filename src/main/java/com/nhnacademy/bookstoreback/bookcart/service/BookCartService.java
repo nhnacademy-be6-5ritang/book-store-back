@@ -8,8 +8,6 @@ import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRe
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
 import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 /**
  * @author 이경헌
  * 책 장바구니 관련 비즈니스 로직을 처리하는 서비스 인터페이스입니다.
@@ -59,8 +57,7 @@ public interface BookCartService {
 	 *
 	 * @param currentUser 현재 인증된 사용자의 정보를 담고 있는 객체입니다.
 	 * @param cartId      사용자의 새로운 장바구니 ID 입니다.
-	 * @param resp        HTTP 응답 객체입니다.
 	 * @return 설정된 장바구니 객체를 반환합니다.
 	 */
-	Cart setupCart(CurrentUserDetails currentUser, Long cartId, HttpServletResponse resp);
+	Cart setupCart(CurrentUserDetails currentUser, Long cartId);
 }
