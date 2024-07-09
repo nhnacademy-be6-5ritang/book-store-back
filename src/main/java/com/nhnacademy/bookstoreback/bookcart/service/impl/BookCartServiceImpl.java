@@ -1,7 +1,6 @@
 package com.nhnacademy.bookstoreback.bookcart.service.impl;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +20,9 @@ import com.nhnacademy.bookstoreback.bookcart.service.BookCartService;
 import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 import com.nhnacademy.bookstoreback.cart.exception.UserCartNotFoundException;
 import com.nhnacademy.bookstoreback.cart.repository.CartRepository;
-import com.nhnacademy.bookstoreback.global.util.CookieUtil;
+import com.nhnacademy.bookstoreback.cart.service.CartService;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -33,36 +32,20 @@ public class BookCartServiceImpl implements BookCartService {
 	private final BookCartRepository bookCartRepository;
 	private final BookRepository bookRepository;
 	private final CartRepository cartRepository;
+	private final CartService cartService;
+	private final HttpServletResponse resp;
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<GetBookCartResponse> getBookCartsByCartId(CurrentUserDetails currentUser, HttpServletRequest req) {
-		Long userId = currentUser != null ? currentUser.getUserId() : null;
-		// 비회원일 경우
-		if (userId == null) {
-			Long cartId = Long.valueOf(Objects.requireNonNull(CookieUtil.getCookie(req, "cartId")).getValue());
-			return bookCartRepository.findAllByCartCartId(cartId)
-				.stream().map(GetBookCartResponse::fromEntity).toList();
-		}
-		//회원일 경우
-		Long cartId = cartRepository.findByUserId(userId)
-			.orElseThrow(() -> new UserCartNotFoundException(userId)).getCartId();
+	public List<GetBookCartResponse> getBookCartsByCartId(CurrentUserDetails currentUser, Long cartId) {
+		cartId = setupCart(currentUser, cartId, resp).getCartId();
+
 		return bookCartRepository.findAllByCartCartId(cartId).stream().map(GetBookCartResponse::fromEntity).toList();
 	}
 
 	@Override
-	public void createBookCart(CurrentUserDetails currentUser, HttpServletRequest req, CreateBookCartRequest request) {
-		Long userId = currentUser != null ? currentUser.getUserId() : null;
-		Cart cart = null;
-		// 비회원일 경우
-		if (userId == null) {
-			Long cartId = Long.valueOf(Objects.requireNonNull(CookieUtil.getCookie(req, "cartId")).getValue());
-			cart = cartRepository.findById(cartId)
-				.orElseThrow(() -> new UserCartNotFoundException("비회원"));
-		} else {
-			// 회원일 경우
-			cart = cartRepository.findByUserId(userId).orElseThrow(() -> new UserCartNotFoundException(userId));
-		}
+	public void createBookCart(CurrentUserDetails currentUser, CreateBookCartRequest request, Long cartId) {
+		Cart cart = setupCart(currentUser, cartId, resp);
 
 		Book book = bookRepository.findById(request.bookId())
 			.orElseThrow(() -> new BookNotFoundException(request.bookId()));
@@ -78,16 +61,8 @@ public class BookCartServiceImpl implements BookCartService {
 
 	@Override
 	public void updateBookCart(Long bookCartId, CurrentUserDetails currentUser, UpdateBookCartRequest request,
-		HttpServletRequest req) {
-		Long userId = currentUser != null ? currentUser.getUserId() : null;
-		// 비회원일 경우
-		if (userId == null) {
-			Long cartId = Long.valueOf(Objects.requireNonNull(CookieUtil.getCookie(req, "cartId")).getValue());
-			cartRepository.findById(cartId).orElseThrow(() -> new UserCartNotFoundException("비회원"));
-		} else {
-			// 회원일 경우
-			cartRepository.findByUserId(userId).orElseThrow(() -> new UserCartNotFoundException(userId));
-		}
+		Long cartId) {
+		setupCart(currentUser, cartId, resp);
 
 		bookCartRepository.findById(bookCartId).orElseThrow(() -> new BookCartNotFoundException(bookCartId));
 
@@ -98,19 +73,35 @@ public class BookCartServiceImpl implements BookCartService {
 	}
 
 	@Override
-	public void deleteBookCart(Long bookCartId, CurrentUserDetails currentUser, HttpServletRequest req) {
-		Long userId = currentUser != null ? currentUser.getUserId() : null;
-		// 비회원일 경우
-		if (userId == null) {
-			Long cartId = Long.valueOf(Objects.requireNonNull(CookieUtil.getCookie(req, "cartId")).getValue());
-			cartRepository.findById(cartId).orElseThrow(() -> new UserCartNotFoundException("비회원"));
-		} else {
-			// 회원일 경우
-			cartRepository.findByUserId(userId).orElseThrow(() -> new UserCartNotFoundException(userId));
+	public void deleteBookCart(Long bookCartId, CurrentUserDetails currentUser, Long cartId) {
+		cartId = setupCart(currentUser, cartId, resp).getCartId();
+
+		BookCart bookCart = bookCartRepository.findById(bookCartId)
+			.orElseThrow(() -> new BookCartNotFoundException(bookCartId));
+
+		// 해당 카트아이디와 실제 카트아이디가 일치할 경우만 삭제되도록
+		if (bookCart.getCart().getCartId().equals(cartId)) {
+			bookCartRepository.deleteById(bookCartId);
 		}
 
-		bookCartRepository.findById(bookCartId).orElseThrow(() -> new BookCartNotFoundException(bookCartId));
-		bookCartRepository.deleteById(bookCartId);
+	}
+
+	public Cart setupCart(CurrentUserDetails currentUser, Long cartId, HttpServletResponse resp) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+
+		// 비회원인데 카트가 없는 경우
+		if (userId == null && cartId == null) {
+			return cartService.createCart(null, resp);
+			// 비회원인데 카트가 있는 경우
+		} else if (userId == null) {
+			return cartRepository.findById(cartId).orElseThrow(() -> new UserCartNotFoundException(cartId));
+			// 회원인데 카트가 없는 경우
+		} else if (!cartRepository.existsByUserId(userId)) {
+			return cartService.createCart(currentUser, resp);
+			// 회원인데 카트가 있는 경우
+		} else {
+			return cartRepository.findByUserId(userId).orElseThrow(() -> new UserCartNotFoundException(userId));
+		}
 	}
 
 }

@@ -28,19 +28,20 @@ public class WishListController {
 
 	@GetMapping
 	public ResponseEntity<List<GetWishListResponse>> getWishLists(@CurrentUser CurrentUserDetails currentUser) {
-		return ResponseEntity.status(HttpStatus.OK).body(wishListService.getWishLists(11L));
+		return ResponseEntity.status(HttpStatus.OK).body(wishListService.getWishLists(currentUser));
 	}
 
 	@PostMapping
 	public ResponseEntity<Void> createWishList(@CurrentUser CurrentUserDetails currentUser,
 		@RequestBody CreateWishListRequest request) {
-		wishListService.createWishList(11L, request);
+		wishListService.createWishList(currentUser, request);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@DeleteMapping("/{wishListId}")
-	public ResponseEntity<Void> deleteWishList(@PathVariable Long wishListId) {
-		wishListService.deleteWishList(wishListId);
+	public ResponseEntity<Void> deleteWishList(@PathVariable Long wishListId,
+		@CurrentUser CurrentUserDetails currentUser) {
+		wishListService.deleteWishList(wishListId, currentUser);
 		return ResponseEntity.noContent().build();
 	}
 }

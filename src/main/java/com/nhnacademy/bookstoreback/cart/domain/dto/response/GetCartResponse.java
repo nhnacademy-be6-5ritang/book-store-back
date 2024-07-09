@@ -10,9 +10,10 @@ public record GetCartResponse(
 	Long userId) {
 
 	public static GetCartResponse fromEntity(Cart cart) {
+		Long userId = cart.getUser() != null ? cart.getUser().getId() : null;
 		return GetCartResponse.builder()
 			.cardId(cart.getCartId())
-			.userId(cart.getCartId())
+			.userId(userId)
 			.build();
 	}
 }
