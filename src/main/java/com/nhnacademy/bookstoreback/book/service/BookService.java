@@ -12,6 +12,7 @@ import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 
 /**
  * BookService 인터페이스
@@ -40,7 +41,7 @@ public interface BookService {
 	 *
 	 * @param item 도서 정보
 	 */
-	void saveBook(JsonNode item) throws Exception;
+	Book saveBook(JsonNode item) throws Exception;
 
 	/**
 	 * 모든 도서를 조회

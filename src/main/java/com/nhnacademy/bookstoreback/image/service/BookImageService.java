@@ -28,29 +28,35 @@ public class BookImageService {
 	}
 
 	@Transactional
+	public void mapImageToBook(Book book) {
+		Optional<Image> existingImageOptional = imageRepository.findByImageName(book.getBookTitle());
+
+		Image image;
+		if (existingImageOptional.isPresent()) {
+			image = existingImageOptional.get();
+		} else {
+			image = new Image(book.getBookTitle(), "http://image.toast.com/aaaacuf/5ritang/books/null.jpg"); // 기본 URL을 사용
+			imageRepository.save(image);
+		}
+
+		if (!bookImageRepository.existsByBookAndImage(book, image)) {
+			BookImage bookImage = new BookImage();
+			bookImage.setBook(book);
+			bookImage.setImage(image);
+			bookImageRepository.save(bookImage);
+		}
+	}
+
+	@Transactional
 	public void mapAllBooksToImages() {
 		List<Book> books = bookRepository.findAll();
-		List<Image> images = imageRepository.findAll();
-
 		for (Book book : books) {
-			Optional<Image> existingImageOptional = images.stream()
-				.filter(image -> image.getImageName().equals(book.getBookTitle()))
-				.findFirst();
-
-			Image image;
-			if (existingImageOptional.isPresent()) {
-				image = existingImageOptional.get();
-			} else {
-				image = new Image(book.getBookTitle(), "http://image.toast.com/aaaacuf/5ritang/books/null.jpg"); // 기본 URL을 사용
-				imageRepository.save(image);
-			}
-
-			if (!bookImageRepository.existsByBookAndImage(book, image)) {
-				BookImage bookImage = new BookImage();
-				bookImage.setBook(book);
-				bookImage.setImage(image);
-				bookImageRepository.save(bookImage);
-			}
+			mapImageToBook(book);
 		}
+	}
+
+	@Transactional
+	public void mapImageForSingleBook(Book book) {
+		mapImageToBook(book);
 	}
 }

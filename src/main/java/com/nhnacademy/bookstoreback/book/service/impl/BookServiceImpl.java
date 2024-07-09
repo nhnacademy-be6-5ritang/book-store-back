@@ -45,6 +45,8 @@ import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
 import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
 import com.nhnacademy.bookstoreback.category.service.BookCategoryService;
 import com.nhnacademy.bookstoreback.category.service.CategoryService;
+import com.nhnacademy.bookstoreback.image.controller.BookImageTestController;
+import com.nhnacademy.bookstoreback.image.controller.CoverImageController;
 import com.nhnacademy.bookstoreback.image.repository.BookImageRepository;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.publisher.exception.PublisherNotFoundException;
@@ -82,6 +84,8 @@ public class BookServiceImpl implements BookService {
 	private final CategoryService categoryService;
 	private final BookCategoryService bookCategoryService;
 	private final BookImageRepository bookImageRepository;
+	private final CoverImageController coverImageController;
+	private final BookImageTestController bookImageTestController;
 
 	/**
 	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
@@ -120,7 +124,10 @@ public class BookServiceImpl implements BookService {
 			JsonNode root = objectMapper.readTree(response);
 			JsonNode item = root.path("item").get(0);
 
-			saveBook(item);
+			Book book = saveBook(item);
+
+			coverImageController.downloadImage(book);
+			bookImageTestController.mapImageForSingleBook(book);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -132,13 +139,13 @@ public class BookServiceImpl implements BookService {
 	 * @param item 도서 정보
 	 */
 	@Override
-	public void saveBook(JsonNode item) throws Exception {
+	public Book saveBook(JsonNode item) throws Exception {
 		// Book 정보 파싱
 		String bookIsbn = item.path("isbn13").asText("");
 
 		// ISBN을 기준으로 책이 이미 존재하는지 확인
 		if (bookRepository.findByBookIsbn(bookIsbn).isPresent()) {
-			return; // 이미 존재하는 책이면 저장하지 않음
+			return null; // 이미 존재하는 책이면 저장하지 않음
 		}
 
 		String bookTitle = item.path("title").asText();
@@ -200,6 +207,8 @@ public class BookServiceImpl implements BookService {
 
 		// BookCategory 엔티티 생성 및 저장
 		bookCategoryService.saveBookCategory(book, category);
+
+		return book;
 	}
 
 	/**

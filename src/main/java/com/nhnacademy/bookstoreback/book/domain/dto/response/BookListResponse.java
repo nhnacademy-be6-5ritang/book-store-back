@@ -19,5 +19,3 @@ public record BookListResponse(
 	BigDecimal bookSalePrice,
 	BigDecimal bookSalePercent) {
 }
-
-// TODO : 이미지 추가
