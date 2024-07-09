@@ -1,22 +1,22 @@
 package com.nhnacademy.bookstoreback.wishlist.service.impl;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
-import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
-import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.exception.UserNotFoundException;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.CreateWishListRequest;
-import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.CreateWishListResponse;
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.GetWishListResponse;
 import com.nhnacademy.bookstoreback.wishlist.domain.entity.WishList;
+import com.nhnacademy.bookstoreback.wishlist.exception.WishListAlreadyExistsException;
+import com.nhnacademy.bookstoreback.wishlist.exception.WishListNotFoundException;
 import com.nhnacademy.bookstoreback.wishlist.repository.WishListRepository;
 import com.nhnacademy.bookstoreback.wishlist.service.WishListService;
 
@@ -24,46 +24,60 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class WishListServiceImpl implements WishListService {
 	private final WishListRepository wishListRepository;
 	private final BookRepository bookRepository;
 	private final UserRepository userRepository;
 
+	@Transactional(readOnly = true)
 	@Override
-	public List<GetWishListResponse> getWishLists(Long userId) {
-		List<WishList> wishLists = wishListRepository.findAllByUserId(userId);
-		return wishLists.stream()
-			.map(wishList -> GetWishListResponse.builder()
-				.bookId(wishList.getBook().getBookId())
-				.build())
-			.collect(Collectors.toList());
+	public List<GetWishListResponse> getWishLists(CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+		if (userId == null) {
+			throw new UserNotFoundException(0L);
+		}
+
+		return wishListRepository.findAllByUserId(userId).stream()
+			.map(GetWishListResponse::fromEntity).toList();
 	}
 
 	@Override
-	public CreateWishListResponse createWishList(CreateWishListRequest request) {
-		Book book = bookRepository.findById(request.bookId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 도서 '%s'는 존재하지 않는 도서입니다.", request.bookId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+	public void createWishList(CurrentUserDetails currentUser, CreateWishListRequest request) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
 
-		User user = userRepository.findById(request.userId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 회원 '%s'는 존재하지 않는 회원입니다.", request.bookId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+		if (userId == null) {
+			throw new UserNotFoundException(0L);
+		}
 
-		WishList wishList = new WishList(book, user);
-		wishListRepository.save(wishList);
+		Book book = bookRepository.findById(request.bookId())
+			.orElseThrow(() -> new BookNotFoundException(request.bookId()));
 
-		return CreateWishListResponse.builder()
-			.bookId(book.getBookId())
-			.userId(user.getId())
-			.build();
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException(userId));
+
+		if (wishListRepository.existsByUserIdAndBookBookId(userId, book.getBookId())) {
+			throw new WishListAlreadyExistsException(book.getBookId());
+		}
+
+		wishListRepository.save(new WishList(book, user));
 	}
 
 	@Override
-	public void deleteWishList(Long wishListId) {
-		wishListRepository.deleteById(wishListId);
+	public void deleteWishList(Long wishListId, CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+
+		if (userId == null) {
+			throw new UserNotFoundException(0L);
+		} else {
+			WishList wishList = wishListRepository.findById(wishListId)
+				.orElseThrow(() -> new WishListNotFoundException(wishListId));
+
+			// 해당 회원의 위시리스트 아이디와 실제 위시리스트가 가진 회원 아이디가 일치할 경우만 삭제되도록
+			if (wishList.getUser().getId().equals(userId)) {
+				wishListRepository.deleteById(wishListId);
+			}
+		}
+
 	}
 }

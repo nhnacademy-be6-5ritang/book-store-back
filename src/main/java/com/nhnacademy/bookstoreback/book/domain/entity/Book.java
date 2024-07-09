@@ -95,7 +95,7 @@ public class Book {
 	@Column(name = "book_sale_price")
 	private BigDecimal bookSalePrice;
 
-	@OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<BookImage> bookImages;
 
 	@Builder
