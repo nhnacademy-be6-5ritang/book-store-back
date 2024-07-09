@@ -108,4 +108,13 @@ public class Delivery {
 	public void updateDeliveryAddPolicy(DeliveryPolicy deliveryPolicy) {
 		this.deliveryPolicy = deliveryPolicy;
 	}
+
+	public void updateDeliverySender(String deliverySenderName, String deliverySenderPhone,
+		String deliverySenderAddress, DeliveryStatus deliveryStatus) {
+		this.deliverySenderName = deliverySenderName;
+		this.deliverySenderPhone = deliverySenderPhone;
+		this.deliverySenderDate = LocalDateTime.now();
+		this.deliverySenderAddress = deliverySenderAddress;
+		this.deliveryStatus = deliveryStatus;
+	}
 }

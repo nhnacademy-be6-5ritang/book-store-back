@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesRequest;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryByOrderIdRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
@@ -98,5 +99,12 @@ public class DeliveryController {
 	@GetMapping("/{orderId}/orders")
 	public ResponseEntity<GetDeliveryResponse> getDeliveryByOrder(@PathVariable Long orderId) {
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.getDeliveryByOrderId(orderId));
+	}
+
+	@PutMapping("/sender/{deliveryId}")
+	public ResponseEntity<Void> updateDeliveryByOrderId(@PathVariable Long deliveryId,
+		@RequestBody UpdateDeliveryByOrderIdRequest request) {
+		deliveryService.updateDeliveryByOrderId(deliveryId, request);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.user.service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +16,7 @@ import com.nhnacademy.bookstoreback.role.exception.RoleNotFoundException;
 import com.nhnacademy.bookstoreback.role.repository.RoleRepository;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
@@ -152,5 +155,16 @@ public class UserService {
 		}
 
 		return UserTokenInfo.fromEntity(user);
+	}
+
+	/**
+	 *  @author 이기훈
+	 *
+	 * 생일쿠폰 발급시 생일 정보를 얻기위한 service
+	 *
+	 */
+	@Transactional(readOnly = true)
+	public List<BirthdayCouponTargetResponse> getUsersWithBirthday(LocalDate date) {
+		return userRepository.findByBirthDate(date);
 	}
 }
