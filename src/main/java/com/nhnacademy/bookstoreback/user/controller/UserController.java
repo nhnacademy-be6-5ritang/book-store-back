@@ -25,10 +25,12 @@ import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoRespo
 import com.nhnacademy.bookstoreback.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 	private final UserService userService;
 
@@ -83,6 +85,7 @@ public class UserController {
 	@GetMapping("/birthday")
 	public ResponseEntity<List<BirthdayCouponTargetResponse>> getUsersWithBirthday(
 		@RequestParam("date") LocalDate date) {
+		log.warn("{} 생일쿠폰 발급 컨트롤러 실행", date);
 		List<BirthdayCouponTargetResponse> users = userService.getUsersWithBirthday(date);
 		return ResponseEntity.ok(users);
 	}

@@ -1,7 +1,6 @@
 
 package com.nhnacademy.bookstoreback.user.repository.impl;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
@@ -23,13 +22,16 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
 
     @Override
-    public List<BirthdayCouponTargetResponse> findByBirthDate(LocalDate date) {
+    public List<BirthdayCouponTargetResponse> findUsersWithBirthMonthDay(int month, int day) {
         QUser user = QUser.user;
 
         return queryFactory
             .select(Projections.constructor(BirthdayCouponTargetResponse.class, user.id, user.birth))
             .from(user)
-            .where(user.birth.eq(date))
+            .where(
+                user.birth.month().eq(month),
+                user.birth.dayOfMonth().eq(day)
+            )
             .fetch();
     }
 }
