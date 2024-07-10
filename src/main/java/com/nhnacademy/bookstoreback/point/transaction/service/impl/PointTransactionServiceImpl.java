@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.point.earningpolicy.domain.entity.PointEarningPolicy;
 import com.nhnacademy.bookstoreback.point.earningpolicy.exception.PointEarningPolicyNotFoundException;
@@ -55,7 +56,7 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 	}
 
 	@Override
-	public Page<GetPointTransactionResponse> getPointTransactions(CurrentUserDetails currentUser, Pageable pageable) {
+	public Page<GetPointTransactionResponse> getPointTransactions(@CurrentUser CurrentUserDetails currentUser, Pageable pageable) {
 		int page = pageable.getPageNumber() > 0 ? pageable.getPageNumber() - 1 : 0;
 		int size = pageable.isPaged() && pageable.getPageSize() > 0 ? pageable.getPageSize() : 10;
 

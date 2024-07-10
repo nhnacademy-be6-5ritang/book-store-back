@@ -34,6 +34,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResp
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetPaperResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetUserPointOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.UpdateBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.service.impl.BookOrderServiceImpl;
@@ -280,7 +281,7 @@ public class OrderController {
 	}
 
 	/**
-	 * 카트아이디로 주문 전부 가져오기
+	 * 로그인 된 유저 주문 전부 가져오기
 	 * 페이징 처리 예정
 	 * @param currentUserDetails 로그인된 사용자 아이디
 	 * @return 카트아이디를 가지고 있는 주문 전부 가져오기
@@ -315,5 +316,11 @@ public class OrderController {
 		@RequestBody OrderCheckNonRequest orderCheckNonRequest) {
 		return ResponseEntity.ok(orderServiceImpl.findByOrderInfoIdByEmail(orderCheckNonRequest.orderInfoId(),
 			orderCheckNonRequest.payerEmail()));
+	}
+
+	@GetMapping("/orders-points")
+	public ResponseEntity<GetUserPointOrderResponse> getUserPointOrders(
+		@CurrentUser CurrentUserDetails currentUserDetails) {
+		return ResponseEntity.ok(orderServiceImpl.getUserPoint(currentUserDetails));
 	}
 }

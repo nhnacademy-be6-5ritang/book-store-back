@@ -12,6 +12,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetNonOrderByInfoR
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetUserPointOrderResponse;
 
 public interface OrderService {
 
@@ -83,4 +84,11 @@ public interface OrderService {
 	 * @return 조회된 주문 정보
 	 */
 	GetNonOrderByInfoResponse findByOrderInfoIdByEmail(String orderInfoId, String email);
+
+	/**
+	 * 회원 포인트 가져오기
+	 * @param currentUserDetails 로그인 된 회원
+	 * @return 회원 보유 포인트
+	 */
+	GetUserPointOrderResponse getUserPoint(@CurrentUser CurrentUserDetails currentUserDetails);
 }
