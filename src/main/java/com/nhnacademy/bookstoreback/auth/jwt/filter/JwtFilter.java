@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.auth.jwt.filter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,7 +21,6 @@ import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -30,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 public class JwtFilter extends OncePerRequestFilter {
 	private final JwtUtils jwtUtils;
 	private final TokenReissueClient tokenReissueClient;
+	private final Long accessTokenExpiresIn;
+	private final Long refreshTokenExpiresIn;
 
 	@Override
 	protected void doFilterInternal(
@@ -44,6 +46,9 @@ public class JwtFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 			return;
 		}
+
+		accessToken = java.net.URLDecoder.decode(accessToken, StandardCharsets.UTF_8);
+		refreshToken = java.net.URLDecoder.decode(refreshToken, StandardCharsets.UTF_8);
 
 		String accessTokenErrorMessage = jwtUtils.validateToken(accessToken);
 		if ("만료된 토큰입니다.".equals(accessTokenErrorMessage)) {
@@ -65,6 +70,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
 			accessToken = Objects.requireNonNull(reissueTokensResponse.getBody()).accessToken();
 			refreshToken = reissueTokensResponse.getBody().refreshToken();
+
+			response.setHeader("New-Authorization", accessToken);
+			response.setHeader("New-Refresh-Token", refreshToken);
 		} else if (Objects.nonNull(accessTokenErrorMessage)) {
 			PrintWriter writer = response.getWriter();
 			writer.print(accessTokenErrorMessage);
@@ -86,11 +94,6 @@ public class JwtFilter extends OncePerRequestFilter {
 			userDetails, null, userDetails.getAuthorities()
 		);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-
-		response.setHeader("Authorization", accessToken);
-		Cookie cookieWithRefreshToken = new Cookie("Refresh-Token", refreshToken);
-		cookieWithRefreshToken.setPath("/");
-		response.addCookie(cookieWithRefreshToken);
 
 		filterChain.doFilter(request, response);
 	}

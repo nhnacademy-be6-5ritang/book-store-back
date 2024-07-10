@@ -1,5 +1,6 @@
 package com.nhnacademy.bookstoreback.global.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,11 @@ public class SecurityConfig {
 	private final IpAddressFilter ipAddressFilter;
 	private final TokenReissueClient tokenReissueClient;
 
+	@Value("${spring.jwt.access-token.expires-in}")
+	private Long accessTokenExpiresIn;
+	@Value("${spring.jwt.refresh-token.expires-in}")
+	private Long refreshTokenExpiresIn;
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
@@ -42,7 +48,8 @@ public class SecurityConfig {
 			)
 			.addFilterBefore(ipAddressFilter, UsernamePasswordAuthenticationFilter.class)
 			// .addFilterAfter(new JwtFilter(jwtUtils, tokenReissueClient), IpAddressFilter.class)
-			.addFilterBefore(new JwtFilter(jwtUtils, tokenReissueClient), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new JwtFilter(jwtUtils, tokenReissueClient, accessTokenExpiresIn, refreshTokenExpiresIn),
+				UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement((session) -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
