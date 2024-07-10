@@ -9,14 +9,14 @@ import lombok.Builder;
 @Builder
 public record GetReviewResponse(
 	Long bookId,
-	Long userId,
+	String userName,
 	int reviewScore,
 	String reviewComment,
 	LocalDateTime reviewCreatedAt) {
 
 	public static GetReviewResponse fromEntity(Review review) {
 		return GetReviewResponse.builder()
-			.userId(review.getUser().getId())
+			.userName(review.getUser().getName())
 			.bookId(review.getBook().getBookId())
 			.reviewScore(review.getReviewScore())
 			.reviewComment(review.getReviewComment())
