@@ -58,10 +58,10 @@ public class Address {
 	public static Address toEntity(RegisterAddressRequest registerAddressRequest, User user) {
 		return Address.builder()
 			.user(user)
-			.postCode(registerAddressRequest.postCode())
-			.base(registerAddressRequest.base())
-			.detail(registerAddressRequest.detail())
 			.alias(registerAddressRequest.alias())
+			.postCode(registerAddressRequest.postCode())
+			.base(registerAddressRequest.baseAddress())
+			.detail(registerAddressRequest.detailAddress())
 			.isDefault(false)
 			.build();
 	}

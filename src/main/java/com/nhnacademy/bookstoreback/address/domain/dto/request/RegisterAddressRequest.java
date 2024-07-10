@@ -4,10 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record RegisterAddressRequest(
-	Long userId,
+	String alias,
 	String postCode,
-	String base,
-	String detail,
-	String alias
+	String baseAddress,
+	String detailAddress
 ) {
 }
