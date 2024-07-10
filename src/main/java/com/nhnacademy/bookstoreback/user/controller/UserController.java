@@ -72,8 +72,6 @@ public class UserController {
 	// 	return ResponseEntity.status(HttpStatus.CREATED).body(registerAddressResponse);
 	// }
 
-
-
 	/**
 	 * @author 이기훈
 	 * @param date 유저 생일
