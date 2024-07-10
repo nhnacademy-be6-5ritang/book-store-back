@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional(readOnly = true)
 	@Override
 	public Page<GetCategoryResponse> getCategories(Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
 		return categoryRepository.findAll(
@@ -124,10 +124,9 @@ public class CategoryServiceImpl implements CategoryService {
 			});
 	}
 
-
 	@Transactional(readOnly = true)
 	@Override
 	public List<CategorySearchResult> searchCategories(String query) {
-	return categoryRepository.findCategoriesByPartialName(query);
+		return categoryRepository.findCategoriesByPartialName(query);
 	}
 }

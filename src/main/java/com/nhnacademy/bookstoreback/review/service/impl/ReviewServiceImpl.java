@@ -48,7 +48,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> findAllReviews(Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
 		return reviewRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
@@ -65,7 +65,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> findReviewsByBookId(Long bookId, Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
 		Page<Review> reviews = reviewRepository.findAllByBookBookId(bookId,
@@ -85,7 +85,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> findReviewsByUserId(Long userId, Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
 		Page<Review> reviews = reviewRepository.findAllByUserId(userId,

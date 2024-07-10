@@ -36,7 +36,7 @@ public class TagServiceImpl implements TagService {
 	@Transactional(readOnly = true)
 	@Override
 	public Page<TagDto> getTags(Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		return tagRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "tagId")))
 			.map(TagDto::fromEntity);

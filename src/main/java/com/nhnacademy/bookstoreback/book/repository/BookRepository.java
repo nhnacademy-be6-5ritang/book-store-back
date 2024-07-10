@@ -2,6 +2,8 @@ package com.nhnacademy.bookstoreback.book.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +17,7 @@ import com.nhnacademy.bookstoreback.book.domain.entity.Book;
  */
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, Long> , CustomBookRepository {
+public interface BookRepository extends JpaRepository<Book, Long>, CustomBookRepository {
 	/**
 	 * ISBN 기반 도서 조회
 	 *
@@ -32,6 +34,6 @@ public interface BookRepository extends JpaRepository<Book, Long> , CustomBookRe
 	 */
 	boolean existsByBookTitle(String bookTitle);
 
-
+	Page<Book> findAllByBookCategories_Category_CategoryName(Pageable pageable, String categoryName);
 }
 

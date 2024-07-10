@@ -48,7 +48,7 @@ public class PublisherServiceImpl implements PublisherService {
 	@Transactional(readOnly = true)
 	@Override
 	public Page<PublisherDto> getPublishers(Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		return publisherRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "publisherId")))
 			.map(PublisherDto::fromEntity);

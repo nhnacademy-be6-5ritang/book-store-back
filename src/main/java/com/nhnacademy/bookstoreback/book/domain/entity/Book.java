@@ -7,6 +7,7 @@ import java.util.List;
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
+import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 
 import jakarta.persistence.CascadeType;
@@ -97,6 +98,9 @@ public class Book {
 
 	@OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<BookImage> bookImages;
+
+	@OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<BookCategory> bookCategories;
 
 	@Builder
 	public Book(
