@@ -1,12 +1,11 @@
 package com.nhnacademy.bookstoreback.user.domain.dto.response;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
-import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
 import com.nhnacademy.bookstoreback.userrole.domain.entity.UserRole;
 
 public record GetMyUserInfoResponse(
@@ -15,8 +14,10 @@ public record GetMyUserInfoResponse(
 	LocalDate birth,
 	String contact,
 	LocalDateTime createdAt,
-	List<UserRoleResponse> roles,
-	UserGrade userGrade
+	List<String> roles,
+	String userGradeName,
+	String userStatusName,
+	BigDecimal points
 ) {
 	private record UserRoleResponse(
 		Long id,
@@ -33,15 +34,17 @@ public record GetMyUserInfoResponse(
 	public static GetMyUserInfoResponse fromEntity(User user) {
 		List<UserRoleResponse> roles = user.getUserRoles().stream()
 			.map(UserRoleResponse::fromEntity)
-			.collect(Collectors.toList());
+			.toList();
 		return new GetMyUserInfoResponse(
 			user.getName(),
 			user.getEmail(),
 			user.getBirth(),
 			user.getContact(),
 			user.getCreatedAt(),
-			roles,
-			user.getUserGrade()
+			roles.stream().map(UserRoleResponse::roleName).toList(),
+			user.getUserGrade().getUserGradeName(),
+			user.getStatus().getUserStatusName(),
+			user.getPoints()
 		);
 	}
 }
