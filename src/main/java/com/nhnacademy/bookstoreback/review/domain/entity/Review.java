@@ -3,6 +3,7 @@ package com.nhnacademy.bookstoreback.review.domain.entity;
 import java.time.LocalDateTime;
 
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
 import jakarta.persistence.Column;
@@ -35,7 +36,7 @@ public class Review {
 	private String reviewComment;
 
 	@Column(name = "review_created_at", nullable = false)
-	private LocalDateTime reviewCreatedAt;
+	private LocalDateTime reviewCreatedAt = LocalDateTime.now();
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "book_id", nullable = false)
@@ -52,6 +53,15 @@ public class Review {
 		this.reviewCreatedAt = reviewCreatedAt;
 		this.book = book;
 		this.user = user;
+	}
+
+	public static Review toEntity(CreateReviewRequest request, Book book, User user) {
+		return Review.builder()
+			.reviewScore(request.reviewScore())
+			.reviewComment(request.reviewComment())
+			.book(book)
+			.user(user)
+			.build();
 	}
 
 	public void updateReviewScore(int newScore, String reviewComment) {
