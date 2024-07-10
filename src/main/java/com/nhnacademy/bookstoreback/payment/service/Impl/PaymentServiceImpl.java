@@ -74,44 +74,45 @@ public class PaymentServiceImpl implements PaymentService {
 				LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
 		}
-		User user = userRepository.getReferenceById(currentUser.getUserId());
+		if (currentUser != null) {
+			User user = userRepository.getReferenceById(currentUser.getUserId());
 
-		if (!order.getOrderPointSale().equals(BigDecimal.ZERO)) {
+			if (!order.getOrderPointSale().equals(BigDecimal.ZERO)) {
+
+				PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
+						"포인트 사용")
+					.orElseThrow(
+						() -> new PointEarningPolicyNotFoundException("포인트 사용"));
+				pointTransactionRepository.save(PointTransaction.builder()
+					.user(user)
+					.pointEarningPolicy(pointEarningPolicy)
+					.pointTransactionAmount(
+						order.getOrderPointSale()
+							.multiply(pointEarningPolicy.getPointEarningAmount(), MathContext.UNLIMITED))
+					.build());
+				user.updateOutPoints(order.getOrderPointSale());
+			}
 
 			PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
-					"포인트 사용")
+					user.getUserGrade().getUserGradeName())
 				.orElseThrow(
-					() -> new PointEarningPolicyNotFoundException("포인트 사용"));
+					() -> new PointEarningPolicyNotFoundException(user.getUserGrade().getUserGradeName()));
 			pointTransactionRepository.save(PointTransaction.builder()
 				.user(user)
 				.pointEarningPolicy(pointEarningPolicy)
 				.pointTransactionAmount(
-					order.getOrderPointSale()
-						.multiply(pointEarningPolicy.getPointEarningAmount(), MathContext.UNLIMITED))
+					order.getOrderPrice()
+						.multiply(pointEarningPolicy.getPointEarningAmount()
+								.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
+							MathContext.UNLIMITED))
 				.build());
-			user.updateOutPoints(order.getOrderPointSale());
-		}
-
-		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
-				user.getUserGrade().getUserGradeName())
-			.orElseThrow(
-				() -> new PointEarningPolicyNotFoundException(user.getUserGrade().getUserGradeName()));
-		pointTransactionRepository.save(PointTransaction.builder()
-			.user(user)
-			.pointEarningPolicy(pointEarningPolicy)
-			.pointTransactionAmount(
+			user.updatePoints(
 				order.getOrderPrice()
 					.multiply(pointEarningPolicy.getPointEarningAmount()
 							.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
-						MathContext.UNLIMITED))
-			.build());
-		user.updatePoints(
-			order.getOrderPrice()
-				.multiply(pointEarningPolicy.getPointEarningAmount()
-						.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
-					MathContext.UNLIMITED));
-		userRepository.save(user);
-
+						MathContext.UNLIMITED));
+			userRepository.save(user);
+		}
 		orderServiceImpl.updateOrderStatus(order.getOrderId(), 1L);
 		return PaymentSaveResponse.from(paymentRepository.save(
 			Payment.toEntity(paymentResponse.paymentKey(), order, paymentResponse.amount(), paymentResponse.status(),
