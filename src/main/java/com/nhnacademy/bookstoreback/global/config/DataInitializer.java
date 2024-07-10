@@ -3,9 +3,9 @@ package com.nhnacademy.bookstoreback.global.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.http.ResponseEntity;
+
 import com.nhnacademy.bookstoreback.book.controller.BookController;
-import com.nhnacademy.bookstoreback.image.controller.BookImageTestController;
+import com.nhnacademy.bookstoreback.image.controller.BookImageController;
 import com.nhnacademy.bookstoreback.image.controller.CoverImageController;
 
 /**
@@ -24,15 +24,15 @@ public class DataInitializer implements CommandLineRunner {
 
 	private final BookController bookController;
 	private final CoverImageController coverImageController;
-	private final BookImageTestController bookImageTestController;
+	private final BookImageController bookImageController;
 
 	@Autowired
 	public DataInitializer(BookController bookController,
 		CoverImageController coverImageController,
-		BookImageTestController bookImageTestController) {
+		BookImageController bookImageController) {
 		this.bookController = bookController;
 		this.coverImageController = coverImageController;
-		this.bookImageTestController = bookImageTestController;
+		this.bookImageController = bookImageController;
 	}
 
 	@Override
@@ -44,16 +44,5 @@ public class DataInitializer implements CommandLineRunner {
 		// 	System.out.println("Failed to fetch and save books: " + bookFetchResponse.getBody());
 		// 	return; // 데이터 로드 실패 시 다음 작업을 수행하지 않음
 		// }
-		//
-		// String imageDownloadResponse = coverImageController.downloadImages();
-		// if ("Images downloaded successfully!".equals(imageDownloadResponse)) {
-		// 	System.out.println("Images downloaded successfully.");
-		// } else {
-		// 	System.out.println("Failed to download images.");
-		// 	return; // 이미지 다운로드 실패 시 다음 작업을 수행하지 않음
-		// }
-		//
-		// bookImageTestController.mapAllBooksToImages();
-		// System.out.println("Mapped all books to images successfully.");
 	}
 }

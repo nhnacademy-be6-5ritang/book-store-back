@@ -44,7 +44,7 @@ import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
 import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
 import com.nhnacademy.bookstoreback.category.service.BookCategoryService;
 import com.nhnacademy.bookstoreback.category.service.CategoryService;
-import com.nhnacademy.bookstoreback.image.controller.BookImageTestController;
+import com.nhnacademy.bookstoreback.image.controller.BookImageController;
 import com.nhnacademy.bookstoreback.image.controller.CoverImageController;
 import com.nhnacademy.bookstoreback.image.repository.BookImageRepository;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
@@ -84,7 +84,7 @@ public class BookServiceImpl implements BookService {
 	private final BookCategoryService bookCategoryService;
 	private final BookImageRepository bookImageRepository;
 	private final CoverImageController coverImageController;
-	private final BookImageTestController bookImageTestController;
+	private final BookImageController bookImageController;
 
 	/**
 	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
@@ -124,9 +124,6 @@ public class BookServiceImpl implements BookService {
 			JsonNode item = root.path("item").get(0);
 
 			Book book = saveBook(item);
-
-			coverImageController.downloadImage(book);
-			bookImageTestController.mapImageForSingleBook(book);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -206,6 +203,9 @@ public class BookServiceImpl implements BookService {
 
 		// BookCategory 엔티티 생성 및 저장
 		bookCategoryService.saveBookCategory(book, category);
+
+		coverImageController.downloadImage(book);
+		bookImageController.mapImageForSingleBook(book);
 
 		return book;
 	}

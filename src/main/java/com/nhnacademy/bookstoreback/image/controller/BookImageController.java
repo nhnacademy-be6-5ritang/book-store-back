@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/test")
-public class BookImageTestController {
+public class BookImageController {
 
 	private final BookImageService bookImageService;
 
 	@Autowired
-	public BookImageTestController(BookImageService bookImageService) {
+	public BookImageController(BookImageService bookImageService) {
 		this.bookImageService = bookImageService;
 	}
 

@@ -13,19 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class BookImageService {
 
 	private final BookRepository bookRepository;
 	private final ImageRepository imageRepository;
 	private final BookImageRepository bookImageRepository;
-
-	@Autowired
-	public BookImageService(BookRepository bookRepository, ImageRepository imageRepository, BookImageRepository bookImageRepository) {
-		this.bookRepository = bookRepository;
-		this.imageRepository = imageRepository;
-		this.bookImageRepository = bookImageRepository;
-	}
 
 	@Transactional
 	public void mapImageToBook(Book book) {

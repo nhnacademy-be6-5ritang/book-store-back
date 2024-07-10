@@ -29,7 +29,7 @@ spring:
 
 nhncloud:
   appkey: vyiy4M85i8mJ5mgP
-  secretkey: ffpUQvzkmH8RsQDTuvpZD7U9tWlqExe4
+  secretkey: fBlt6m4cSRJs07X05mhPBfmofWoBlcSU
 
 naver:
   client:
