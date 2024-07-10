@@ -40,7 +40,7 @@ public class BookController {
 	private final BookServiceImpl bookService;
 
 	/**
-	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
+	 * 도서 리스트 조회 및 저장 (국내도서&외국도서 베스트셀러 count 만큼 저장)
 	 *
 	 * @return 도서저장결과
 	 */
@@ -62,7 +62,7 @@ public class BookController {
 	}
 
 	/**
-	 * ISBN을 통한 도서정보 조회 및 저장
+	 * ISBN을 통한 도서 한권 조회 및 저장
 	 *
 	 * @return 도서저장결과
 	 */
