@@ -196,8 +196,7 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional(readOnly = true)
 	public GetUserPointOrderResponse getUserPoint(@CurrentUser CurrentUserDetails currentUserDetails) {
 		if (currentUserDetails == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_USER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new OrderFailException(errorStatus);
+			return null;
 		}
 		User user = userRepository.getReferenceById(currentUserDetails.getUserId());
 		return GetUserPointOrderResponse.from(user.getPoints());
