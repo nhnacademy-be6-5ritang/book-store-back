@@ -62,96 +62,105 @@ public class CloudImageService {
 	}
 
 	@Transactional
-	public void downloadCoverImages() {
-		List<Book> books = bookRepository.findAll();
-
+	public void downloadAndSaveImageForBook(Book book) {
 		// 디렉토리 생성
 		File directory = new File(LOCAL_DIRECTORY);
 		if (!directory.exists()) {
 			directory.mkdirs();
 		}
 
-		for (Book book : books) {
-			String isbn = book.getBookIsbn();
-			String apiUrl = "https://openapi.naver.com/v1/search/book.json?query=" + isbn;
+		String isbn = book.getBookIsbn();
+		String apiUrl = "https://openapi.naver.com/v1/search/book.json?query=" + isbn;
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.set("X-Naver-Client-Id", naverClientId);
-			headers.set("X-Naver-Client-Secret", naverClientSecret);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-Naver-Client-Id", naverClientId);
+		headers.set("X-Naver-Client-Secret", naverClientSecret);
 
-			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-			int attempt = 0;
-			boolean success = false;
+		int attempt = 0;
+		boolean success = false;
 
-			while (!success && attempt < MAX_RETRY_COUNT) {
-				try {
-					ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.GET, requestEntity, Map.class);
+		while (!success && attempt < MAX_RETRY_COUNT) {
+			try {
+				ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.GET, requestEntity, Map.class);
 
-					Map<String, Object> body = response.getBody();
-					if (body == null) {
-						System.out.println("Failed to get API response for ISBN: " + isbn);
-						break;
-					}
-
-					List<Object> items = (List<Object>) body.get("items");
-					if (items == null || items.isEmpty()) {
-						System.out.println("No items found in API response for ISBN: " + isbn);
-						break;
-					}
-
-					Map<String, Object> item = (Map<String, Object>) items.get(0);
-					String coverUrl = (String) item.get("image");
-
-					try {
-						URL url = new URL(coverUrl);
-						BufferedImage image = ImageIO.read(url);
-						String fileName = book.getBookTitle() + ".jpg";
-						File outputfile = new File(LOCAL_DIRECTORY + File.separator + fileName);
-						ImageIO.write(image, "jpg", outputfile);
-						System.out.println("Saved image for book: " + book.getBookTitle());
-
-						// 이미지 업로드 후 Image 엔티티 저장
-						String imageUrl = uploadImage(outputfile.getAbsolutePath(), fileName);
-						if (imageUrl != null) {
-							Image savedImage = new Image(book.getBookTitle(), imageUrl);
-							if (imageRepository.findByImageName(book.getBookTitle()).isEmpty()) {
-								imageRepository.save(savedImage);
-								System.out.println("Saved image information to database: " + savedImage);
-							} else {
-								System.out.println("Image with name " + fileName + " already exists in the database. Skipping save.");
-							}
-						}
-
-						success = true;
-
-					} catch (IOException e) {
-						e.printStackTrace();
-						System.out.println("Failed to download or save image for book: " + book.getBookTitle());
-					}
-
-				} catch (HttpClientErrorException.TooManyRequests e) {
-					attempt++;
-					if (attempt < MAX_RETRY_COUNT) {
-						try {
-							Thread.sleep(RETRY_DELAY_MS);
-						} catch (InterruptedException interruptedException) {
-							interruptedException.printStackTrace();
-							break;
-						}
-					} else {
-						System.out.println("Failed to get API response for ISBN: " + isbn + " after " + MAX_RETRY_COUNT + " attempts.");
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+				Map<String, Object> body = response.getBody();
+				if (body == null) {
+					System.out.println("Failed to get API response for ISBN: " + isbn);
 					break;
 				}
-			}
 
-			if (!success) {
-				System.out.println("Giving up on ISBN: " + isbn + " after " + MAX_RETRY_COUNT + " attempts.");
+				List<Object> items = (List<Object>) body.get("items");
+				if (items == null || items.isEmpty()) {
+					System.out.println("No items found in API response for ISBN: " + isbn);
+					break;
+				}
+
+				Map<String, Object> item = (Map<String, Object>) items.get(0);
+				String coverUrl = (String) item.get("image");
+
+				try {
+					URL url = new URL(coverUrl);
+					BufferedImage image = ImageIO.read(url);
+					String fileName = book.getBookTitle() + ".jpg";
+					File outputfile = new File(LOCAL_DIRECTORY + File.separator + fileName);
+					ImageIO.write(image, "jpg", outputfile);
+					System.out.println("Saved image for book: " + book.getBookTitle());
+
+					// 이미지 업로드 후 Image 엔티티 저장
+					String imageUrl = uploadImage(outputfile.getAbsolutePath(), fileName);
+					if (imageUrl != null) {
+						Image savedImage = new Image(book.getBookTitle(), imageUrl);
+						if (imageRepository.findByImageName(book.getBookTitle()).isEmpty()) {
+							imageRepository.save(savedImage);
+							System.out.println("Saved image information to database: " + savedImage);
+						} else {
+							System.out.println("Image with name " + fileName + " already exists in the database. Skipping save.");
+						}
+					}
+
+					success = true;
+
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("Failed to download or save image for book: " + book.getBookTitle());
+				}
+
+			} catch (HttpClientErrorException.TooManyRequests e) {
+				attempt++;
+				if (attempt < MAX_RETRY_COUNT) {
+					try {
+						Thread.sleep(RETRY_DELAY_MS);
+					} catch (InterruptedException interruptedException) {
+						interruptedException.printStackTrace();
+						break;
+					}
+				} else {
+					System.out.println("Failed to get API response for ISBN: " + isbn + " after " + MAX_RETRY_COUNT + " attempts.");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				break;
 			}
 		}
+
+		if (!success) {
+			System.out.println("Giving up on ISBN: " + isbn + " after " + MAX_RETRY_COUNT + " attempts.");
+		}
+	}
+
+	@Transactional
+	public void downloadCoverImagesForAllBooks() {
+		List<Book> books = bookRepository.findAll();
+		for (Book book : books) {
+			downloadAndSaveImageForBook(book);
+		}
+	}
+
+	@Transactional
+	public void downloadCoverImageForBook(Book book) {
+		downloadAndSaveImageForBook(book);
 	}
 
 	public String uploadImage(String localFilePath, String imageName) {
