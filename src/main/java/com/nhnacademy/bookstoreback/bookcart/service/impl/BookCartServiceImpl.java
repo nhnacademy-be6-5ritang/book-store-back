@@ -35,17 +35,19 @@ public class BookCartServiceImpl implements BookCartService {
 	private final CartService cartService;
 	private final HttpServletResponse resp;
 
-	@Transactional(readOnly = true)
 	@Override
 	public List<GetBookCartResponse> getBookCartsByCartId(CurrentUserDetails currentUser, Long cartId) {
-		cartId = setupCart(currentUser, cartId, resp).getCartId();
+		Cart cart = setupCart(currentUser, cartId);
 
-		return bookCartRepository.findAllByCartCartId(cartId).stream().map(GetBookCartResponse::fromEntity).toList();
+		return bookCartRepository.findAllByCartCartId(cart.getCartId())
+			.stream()
+			.map(GetBookCartResponse::fromEntity)
+			.toList();
 	}
 
 	@Override
 	public void createBookCart(CurrentUserDetails currentUser, CreateBookCartRequest request, Long cartId) {
-		Cart cart = setupCart(currentUser, cartId, resp);
+		Cart cart = setupCart(currentUser, cartId);
 
 		Book book = bookRepository.findById(request.bookId())
 			.orElseThrow(() -> new BookNotFoundException(request.bookId()));
@@ -62,7 +64,7 @@ public class BookCartServiceImpl implements BookCartService {
 	@Override
 	public void updateBookCart(Long bookCartId, CurrentUserDetails currentUser, UpdateBookCartRequest request,
 		Long cartId) {
-		setupCart(currentUser, cartId, resp);
+		setupCart(currentUser, cartId);
 
 		bookCartRepository.findById(bookCartId).orElseThrow(() -> new BookCartNotFoundException(bookCartId));
 
@@ -74,7 +76,7 @@ public class BookCartServiceImpl implements BookCartService {
 
 	@Override
 	public void deleteBookCart(Long bookCartId, CurrentUserDetails currentUser, Long cartId) {
-		cartId = setupCart(currentUser, cartId, resp).getCartId();
+		cartId = setupCart(currentUser, cartId).getCartId();
 
 		BookCart bookCart = bookCartRepository.findById(bookCartId)
 			.orElseThrow(() -> new BookCartNotFoundException(bookCartId));
@@ -86,12 +88,12 @@ public class BookCartServiceImpl implements BookCartService {
 
 	}
 
-	public Cart setupCart(CurrentUserDetails currentUser, Long cartId, HttpServletResponse resp) {
+	public Cart setupCart(CurrentUserDetails currentUser, Long cartId) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 
 		// 비회원인데 카트가 없는 경우
 		if (userId == null && cartId == null) {
-			return cartService.createCart(null, resp);
+			return cartService.createCart(currentUser, resp);
 			// 비회원인데 카트가 있는 경우
 		} else if (userId == null) {
 			return cartRepository.findById(cartId).orElseThrow(() -> new UserCartNotFoundException(cartId));

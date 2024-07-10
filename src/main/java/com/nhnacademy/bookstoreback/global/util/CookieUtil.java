@@ -7,16 +7,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
+ * @author 이경헌
  * 서블릿 환경에서 쿠키를 처리하기 위한 유틸리티 클래스입니다.
  */
 public class CookieUtil {
+	// 인스턴스화를 방지하기 위한 private 생성자
+	private CookieUtil() {
+	}
 
 	/**
 	 * 요청된 HttpServletRequest 객체에서 지정된 이름의 쿠키가 존재하는지 확인합니다.
 	 *
 	 * @param req        요청을 나타내는 HttpServletRequest 객체입니다.
 	 * @param cookieName 확인할 쿠키의 이름입니다.
-	 * @return 쿠키가 존재하면 true, 그렇지 않으면 false를 반환합니다.
+	 * @return 쿠키가 존재하면 true, 그렇지 않으면 false 를 반환합니다.
 	 */
 	public static boolean exists(HttpServletRequest req, String cookieName) {
 		Cookie[] cookies = req.getCookies();
@@ -49,7 +53,7 @@ public class CookieUtil {
 	 *
 	 * @param req        요청을 나타내는 HttpServletRequest 객체입니다.
 	 * @param cookieName 검색할 쿠키의 이름입니다.
-	 * @return 찾은 쿠키를 반환하거나, 존재하지 않으면 null을 반환합니다.
+	 * @return 찾은 쿠키를 반환하거나, 존재하지 않으면 null 을 반환합니다.
 	 */
 	public static Cookie getCookie(HttpServletRequest req, String cookieName) {
 		Cookie[] cookies = req.getCookies();

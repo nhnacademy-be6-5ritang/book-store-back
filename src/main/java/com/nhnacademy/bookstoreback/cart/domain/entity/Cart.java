@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.cart.domain.entity;
 
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Cart {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JoinColumn(name = "cart_id")
+	@Column(name = "cart_id")
 	private Long cartId;
 
 	@OneToOne
