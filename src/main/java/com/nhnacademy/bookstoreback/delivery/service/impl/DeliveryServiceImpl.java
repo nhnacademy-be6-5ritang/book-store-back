@@ -73,7 +73,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetDeliveryResponse> getDeliveriesByUserId(GetDeliveriesRequest request, Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = 10;
 
 		return deliveryRepository.findAllByOrder_Cart_User_Id(request.userId(),

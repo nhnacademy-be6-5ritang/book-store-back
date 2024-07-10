@@ -160,8 +160,6 @@ public class BookController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-
-
 	/**
 	 * @author 이기훈
 	 * @param search 검색키워드
@@ -172,5 +170,12 @@ public class BookController {
 	public ResponseEntity<List<BookSearchResult>> searchBooks(@RequestParam("key") String search) {
 		List<BookSearchResult> results = bookService.searchBooks(search);
 		return ResponseEntity.ok(results);
+	}
+
+	@GetMapping("/page/category")
+	public ResponseEntity<Page<GetBookDetailResponse>> findAllBooksByCategoryName(
+		@PageableDefault(page = 1, size = 20) Pageable pageable, @RequestParam String categoryName) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(bookService.findAllBooksByCategoryName(pageable, categoryName));
 	}
 }

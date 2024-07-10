@@ -230,7 +230,7 @@ public class BookServiceImpl implements BookService {
 	@Transactional(readOnly = true)
 	@Override
 	public Page<GetBookDetailResponse> findAllBooks(Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
 		return bookRepository.findAll(
@@ -380,12 +380,21 @@ public class BookServiceImpl implements BookService {
 		bookRepository.save(book);
 	}
 
-
-
 	@Transactional(readOnly = true)
 	@Override
 	public List<BookSearchResult> searchBooks(String title) {
 		return bookRepository.findByBookTitleContainingIgnoreCaseCustom(title);
 
 	}
+
+	@Transactional(readOnly = true)
+	public Page<GetBookDetailResponse> findAllBooksByCategoryName(Pageable pageable, String categoryName) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+
+		return bookRepository.findAllByBookCategories_Category_CategoryName(
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), categoryName)
+			.map(GetBookDetailResponse::fromEntity);
+	}
+
 }

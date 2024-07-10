@@ -10,15 +10,9 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.nhnacademy.bookstoreback.auth.resolver.CurrentUserArgumentResolver;
-import com.nhnacademy.bookstoreback.global.handler.CustomPageableHandlerMethodArgumentResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
-	@Bean
-	public CustomPageableHandlerMethodArgumentResolver customPageableHandlerMethodArgumentResolver() {
-		return new CustomPageableHandlerMethodArgumentResolver();
-	}
 
 	@Bean
 	public CurrentUserArgumentResolver currentUserArgumentResolver() {
@@ -27,7 +21,6 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-		resolvers.add(customPageableHandlerMethodArgumentResolver());
 		resolvers.add(currentUserArgumentResolver());
 	}
 

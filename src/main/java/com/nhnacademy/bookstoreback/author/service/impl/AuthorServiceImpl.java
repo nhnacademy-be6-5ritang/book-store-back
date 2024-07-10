@@ -52,7 +52,7 @@ public class AuthorServiceImpl implements AuthorService {
 	@Transactional(readOnly = true)
 	@Override
 	public Page<AuthorDto> getAuthors(Pageable pageable) {
-		int page = pageable.getPageNumber() - 1;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		return authorRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "authorId")))
 			.map(AuthorDto::fromEntity);
