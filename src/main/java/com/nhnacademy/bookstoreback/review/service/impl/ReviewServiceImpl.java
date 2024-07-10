@@ -10,19 +10,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
-import com.nhnacademy.bookstoreback.review.domain.dto.response.CreateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
-import com.nhnacademy.bookstoreback.review.domain.dto.response.UpdateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
+import com.nhnacademy.bookstoreback.review.exception.ReviewNotFoundException;
 import com.nhnacademy.bookstoreback.review.repository.ReviewRepository;
 import com.nhnacademy.bookstoreback.review.service.ReviewService;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.exception.UserNotFoundException;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -75,16 +77,10 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(GetReviewResponse::fromEntity);
 	}
 
-	/**
-	 * 사용자 ID를 기준으로 리뷰를 페이지네이션하여 조회합니다.
-	 *
-	 * @param userId 사용자의 ID
-	 * @param pageable 페이지네이션 정보
-	 * @return 페이지네이션된 리뷰 응답
-	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetReviewResponse> findReviewsByUserId(Long userId, Pageable pageable) {
+	public Page<GetReviewResponse> findReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
@@ -99,26 +95,17 @@ public class ReviewServiceImpl implements ReviewService {
 	 * 새로운 리뷰를 저장합니다.
 	 *
 	 * @param request 리뷰 생성 요청 DTO
-	 * @return 생성된 리뷰 응답 DTO
 	 */
 	@Override
-	public CreateReviewResponse saveReview(CreateReviewRequest request) {
-		User user = userRepository.findById(request.userId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 회원 '%d'는 존재하지 않는 회원입니다.", request.userId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+	public void saveReview(CreateReviewRequest request, CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
 
-		Book book = bookRepository.findById(request.bookId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 도서 '%d'는 존재하지 않는 도서입니다.", request.bookId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+		Book book = bookRepository.findById(request.bookId())
+			.orElseThrow(() -> new BookNotFoundException(request.bookId()));
 
-		Review review = new Review(request.reviewScore(), request.reviewComment(), LocalDateTime.now(), book, user);
-		reviewRepository.save(review);
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
-		return CreateReviewResponse.fromEntity(review, user, book);
+		reviewRepository.save(Review.toEntity(request, book, user));
 	}
 
 	/**
@@ -147,17 +134,9 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @return 업데이트된 리뷰 응답 DTO
 	 */
 	@Override
-	public UpdateReviewResponse updateReview(Long reviewId, UpdateReviewRequest request) {
-		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 리뷰 '%d'는 존재하지 않는 리뷰입니다.", reviewId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
+	public void updateReview(Long reviewId, UpdateReviewRequest request) {
+		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
 		review.updateReviewScore(request.reviewScore(), request.reviewComment());
-		reviewRepository.save(review);
-
-		return UpdateReviewResponse.fromEntity(review);
 	}
 
 	/**

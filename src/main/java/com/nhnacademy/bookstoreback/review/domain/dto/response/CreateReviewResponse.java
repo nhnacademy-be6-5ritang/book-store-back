@@ -17,7 +17,7 @@ public record CreateReviewResponse(
 	String reviewComment,
 	LocalDateTime reviewCreatedAt) {
 
-	public static CreateReviewResponse fromEntity(Review review, User user, Book book) {
+	public static CreateReviewResponse fromEntity(Review review, Book book, User user) {
 		return CreateReviewResponse.builder()
 			.reviewId(review.getReviewId())
 			.reviewScore(review.getReviewScore())
