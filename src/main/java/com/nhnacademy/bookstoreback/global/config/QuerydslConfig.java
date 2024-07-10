@@ -8,8 +8,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
-
-
+/**
+ * @author 이기훈
+ * 쿼리 dsl configuration하기위한 class
+ */
 @Configuration
 public class QuerydslConfig {
 
