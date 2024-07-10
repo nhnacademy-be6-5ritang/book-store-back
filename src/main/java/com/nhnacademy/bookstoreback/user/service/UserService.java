@@ -35,10 +35,12 @@ import com.nhnacademy.bookstoreback.userstatus.exception.UserStatusNotFoundExcep
 import com.nhnacademy.bookstoreback.userstatus.repository.UserStatusRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserService {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
@@ -163,8 +165,12 @@ public class UserService {
 	 * 생일쿠폰 발급시 생일 정보를 얻기위한 service
 	 *
 	 */
-	@Transactional(readOnly = true)
+
 	public List<BirthdayCouponTargetResponse> getUsersWithBirthday(LocalDate date) {
-		return userRepository.findByBirthDate(date);
+		int month = date.getMonthValue();
+		int day = date.getDayOfMonth();
+		log.warn("{}, 월 {} , 일 {} 생일쿠폰 발급 서비스 실행", date, month, day);
+
+		return userRepository.findUsersWithBirthMonthDay(month, day);
 	}
 }
