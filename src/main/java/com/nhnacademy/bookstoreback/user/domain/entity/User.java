@@ -162,4 +162,8 @@ public class User {
 	public void updatePoints(BigDecimal incomingPoints) {
 		this.points = this.points.add(incomingPoints);
 	}
+
+	public void updateOutPoints(BigDecimal outPoints) {
+		this.points = this.points.subtract(outPoints);
+	}
 }

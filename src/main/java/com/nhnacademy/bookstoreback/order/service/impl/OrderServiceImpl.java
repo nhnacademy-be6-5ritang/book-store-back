@@ -23,17 +23,24 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetNonOrderByInfoR
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetUserPointOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.entity.Order;
 import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
 import com.nhnacademy.bookstoreback.order.service.OrderService;
+import com.nhnacademy.bookstoreback.point.earningpolicy.repository.PointEarningPolicyRepository;
+import com.nhnacademy.bookstoreback.point.transaction.repository.PointTransactionRepository;
+import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
 @Transactional
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
 	private final OrderRepository orderRepository;
@@ -41,6 +48,12 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderStatusRepository orderStatusRepository;
 
 	private final CartRepository cartRepository;
+
+	private final UserRepository userRepository;
+
+	private final PointTransactionRepository pointTransactionRepository;
+
+	private final PointEarningPolicyRepository pointEarningPolicyRepository;
 
 	public static final String ERROR_STATUS_WAIT = "주문 상태를 대기로 지정할 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문을 가져올 수 없습니다";
@@ -177,5 +190,16 @@ public class OrderServiceImpl implements OrderService {
 			throw new OrderFailException(errorStatus);
 		}
 		return GetNonOrderByInfoResponse.from(order);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetUserPointOrderResponse getUserPoint(@CurrentUser CurrentUserDetails currentUserDetails) {
+		if (currentUserDetails == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_USER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
+		User user = userRepository.getReferenceById(currentUserDetails.getUserId());
+		return GetUserPointOrderResponse.from(user.getPoints());
 	}
 }

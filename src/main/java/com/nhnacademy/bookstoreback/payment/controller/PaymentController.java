@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.CancelResponse;
@@ -54,8 +56,10 @@ public class PaymentController {
 	 * @return 페이먼츠 키 리턴
 	 */
 	@PostMapping
-	public ResponseEntity<PaymentSaveResponse> savePayment(@RequestBody String paymentResponseJson) {
-		return ResponseEntity.status(HttpStatus.OK).body(paymentServiceImpl.savePaymentResponse(paymentResponseJson));
+	public ResponseEntity<PaymentSaveResponse> savePayment(@RequestBody String paymentResponseJson, @CurrentUser
+	CurrentUserDetails currentUser) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(paymentServiceImpl.savePaymentResponse(paymentResponseJson, currentUser));
 	}
 
 	/**

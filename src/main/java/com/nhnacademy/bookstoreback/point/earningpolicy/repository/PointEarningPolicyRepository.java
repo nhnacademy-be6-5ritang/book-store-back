@@ -10,4 +10,5 @@ public interface PointEarningPolicyRepository extends JpaRepository<PointEarning
 	boolean existsByPointEarningPolicyType(String pointEarningPolicyType);
 
 	Optional<PointEarningPolicy> findByPointEarningPolicyType(String signUp);
+
 }
