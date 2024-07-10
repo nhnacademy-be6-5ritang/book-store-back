@@ -1,8 +1,5 @@
 package com.nhnacademy.bookstoreback.order.service.impl;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,10 +29,7 @@ import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
 import com.nhnacademy.bookstoreback.order.service.OrderService;
-import com.nhnacademy.bookstoreback.point.earningpolicy.domain.entity.PointEarningPolicy;
-import com.nhnacademy.bookstoreback.point.earningpolicy.exception.PointEarningPolicyNotFoundException;
 import com.nhnacademy.bookstoreback.point.earningpolicy.repository.PointEarningPolicyRepository;
-import com.nhnacademy.bookstoreback.point.transaction.domain.entity.PointTransaction;
 import com.nhnacademy.bookstoreback.point.transaction.repository.PointTransactionRepository;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
@@ -80,47 +74,7 @@ public class OrderServiceImpl implements OrderService {
 				if (currentUser != null) {
 					Cart cart = cartRepository.findByUser_Id(currentUser.getUserId());
 					order.updateCart(cart);
-					User user = userRepository.getReferenceById(currentUser.getUserId());
 
-					if (!createOrderRequest.pointSale().equals(BigDecimal.ZERO)) {
-						PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
-								"포인트 사용")
-							.orElseThrow(
-								() -> new PointEarningPolicyNotFoundException("포인트 사용"));
-						pointTransactionRepository.save(PointTransaction.builder()
-							.user(user)
-							.pointEarningPolicy(pointEarningPolicy)
-							.pointTransactionAmount(
-								createOrderRequest.pointSale()
-									.multiply(pointEarningPolicy.getPointEarningAmount(), MathContext.UNLIMITED))
-							.build());
-						user.updateOutPoints(createOrderRequest.pointSale());
-					}
-
-					PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
-							user.getUserGrade().getUserGradeName())
-						.orElseThrow(
-							() -> new PointEarningPolicyNotFoundException(user.getUserGrade().getUserGradeName()));
-					pointTransactionRepository.save(PointTransaction.builder()
-						.user(user)
-						.pointEarningPolicy(pointEarningPolicy)
-						.pointTransactionAmount(
-							createOrderRequest.orderPrice()
-								.multiply(pointEarningPolicy.getPointEarningAmount()
-										.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
-									MathContext.UNLIMITED))
-						.build());
-					log.info("{}", createOrderRequest.orderPrice()
-						.multiply(pointEarningPolicy.getPointEarningAmount()
-								.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
-							MathContext.UNLIMITED));
-					user.updatePoints(
-						createOrderRequest.orderPrice()
-							.multiply(pointEarningPolicy.getPointEarningAmount()
-									.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
-								MathContext.UNLIMITED));
-
-					userRepository.save(user);
 					orderRepository.save(order);
 					return CreateOrderResponse.from(order);
 				} else {

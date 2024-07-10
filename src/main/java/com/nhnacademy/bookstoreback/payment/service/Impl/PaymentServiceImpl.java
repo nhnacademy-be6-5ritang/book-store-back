@@ -1,6 +1,8 @@
 package com.nhnacademy.bookstoreback.payment.service.Impl;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
@@ -11,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.global.exception.BookOrderFailException;
 import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
 import com.nhnacademy.bookstoreback.global.exception.ParserFailException;
@@ -33,6 +37,13 @@ import com.nhnacademy.bookstoreback.payment.dto.response.TransactionsResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.UpdatePaymentResponse;
 import com.nhnacademy.bookstoreback.payment.repository.PaymentRepository;
 import com.nhnacademy.bookstoreback.payment.service.PaymentService;
+import com.nhnacademy.bookstoreback.point.earningpolicy.domain.entity.PointEarningPolicy;
+import com.nhnacademy.bookstoreback.point.earningpolicy.exception.PointEarningPolicyNotFoundException;
+import com.nhnacademy.bookstoreback.point.earningpolicy.repository.PointEarningPolicyRepository;
+import com.nhnacademy.bookstoreback.point.transaction.domain.entity.PointTransaction;
+import com.nhnacademy.bookstoreback.point.transaction.repository.PointTransactionRepository;
+import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +55,9 @@ public class PaymentServiceImpl implements PaymentService {
 	private final OrderRepository orderRepository;
 	private final BookOrderRepository bookOrderRepository;
 	private final OrderServiceImpl orderServiceImpl;
+	private final PointTransactionRepository pointTransactionRepository;
+	private final PointEarningPolicyRepository pointEarningPolicyRepository;
+	private final UserRepository userRepository;
 
 	public static final String ERROR_PARSER_FAIL = "파싱 실패";
 	public static final String ERROR_PAYMENT_EXITS = "결제를 찾을 수 없습니다";
@@ -51,7 +65,8 @@ public class PaymentServiceImpl implements PaymentService {
 	public static final String ERROR_BOOKORDER_EXITS = "주문리스트를 찾을 수 없습니다";
 
 	@Override
-	public PaymentSaveResponse savePaymentResponse(String paymentResponseJson) {
+	public PaymentSaveResponse savePaymentResponse(String paymentResponseJson,
+		@CurrentUser CurrentUserDetails currentUser) {
 		PaymentResponse paymentResponse = parsePaymentResponse(paymentResponseJson);
 		Order order = orderRepository.findByOrderInfoId(paymentResponse.orderId());
 		if (order == null) {
@@ -59,6 +74,44 @@ public class PaymentServiceImpl implements PaymentService {
 				LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
 		}
+		User user = userRepository.getReferenceById(currentUser.getUserId());
+
+		if (!order.getOrderPointSale().equals(BigDecimal.ZERO)) {
+
+			PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
+					"포인트 사용")
+				.orElseThrow(
+					() -> new PointEarningPolicyNotFoundException("포인트 사용"));
+			pointTransactionRepository.save(PointTransaction.builder()
+				.user(user)
+				.pointEarningPolicy(pointEarningPolicy)
+				.pointTransactionAmount(
+					order.getOrderPointSale()
+						.multiply(pointEarningPolicy.getPointEarningAmount(), MathContext.UNLIMITED))
+				.build());
+			user.updateOutPoints(order.getOrderPointSale());
+		}
+
+		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
+				user.getUserGrade().getUserGradeName())
+			.orElseThrow(
+				() -> new PointEarningPolicyNotFoundException(user.getUserGrade().getUserGradeName()));
+		pointTransactionRepository.save(PointTransaction.builder()
+			.user(user)
+			.pointEarningPolicy(pointEarningPolicy)
+			.pointTransactionAmount(
+				order.getOrderPrice()
+					.multiply(pointEarningPolicy.getPointEarningAmount()
+							.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
+						MathContext.UNLIMITED))
+			.build());
+		user.updatePoints(
+			order.getOrderPrice()
+				.multiply(pointEarningPolicy.getPointEarningAmount()
+						.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
+					MathContext.UNLIMITED));
+		userRepository.save(user);
+
 		orderServiceImpl.updateOrderStatus(order.getOrderId(), 1L);
 		return PaymentSaveResponse.from(paymentRepository.save(
 			Payment.toEntity(paymentResponse.paymentKey(), order, paymentResponse.amount(), paymentResponse.status(),

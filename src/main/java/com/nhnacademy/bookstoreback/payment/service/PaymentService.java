@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.payment.service;
 
+import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.CancelResponse;
@@ -13,7 +15,7 @@ public interface PaymentService {
 	 * @param paymentResponseJson 결제 요청으로 받은 Json 객체
 	 * @return 페이먼츠 키 리턴
 	 */
-	PaymentSaveResponse savePaymentResponse(String paymentResponseJson);
+	PaymentSaveResponse savePaymentResponse(String paymentResponseJson, @CurrentUser CurrentUserDetails currentUser);
 
 	/**
 	 * 결제 조회
