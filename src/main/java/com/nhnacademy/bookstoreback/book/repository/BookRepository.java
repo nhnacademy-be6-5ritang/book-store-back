@@ -35,5 +35,6 @@ public interface BookRepository extends JpaRepository<Book, Long>, CustomBookRep
 	boolean existsByBookTitle(String bookTitle);
 
 	Page<Book> findAllByBookCategories_Category_CategoryName(Pageable pageable, String categoryName);
+
 }
 
