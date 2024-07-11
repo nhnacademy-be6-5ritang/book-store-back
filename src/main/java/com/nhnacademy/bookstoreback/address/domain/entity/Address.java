@@ -1,6 +1,7 @@
 package com.nhnacademy.bookstoreback.address.domain.entity;
 
 import com.nhnacademy.bookstoreback.address.domain.dto.request.RegisterAddressRequest;
+import com.nhnacademy.bookstoreback.address.domain.dto.request.UpdateAddressRequest;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
 import jakarta.persistence.Column;
@@ -64,5 +65,16 @@ public class Address {
 			.detail(registerAddressRequest.detailAddress())
 			.isDefault(false)
 			.build();
+	}
+
+	public void update(UpdateAddressRequest updateAddressRequest) {
+		this.alias = updateAddressRequest.alias();
+		this.postCode = updateAddressRequest.postCode();
+		this.base = updateAddressRequest.baseAddress();
+		this.detail = updateAddressRequest.detailAddress();
+	}
+
+	public void updateIsDefault(boolean isDefault) {
+		this.isDefault = isDefault;
 	}
 }
