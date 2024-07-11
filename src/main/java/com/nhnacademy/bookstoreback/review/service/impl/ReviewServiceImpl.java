@@ -1,5 +1,6 @@
 package com.nhnacademy.bookstoreback.review.service.impl;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
@@ -16,6 +18,8 @@ import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
+import com.nhnacademy.bookstoreback.image.domain.entity.Image;
+import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
@@ -23,6 +27,9 @@ import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 import com.nhnacademy.bookstoreback.review.exception.ReviewNotFoundException;
 import com.nhnacademy.bookstoreback.review.repository.ReviewRepository;
 import com.nhnacademy.bookstoreback.review.service.ReviewService;
+import com.nhnacademy.bookstoreback.reviewimage.domain.entity.ReviewImage;
+import com.nhnacademy.bookstoreback.reviewimage.repository.ReviewImageRepository;
+import com.nhnacademy.bookstoreback.reviewimage.service.impl.CloudStorageService;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.exception.UserNotFoundException;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
@@ -40,6 +47,9 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final BookRepository bookRepository;
 	private final UserRepository userRepository;
+	private final ImageRepository imageRepository;
+	private final ReviewImageRepository reviewImageRepository;
+	private final CloudStorageService cloudStorageService;  // 클라우드 저장소 서비스 (구현 필요)
 
 	/**
 	 * 모든 리뷰를 페이지네이션하여 조회합니다.
@@ -97,15 +107,31 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param request 리뷰 생성 요청 DTO
 	 */
 	@Override
-	public void saveReview(CreateReviewRequest request, CurrentUserDetails currentUser) {
+	public void saveReview(CreateReviewRequest request, CurrentUserDetails currentUser, MultipartFile image) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 
 		Book book = bookRepository.findById(request.bookId())
 			.orElseThrow(() -> new BookNotFoundException(request.bookId()));
 
-		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException(userId));
 
-		reviewRepository.save(Review.toEntity(request, book, user));
+		Review review = reviewRepository.save(Review.toEntity(request, book, user));
+
+		if (image != null && !image.isEmpty()) {
+			String imageUrl = null;
+			try {
+				imageUrl = cloudStorageService.uploadFile(image);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			Image image1 = imageRepository.save(new Image(review.getReviewId().toString(), imageUrl));
+
+			ReviewImage reviewImage = new ReviewImage();
+			reviewImage.setReview(review);
+			reviewImage.setImage(image1);
+			reviewImageRepository.save(reviewImage);
+		}
 	}
 
 	/**

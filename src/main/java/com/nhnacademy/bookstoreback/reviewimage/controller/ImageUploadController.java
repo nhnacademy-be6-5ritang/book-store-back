@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,7 +38,7 @@ public class ImageUploadController {
 
 	private final RestTemplate restTemplate = new RestTemplate();
 
-	@PutMapping("/upload-image")
+	@PostMapping("/upload-image")  // @PutMapping에서 @PostMapping으로 변경
 	public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
 		try {
 			String fileName = file.getOriginalFilename();
@@ -64,7 +65,6 @@ public class ImageUploadController {
 			System.out.println("Response Body: " + response.getBody());
 
 			if (response.getStatusCode().is2xxSuccessful()) {
-				// JSON 파싱을 통한 URL 추출
 				String imageUrl = extractImageUrlFromResponse(response.getBody());
 				return ResponseEntity.ok(Collections.singletonMap("imageUrl", imageUrl));
 			} else {

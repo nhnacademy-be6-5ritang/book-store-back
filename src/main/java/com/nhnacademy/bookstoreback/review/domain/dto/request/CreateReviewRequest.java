@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.review.domain.dto.request;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 
 import lombok.Builder;

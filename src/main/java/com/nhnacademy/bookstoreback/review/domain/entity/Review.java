@@ -47,10 +47,9 @@ public class Review {
 	private User user;
 
 	@Builder
-	public Review(int reviewScore, String reviewComment, LocalDateTime reviewCreatedAt, Book book, User user) {
+	public Review(int reviewScore, String reviewComment, Book book, User user) {
 		this.reviewScore = reviewScore;
 		this.reviewComment = reviewComment;
-		this.reviewCreatedAt = reviewCreatedAt;
 		this.book = book;
 		this.user = user;
 	}
