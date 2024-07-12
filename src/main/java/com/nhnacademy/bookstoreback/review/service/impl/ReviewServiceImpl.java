@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.review.service.impl;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
@@ -214,6 +217,12 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public double getReviewsAverageScoreByBookId(Long bookId) {
 		return reviewRepository.getReviewsAverageScoreByBookId(bookId);
+	}
+
+	@Override
+	public List<GetBookTitleResponse> getBooksByOrderStatusCompletionAndUserId(CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+		return bookRepository.getBooksByOrderStatusCompletionAndUserId("배송 완료", userId);
 	}
 
 	public static String ImageNameParser(String fileName) {

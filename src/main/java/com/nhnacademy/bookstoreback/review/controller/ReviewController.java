@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.review.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
@@ -123,4 +126,10 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getReviewsAverageScoreByBookId(bookId));
 	}
 
+	@GetMapping("/reviews/create/possible")
+	ResponseEntity<List<GetBookTitleResponse>> getBooksByOrderStatusCompletionAndUserId(
+		@CurrentUser CurrentUserDetails currentUser) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(reviewService.getBooksByOrderStatusCompletionAndUserId(currentUser));
+	}
 }
