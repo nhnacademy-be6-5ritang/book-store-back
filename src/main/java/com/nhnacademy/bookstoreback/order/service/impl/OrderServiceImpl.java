@@ -273,7 +273,7 @@ public class OrderServiceImpl implements OrderService {
 		BigDecimal totalPaymentAmount = BigDecimal.ZERO;
 		Long userId = currentUser.getUserId();
 
-		List<Order> currentUserOrders = orderRepository.findAllByCart_UserId(userId);
+		List<Order> currentUserOrders = orderRepository.findAllByUserId(userId);
 
 		for (Order order : currentUserOrders) {
 			totalPaymentAmount = totalPaymentAmount.add(order.getOrderPrice());
