@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.nhnacademy.bookstoreback.upload.service.UploadService;
+import com.nhnacademy.bookstoreback.upload.service.impl.UploadServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/uploads")
 public class ImageUploadController {
-	private final UploadService uploadService;
+	private final UploadServiceImpl uploadService;
 
 	@PostMapping
 	public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {

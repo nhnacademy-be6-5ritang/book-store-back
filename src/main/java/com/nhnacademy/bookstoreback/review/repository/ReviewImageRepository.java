@@ -6,6 +6,4 @@ import com.nhnacademy.bookstoreback.review.domain.entity.ReviewImage;
 
 public interface ReviewImageRepository extends JpaRepository<ReviewImage, Long> {
 	ReviewImage findByReviewReviewId(Long reviewId);
-
-	boolean existsByReviewReviewId(Long reviewId);
 }

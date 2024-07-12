@@ -40,7 +40,7 @@ public class ReviewController {
 		@PageableDefault(page = 1, size = 5) Pageable pageable,
 		@PathVariable Long bookId) {
 
-		Page<GetReviewResponse> reviews = reviewService.findReviewsByBookId(bookId, pageable);
+		Page<GetReviewResponse> reviews = reviewService.getReviewsByBookId(bookId, pageable);
 
 		return ResponseEntity.status(HttpStatus.OK).body(reviews);
 	}
@@ -65,11 +65,29 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK).body(reviews);
 	}
 
-	@GetMapping("/users/me/reviews/page")
+	@GetMapping("/users/me/reviews/all/page")
 	public ResponseEntity<Page<GetReviewResponse>> getReviewsByUserId(
 		@PageableDefault(page = 1, size = 5) Pageable pageable, @CurrentUser CurrentUserDetails currentUser) {
 
-		Page<GetReviewResponse> reviews = reviewService.findReviewsByUserId(pageable, currentUser);
+		Page<GetReviewResponse> reviews = reviewService.getReviewsByUserId(pageable, currentUser);
+
+		return ResponseEntity.status(HttpStatus.OK).body(reviews);
+	}
+
+	@GetMapping("/users/me/reviews/general/page")
+	public ResponseEntity<Page<GetReviewResponse>> getGeneralReviewsByUserId(
+		@PageableDefault(page = 1, size = 5) Pageable pageable, @CurrentUser CurrentUserDetails currentUser) {
+
+		Page<GetReviewResponse> reviews = reviewService.getGeneralReviewsByUserId(pageable, currentUser);
+
+		return ResponseEntity.status(HttpStatus.OK).body(reviews);
+	}
+
+	@GetMapping("/users/me/reviews/photo/page")
+	public ResponseEntity<Page<GetReviewResponse>> getPhotoReviewsByUserId(
+		@PageableDefault(page = 1, size = 5) Pageable pageable, @CurrentUser CurrentUserDetails currentUser) {
+
+		Page<GetReviewResponse> reviews = reviewService.getPhotoReviewsByUserId(pageable, currentUser);
 
 		return ResponseEntity.status(HttpStatus.OK).body(reviews);
 	}

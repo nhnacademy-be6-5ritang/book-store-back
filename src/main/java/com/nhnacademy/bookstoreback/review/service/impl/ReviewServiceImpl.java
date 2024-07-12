@@ -70,25 +70,11 @@ public class ReviewServiceImpl implements ReviewService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetReviewResponse> findReviewsByBookId(Long bookId, Pageable pageable) {
+	public Page<GetReviewResponse> getReviewsByBookId(Long bookId, Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
 		return reviewRepository.findAllByBookBookId(bookId,
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(review -> {
-				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
-				return GetReviewResponse.fromEntity(review, reviewImage);
-			});
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public Page<GetReviewResponse> getPhotoReviewsByBookId(Long bookId, Pageable pageable) {
-		int page = Math.max(pageable.getPageNumber() - 1, 0);
-		int pageSize = pageable.getPageSize();
-
-		return reviewRepository.findAllByBookBookIdAndReviewImagesNotEmpty(bookId,
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
 			.map(review -> {
 				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
@@ -109,12 +95,53 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetReviewResponse> findReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
+	public Page<GetReviewResponse> getPhotoReviewsByBookId(Long bookId, Pageable pageable) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+
+		return reviewRepository.findAllByBookBookIdAndReviewImagesNotEmpty(bookId,
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
+			.map(review -> {
+				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
+				return GetReviewResponse.fromEntity(review, reviewImage);
+			});
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<GetReviewResponse> getReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
 		return reviewRepository.findAllByUserId(userId,
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
+			.map(review -> {
+				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
+				return GetReviewResponse.fromEntity(review, reviewImage);
+			});
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<GetReviewResponse> getGeneralReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+
+		return reviewRepository.findAllByUserIdAndReviewImagesEmpty(userId,
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
+			.map(review -> GetReviewResponse.fromEntity(review, null));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<GetReviewResponse> getPhotoReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+
+		return reviewRepository.findAllByUserIdAndReviewImagesNotEmpty(userId,
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
 			.map(review -> {
 				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
