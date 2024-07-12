@@ -1,9 +1,6 @@
 package com.nhnacademy.bookstoreback.address.domain.dto.request;
 
-import lombok.Builder;
-
-@Builder
-public record RegisterAddressRequest(
+public record UpdateAddressRequest(
 	String alias,
 	String postCode,
 	String baseAddress,
