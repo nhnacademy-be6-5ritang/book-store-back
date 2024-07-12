@@ -20,5 +20,12 @@ public interface CustomBookRepository {
 	 */
 	List<BookSearchResult> findByBookTitleContainingIgnoreCaseCustom(String title);
 
+	/**
+	 * @author 이경헌
+	 * @param  orderStatusName 주문 상태
+	 * @param  userId 사용자Id
+	 * @return 리뷰를 작성하기 위한 "배송 완료" 상태를 가진 주문중에 도서 리시트 결과를 반환하는 커스텀 메소드
+	 *
+	 */
 	List<GetBookTitleResponse> getBooksByOrderStatusCompletionAndUserId(String orderStatusName, Long userId);
 }
