@@ -211,6 +211,11 @@ public class ReviewServiceImpl implements ReviewService {
 		reviewRepository.deleteById(reviewId);
 	}
 
+	@Override
+	public double getReviewsAverageScoreByBookId(Long bookId) {
+		return reviewRepository.getReviewsAverageScoreByBookId(bookId);
+	}
+
 	public static String ImageNameParser(String fileName) {
 		// 파일 이름을 "_"로 분리하여 배열로 만듭니다.
 		String[] parts = fileName.split("_", 2);

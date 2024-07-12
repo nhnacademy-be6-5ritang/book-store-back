@@ -118,4 +118,9 @@ public class ReviewController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@GetMapping("/books/{bookId}/reviews/average")
+	public ResponseEntity<Double> getReviewsAverageScoreByBookId(@PathVariable Long bookId) {
+		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getReviewsAverageScoreByBookId(bookId));
+	}
+
 }

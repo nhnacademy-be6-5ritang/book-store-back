@@ -106,4 +106,6 @@ public interface ReviewService {
 	 * @param reviewId 삭제할 리뷰의 ID
 	 */
 	void deleteReview(Long reviewId);
+
+	double getReviewsAverageScoreByBookId(Long bookId);
 }

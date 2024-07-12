@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/uploads")
-public class ImageUploadController {
+public class UploadController {
 	private final UploadServiceImpl uploadService;
 
 	@PostMapping

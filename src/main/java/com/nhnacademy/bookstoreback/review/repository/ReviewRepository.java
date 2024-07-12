@@ -10,7 +10,7 @@ import com.nhnacademy.bookstoreback.review.domain.entity.Review;
  * @author 이경헌
  * Review 엔티티를 관리하는 Spring Data JPA 리포지토리입니다.
  */
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+public interface ReviewRepository extends JpaRepository<Review, Long>, CustomReviewRepository {
 
 	/**
 	 * 책(Book)의 ID를 기반으로 리뷰(Review)들을 페이지네이션하여 조회합니다.
@@ -65,5 +65,4 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	 * @return 이미지가 있는 해당 사용자의 리뷰들을 페이지네이션한 결과 (Page 객체)
 	 */
 	Page<Review> findAllByUserIdAndReviewImagesNotEmpty(Long userId, Pageable pageable);
-
 }
