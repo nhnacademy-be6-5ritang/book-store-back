@@ -63,9 +63,9 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(updateUserInfoResponse);
 	}
 
-	@PatchMapping("/dormant")
-	public ResponseEntity<Void> dormantUser(@CurrentUser CurrentUserDetails currentUser) {
-		userService.dormantUser(currentUser);
+	@PatchMapping("/withdraw")
+	public ResponseEntity<Void> withdrawUser(@CurrentUser CurrentUserDetails currentUser) {
+		userService.withdrawUser(currentUser);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
@@ -75,20 +75,11 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(totalPaymentAmount);
 	}
 
-	// 주소
-	// @PostMapping("/addresses")
-	// public ResponseEntity<RegisterAddressResponse> registerAddress(
-	// 	@RequestBody RegisterAddressRequest registerAddressRequest) {
-	// 	RegisterAddressResponse registerAddressResponse = addressService.registerAddress(registerAddressRequest);
-	// 	return ResponseEntity.status(HttpStatus.CREATED).body(registerAddressResponse);
-	// }
-
 	/**
 	 * @author 이기훈
 	 * @param date 유저 생일
 	 * @return 해당 날짜가 생일인 유저의 생일리스트를 리턴
 	 */
-
 	@GetMapping("/birthday")
 	public ResponseEntity<List<BirthdayCouponTargetResponse>> getUsersWithBirthday(
 		@RequestParam("date") LocalDate date) {
