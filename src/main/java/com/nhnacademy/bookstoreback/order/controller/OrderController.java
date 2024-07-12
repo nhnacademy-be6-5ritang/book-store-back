@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
-import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
+import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateRefundPolicyRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateWrappingTypeRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.OrderCheckNonRequest;
+import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateRefundPolicyRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateWrappingTypeRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
@@ -27,6 +28,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperRespons
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllRefundResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetListWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetNonOrderByInfoResponse;
@@ -41,6 +43,7 @@ import com.nhnacademy.bookstoreback.order.service.impl.BookOrderServiceImpl;
 import com.nhnacademy.bookstoreback.order.service.impl.OrderServiceImpl;
 import com.nhnacademy.bookstoreback.order.service.impl.OrderStatusServiceImpl;
 import com.nhnacademy.bookstoreback.order.service.impl.PaperTypeServiceImpl;
+import com.nhnacademy.bookstoreback.order.service.impl.RefundPolicyServiceImpl;
 import com.nhnacademy.bookstoreback.order.service.impl.WrappingPaperServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -60,7 +63,7 @@ public class OrderController {
 
 	private final PaperTypeServiceImpl paperTypeServiceImpl;
 
-	private final BookServiceImpl bookService;
+	private final RefundPolicyServiceImpl refundPolicyServiceImpl;
 
 	//TODO 주문
 
@@ -286,8 +289,8 @@ public class OrderController {
 	 * @param currentUserDetails 로그인된 사용자 아이디
 	 * @return 카트아이디를 가지고 있는 주문 전부 가져오기
 	 */
-	@GetMapping("/carts/orders/all")
-	public ResponseEntity<GetAllListOrderResponse> findAllByCartId(@CurrentUser CurrentUserDetails currentUserDetails) {
+	@GetMapping("/users/all")
+	public ResponseEntity<GetAllListOrderResponse> findAllByUserId(@CurrentUser CurrentUserDetails currentUserDetails) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findAllUserId(currentUserDetails));
 	}
 
@@ -301,6 +304,7 @@ public class OrderController {
 		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findByOrderInfoId(orderInfoId));
 	}
 
+	// 이거 이름으로 바꿀 예정
 	@GetMapping("/order-status/wait")
 	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusWait() {
 		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(1L));
@@ -309,6 +313,21 @@ public class OrderController {
 	@GetMapping("/order-status/going")
 	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusGoing() {
 		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(4L));
+	}
+
+	@GetMapping("/order-status/complete")
+	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusComplete() {
+		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(5L));
+	}
+
+	@GetMapping("/order-status/refunded")
+	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusRefunded() {
+		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(6L));
+	}
+
+	@GetMapping("/order-status/refunding")
+	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusRefunding() {
+		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(7L));
 	}
 
 	@PostMapping("order-info/Non")
@@ -322,5 +341,41 @@ public class OrderController {
 	public ResponseEntity<GetUserPointOrderResponse> getUserPointOrders(
 		@CurrentUser CurrentUserDetails currentUserDetails) {
 		return ResponseEntity.ok(orderServiceImpl.getUserPoint(currentUserDetails));
+	}
+
+	@GetMapping("/refunding/{orderInfoId}")
+	public ResponseEntity<Void> refundingOrder(@PathVariable("orderInfoId") String orderInfoId) {
+		orderServiceImpl.refundingOrder(orderInfoId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@GetMapping("/refunded/{orderInfoId}")
+	public ResponseEntity<Void> refundedOrder(@PathVariable("orderInfoId") String orderInfoId) {
+		orderServiceImpl.refundedOrder(orderInfoId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@GetMapping("/refund-policy")
+	public ResponseEntity<GetAllRefundResponse> getRefundPolicy() {
+		return ResponseEntity.ok(refundPolicyServiceImpl.getAllRefundPolicies());
+	}
+
+	@PutMapping("/refund-policy/{refundPolicyId}")
+	public ResponseEntity<Void> updateRefundPolicy(@PathVariable("refundPolicyId") Long refundPolicyId,
+		@RequestBody UpdateRefundPolicyRequest updateRefundPolicyRequest) {
+		refundPolicyServiceImpl.updateRefundPolicy(updateRefundPolicyRequest, refundPolicyId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@PostMapping("/refund-policy")
+	public ResponseEntity<Void> createRefundPolicy(@RequestBody CreateRefundPolicyRequest refundPolicyRequest) {
+		refundPolicyServiceImpl.createRefundPolicy(refundPolicyRequest);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@DeleteMapping("/refund-policy/{refundPolicyId}")
+	public ResponseEntity<Void> deleteRefundPolicy(@PathVariable Long refundPolicyId) {
+		refundPolicyServiceImpl.deleteRefundPolicy(refundPolicyId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

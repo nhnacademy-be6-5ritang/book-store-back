@@ -11,9 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
-import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
-import com.nhnacademy.bookstoreback.cart.repository.CartRepository;
+import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
+import com.nhnacademy.bookstoreback.delivery.repository.DeliveryRepository;
+import com.nhnacademy.bookstoreback.deliverystatus.domain.entity.DeliveryStatus;
+import com.nhnacademy.bookstoreback.deliverystatus.exception.DeliveryStatusNotFoundException;
+import com.nhnacademy.bookstoreback.deliverystatus.repository.DeliveryStatusRepository;
+import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
 import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
+import com.nhnacademy.bookstoreback.global.exception.OrderStatusFailException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
@@ -29,8 +34,7 @@ import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
 import com.nhnacademy.bookstoreback.order.service.OrderService;
-import com.nhnacademy.bookstoreback.point.earningpolicy.repository.PointEarningPolicyRepository;
-import com.nhnacademy.bookstoreback.point.transaction.repository.PointTransactionRepository;
+import com.nhnacademy.bookstoreback.point.transaction.service.impl.PointTransactionServiceImpl;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
@@ -47,19 +51,21 @@ public class OrderServiceImpl implements OrderService {
 
 	private final OrderStatusRepository orderStatusRepository;
 
-	private final CartRepository cartRepository;
+	private final PointTransactionServiceImpl pointTransactionService;
 
 	private final UserRepository userRepository;
 
-	private final PointTransactionRepository pointTransactionRepository;
+	private final DeliveryRepository deliveryRepository;
 
-	private final PointEarningPolicyRepository pointEarningPolicyRepository;
+	private final DeliveryStatusRepository deliveryStatusRepository;
 
 	public static final String ERROR_STATUS_WAIT = "주문 상태를 대기로 지정할 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문을 가져올 수 없습니다";
 	public static final String ERROR_ORDERS_EXITS = "주문 내역을 가져올 수 없습니다";
 	public static final String ERROR_STATUS_EXITS = "주문 상태를 가져올 수 없습니다";
 	public static final String ERROR_USER_EXITS = "사용자 정보를 가져올 수 없습니다";
+	public static final String ERROR_DELIVERY_STATUS_NOTFUND = "배송 상태를 가져올 수 없습니다";
+	public static final String ERROR_ORDER_STATUS_NOTFUND = "주문 상태를 가져올 수 없습니다";
 
 	//카트 아이디를 가지고 있다면 그걸 사용해서 정보 추가로 가져오는 코드 추가 예정
 	@Override
@@ -72,8 +78,8 @@ public class OrderServiceImpl implements OrderService {
 				Order order = Order.toEntity(createOrderRequest, orderStatus);
 
 				if (currentUser != null) {
-					Cart cart = cartRepository.findByUser_Id(currentUser.getUserId());
-					order.updateCart(cart);
+					User user = userRepository.getReferenceById(currentUser.getUserId());
+					order.updateUser(user);
 
 					orderRepository.save(order);
 					return CreateOrderResponse.from(order);
@@ -143,8 +149,8 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public GetAllListOrderResponse findAllByCartId(Long cartId) {
-		List<Order> orders = orderRepository.findAllByCart_CartId(cartId);
+	public GetAllListOrderResponse findAllByUserId(Long userId) {
+		List<Order> orders = orderRepository.findAllByUserId(userId);
 		if (orders == null) {
 			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDERS_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
@@ -159,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
 			ErrorStatus errorStatus = ErrorStatus.from(ERROR_USER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
 		}
-		List<Order> orders = orderRepository.findAllByCart_UserId(currentUserDetails.getUserId());
+		List<Order> orders = orderRepository.findAllByUserId(currentUserDetails.getUserId());
 		if (orders == null) {
 			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDERS_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
@@ -200,5 +206,63 @@ public class OrderServiceImpl implements OrderService {
 		}
 		User user = userRepository.getReferenceById(currentUserDetails.getUserId());
 		return GetUserPointOrderResponse.from(user.getPoints());
+	}
+
+	@Override
+	public void refundedOrder(String orderInfoId) {
+		Order order = orderRepository.findByOrderInfoId(orderInfoId);
+
+		if (order == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
+
+		Delivery delivery = deliveryRepository.findByOrder_OrderId(order.getOrderId());
+
+		if (delivery == null) {
+			String errorMessage = "해당 주문은 아직 배송을 준비중입니다.";
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new NotFoundException(errorStatus);
+		}
+
+		DeliveryStatus deliveryStatus = deliveryStatusRepository.findDeliveryStatusByDeliveryStatusName("반품");
+		delivery.updateDeliveryStatus(deliveryStatus);
+		OrderStatus status = orderStatusRepository.findByOrderStatusName("반품");
+		order.updateOrderStatus(status);
+
+		pointTransactionService.refundPointTransaction(order.getUser(), order.getOrderPrice());
+	}
+
+	@Override
+	public void refundingOrder(String orderInfoId) {
+		Order order = orderRepository.findByOrderInfoId(orderInfoId);
+
+		if (order == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
+
+		Delivery delivery = deliveryRepository.findByOrder_OrderId(order.getOrderId());
+
+		if (delivery == null) {
+			String errorMessage = "해당 주문은 아직 배송을 준비중입니다.";
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new NotFoundException(errorStatus);
+		}
+
+		DeliveryStatus deliveryStatus = deliveryStatusRepository.findDeliveryStatusByDeliveryStatusName("반품 요청중");
+		if (deliveryStatus == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_DELIVERY_STATUS_NOTFUND, HttpStatus.NOT_FOUND,
+				LocalDateTime.now());
+			throw new DeliveryStatusNotFoundException(errorStatus);
+		}
+		delivery.updateDeliveryStatus(deliveryStatus);
+		OrderStatus status = orderStatusRepository.findByOrderStatusName("반품 요청중");
+		if (status == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_STATUS_NOTFUND, HttpStatus.NOT_FOUND,
+				LocalDateTime.now());
+			throw new OrderStatusFailException(errorStatus);
+		}
+		order.updateOrderStatus(status);
 	}
 }
