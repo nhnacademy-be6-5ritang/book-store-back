@@ -95,6 +95,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Redis Dependency -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- Elasticsearch Dependency -->
         <!--        <dependency>-->
         <!--            <groupId>org.springframework.boot</groupId>-->
@@ -154,6 +160,12 @@
                     <artifactId>commons-fileupload</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- Mail Dependency -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
         <!-- Testing Dependencies -->

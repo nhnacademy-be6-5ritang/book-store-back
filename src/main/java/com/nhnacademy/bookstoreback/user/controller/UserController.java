@@ -25,6 +25,7 @@ import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTarge
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
+import com.nhnacademy.bookstoreback.user.service.MailService;
 import com.nhnacademy.bookstoreback.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserController {
 	private final UserService userService;
+	private final MailService mailService;
 	private final OrderService orderService;
 
 	@PostMapping
@@ -44,10 +46,40 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserResponse);
 	}
 
-	@GetMapping("/check-email")
-	public ResponseEntity<Boolean> isEmailExist(@RequestParam String email) {
-		Boolean isEmailExist = userService.isEmailExist(email);
-		return ResponseEntity.status(HttpStatus.OK).body(isEmailExist);
+	@PostMapping("/send-email/sign-up")
+	public ResponseEntity<Void> sendMailSignUp(@RequestParam String email) {
+		String subject = "회원가입";
+		boolean isEmailExist = userService.isEmailExist(email);
+		if (isEmailExist) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		mailService.sendMail(email, subject);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@PostMapping("/send-email/dormant-to-active")
+	public ResponseEntity<Void> sendMailDormantToActive(@RequestParam String email) {
+		String subject = "휴면계정 활성화";
+		mailService.sendMail(email, subject);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@GetMapping("/check-email/sign-up")
+	public ResponseEntity<Void> checkMailSignUp(@RequestParam String email, @RequestParam String certifyCode) {
+		String subject = "회원가입";
+		boolean codeMatch = mailService.checkMail(email, certifyCode, subject);
+		if (codeMatch) {
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	}
+
+	@GetMapping("/check-email/dormant-to-active")
+	public ResponseEntity<Boolean> checkMailDormantToActive(@RequestParam String email,
+		@RequestParam String certifyCode) {
+		String subject = "휴면계정 활성화";
+		boolean codeMatch = mailService.checkMail(email, certifyCode, subject);
+		return ResponseEntity.status(HttpStatus.OK).body(codeMatch);
 	}
 
 	@GetMapping("/self")
