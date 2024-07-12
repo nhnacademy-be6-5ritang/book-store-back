@@ -5,23 +5,23 @@ import com.nhnacademy.bookstoreback.address.domain.entity.Address;
 import lombok.Builder;
 
 @Builder
-public record RegisterAddressResponse(
+public record GetAddressResponse(
 	Long id,
-	Long userId,
 	String postCode,
 	String baseAddress,
 	String detailAddress,
-	String alias
+	String alias,
+	boolean isDefault
 ) {
 
-	public static RegisterAddressResponse fromEntity(Address address) {
-		return RegisterAddressResponse.builder()
+	public static GetAddressResponse fromEntity(Address address) {
+		return GetAddressResponse.builder()
 			.id(address.getId())
-			.userId(address.getUser().getId())
 			.postCode(address.getPostCode())
 			.baseAddress(address.getBase())
 			.detailAddress(address.getDetail())
 			.alias(address.getAlias())
+			.isDefault(address.getIsDefault())
 			.build();
 	}
 }

@@ -16,6 +16,7 @@ import com.nhnacademy.bookstoreback.point.earningpolicy.exception.PointEarningPo
 import com.nhnacademy.bookstoreback.point.earningpolicy.repository.PointEarningPolicyRepository;
 import com.nhnacademy.bookstoreback.point.transaction.domain.dto.request.CreatePointTransactionRequest;
 import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.CreatePointTransactionResponse;
+import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.GetAllPointTransactionResponse;
 import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.GetPointTransactionResponse;
 import com.nhnacademy.bookstoreback.point.transaction.domain.entity.PointTransaction;
 import com.nhnacademy.bookstoreback.point.transaction.repository.PointTransactionRepository;
@@ -56,7 +57,8 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 	}
 
 	@Override
-	public Page<GetPointTransactionResponse> getPointTransactions(@CurrentUser CurrentUserDetails currentUser, Pageable pageable) {
+	public Page<GetPointTransactionResponse> getPointTransactions(@CurrentUser CurrentUserDetails currentUser,
+		Pageable pageable) {
 		int page = pageable.getPageNumber() > 0 ? pageable.getPageNumber() - 1 : 0;
 		int size = pageable.isPaged() && pageable.getPageSize() > 0 ? pageable.getPageSize() : 10;
 
@@ -148,6 +150,30 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 
 		user.updatePoints(pointTransactionAmount);
 
+		userRepository.save(user);
+	}
+
+	@Override
+	public Page<GetAllPointTransactionResponse> getAllPointTransaction(Pageable pageable) {
+		int page = pageable.getPageNumber() > 0 ? pageable.getPageNumber() - 1 : 0;
+		int size = pageable.isPaged() && pageable.getPageSize() > 0 ? pageable.getPageSize() : 10;
+
+		Page<PointTransaction> pointTransactionPage = pointTransactionRepository.findAll(
+			PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "pointTransactionDate")));
+		return pointTransactionPage.map(GetAllPointTransactionResponse::fromEntity);
+	}
+
+	public void refundPointTransaction(User user, BigDecimal totalPrice) {
+		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
+				"반품")
+			.orElseThrow(() -> new PointEarningPolicyNotFoundException("반품"));
+		PointTransaction pointTransaction = PointTransaction.builder()
+			.user(user)
+			.pointEarningPolicy(pointEarningPolicy)
+			.pointTransactionAmount(totalPrice)
+			.build();
+		pointTransactionRepository.save(pointTransaction);
+		user.updatePoints(totalPrice);
 		userRepository.save(user);
 	}
 }

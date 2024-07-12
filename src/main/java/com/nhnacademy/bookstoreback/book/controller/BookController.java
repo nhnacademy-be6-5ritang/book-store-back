@@ -66,8 +66,8 @@ public class BookController {
 	 *
 	 * @return 도서저장결과
 	 */
-	@PostMapping("/fetch/{isbn}")
-	public String saveBookByIsbn(@PathVariable String isbn) {
+	@PostMapping("/fetch")
+	public String saveBookByIsbn(@RequestParam String isbn) {
 		try {
 			String apiUrl =
 				"http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttb2897robo0933001&itemIdType=ISBN&ItemId="

@@ -52,8 +52,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 	private final OrderServiceImpl orderServiceImpl;
 	private final OrderStatusRepository orderStatusRepository;
 	private final TaskScheduler taskScheduler;
-	private final String NOT_FOUND_MESSAGE_DELIVERY_STATUS = "존재하지 않는 배달 상태입니다.";
-	private final String INIT_DELIVERY_STATUS = "발송준비중";
+	private static final String NOT_FOUND_MESSAGE_DELIVERY_STATUS = "존재하지 않는 배달 상태입니다.";
+	private static final String INIT_DELIVERY_STATUS = "발송준비중";
 
 	public void scheduleDeliveries(Delivery delivery) {
 		if (delivery.getDeliverySenderDate() != null && delivery.getDeliveryStatus().getDeliveryStatusId() == 2L) {
@@ -76,7 +76,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = 10;
 
-		return deliveryRepository.findAllByOrder_Cart_User_Id(request.userId(),
+		return deliveryRepository.findAllByOrder_User_Id(request.userId(),
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "delivery_sender_date")))
 			.map(GetDeliveryResponse::fromEntity);
 	}

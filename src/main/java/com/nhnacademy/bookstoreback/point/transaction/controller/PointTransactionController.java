@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.GetAllPointTransactionResponse;
 import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.GetPointTransactionResponse;
 import com.nhnacademy.bookstoreback.point.transaction.service.PointTransactionService;
 
@@ -27,6 +28,15 @@ public class PointTransactionController {
 	) {
 		Page<GetPointTransactionResponse> getPointTransactionResponsePage
 			= pointTransactionService.getPointTransactions(currentUser, pageable);
+		return ResponseEntity.status(HttpStatus.OK).body(getPointTransactionResponsePage);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<Page<GetAllPointTransactionResponse>> getAllPointTransactions(
+		Pageable pageable
+	) {
+		Page<GetAllPointTransactionResponse> getPointTransactionResponsePage
+			= pointTransactionService.getAllPointTransaction(pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(getPointTransactionResponsePage);
 	}
 }

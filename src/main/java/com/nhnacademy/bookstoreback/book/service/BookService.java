@@ -102,11 +102,9 @@ public interface BookService {
 	 */
 	void deleteBook(Long bookId);
 
-
-
 	/**
 	 * @author 이기훈
 	 * 테스트용 서비스 (차후 리팩토링 예정)
 	 */
-	 List<BookSearchResult> searchBooks(String query);
+	List<BookSearchResult> searchBooks(String query);
 }

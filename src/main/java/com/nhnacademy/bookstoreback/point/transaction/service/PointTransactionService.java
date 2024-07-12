@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.point.transaction.domain.dto.request.CreatePointTransactionRequest;
 import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.CreatePointTransactionResponse;
+import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.GetAllPointTransactionResponse;
 import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.GetPointTransactionResponse;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
@@ -44,4 +45,11 @@ public interface PointTransactionService {
 	 * @author 김태환
 	 */
 	void orderPointTransaction(User user, BigDecimal totalPrice);
+
+	/**
+	 * 관리자용 모든 포인트 거래 정보
+	 * @param pageable 페이징 처리
+	 * @return 모든 포인트 거래 정보
+	 */
+	Page<GetAllPointTransactionResponse> getAllPointTransaction(Pageable pageable);
 }
