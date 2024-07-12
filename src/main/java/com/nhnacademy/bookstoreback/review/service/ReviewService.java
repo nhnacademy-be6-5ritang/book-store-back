@@ -2,7 +2,6 @@ package com.nhnacademy.bookstoreback.review.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
@@ -31,6 +30,10 @@ public interface ReviewService {
 	 */
 	Page<GetReviewResponse> findReviewsByBookId(Long bookId, Pageable pageable);
 
+	Page<GetReviewResponse> getPhotoReviewsByBookId(Long bookId, Pageable pageable);
+
+	Page<GetReviewResponse> getGeneralReviewsByBookId(Long bookId, Pageable pageable);
+
 	Page<GetReviewResponse> findReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser);
 
 	/**
@@ -38,7 +41,7 @@ public interface ReviewService {
 	 *
 	 * @param request 새로 저장할 리뷰의 정보 (작성자 ID, 책 ID, 평점, 코멘트 등)
 	 */
-	void saveReview(CreateReviewRequest request, CurrentUserDetails currentUser, MultipartFile image);
+	void createReview(CreateReviewRequest request, CurrentUserDetails currentUser);
 
 	/**
 	 * 주어진 ID에 해당하는 리뷰를 조회합니다.

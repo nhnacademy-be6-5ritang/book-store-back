@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.review.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +22,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	 */
 	Page<Review> findAllByBookBookId(Long bookId, Pageable pageable);
 
+	List<Review> findAllByBookBookId(Long bookId);
+
 	/**
 	 * 특정 사용자(User)의 ID를 기반으로 리뷰(Review)들을 페이지네이션하여 조회합니다.
 	 *
@@ -28,4 +32,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	 * @return 해당 사용자의 리뷰들을 페이지네이션한 결과 (Page 객체)
 	 */
 	Page<Review> findAllByUserId(Long userId, Pageable pageable);
+
+	Page<Review> findAllByBookBookIdAndReviewImagesEmpty(Long bookId, Pageable pageable);
+
+	Page<Review> findAllByBookBookIdAndReviewImagesNotEmpty(Long bookId, Pageable pageable);
 }
