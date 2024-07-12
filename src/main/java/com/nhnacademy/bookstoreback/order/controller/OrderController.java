@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
@@ -62,6 +63,8 @@ public class OrderController {
 	private final BookOrderServiceImpl bookOrderServiceImpl;
 
 	private final PaperTypeServiceImpl paperTypeServiceImpl;
+
+	private final BookServiceImpl bookService;
 
 	private final RefundPolicyServiceImpl refundPolicyServiceImpl;
 
