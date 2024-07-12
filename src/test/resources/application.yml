@@ -37,6 +37,19 @@ spring:
     refresh-token:
       expires-in: 86400000
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GOOGLE_MAIL}
+    password: ${GOOGLE_APP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
 remote-addr: 127.0.0.1
 
 nhncloud:
