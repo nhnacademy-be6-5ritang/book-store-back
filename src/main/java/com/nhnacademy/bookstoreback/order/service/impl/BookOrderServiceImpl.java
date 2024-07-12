@@ -15,6 +15,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequ
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderGetBookResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderGetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookByOrderCouponResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderGetBookResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.UpdateBookOrderResponse;
@@ -101,6 +102,13 @@ public class BookOrderServiceImpl implements BookOrderService {
 		}
 		return GetBookOrderResponse.from(GetBookOrderGetBookResponse.from(bookOrder.getBook()),
 			bookOrder.getBookQuantity());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetBookByOrderCouponResponse getBookAndCategoryByOrderListId(Long orderListId) {
+
+		return bookOrderRepository.findBooksByOrderListId(orderListId);
 	}
 
 }
