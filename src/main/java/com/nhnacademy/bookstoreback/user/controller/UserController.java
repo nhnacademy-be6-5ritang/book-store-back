@@ -1,5 +1,6 @@
 package com.nhnacademy.bookstoreback.user.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.order.service.OrderService;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
@@ -33,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserController {
 	private final UserService userService;
+	private final OrderService orderService;
 
 	@PostMapping
 	public ResponseEntity<CreateUserResponse> signUpUser(@RequestBody CreateUserRequest createUserRequest) {
@@ -60,26 +63,23 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(updateUserInfoResponse);
 	}
 
-	@PatchMapping("/dormant")
-	public ResponseEntity<Void> dormantUser(@CurrentUser CurrentUserDetails currentUser) {
-		userService.dormantUser(currentUser);
+	@PatchMapping("/withdraw")
+	public ResponseEntity<Void> withdrawUser(@CurrentUser CurrentUserDetails currentUser) {
+		userService.withdrawUser(currentUser);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	// 주소
-	// @PostMapping("/addresses")
-	// public ResponseEntity<RegisterAddressResponse> registerAddress(
-	// 	@RequestBody RegisterAddressRequest registerAddressRequest) {
-	// 	RegisterAddressResponse registerAddressResponse = addressService.registerAddress(registerAddressRequest);
-	// 	return ResponseEntity.status(HttpStatus.CREATED).body(registerAddressResponse);
-	// }
+	@GetMapping("/self/total-order-price")
+	public ResponseEntity<BigDecimal> getTotalOrderPrice(@CurrentUser CurrentUserDetails currentUser) {
+		BigDecimal totalPaymentAmount = orderService.getTotalOrderPrice(currentUser);
+		return ResponseEntity.status(HttpStatus.OK).body(totalPaymentAmount);
+	}
 
 	/**
 	 * @author 이기훈
 	 * @param date 유저 생일
 	 * @return 해당 날짜가 생일인 유저의 생일리스트를 리턴
 	 */
-
 	@GetMapping("/birthday")
 	public ResponseEntity<List<BirthdayCouponTargetResponse>> getUsersWithBirthday(
 		@RequestParam("date") LocalDate date) {
