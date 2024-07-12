@@ -1,6 +1,7 @@
 package com.nhnacademy.bookstoreback.user.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -172,5 +173,13 @@ public class UserService {
 		log.warn("{}, 월 {} , 일 {} 생일쿠폰 발급 서비스 실행", date, month, day);
 
 		return userRepository.findUsersWithBirthMonthDay(month, day);
+	}
+
+	public void updateLastLoginAt(CurrentUserDetails currentUser, LocalDateTime lastLoginAt) {
+		User user = userRepository.findById(currentUser.getUserId())
+			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
+
+		user.updateLastLoginAt(lastLoginAt);
+		userRepository.save(user);
 	}
 }

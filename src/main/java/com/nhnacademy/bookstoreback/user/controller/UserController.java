@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.user.controller;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -73,6 +74,14 @@ public class UserController {
 	public ResponseEntity<BigDecimal> getTotalOrderPrice(@CurrentUser CurrentUserDetails currentUser) {
 		BigDecimal totalPaymentAmount = orderService.getTotalOrderPrice(currentUser);
 		return ResponseEntity.status(HttpStatus.OK).body(totalPaymentAmount);
+	}
+
+	@PatchMapping("/last-login-at")
+	public ResponseEntity<Void> updateLastLoginAt(
+		@CurrentUser CurrentUserDetails currentUser, @RequestBody LocalDateTime lastLoginAt
+	) {
+		userService.updateLastLoginAt(currentUser, lastLoginAt);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**

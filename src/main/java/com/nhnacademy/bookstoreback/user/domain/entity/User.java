@@ -166,4 +166,8 @@ public class User {
 	public void updateOutPoints(BigDecimal outPoints) {
 		this.points = this.points.subtract(outPoints);
 	}
+
+	public void updateLastLoginAt(LocalDateTime lastLoginAt) {
+		this.lastLoginAt = lastLoginAt;
+	}
 }
