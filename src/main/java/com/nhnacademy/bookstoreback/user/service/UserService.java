@@ -138,13 +138,13 @@ public class UserService {
 		return UpdateUserInfoResponse.fromEntity(updatedUser);
 	}
 
-	public void dormantUser(@CurrentUser CurrentUserDetails currentUser) {
+	public void withdrawUser(@CurrentUser CurrentUserDetails currentUser) {
 		User user = userRepository.findById(currentUser.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
 
-		UserStatus dormantUserStatus = userStatusRepository.findByUserStatusName("DORMANT")
-			.orElseThrow(() -> new UserStatusNotFoundException("DORMANT"));
-		user.updateUserStatus(dormantUserStatus);
+		UserStatus withdrawUserStatus = userStatusRepository.findByUserStatusName("WITHDRAW")
+			.orElseThrow(() -> new UserStatusNotFoundException("WITHDRAW"));
+		user.updateUserStatus(withdrawUserStatus);
 
 		userRepository.save(user);
 	}

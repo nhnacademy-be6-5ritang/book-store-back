@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.order.service;
 
+import java.math.BigDecimal;
+
 import org.springframework.data.domain.Pageable;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
@@ -103,4 +105,11 @@ public interface OrderService {
 	 * @param orderInfoId 주문 보안 아이디
 	 */
 	void refundingOrder(String orderInfoId);
+
+	/**
+	 * 회원의 총 주문 금액 조회
+	 * @param currentUser 로그인 된 회원
+	 * @return 회원 주문 금액 총합
+	 */
+	BigDecimal getTotalOrderPrice(CurrentUserDetails currentUser);
 }
