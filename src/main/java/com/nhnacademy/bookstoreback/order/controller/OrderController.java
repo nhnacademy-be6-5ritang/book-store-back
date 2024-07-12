@@ -18,6 +18,7 @@ import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
+import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateRefundPolicyRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateWrappingTypeRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.OrderCheckNonRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateRefundPolicyRequest;
@@ -28,8 +29,8 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperRespons
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookByOrderCouponResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllRefundResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookByOrderCouponResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetListWrappingResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetNonOrderByInfoResponse;
@@ -346,8 +347,6 @@ public class OrderController {
 		return ResponseEntity.ok(orderServiceImpl.getUserPoint(currentUserDetails));
 	}
 
-
-
 	/**
 	 * 단건주문 bookId, categoryId 가져오는 controller
 	 * @author 이기훈
@@ -355,8 +354,10 @@ public class OrderController {
 	 * @return 주문한 bookId, categoryId 가져옴
 	 */
 	@GetMapping("/{orderListId}/book")
-	public ResponseEntity<GetBookByOrderCouponResponse> getBookByOneOrder(@PathVariable("orderListId") Long orderListId) {
-		return ResponseEntity.status(HttpStatus.OK).body(bookOrderServiceImpl.getBookAndCategoryByOrderListId(orderListId));
+	public ResponseEntity<GetBookByOrderCouponResponse> getBookByOneOrder(
+		@PathVariable("orderListId") Long orderListId) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(bookOrderServiceImpl.getBookAndCategoryByOrderListId(orderListId));
 	}
 
 	@GetMapping("/refunding/{orderInfoId}")
