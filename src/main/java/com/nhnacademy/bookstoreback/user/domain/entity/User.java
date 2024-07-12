@@ -147,8 +147,8 @@ public class User {
 			.collect(Collectors.toList());
 	}
 
-	public void updateUserStatus(UserStatus userStatus) {
-		this.status = userStatus;
+	public void updateUserStatus(UserStatus status) {
+		this.status = status;
 	}
 
 	public void updateUserGrade(UserGrade userGrade) {
