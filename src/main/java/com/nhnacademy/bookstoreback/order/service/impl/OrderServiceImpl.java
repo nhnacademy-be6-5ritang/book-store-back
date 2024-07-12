@@ -1,5 +1,6 @@
 package com.nhnacademy.bookstoreback.order.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -200,5 +201,20 @@ public class OrderServiceImpl implements OrderService {
 		}
 		User user = userRepository.getReferenceById(currentUserDetails.getUserId());
 		return GetUserPointOrderResponse.from(user.getPoints());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public BigDecimal getTotalOrderPrice(CurrentUserDetails currentUser) {
+		BigDecimal totalPaymentAmount = BigDecimal.ZERO;
+		Long userId = currentUser.getUserId();
+
+		List<Order> currentUserOrders = orderRepository.findAllByCart_UserId(userId);
+
+		for (Order order : currentUserOrders) {
+			totalPaymentAmount = totalPaymentAmount.add(order.getOrderPrice());
+		}
+
+		return totalPaymentAmount;
 	}
 }
