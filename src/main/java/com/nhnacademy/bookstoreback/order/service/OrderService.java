@@ -53,10 +53,10 @@ public interface OrderService {
 	/**
 	 * 카트 아이디로 모든 주문 가져오기
 	 * 페이징 처리 예정
-	 * @param cartId 카트아이디
+	 * @param userId 유저 아이디
 	 * @return 일부 주문 정보를 가진 리스트 리턴
 	 */
-	GetAllListOrderResponse findAllByCartId(Long cartId);
+	GetAllListOrderResponse findAllByUserId(Long userId);
 
 	/**
 	 * 주문 보안 아이디로 주문 찾기
@@ -93,6 +93,18 @@ public interface OrderService {
 	 * @return 회원 보유 포인트
 	 */
 	GetUserPointOrderResponse getUserPoint(@CurrentUser CurrentUserDetails currentUserDetails);
+
+	/**
+	 * 반품
+	 * @param orderInfoId 주문 보안 아이디
+	 */
+	void refundedOrder(String orderInfoId);
+
+	/**
+	 * 반품 요청중
+	 * @param orderInfoId 주문 보안 아이디
+	 */
+	void refundingOrder(String orderInfoId);
 
 	/**
 	 * 회원의 총 주문 금액 조회

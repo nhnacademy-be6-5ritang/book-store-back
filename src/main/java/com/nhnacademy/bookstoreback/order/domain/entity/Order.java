@@ -10,9 +10,9 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
+import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -71,8 +71,8 @@ public class Order {
 	private OrderStatus orderStatus;
 
 	@ManyToOne
-	@JoinColumn(name = "cart_id")
-	private Cart cart;
+	@JoinColumn(name = "user_id")
+	private User user;
 
 	@OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
 	@Fetch(FetchMode.SUBSELECT)
@@ -132,7 +132,7 @@ public class Order {
 		this.orderStatus = orderStatus;
 	}
 
-	public void updateCart(Cart cart) {
-		this.cart = cart;
+	public void updateUser(User user) {
+		this.user = user;
 	}
 }
