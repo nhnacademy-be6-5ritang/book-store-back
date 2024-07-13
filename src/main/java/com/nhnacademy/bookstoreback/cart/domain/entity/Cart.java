@@ -1,14 +1,12 @@
 package com.nhnacademy.bookstoreback.cart.domain.entity;
 
-import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,13 +20,12 @@ public class Cart {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "cart_id")
-	private Long cartId;
+	private String cartId = UUID.randomUUID().toString();
 
-	@OneToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	@Column(name = "user_id")
+	private Long userId;
 
-	public Cart(User user) {
-		this.user = user;
+	public Cart(Long userId) {
+		this.userId = userId;
 	}
 }

@@ -11,7 +11,6 @@ import com.nhnacademy.bookstoreback.cart.exception.CartNotFoundException;
 import com.nhnacademy.bookstoreback.cart.repository.CartRepository;
 import com.nhnacademy.bookstoreback.cart.service.CartService;
 import com.nhnacademy.bookstoreback.global.util.CookieUtil;
-import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.exception.UserNotFoundException;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
@@ -27,7 +26,7 @@ public class CartServiceImpl implements CartService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public GetCartResponse getCart(Long cartId) {
+	public GetCartResponse getCart(String cartId) {
 		Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException(cartId));
 		return GetCartResponse.fromEntity(cart);
 	}
@@ -42,11 +41,11 @@ public class CartServiceImpl implements CartService {
 			CookieUtil.addCookie(resp, "cartId", cart.getCartId(), 7 * 24 * 60 * 60);
 		} else {
 			// 회원인 경우
-			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 			if (cartRepository.existsByUserId(userId)) {
 				throw new CartAlreadyExistsException(userId);
 			}
-			cart = cartRepository.save(new Cart(user));
+			cart = cartRepository.save(new Cart(userId));
 		}
 		return cart;
 	}

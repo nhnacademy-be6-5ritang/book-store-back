@@ -23,7 +23,7 @@ public class CartController {
 	private final CartService cartService;
 
 	@GetMapping("/{cartId}")
-	public ResponseEntity<GetCartResponse> getCart(@PathVariable Long cartId) {
+	public ResponseEntity<GetCartResponse> getCart(@PathVariable String cartId) {
 		return ResponseEntity.ok(cartService.getCart(cartId));
 	}
 

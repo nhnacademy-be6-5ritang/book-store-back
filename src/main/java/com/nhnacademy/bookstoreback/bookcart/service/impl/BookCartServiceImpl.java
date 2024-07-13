@@ -36,7 +36,7 @@ public class BookCartServiceImpl implements BookCartService {
 	private final HttpServletResponse resp;
 
 	@Override
-	public List<GetBookCartResponse> getBookCartsByCartId(CurrentUserDetails currentUser, Long cartId) {
+	public List<GetBookCartResponse> getBookCartsByCartId(CurrentUserDetails currentUser, String cartId) {
 		Cart cart = setupCart(currentUser, cartId);
 
 		return bookCartRepository.findAllByCartCartId(cart.getCartId())
@@ -46,7 +46,7 @@ public class BookCartServiceImpl implements BookCartService {
 	}
 
 	@Override
-	public void createBookCart(CurrentUserDetails currentUser, CreateBookCartRequest request, Long cartId) {
+	public void createBookCart(CurrentUserDetails currentUser, CreateBookCartRequest request, String cartId) {
 		Cart cart = setupCart(currentUser, cartId);
 
 		Book book = bookRepository.findById(request.bookId())
@@ -63,7 +63,7 @@ public class BookCartServiceImpl implements BookCartService {
 
 	@Override
 	public void updateBookCart(Long bookCartId, CurrentUserDetails currentUser, UpdateBookCartRequest request,
-		Long cartId) {
+		String cartId) {
 		setupCart(currentUser, cartId);
 
 		bookCartRepository.findById(bookCartId).orElseThrow(() -> new BookCartNotFoundException(bookCartId));
@@ -75,7 +75,7 @@ public class BookCartServiceImpl implements BookCartService {
 	}
 
 	@Override
-	public void deleteBookCart(Long bookCartId, CurrentUserDetails currentUser, Long cartId) {
+	public void deleteBookCart(Long bookCartId, CurrentUserDetails currentUser, String cartId) {
 		cartId = setupCart(currentUser, cartId).getCartId();
 
 		BookCart bookCart = bookCartRepository.findById(bookCartId)
@@ -88,7 +88,7 @@ public class BookCartServiceImpl implements BookCartService {
 
 	}
 
-	public Cart setupCart(CurrentUserDetails currentUser, Long cartId) {
+	public Cart setupCart(CurrentUserDetails currentUser, String cartId) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 
 		// 비회원인데 카트가 없는 경우
