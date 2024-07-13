@@ -23,6 +23,8 @@ jobs:
         env:
           REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          GOOGLE_MAIL: ${{ secrets.GOOGLE_MAIL }}
+          GOOGLE_MAIL_PASSWORD: ${{ secrets.GOOGLE_MAIL_PASSWORD }}
 
 
       - name: Copy files via SCP

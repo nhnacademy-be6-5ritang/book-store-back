@@ -20,6 +20,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -32,7 +33,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "users")
+@Table(name = "users", indexes = @Index(name = "idx_user_email", columnList = "user_email", unique = true))
 public class User {
 
 	@Id
@@ -147,8 +148,8 @@ public class User {
 			.collect(Collectors.toList());
 	}
 
-	public void updateUserStatus(UserStatus userStatus) {
-		this.status = userStatus;
+	public void updateUserStatus(UserStatus status) {
+		this.status = status;
 	}
 
 	public void updateUserGrade(UserGrade userGrade) {
@@ -165,5 +166,9 @@ public class User {
 
 	public void updateOutPoints(BigDecimal outPoints) {
 		this.points = this.points.subtract(outPoints);
+	}
+
+	public void updateLastLoginAt(LocalDateTime lastLoginAt) {
+		this.lastLoginAt = lastLoginAt;
 	}
 }
