@@ -25,6 +25,8 @@ import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTarge
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
+import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 import com.nhnacademy.bookstoreback.user.service.MailService;
 import com.nhnacademy.bookstoreback.user.service.UserService;
 
@@ -39,6 +41,7 @@ public class UserController {
 	private final UserService userService;
 	private final MailService mailService;
 	private final OrderService orderService;
+	private final UserRepository userRepository;
 
 	@PostMapping
 	public ResponseEntity<CreateUserResponse> signUpUser(@RequestBody CreateUserRequest createUserRequest) {
@@ -75,11 +78,16 @@ public class UserController {
 	}
 
 	@GetMapping("/check-email/dormant-to-active")
-	public ResponseEntity<Boolean> checkMailDormantToActive(@RequestParam String email,
+	public ResponseEntity<Void> checkMailDormantToActive(@RequestParam String email,
 		@RequestParam String certifyCode) {
 		String subject = "휴면계정 활성화";
 		boolean codeMatch = mailService.checkMail(email, certifyCode, subject);
-		return ResponseEntity.status(HttpStatus.OK).body(codeMatch);
+		if (codeMatch) {
+			User user = userRepository.findByEmail(email);
+			userService.activateUser(user);
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	}
 
 	@GetMapping("/self")

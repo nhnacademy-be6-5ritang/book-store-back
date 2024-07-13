@@ -150,6 +150,13 @@ public class UserService {
 		userRepository.save(user);
 	}
 
+	public void activateUser(User user) {
+		user.updateUserStatus(userStatusRepository.findByUserStatusName("ACTIVE")
+			.orElseThrow(() -> new UserStatusNotFoundException("ACTIVE")));
+
+		userRepository.save(user);
+	}
+
 	public UserTokenInfo getUserTokenInfoByEmail(String userEmail) {
 		User user = userRepository.findByEmail(userEmail);
 
