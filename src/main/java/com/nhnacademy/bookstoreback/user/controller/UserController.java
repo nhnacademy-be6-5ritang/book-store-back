@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.user.controller;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,9 @@ import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTarge
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
+import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.repository.UserRepository;
+import com.nhnacademy.bookstoreback.user.service.MailService;
 import com.nhnacademy.bookstoreback.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -35,7 +39,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserController {
 	private final UserService userService;
+	private final MailService mailService;
 	private final OrderService orderService;
+	private final UserRepository userRepository;
 
 	@PostMapping
 	public ResponseEntity<CreateUserResponse> signUpUser(@RequestBody CreateUserRequest createUserRequest) {
@@ -43,10 +49,45 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserResponse);
 	}
 
-	@GetMapping("/check-email")
-	public ResponseEntity<Boolean> isEmailExist(@RequestParam String email) {
-		Boolean isEmailExist = userService.isEmailExist(email);
-		return ResponseEntity.status(HttpStatus.OK).body(isEmailExist);
+	@PostMapping("/send-email/sign-up")
+	public ResponseEntity<Void> sendMailSignUp(@RequestParam String email) {
+		String subject = "회원가입";
+		boolean isEmailExist = userService.isEmailExist(email);
+		if (isEmailExist) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		mailService.sendMail(email, subject);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@PostMapping("/send-email/dormant-to-active")
+	public ResponseEntity<Void> sendMailDormantToActive(@RequestParam String email) {
+		String subject = "휴면계정 활성화";
+		mailService.sendMail(email, subject);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@GetMapping("/check-email/sign-up")
+	public ResponseEntity<Void> checkMailSignUp(@RequestParam String email, @RequestParam String certifyCode) {
+		String subject = "회원가입";
+		boolean codeMatch = mailService.checkMail(email, certifyCode, subject);
+		if (codeMatch) {
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	}
+
+	@GetMapping("/check-email/dormant-to-active")
+	public ResponseEntity<Void> checkMailDormantToActive(@RequestParam String email,
+		@RequestParam String certifyCode) {
+		String subject = "휴면계정 활성화";
+		boolean codeMatch = mailService.checkMail(email, certifyCode, subject);
+		if (codeMatch) {
+			User user = userRepository.findByEmail(email);
+			userService.activateUser(user);
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	}
 
 	@GetMapping("/self")
@@ -73,6 +114,14 @@ public class UserController {
 	public ResponseEntity<BigDecimal> getTotalOrderPrice(@CurrentUser CurrentUserDetails currentUser) {
 		BigDecimal totalPaymentAmount = orderService.getTotalOrderPrice(currentUser);
 		return ResponseEntity.status(HttpStatus.OK).body(totalPaymentAmount);
+	}
+
+	@PatchMapping("/last-login-at")
+	public ResponseEntity<Void> updateLastLoginAt(
+		@CurrentUser CurrentUserDetails currentUser, @RequestBody LocalDateTime lastLoginAt
+	) {
+		userService.updateLastLoginAt(currentUser, lastLoginAt);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**
