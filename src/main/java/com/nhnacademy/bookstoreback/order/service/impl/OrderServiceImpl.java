@@ -21,6 +21,7 @@ import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
 import com.nhnacademy.bookstoreback.global.exception.OrderStatusFailException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateCartOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
@@ -72,7 +73,6 @@ public class OrderServiceImpl implements OrderService {
 	public CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest,
 		@CurrentUser CurrentUserDetails currentUser) {
 		List<OrderStatus> orderStatuses = orderStatusRepository.findAll();
-
 		for (OrderStatus orderStatus : orderStatuses) {
 			if (orderStatus.getOrderStatusName().equals("결제 대기")) {
 				Order order = Order.toEntity(createOrderRequest, orderStatus);
@@ -92,6 +92,18 @@ public class OrderServiceImpl implements OrderService {
 		ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_WAIT, HttpStatus.UNPROCESSABLE_ENTITY,
 			LocalDateTime.now());
 		throw new OrderFailException(errorStatus);
+	}
+
+	@Override
+	public CreateCartOrderResponse createCartOrder(@CurrentUser CurrentUserDetails currentUser) {
+		Order order = Order.builder()
+			.build();
+		if (currentUser != null) {
+			User user = userRepository.getReferenceById(currentUser.getUserId());
+			order.updateUser(user);
+		}
+		orderRepository.save(order);
+		return CreateCartOrderResponse.from(order);
 	}
 
 	// 특정 주문 가져오기

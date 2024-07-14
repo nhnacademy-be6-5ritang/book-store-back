@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateCartOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
@@ -103,4 +104,11 @@ public interface OrderService {
 	 * @param orderInfoId 주문 보안 아이디
 	 */
 	void refundingOrder(String orderInfoId);
+
+	/**
+	 * 카트 주문 생성
+	 * @param currentUser 로그인된 회원
+	 * @return 주문 아이디
+	 */
+	CreateCartOrderResponse createCartOrder(@CurrentUser CurrentUserDetails currentUser);
 }
