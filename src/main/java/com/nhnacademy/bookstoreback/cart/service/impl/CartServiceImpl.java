@@ -6,7 +6,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
-import com.nhnacademy.bookstoreback.bookcart.repository.BookCartRepository;
 import com.nhnacademy.bookstoreback.cart.domain.dto.response.GetCartResponse;
 import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 import com.nhnacademy.bookstoreback.cart.exception.CartAlreadyExistsException;
@@ -26,7 +25,6 @@ public class CartServiceImpl implements CartService {
 	private final RedisTemplate<String, Object> cartRedisTemplate;
 	private final CartRepository cartRepository;
 	private final UserRepository userRepository;
-	private final BookCartRepository bookCartRepository;
 
 	@Override
 	public GetCartResponse getCart(String cartId) {
