@@ -12,7 +12,6 @@ import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
-import com.nhnacademy.bookstoreback.bookcart.repository.BookCartRepository;
 import com.nhnacademy.bookstoreback.bookcart.service.BookCartService;
 import com.nhnacademy.bookstoreback.cart.exception.UserCartNotFoundException;
 import com.nhnacademy.bookstoreback.cart.repository.CartRepository;
@@ -30,7 +29,6 @@ public class BookCartServiceImpl implements BookCartService {
 	private final CartRepository cartRepository;
 	private final CartService cartService;
 	private final HttpServletResponse resp;
-	private final BookCartRepository bookCartRepository;
 
 	@Override
 	public List<GetBookCartResponse> getBookCartsByCartId(CurrentUserDetails currentUser, String cartId) {
