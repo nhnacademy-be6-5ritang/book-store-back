@@ -1,7 +1,5 @@
 package com.nhnacademy.bookstoreback.bookcart.domain.entity;
 
-import org.springframework.data.annotation.Id;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookCart {
-	@Id
 	private String cartId;
 	private Long bookId;
 	private int bookQuantity;
