@@ -1,13 +1,8 @@
 package com.nhnacademy.bookstoreback.bookcart.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
 import com.nhnacademy.bookstoreback.bookcart.domain.entity.BookCart;
 
-public interface BookCartRepository extends JpaRepository<BookCart, Long> {
-	List<BookCart> findAllByCartCartId(Long cartId);
-
-	boolean existsByCartCartIdAndBookBookId(Long cartId, Long bookId);
+public interface BookCartRepository extends CrudRepository<BookCart, String> {
 }

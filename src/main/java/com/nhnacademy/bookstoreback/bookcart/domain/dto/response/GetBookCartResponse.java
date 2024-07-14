@@ -2,15 +2,15 @@ package com.nhnacademy.bookstoreback.bookcart.domain.dto.response;
 
 import java.math.BigDecimal;
 
-import com.nhnacademy.bookstoreback.bookcart.domain.entity.BookCart;
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 
 import lombok.Builder;
 
 @Builder
 public record GetBookCartResponse(
-	Long bookCartId,
 	Long bookId,
-	Long cartId,
+	String cartId,
 	String bookImageUrl,
 	String bookTitle,
 	String authorName,
@@ -21,25 +21,24 @@ public record GetBookCartResponse(
 	int inventorQuantity,
 	int bookQuantity
 ) {
-	public static GetBookCartResponse fromEntity(BookCart bookCart) {
-		String imageUrl = bookCart.getBook().getBookImages().stream()
+	public static GetBookCartResponse fromEntity(Book book, Cart cart) {
+		String imageUrl = book.getBookImages().stream()
 			.map(bookImage -> bookImage.getImage().getImageUrl())
 			.findFirst()
 			.orElse(null); // 이미지가 없는 경우 null 반환
 
 		return GetBookCartResponse.builder()
-			.bookCartId(bookCart.getBookCartId())
-			.bookId(bookCart.getBook().getBookId())
-			.cartId(bookCart.getCart().getCartId())
+			.bookId(book.getBookId())
+			.cartId(cart.getCartId())
 			.bookImageUrl(imageUrl)
-			.bookTitle(bookCart.getBook().getBookTitle())
-			.authorName(bookCart.getBook().getAuthor().getAuthorName())
-			.publisherName(bookCart.getBook().getPublisher().getPublisherName())
-			.bookPrice(bookCart.getBook().getBookPrice())
-			.bookSalePrice(bookCart.getBook().getBookSalePrice())
-			.bookSalePercent(bookCart.getBook().getBookSalePercent())
-			.inventorQuantity(bookCart.getBook().getBookQuantity())
-			.bookQuantity(bookCart.getBookQuantity())
+			.bookTitle(book.getBookTitle())
+			.authorName(book.getAuthor().getAuthorName())
+			.publisherName(book.getPublisher().getPublisherName())
+			.bookPrice(book.getBookPrice())
+			.bookSalePrice(book.getBookSalePrice())
+			.bookSalePercent(book.getBookSalePercent())
+			.inventorQuantity(book.getBookQuantity())
+			.bookQuantity(book.getBookQuantity())
 			.build();
 	}
 }
