@@ -48,7 +48,7 @@ public interface BookService {
 	 *
 	 * @return 도서 리스트를 포함하는 List 객체
 	 */
-	List<GetBookDetailResponse> findAllBooks();
+	List<GetBookDetailResponse> getNewestBooks();
 
 	/**
 	 * 모든 도서를 페이지네이션하여 조회
@@ -107,4 +107,8 @@ public interface BookService {
 	 * 테스트용 서비스 (차후 리팩토링 예정)
 	 */
 	List<BookSearchResult> searchBooks(String query);
+
+	List<GetBookDetailResponse> getOrderedBooks();
+
+	List<GetBookDetailResponse> getLikesBooks();
 }
