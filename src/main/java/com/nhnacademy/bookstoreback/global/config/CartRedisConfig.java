@@ -8,10 +8,12 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+@EnableRedisRepositories(basePackages = "com.nhnacademy.bookstoreback.bookcart.repository", redisTemplateRef = "cartRedisTemplate")
 public class CartRedisConfig {
 	@Value("${spring.data.redis.host}")
 	private String host;
@@ -41,4 +43,10 @@ public class CartRedisConfig {
 		sessionRedisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
 		return sessionRedisTemplate;
 	}
+
+	// @Bean("cartKeyValueTemplate")
+	// public KeyValueTemplate cartKeyValueTemplate(
+	// 	@Qualifier("cartRedisTemplate") RedisTemplate<String, Object> cartRedisTemplate) {
+	// 	return new KeyValueTemplate(new RedisKeyValueAdapter(cartRedisTemplate));
+	// }
 }

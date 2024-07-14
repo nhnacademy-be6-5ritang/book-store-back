@@ -38,7 +38,8 @@ public class BookCartController {
 
 	@PostMapping
 	public ResponseEntity<Void> createBookCart(@CurrentUser CurrentUserDetails currentUser,
-		@RequestBody CreateBookCartRequest request, @CookieValue(name = "cartId", required = false) String cartId) {
+		@RequestBody CreateBookCartRequest request,
+		@CookieValue(name = "cartId", required = false) String cartId) {
 		bookCartService.createBookCart(currentUser, request, cartId);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
