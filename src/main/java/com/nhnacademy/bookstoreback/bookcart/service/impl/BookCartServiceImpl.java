@@ -12,7 +12,6 @@ import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
-import com.nhnacademy.bookstoreback.bookcart.domain.entity.BookCart;
 import com.nhnacademy.bookstoreback.bookcart.repository.BookCartRepository;
 import com.nhnacademy.bookstoreback.bookcart.service.BookCartService;
 import com.nhnacademy.bookstoreback.cart.exception.UserCartNotFoundException;
@@ -51,7 +50,7 @@ public class BookCartServiceImpl implements BookCartService {
 		// cartRedisTemplate.opsForHash().put(cartId, "bookId", String.valueOf(request.bookId()));
 		// cartRedisTemplate.opsForHash().put(cartId, "bookQuantity", String.valueOf(request.bookQuantity()));
 
-		bookCartRepository.save(new BookCart(cartId, request.bookId(), request.bookQuantity()));
+		// bookCartRepository.save(new BookCart(cartId, request.bookId(), request.bookQuantity()));
 
 		// // 장바구니를 이용할 때마다 유효기간을 갱신
 		// if (currentUser == null) {
