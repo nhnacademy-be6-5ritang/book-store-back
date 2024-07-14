@@ -1,9 +1,12 @@
 package com.nhnacademy.bookstoreback.cart.service.impl;
 
+import java.time.Duration;
+
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.bookcart.repository.BookCartRepository;
 import com.nhnacademy.bookstoreback.cart.domain.dto.response.GetCartResponse;
 import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 import com.nhnacademy.bookstoreback.cart.exception.CartAlreadyExistsException;
@@ -19,12 +22,12 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class CartServiceImpl implements CartService {
+	private final RedisTemplate<String, Object> cartRedisTemplate;
 	private final CartRepository cartRepository;
 	private final UserRepository userRepository;
+	private final BookCartRepository bookCartRepository;
 
-	@Transactional(readOnly = true)
 	@Override
 	public GetCartResponse getCart(String cartId) {
 		Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException(cartId));
@@ -37,7 +40,7 @@ public class CartServiceImpl implements CartService {
 		Cart cart = null;
 		// 비회원인 경우
 		if (userId == null) {
-			cart = cartRepository.save(new Cart(null));
+			cart = new Cart(null);
 			CookieUtil.addCookie(resp, "cartId", cart.getCartId(), 7 * 24 * 60 * 60);
 		} else {
 			// 회원인 경우
@@ -47,6 +50,9 @@ public class CartServiceImpl implements CartService {
 			}
 			cart = cartRepository.save(new Cart(userId));
 		}
+
+		cartRedisTemplate.opsForValue().set(cart.getCartId(), "", Duration.ofDays(7));
+
 		return cart;
 	}
 }

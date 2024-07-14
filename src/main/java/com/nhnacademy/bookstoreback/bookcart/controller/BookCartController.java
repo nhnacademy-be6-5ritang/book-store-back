@@ -43,18 +43,18 @@ public class BookCartController {
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
-	@PutMapping("/{bookCartId}")
+	@PutMapping("/{bookId}")
 	public ResponseEntity<Void> updateBookCart(@CurrentUser CurrentUserDetails currentUser,
-		@PathVariable Long bookCartId, @RequestBody UpdateBookCartRequest request,
+		@PathVariable Long bookId, @RequestBody UpdateBookCartRequest request,
 		@CookieValue(name = "cartId", required = false) String cartId) {
-		bookCartService.updateBookCart(bookCartId, currentUser, request, cartId);
+		bookCartService.updateBookCart(bookId, currentUser, request, cartId);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@DeleteMapping("/{bookCartId}")
+	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> deleteBookCart(@CurrentUser CurrentUserDetails currentUser,
-		@PathVariable Long bookCartId, @CookieValue(name = "cartId", required = false) String cartId) {
-		bookCartService.deleteBookCart(bookCartId, currentUser, cartId);
+		@PathVariable Long bookId, @CookieValue(name = "cartId", required = false) String cartId) {
+		bookCartService.deleteBookCart(bookId, currentUser, cartId);
 		return ResponseEntity.noContent().build();
 	}
 }
