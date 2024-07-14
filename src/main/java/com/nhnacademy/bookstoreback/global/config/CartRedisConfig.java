@@ -43,10 +43,4 @@ public class CartRedisConfig {
 		sessionRedisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
 		return sessionRedisTemplate;
 	}
-
-	// @Bean("cartKeyValueTemplate")
-	// public KeyValueTemplate cartKeyValueTemplate(
-	// 	@Qualifier("cartRedisTemplate") RedisTemplate<String, Object> cartRedisTemplate) {
-	// 	return new KeyValueTemplate(new RedisKeyValueAdapter(cartRedisTemplate));
-	// }
 }
