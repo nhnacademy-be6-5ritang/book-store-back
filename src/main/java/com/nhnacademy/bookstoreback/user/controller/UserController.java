@@ -1,6 +1,8 @@
 package com.nhnacademy.bookstoreback.user.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -16,12 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.order.service.OrderService;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
+import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.repository.UserRepository;
+import com.nhnacademy.bookstoreback.user.service.MailService;
 import com.nhnacademy.bookstoreback.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +39,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserController {
 	private final UserService userService;
+	private final MailService mailService;
+	private final OrderService orderService;
+	private final UserRepository userRepository;
 
 	@PostMapping
 	public ResponseEntity<CreateUserResponse> signUpUser(@RequestBody CreateUserRequest createUserRequest) {
@@ -40,10 +49,45 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserResponse);
 	}
 
-	@GetMapping("/check-email")
-	public ResponseEntity<Boolean> isEmailExist(@RequestParam String email) {
-		Boolean isEmailExist = userService.isEmailExist(email);
-		return ResponseEntity.status(HttpStatus.OK).body(isEmailExist);
+	@PostMapping("/send-email/sign-up")
+	public ResponseEntity<Void> sendMailSignUp(@RequestParam String email) {
+		String subject = "회원가입";
+		boolean isEmailExist = userService.isEmailExist(email);
+		if (isEmailExist) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		mailService.sendMail(email, subject);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@PostMapping("/send-email/dormant-to-active")
+	public ResponseEntity<Void> sendMailDormantToActive(@RequestParam String email) {
+		String subject = "휴면계정 활성화";
+		mailService.sendMail(email, subject);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@GetMapping("/check-email/sign-up")
+	public ResponseEntity<Void> checkMailSignUp(@RequestParam String email, @RequestParam String certifyCode) {
+		String subject = "회원가입";
+		boolean codeMatch = mailService.checkMail(email, certifyCode, subject);
+		if (codeMatch) {
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	}
+
+	@GetMapping("/check-email/dormant-to-active")
+	public ResponseEntity<Void> checkMailDormantToActive(@RequestParam String email,
+		@RequestParam String certifyCode) {
+		String subject = "휴면계정 활성화";
+		boolean codeMatch = mailService.checkMail(email, certifyCode, subject);
+		if (codeMatch) {
+			User user = userRepository.findByEmail(email);
+			userService.activateUser(user);
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	}
 
 	@GetMapping("/self")
@@ -60,26 +104,31 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(updateUserInfoResponse);
 	}
 
-	@PatchMapping("/dormant")
-	public ResponseEntity<Void> dormantUser(@CurrentUser CurrentUserDetails currentUser) {
-		userService.dormantUser(currentUser);
+	@PatchMapping("/withdraw")
+	public ResponseEntity<Void> withdrawUser(@CurrentUser CurrentUserDetails currentUser) {
+		userService.withdrawUser(currentUser);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	// 주소
-	// @PostMapping("/addresses")
-	// public ResponseEntity<RegisterAddressResponse> registerAddress(
-	// 	@RequestBody RegisterAddressRequest registerAddressRequest) {
-	// 	RegisterAddressResponse registerAddressResponse = addressService.registerAddress(registerAddressRequest);
-	// 	return ResponseEntity.status(HttpStatus.CREATED).body(registerAddressResponse);
-	// }
+	@GetMapping("/self/total-order-price")
+	public ResponseEntity<BigDecimal> getTotalOrderPrice(@CurrentUser CurrentUserDetails currentUser) {
+		BigDecimal totalPaymentAmount = orderService.getTotalOrderPrice(currentUser);
+		return ResponseEntity.status(HttpStatus.OK).body(totalPaymentAmount);
+	}
+
+	@PatchMapping("/last-login-at")
+	public ResponseEntity<Void> updateLastLoginAt(
+		@CurrentUser CurrentUserDetails currentUser, @RequestBody LocalDateTime lastLoginAt
+	) {
+		userService.updateLastLoginAt(currentUser, lastLoginAt);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
 
 	/**
 	 * @author 이기훈
 	 * @param date 유저 생일
 	 * @return 해당 날짜가 생일인 유저의 생일리스트를 리턴
 	 */
-
 	@GetMapping("/birthday")
 	public ResponseEntity<List<BirthdayCouponTargetResponse>> getUsersWithBirthday(
 		@RequestParam("date") LocalDate date) {

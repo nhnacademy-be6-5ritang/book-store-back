@@ -31,30 +31,30 @@ public class BookCartController {
 
 	@GetMapping
 	public ResponseEntity<List<GetBookCartResponse>> getBookCarts(
-		@CurrentUser CurrentUserDetails currentUser, @CookieValue(name = "cartId", required = false) Long cartId) {
+		@CurrentUser CurrentUserDetails currentUser, @CookieValue(name = "cartId", required = false) String cartId) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(bookCartService.getBookCartsByCartId(currentUser, cartId));
 	}
 
 	@PostMapping
 	public ResponseEntity<Void> createBookCart(@CurrentUser CurrentUserDetails currentUser,
-		@RequestBody CreateBookCartRequest request, @CookieValue(name = "cartId", required = false) Long cartId) {
+		@RequestBody CreateBookCartRequest request, @CookieValue(name = "cartId", required = false) String cartId) {
 		bookCartService.createBookCart(currentUser, request, cartId);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
-	@PutMapping("/{bookCartId}")
+	@PutMapping("/{bookId}")
 	public ResponseEntity<Void> updateBookCart(@CurrentUser CurrentUserDetails currentUser,
-		@PathVariable Long bookCartId, @RequestBody UpdateBookCartRequest request,
-		@CookieValue(name = "cartId", required = false) Long cartId) {
-		bookCartService.updateBookCart(bookCartId, currentUser, request, cartId);
+		@PathVariable Long bookId, @RequestBody UpdateBookCartRequest request,
+		@CookieValue(name = "cartId", required = false) String cartId) {
+		bookCartService.updateBookCart(bookId, currentUser, request, cartId);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@DeleteMapping("/{bookCartId}")
+	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> deleteBookCart(@CurrentUser CurrentUserDetails currentUser,
-		@PathVariable Long bookCartId, @CookieValue(name = "cartId", required = false) Long cartId) {
-		bookCartService.deleteBookCart(bookCartId, currentUser, cartId);
+		@PathVariable Long bookId, @CookieValue(name = "cartId", required = false) String cartId) {
+		bookCartService.deleteBookCart(bookId, currentUser, cartId);
 		return ResponseEntity.noContent().build();
 	}
 }

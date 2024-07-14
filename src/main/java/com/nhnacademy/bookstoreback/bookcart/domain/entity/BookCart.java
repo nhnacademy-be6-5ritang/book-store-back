@@ -1,45 +1,29 @@
 package com.nhnacademy.bookstoreback.bookcart.domain.entity;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
-import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
-@Table(name = "books_and_carts")
 public class BookCart {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "book_cart_id")
-	private Long bookCartId;
-
-	@Column(name = "book_quantity", nullable = false)
+	private String cartId;
+	private Long bookId;
 	private int bookQuantity;
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "book_id", nullable = false)
-	private Book book;
+	public BookCart(String cartId) {
+		this.cartId = cartId;
+	}
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "cart_id", nullable = false)
-	private Cart cart;
-
-	public BookCart(Book book, Cart cart, int bookQuantity) {
+	public BookCart(Long bookId, int bookQuantity) {
+		this.bookId = bookId;
 		this.bookQuantity = bookQuantity;
-		this.book = book;
-		this.cart = cart;
+	}
+
+	public BookCart(String cartId, Long bookId, int bookQuantity) {
+		this.cartId = cartId;
+		this.bookId = bookId;
+		this.bookQuantity = bookQuantity;
 	}
 
 	public void updateBookQuantity(int bookQuantity) {

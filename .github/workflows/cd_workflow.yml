@@ -23,6 +23,8 @@ jobs:
         env:
           REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          GOOGLE_MAIL: ${{ secrets.GOOGLE_MAIL }}
+          GOOGLE_APP_PASSWORD: ${{ secrets.GOOGLE_APP_PASSWORD }}
 
 
       - name: Copy files via SCP
@@ -65,7 +67,7 @@ jobs:
           script: |
             echo "Starting new application..."
             source ~/.bashrc
-            nohup java -jar ~/target/BOOK-STORE-BACK.jar --server.pofiles.active=${{secrets.SPRING_PROFILE}} --server.port=${{ secrets.BACK_PORT }} --spring.datasource.password=${{ secrets.MYSQL_PASSWORD }} --spring.redis.password=${{ secrets.REDIS_PASSWORD }} > Back_API.log 2>&1 &
+            nohup java -jar ~/target/BOOK-STORE-BACK.jar --server.profiles.active=prod --server.port=${{ secrets.BACK_PORT }} --spring.datasource.password=${{ secrets.MYSQL_PASSWORD }} --spring.data.redis.password=${{ secrets.REDIS_PASSWORD }} > Back_API.log 2>&1 &
             echo "New application started. Check app.log for details."
 
 

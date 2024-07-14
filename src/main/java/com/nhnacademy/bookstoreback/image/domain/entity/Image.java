@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,6 +38,7 @@ public class Image {
 	@NotNull
 	private LocalDateTime imageCreatedAt = LocalDateTime.now();
 
+	@Builder
 	public Image(String fileName, String imageUrl) {
 		this.imageName = fileName;
 		this.imageUrl = imageUrl;

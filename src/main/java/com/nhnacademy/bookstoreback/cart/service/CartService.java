@@ -18,7 +18,7 @@ public interface CartService {
 	 * @param cartId 조회할 장바구니의 ID
 	 * @return 장바구니 정보가 포함된 ResponseEntity 객체
 	 */
-	GetCartResponse getCart(Long cartId);
+	GetCartResponse getCart(String cartId);
 
 	/**
 	 * 새로운 장바구니를 생성합니다.

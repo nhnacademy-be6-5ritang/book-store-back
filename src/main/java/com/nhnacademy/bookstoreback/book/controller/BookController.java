@@ -85,8 +85,18 @@ public class BookController {
 	 * @return 도서 리스트를 포함하는 ResponseEntity 객체
 	 */
 	@GetMapping
-	public ResponseEntity<List<GetBookDetailResponse>> findAllBooks() {
-		return ResponseEntity.status(HttpStatus.OK).body(bookService.findAllBooks());
+	public ResponseEntity<List<GetBookDetailResponse>> getNewestBooks() {
+		return ResponseEntity.status(HttpStatus.OK).body(bookService.getNewestBooks());
+	}
+
+	@GetMapping("/ordered")
+	public ResponseEntity<List<GetBookDetailResponse>> getOrderedBooks() {
+		return ResponseEntity.status(HttpStatus.OK).body(bookService.getOrderedBooks());
+	}
+
+	@GetMapping("/likes")
+	public ResponseEntity<List<GetBookDetailResponse>> getLikesBooks() {
+		return ResponseEntity.status(HttpStatus.OK).body(bookService.getLikesBooks());
 	}
 
 	/**
@@ -96,7 +106,7 @@ public class BookController {
 	 * @return 페이지네이션 된 도서 리스트를 포함하는 ResponseEntity 객체
 	 */
 	@GetMapping("/page")
-	public ResponseEntity<Page<GetBookDetailResponse>> findAllBooks(
+	public ResponseEntity<Page<GetBookDetailResponse>> getNewestBooks(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.findAllBooks(pageable));
 	}

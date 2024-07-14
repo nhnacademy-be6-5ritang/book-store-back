@@ -10,4 +10,6 @@ import com.nhnacademy.bookstoreback.image.domain.entity.Image;
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Long> {
 	Optional<Image> findByImageName(String imageName);
+
+	Optional<Image> findByImageUrl(String imageUrl);
 }

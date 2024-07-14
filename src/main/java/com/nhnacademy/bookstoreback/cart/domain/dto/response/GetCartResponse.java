@@ -6,11 +6,11 @@ import lombok.Builder;
 
 @Builder
 public record GetCartResponse(
-	Long cardId,
+	String cardId,
 	Long userId) {
 
 	public static GetCartResponse fromEntity(Cart cart) {
-		Long userId = cart.getUser() != null ? cart.getUser().getId() : null;
+		Long userId = cart.getUserId() != null ? cart.getUserId() : null;
 		return GetCartResponse.builder()
 			.cardId(cart.getCartId())
 			.userId(userId)

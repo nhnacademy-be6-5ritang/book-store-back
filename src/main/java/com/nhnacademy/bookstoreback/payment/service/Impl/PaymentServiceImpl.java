@@ -5,6 +5,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,8 @@ import com.nhnacademy.bookstoreback.point.transaction.domain.entity.PointTransac
 import com.nhnacademy.bookstoreback.point.transaction.repository.PointTransactionRepository;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
+import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
+import com.nhnacademy.bookstoreback.usergrade.repository.UserGradeRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,6 +54,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class PaymentServiceImpl implements PaymentService {
+	public static final String ERROR_PARSER_FAIL = "파싱 실패";
+	public static final String ERROR_PAYMENT_EXITS = "결제를 찾을 수 없습니다";
+	public static final String ERROR_ORDER_EXITS = "주문 정보를 찾을 수 없습니다";
+	public static final String ERROR_BOOKORDER_EXITS = "주문리스트를 찾을 수 없습니다";
 	private final PaymentRepository paymentRepository;
 	private final OrderRepository orderRepository;
 	private final BookOrderRepository bookOrderRepository;
@@ -58,11 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private final PointTransactionRepository pointTransactionRepository;
 	private final PointEarningPolicyRepository pointEarningPolicyRepository;
 	private final UserRepository userRepository;
-
-	public static final String ERROR_PARSER_FAIL = "파싱 실패";
-	public static final String ERROR_PAYMENT_EXITS = "결제를 찾을 수 없습니다";
-	public static final String ERROR_ORDER_EXITS = "주문 정보를 찾을 수 없습니다";
-	public static final String ERROR_BOOKORDER_EXITS = "주문리스트를 찾을 수 없습니다";
+	private final UserGradeRepository userGradeRepository;
 
 	@Override
 	public PaymentSaveResponse savePaymentResponse(String paymentResponseJson,
@@ -111,6 +114,11 @@ public class PaymentServiceImpl implements PaymentService {
 					.multiply(pointEarningPolicy.getPointEarningAmount()
 							.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
 						MathContext.UNLIMITED));
+
+			BigDecimal updatedOrderPrice = orderServiceImpl.getTotalOrderPrice(currentUser);
+
+			updateUserGrade(updatedOrderPrice, user);
+
 			userRepository.save(user);
 		}
 		orderServiceImpl.updateOrderStatus(order.getOrderId(), 1L);
@@ -118,6 +126,31 @@ public class PaymentServiceImpl implements PaymentService {
 			Payment.toEntity(paymentResponse.paymentKey(), order, paymentResponse.amount(), paymentResponse.status(),
 				paymentResponse.date())));
 	}
+
+	private void updateUserGrade(BigDecimal updatedOrderPrice, User user) {
+		List<UserGrade> userGrades = userGradeRepository.findAll();
+		for (UserGrade userGrade : userGrades) {
+			if (userGrade.getUserGradeMinAmount().compareTo(updatedOrderPrice) <= 0
+				&& updatedOrderPrice.compareTo(userGrade.getUserGradeMaxAmount()) < 0) {
+				user.updateUserGrade(userGrade);
+				break;
+			}
+		}
+	}
+
+	// private String getNextGrade(User user) {
+	// 	String gradeName = user.getUserGrade().getUserGradeName();
+	// 	String nextGrade = null;
+	// 	if ("REGULAR".equals(gradeName)) {
+	// 		nextGrade = "ROYAL";
+	// 	} else if ("ROYAL".equals(gradeName)) {
+	// 		nextGrade = "GRAND";
+	// 	} else if ("GRAND".equals(gradeName)) {
+	// 		nextGrade = "PRESTIGE";
+	// 	}
+	//
+	// 	return nextGrade;
+	// }
 
 	public PaymentResponse parsePaymentResponse(String paymentResponseJson) {
 		ObjectMapper objectMapper = new ObjectMapper();

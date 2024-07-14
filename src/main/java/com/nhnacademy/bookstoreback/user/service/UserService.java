@@ -1,6 +1,7 @@
 package com.nhnacademy.bookstoreback.user.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,6 +20,7 @@ import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoReques
 import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.GetPaycoUserTokenInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
@@ -138,13 +140,20 @@ public class UserService {
 		return UpdateUserInfoResponse.fromEntity(updatedUser);
 	}
 
-	public void dormantUser(@CurrentUser CurrentUserDetails currentUser) {
+	public void withdrawUser(@CurrentUser CurrentUserDetails currentUser) {
 		User user = userRepository.findById(currentUser.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
 
-		UserStatus dormantUserStatus = userStatusRepository.findByUserStatusName("DORMANT")
-			.orElseThrow(() -> new UserStatusNotFoundException("DORMANT"));
-		user.updateUserStatus(dormantUserStatus);
+		UserStatus withdrawUserStatus = userStatusRepository.findByUserStatusName("WITHDRAW")
+			.orElseThrow(() -> new UserStatusNotFoundException("WITHDRAW"));
+		user.updateUserStatus(withdrawUserStatus);
+
+		userRepository.save(user);
+	}
+
+	public void activateUser(User user) {
+		user.updateUserStatus(userStatusRepository.findByUserStatusName("ACTIVE")
+			.orElseThrow(() -> new UserStatusNotFoundException("ACTIVE")));
 
 		userRepository.save(user);
 	}
@@ -172,5 +181,21 @@ public class UserService {
 		log.warn("{}, 월 {} , 일 {} 생일쿠폰 발급 서비스 실행", date, month, day);
 
 		return userRepository.findUsersWithBirthMonthDay(month, day);
+	}
+
+	public void updateLastLoginAt(CurrentUserDetails currentUser, LocalDateTime lastLoginAt) {
+		User user = userRepository.findById(currentUser.getUserId())
+			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
+
+		user.updateLastLoginAt(lastLoginAt);
+		userRepository.save(user);
+	}
+
+	public GetPaycoUserTokenInfoResponse getUserTokenInfoByPaycoId(String paycoIdNo) {
+		User user = userRepository.findBySsoId(paycoIdNo).orElseThrow(
+			() -> new UserNotFoundException(paycoIdNo)
+		);
+
+		return GetPaycoUserTokenInfoResponse.fromEntity(user);
 	}
 }

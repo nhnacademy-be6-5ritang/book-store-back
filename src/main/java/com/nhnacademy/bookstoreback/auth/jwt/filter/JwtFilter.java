@@ -74,7 +74,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			refreshToken = reissueTokensResponse.getBody().refreshToken();
 
 			String requestUri = request.getRequestURI();
-			if (!"/api/users/dormant".equals(requestUri)) {
+			if (!"/api/users/withdraw".equals(requestUri)) {
 				response.setHeader("New-Authorization", URLEncoder.encode(accessToken, StandardCharsets.UTF_8));
 				response.setHeader("New-Refresh-Token", URLEncoder.encode(refreshToken, StandardCharsets.UTF_8));
 			}

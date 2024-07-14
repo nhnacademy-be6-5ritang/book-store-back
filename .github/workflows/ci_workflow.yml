@@ -20,6 +20,8 @@ jobs:
         env:
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          GOOGLE_MAIL: ${{ secrets.GOOGLE_MAIL }}
+          GOOGLE_APP_PASSWORD: ${{ secrets.GOOGLE_APP_PASSWORD }}
 
       # 소나큐브 테스트 커버리지 측정
       - name: Build and analyze with SonarQube
