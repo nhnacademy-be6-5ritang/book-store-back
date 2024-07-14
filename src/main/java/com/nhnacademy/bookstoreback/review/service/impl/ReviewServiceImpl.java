@@ -1,28 +1,32 @@
 package com.nhnacademy.bookstoreback.review.service.impl;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
-import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
-import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
+import com.nhnacademy.bookstoreback.image.domain.entity.Image;
+import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
-import com.nhnacademy.bookstoreback.review.domain.dto.response.CreateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
-import com.nhnacademy.bookstoreback.review.domain.dto.response.UpdateReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
+import com.nhnacademy.bookstoreback.review.domain.entity.ReviewImage;
+import com.nhnacademy.bookstoreback.review.exception.ReviewNotFoundException;
+import com.nhnacademy.bookstoreback.review.repository.ReviewImageRepository;
 import com.nhnacademy.bookstoreback.review.repository.ReviewRepository;
 import com.nhnacademy.bookstoreback.review.service.ReviewService;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.exception.UserNotFoundException;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +42,8 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final BookRepository bookRepository;
 	private final UserRepository userRepository;
+	private final ImageRepository imageRepository;
+	private final ReviewImageRepository reviewImageRepository;
 
 	/**
 	 * 모든 리뷰를 페이지네이션하여 조회합니다.
@@ -52,7 +58,10 @@ public class ReviewServiceImpl implements ReviewService {
 		int pageSize = pageable.getPageSize();
 
 		return reviewRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(GetReviewResponse::fromEntity);
+			.map(review -> {
+				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
+				return GetReviewResponse.fromEntity(review, reviewImage);
+			});
 	}
 
 	/**
@@ -64,61 +73,108 @@ public class ReviewServiceImpl implements ReviewService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetReviewResponse> findReviewsByBookId(Long bookId, Pageable pageable) {
+	public Page<GetReviewResponse> getReviewsByBookId(Long bookId, Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		Page<Review> reviews = reviewRepository.findAllByBookBookId(bookId,
-			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
-
-		return reviews
-			.map(GetReviewResponse::fromEntity);
+		return reviewRepository.findAllByBookBookId(bookId,
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
+			.map(review -> {
+				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
+				return GetReviewResponse.fromEntity(review, reviewImage);
+			});
 	}
 
-	/**
-	 * 사용자 ID를 기준으로 리뷰를 페이지네이션하여 조회합니다.
-	 *
-	 * @param userId 사용자의 ID
-	 * @param pageable 페이지네이션 정보
-	 * @return 페이지네이션된 리뷰 응답
-	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetReviewResponse> findReviewsByUserId(Long userId, Pageable pageable) {
+	public Page<GetReviewResponse> getGeneralReviewsByBookId(Long bookId, Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		Page<Review> reviews = reviewRepository.findAllByUserId(userId,
-			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
+		return reviewRepository.findAllByBookBookIdAndReviewImagesEmpty(bookId,
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
+			.map(review -> GetReviewResponse.fromEntity(review, null));
+	}
 
-		return reviews
-			.map(GetReviewResponse::fromEntity);
+	@Override
+	@Transactional(readOnly = true)
+	public Page<GetReviewResponse> getPhotoReviewsByBookId(Long bookId, Pageable pageable) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+
+		return reviewRepository.findAllByBookBookIdAndReviewImagesNotEmpty(bookId,
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
+			.map(review -> {
+				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
+				return GetReviewResponse.fromEntity(review, reviewImage);
+			});
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<GetReviewResponse> getReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+
+		return reviewRepository.findAllByUserId(userId,
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
+			.map(review -> {
+				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
+				return GetReviewResponse.fromEntity(review, reviewImage);
+			});
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<GetReviewResponse> getGeneralReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+
+		return reviewRepository.findAllByUserIdAndReviewImagesEmpty(userId,
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
+			.map(review -> GetReviewResponse.fromEntity(review, null));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<GetReviewResponse> getPhotoReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+
+		return reviewRepository.findAllByUserIdAndReviewImagesNotEmpty(userId,
+				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
+			.map(review -> {
+				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
+				return GetReviewResponse.fromEntity(review, reviewImage);
+			});
 	}
 
 	/**
 	 * 새로운 리뷰를 저장합니다.
 	 *
 	 * @param request 리뷰 생성 요청 DTO
-	 * @return 생성된 리뷰 응답 DTO
 	 */
 	@Override
-	public CreateReviewResponse saveReview(CreateReviewRequest request) {
-		User user = userRepository.findById(request.userId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 회원 '%d'는 존재하지 않는 회원입니다.", request.userId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+	public void createReview(CreateReviewRequest request, CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
 
-		Book book = bookRepository.findById(request.bookId()).orElseThrow(() -> {
-			String errorMessage = String.format("해당 도서 '%d'는 존재하지 않는 도서입니다.", request.bookId());
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+		Book book = bookRepository.findById(request.bookId())
+			.orElseThrow(() -> new BookNotFoundException(request.bookId()));
 
-		Review review = new Review(request.reviewScore(), request.reviewComment(), LocalDateTime.now(), book, user);
-		reviewRepository.save(review);
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException(userId));
 
-		return CreateReviewResponse.fromEntity(review, user, book);
+		Review review = reviewRepository.save(Review.toEntity(request, book, user));
+
+		// 파일 이름이 비어있지 않으면 이미지 저장
+		if (request.fileName() != null) {
+			Image image = imageRepository.save(new Image(ImageNameParser(request.fileName()), request.fileName()));
+			reviewImageRepository.save(ReviewImage.toEntity(review, image));
+		}
+
 	}
 
 	/**
@@ -130,13 +186,9 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetReviewResponse findReviewById(Long reviewId) {
-		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 리뷰 '%d'는 존재하지 않는 리뷰입니다.", reviewId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
-		return GetReviewResponse.fromEntity(review);
+		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
+		ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
+		return GetReviewResponse.fromEntity(review, reviewImage);
 	}
 
 	/**
@@ -147,17 +199,9 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @return 업데이트된 리뷰 응답 DTO
 	 */
 	@Override
-	public UpdateReviewResponse updateReview(Long reviewId, UpdateReviewRequest request) {
-		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 리뷰 '%d'는 존재하지 않는 리뷰입니다.", reviewId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
+	public void updateReview(Long reviewId, UpdateReviewRequest request) {
+		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
 		review.updateReviewScore(request.reviewScore(), request.reviewComment());
-		reviewRepository.save(review);
-
-		return UpdateReviewResponse.fromEntity(review);
 	}
 
 	/**
@@ -169,4 +213,41 @@ public class ReviewServiceImpl implements ReviewService {
 	public void deleteReview(Long reviewId) {
 		reviewRepository.deleteById(reviewId);
 	}
+
+	@Override
+	public double getReviewsAverageScoreByBookId(Long bookId) {
+		return reviewRepository.getReviewsAverageScoreByBookId(bookId);
+	}
+
+	@Override
+	public List<GetBookTitleResponse> getBooksByOrderStatusCompletionAndUserId(CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+		return bookRepository.getBooksByOrderStatusCompletionAndUserId("배송 완료", userId);
+	}
+
+	public static String ImageNameParser(String fileName) {
+		// 파일 이름을 "_"로 분리하여 배열로 만듭니다.
+		String[] parts = fileName.split("_", 2);
+
+		// parts 배열의 두 번째 요소가 실제 파일 이름이 포함된 부분입니다.
+		if (parts.length > 1) {
+			String filePart = parts[1];
+
+			// 파일 이름에서 마지막 "."의 위치를 찾습니다.
+			int lastDotIndex = filePart.lastIndexOf('.');
+
+			// 마지막 "."이 있는 경우
+			if (lastDotIndex != -1) {
+				// 파일 이름의 확장자를 제외한 부분을 반환합니다.
+				return filePart.substring(0, lastDotIndex);
+			} else {
+				// 마지막 "."이 없는 경우 전체 파일 이름을 반환합니다.
+				return filePart;
+			}
+		}
+
+		// "_"가 없거나 제대로 분리되지 않은 경우 빈 문자열 반환
+		return "";
+	}
+
 }
