@@ -18,4 +18,12 @@ public class UserNotFoundException extends NotFoundException {
 			LocalDateTime.now()
 		));
 	}
+
+	public UserNotFoundException(String ssoId) {
+		super(ErrorStatus.from(
+			String.format("해당 사용자 '%s'는 존재하지 않는 사용자입니다.", ssoId),
+			HttpStatus.NOT_FOUND,
+			LocalDateTime.now()
+		));
+	}
 }

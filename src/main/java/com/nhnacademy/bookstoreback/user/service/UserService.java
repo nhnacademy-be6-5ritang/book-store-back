@@ -20,6 +20,7 @@ import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoReques
 import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.GetPaycoUserTokenInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
@@ -188,5 +189,13 @@ public class UserService {
 
 		user.updateLastLoginAt(lastLoginAt);
 		userRepository.save(user);
+	}
+
+	public GetPaycoUserTokenInfoResponse getUserTokenInfoByPaycoId(String paycoIdNo) {
+		User user = userRepository.findBySsoId(paycoIdNo).orElseThrow(
+			() -> new UserNotFoundException(paycoIdNo)
+		);
+
+		return GetPaycoUserTokenInfoResponse.fromEntity(user);
 	}
 }
