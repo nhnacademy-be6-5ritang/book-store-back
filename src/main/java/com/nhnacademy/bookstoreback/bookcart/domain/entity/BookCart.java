@@ -1,13 +1,11 @@
 package com.nhnacademy.bookstoreback.bookcart.domain.entity;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@RedisHash(value = "BookCart", timeToLive = 3600)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookCart {
