@@ -3,10 +3,12 @@ package com.nhnacademy.bookstoreback.book.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -217,8 +219,35 @@ public class BookServiceImpl implements BookService {
 	 */
 	@Transactional(readOnly = true)
 	@Override
-	public List<GetBookDetailResponse> findAllBooks() {
-		return bookRepository.findAll().stream().map(GetBookDetailResponse::fromEntity).toList();
+	public List<GetBookDetailResponse> getNewestBooks() {
+		Pageable topTenNewest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "bookPublishDate"));
+		Page<Book> newestBooksPage = bookRepository.findAllByOrderByBookPublishDateDesc(topTenNewest);
+		List<Book> newestBooks = newestBooksPage.getContent();
+		return newestBooks.stream()
+			.map(GetBookDetailResponse::fromEntity)
+			.collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<GetBookDetailResponse> getOrderedBooks() {
+		Pageable topTen = PageRequest.of(0, 10);
+		Page<Book> topOrderedBooksPage = bookRepository.findTopOrderedBooks(topTen);
+		List<Book> topOrderedBooks = topOrderedBooksPage.getContent();
+		return topOrderedBooks.stream()
+			.map(GetBookDetailResponse::fromEntity)
+			.collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<GetBookDetailResponse> getLikesBooks() {
+		Pageable topTen = PageRequest.of(0, 10);
+		Page<Book> topOrderedBooksPage = bookRepository.findTopLikedBooks(topTen);
+		List<Book> topOrderedBooks = topOrderedBooksPage.getContent();
+		return topOrderedBooks.stream()
+			.map(GetBookDetailResponse::fromEntity)
+			.collect(Collectors.toList());
 	}
 
 	/**

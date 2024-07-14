@@ -1,12 +1,15 @@
 package com.nhnacademy.bookstoreback.book.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 
 /**
@@ -36,5 +39,13 @@ public interface BookRepository extends JpaRepository<Book, Long>, CustomBookRep
 
 	Page<Book> findAllByBookCategories_Category_CategoryName(Pageable pageable, String categoryName);
 
-}
+	Page<Book> findAllByOrderByBookPublishDateDesc(Pageable pageable);
 
+	@Query("SELECT b FROM Book b JOIN WishList wl ON b.bookId = wl.book.bookId " +
+		"GROUP BY b.bookId ORDER BY COUNT(wl.book.bookId) DESC")
+	Page<Book> findTopLikedBooks(Pageable pageable);
+
+	@Query("SELECT b FROM Book b JOIN BookOrder bo ON b.bookId = bo.book.bookId " +
+		"GROUP BY b.bookId ORDER BY COUNT(bo.book.bookId) DESC")
+	Page<Book> findTopOrderedBooks(Pageable pageable);
+}
