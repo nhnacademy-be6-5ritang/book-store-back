@@ -46,8 +46,7 @@ public class SecurityConfig {
 				// .requestMatchers("/api/admin").hasRole("ADMIN")
 				.anyRequest().permitAll()
 			)
-			.addFilterBefore(ipAddressFilter, UsernamePasswordAuthenticationFilter.class)
-			// .addFilterAfter(new JwtFilter(jwtUtils, tokenReissueClient), IpAddressFilter.class)
+			// .addFilterBefore(ipAddressFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new JwtFilter(jwtUtils, tokenReissueClient, accessTokenExpiresIn, refreshTokenExpiresIn),
 				UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement((session) -> session
