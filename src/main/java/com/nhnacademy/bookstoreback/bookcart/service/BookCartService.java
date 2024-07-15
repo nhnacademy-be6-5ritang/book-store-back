@@ -6,6 +6,7 @@ import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
+import com.nhnacademy.bookstoreback.bookcart.domain.entity.BookCart;
 
 /**
  * @author 이경헌
@@ -59,4 +60,6 @@ public interface BookCartService {
 	 * @return 설정된 장바구니 객체를 반환합니다.
 	 */
 	String setupCart(CurrentUserDetails currentUser, String cartId);
+
+	<S extends BookCart> void saveWithTtl(S entity);
 }
