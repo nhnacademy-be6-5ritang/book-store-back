@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 
 /**
@@ -48,4 +47,12 @@ public interface BookRepository extends JpaRepository<Book, Long>, CustomBookRep
 	@Query("SELECT b FROM Book b JOIN BookOrder bo ON b.bookId = bo.book.bookId " +
 		"GROUP BY b.bookId ORDER BY COUNT(bo.book.bookId) DESC")
 	Page<Book> findTopOrderedBooks(Pageable pageable);
+
+	@Query("SELECT b FROM Book b WHERE b.bookId NOT IN " +
+		"(SELECT bo.book.bookId FROM BookOrder bo) ORDER BY RAND()")
+	List<Book> findRandomOrderedBooks(Pageable pageable);
+
+	@Query("SELECT b FROM Book b WHERE b.bookId NOT IN " +
+		"(SELECT wl.book.bookId FROM WishList wl) ORDER BY RAND()")
+	List<Book> findRandomLikedBooks(Pageable pageable);
 }
