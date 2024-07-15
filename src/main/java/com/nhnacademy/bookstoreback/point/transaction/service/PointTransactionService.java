@@ -23,19 +23,7 @@ public interface PointTransactionService {
 
 	// 이 밑에 포인트 거래 생성 메서드들은 @CurrentUser로 수정해도 된다.
 
-	/**
-	 * 리뷰 작성 시 포인트 거래 생성
-	 * @param user 리뷰 작성자
-	 */
-	void reviewPointTransaction(User user);
-
-	/**
-	 * 사진 리뷰 작성 시 포인트 거래 생성
-	 * @param user 사진 리뷰 작성자
-	 *
-	 * @author 김태환
-	 */
-	void photoReviewPointTransaction(User user);
+	GetPointTransactionResponse reviewPointTransaction(CurrentUserDetails currentUser, String reviewType);
 
 	/**
 	 * 주문 시 주문자의 회원 등급에 따른 포인트 거래 생성

@@ -88,9 +88,19 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 	}
 
 	@Override
-	public void reviewPointTransaction(User user) {
-		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType("REVIEW")
-			.orElseThrow(() -> new PointEarningPolicyNotFoundException("REVIEW"));
+	public GetPointTransactionResponse reviewPointTransaction(CurrentUserDetails currentUser, String reviewType) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+		PointEarningPolicy pointEarningPolicy = null;
+		if (reviewType.equals("REVIEW")) {
+			pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType("REVIEW")
+				.orElseThrow(() -> new PointEarningPolicyNotFoundException("REVIEW"));
+		} else {
+			pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType("PHOTO_REVIEW")
+				.orElseThrow(() -> new PointEarningPolicyNotFoundException("PHOTO_REVIEW"));
+		}
 
 		PointTransaction pointTransaction = PointTransaction.builder()
 			.user(user)
@@ -103,25 +113,8 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 		user.updatePoints(pointEarningPolicy.getPointEarningAmount());
 
 		userRepository.save(user);
-	}
 
-	@Override
-	public void photoReviewPointTransaction(User user) {
-		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
-				"PHOTO_REVIEW")
-			.orElseThrow(() -> new PointEarningPolicyNotFoundException("PHOTO_REVIEW"));
-
-		PointTransaction pointTransaction = PointTransaction.builder()
-			.user(user)
-			.pointEarningPolicy(pointEarningPolicy)
-			.pointTransactionAmount(pointEarningPolicy.getPointEarningAmount())
-			.build();
-
-		pointTransactionRepository.save(pointTransaction);
-
-		user.updatePoints(pointEarningPolicy.getPointEarningAmount());
-
-		userRepository.save(user);
+		return GetPointTransactionResponse.fromEntity(pointTransaction);
 	}
 
 	@Override
