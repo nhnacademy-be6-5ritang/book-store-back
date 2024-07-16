@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.order.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.request.OrderCheckNonReques
 import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateRefundPolicyRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateWrappingTypeRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateCartOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
@@ -214,6 +217,16 @@ public class OrderController {
 		return ResponseEntity.status(HttpStatus.OK).body(bookOrderServiceImpl.getBookOrder(orderListId));
 	}
 
+	/**
+	 * 주문 보안아이디로 주문리스트 가져오기
+	 * @param orderInfoId 주문 보안이이디
+	 * @return 주문리스트
+	 */
+	@GetMapping("/book-orders/cart-order/{orderInfoId}")
+	public ResponseEntity<List<GetBookOrderResponse>> getCartOrder(@PathVariable("orderInfoId") String orderInfoId) {
+		return ResponseEntity.status(HttpStatus.OK).body(bookOrderServiceImpl.getBookOrderByOrderId(orderInfoId));
+	}
+
 	//도서 주문 생성
 
 	/**
@@ -394,5 +407,13 @@ public class OrderController {
 	public ResponseEntity<Void> deleteRefundPolicy(@PathVariable Long refundPolicyId) {
 		refundPolicyServiceImpl.deleteRefundPolicy(refundPolicyId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	// 카트로 구매
+
+	@GetMapping("/cart-orders")
+	public ResponseEntity<CreateCartOrderResponse> createCartOrders(
+		@CurrentUser CurrentUserDetails currentUserDetails) {
+		return ResponseEntity.ok(orderServiceImpl.createCartOrder(currentUserDetails));
 	}
 }

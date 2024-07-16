@@ -2,7 +2,9 @@ package com.nhnacademy.bookstoreback.order.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateCartOrderRes
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetNonOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
@@ -98,6 +101,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public CreateCartOrderResponse createCartOrder(@CurrentUser CurrentUserDetails currentUser) {
 		Order order = Order.builder()
+			.orderInfoId(UUID.randomUUID().toString())
 			.build();
 		if (currentUser != null) {
 			User user = userRepository.getReferenceById(currentUser.getUserId());
@@ -183,7 +187,13 @@ public class OrderServiceImpl implements OrderService {
 			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDERS_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
 		}
-		return GetAllListOrderResponse.from(orders);
+		List<GetAllOrderResponse> orderResponses = new ArrayList<>();
+		for (Order order : orders) {
+			if (order.getOrderStatus() != null) {
+				orderResponses.add(GetAllOrderResponse.from(order));
+			}
+		}
+		return new GetAllListOrderResponse(orderResponses);
 	}
 
 	@Override

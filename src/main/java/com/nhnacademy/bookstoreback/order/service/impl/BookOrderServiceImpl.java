@@ -1,6 +1,8 @@
 package com.nhnacademy.bookstoreback.order.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -101,14 +103,24 @@ public class BookOrderServiceImpl implements BookOrderService {
 			throw new BookOrderFailException(errorStatus);
 		}
 		return GetBookOrderResponse.from(GetBookOrderGetBookResponse.from(bookOrder.getBook()),
-			bookOrder.getBookQuantity());
+			bookOrder.getBookQuantity(), bookOrder.getOrderListId());
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public GetBookByOrderCouponResponse getBookAndCategoryByOrderListId(Long orderListId) {
-
 		return bookOrderRepository.findBooksByOrderListId(orderListId);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<GetBookOrderResponse> getBookOrderByOrderId(String orderInfoId) {
+		List<BookOrder> bookOrder = bookOrderRepository.findByOrder_OrderInfoId(orderInfoId);
+		List<GetBookOrderResponse> bookOrderResponses = new ArrayList<>();
+		for (BookOrder bookOrderItem : bookOrder) {
+			bookOrderResponses.add(GetBookOrderResponse.from(GetBookOrderGetBookResponse.from(bookOrderItem.getBook()),
+				bookOrderItem.getBookQuantity(), bookOrderItem.getOrderListId()));
+		}
+		return bookOrderResponses;
+	}
 }

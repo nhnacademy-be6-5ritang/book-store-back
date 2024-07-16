@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.order.service;
 
+import java.util.List;
+
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookByOrderCouponResponse;
@@ -30,7 +32,6 @@ public interface BookOrderService {
 	 */
 	GetBookOrderResponse getBookOrder(Long bookOrderId);
 
-
 	/**
 	 * 주문 리스트 아이디로 도서정보 가져오기
 	 * @author 이기훈
@@ -38,4 +39,11 @@ public interface BookOrderService {
 	 * @return 주문 리스트 정보 리턴
 	 */
 	GetBookByOrderCouponResponse getBookAndCategoryByOrderListId(Long orderListId);
+
+	/**
+	 * 주문 보안아이디로 주문리스트 가져오기
+	 * @param orderInfoId 주문보안아이디
+	 * @return 주문리스트 정보
+	 */
+	public List<GetBookOrderResponse> getBookOrderByOrderId(String orderInfoId);
 }
