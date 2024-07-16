@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.order.service.OrderService;
@@ -24,6 +27,7 @@ import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoReques
 import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.GetUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
@@ -90,6 +94,13 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	}
 
+	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
+	@GetMapping
+	public ResponseEntity<List<GetUserInfoResponse>> getUsers(@PageableDefault(size = 10) Pageable pageable) {
+		List<GetUserInfoResponse> getUserInfoResponses = userService.getUsers(pageable);
+		return ResponseEntity.status(HttpStatus.OK).body(getUserInfoResponses);
+	}
+
 	@GetMapping("/self")
 	public ResponseEntity<GetMyUserInfoResponse> getMyUserInfo(@CurrentUser CurrentUserDetails currentUser) {
 		GetMyUserInfoResponse getMyUserInfoResponse = userService.getMyUserInfo(currentUser);
@@ -137,4 +148,9 @@ public class UserController {
 		return ResponseEntity.ok(users);
 	}
 
+	@AuthorizeRole({"ADMIN", "HEAD_ADMIN"})
+	@GetMapping("/test")
+	public ResponseEntity<String> test() {
+		return ResponseEntity.ok("ADMIN 권한이 필요한 API 테스트 성공");
+	}
 }
