@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTarge
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetPaycoUserTokenInfoResponse;
+import com.nhnacademy.bookstoreback.user.domain.dto.response.GetUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UpdateUserInfoResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
@@ -197,5 +201,14 @@ public class UserService {
 		);
 
 		return GetPaycoUserTokenInfoResponse.fromEntity(user);
+	}
+
+	public List<GetUserInfoResponse> getUsers(Pageable pageable) {
+		int page = pageable.getPageNumber() > 0 ? pageable.getPageNumber() - 1 : 0;
+		int size = pageable.isPaged() && pageable.getPageSize() > 0 ? pageable.getPageSize() : 10;
+
+		return userRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")))
+			.map(GetUserInfoResponse::fromEntity)
+			.getContent();
 	}
 }
