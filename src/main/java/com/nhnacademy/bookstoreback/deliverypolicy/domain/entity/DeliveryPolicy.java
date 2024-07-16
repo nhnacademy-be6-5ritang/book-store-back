@@ -8,9 +8,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * @author 이경헌
+ * 배송 정책을 나타내는 엔티티입니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor
@@ -21,16 +27,22 @@ public class DeliveryPolicy {
 	@Column(name = "delivery_policy_id")
 	private Long deliveryPolicyId;
 
-	@Column(name = "delivery_policy_name")
+	@NotNull
+	@Size(min = 1, max = 20)
+	@Column(name = "delivery_policy_name", nullable = false, length = 20)
 	private String deliveryPolicyName;
 
-	@Column(name = "delivery_policy_price")
+	@NotNull
+	@Column(name = "delivery_policy_price", nullable = false)
 	private BigDecimal deliveryPolicyPrice;
 
-	@Column(name = "delivery_policy_content")
+	@NotNull
+	@Size(min = 1, max = 200)
+	@Column(name = "delivery_policy_content", nullable = false, length = 200)
 	private String deliveryPolicyContent;
 
-	@Column(name = "delivery_policy_standard_price")
+	@NotNull
+	@Column(name = "delivery_policy_standard_price", nullable = false)
 	private BigDecimal deliveryPolicyStandardPrice;
 
 	public DeliveryPolicy(String deliveryPolicyName, BigDecimal deliveryPolicyPrice, String deliveryPolicyContent,

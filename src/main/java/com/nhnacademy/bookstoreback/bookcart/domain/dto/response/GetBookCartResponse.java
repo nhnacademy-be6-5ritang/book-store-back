@@ -18,9 +18,9 @@ public record GetBookCartResponse(
 	BigDecimal bookSalePrice,
 	BigDecimal bookSalePercent,
 	int inventorQuantity,
-	Long bookQuantity
+	Integer bookQuantity
 ) {
-	public static GetBookCartResponse fromEntity(Book book, Long bookQuantity, String cartId) {
+	public static GetBookCartResponse fromEntity(Book book, Integer bookQuantity, String cartId) {
 		String imageUrl = book.getBookImages().stream()
 			.map(bookImage -> bookImage.getImage().getImageUrl())
 			.findFirst()

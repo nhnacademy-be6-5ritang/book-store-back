@@ -13,8 +13,8 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryA
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
 
 /**
- * DeliveryService는 배달과 관련된 서비스 인터페이스입니다.
- * 이 인터페이스는 배달의 생성, 조회, 수정 및 삭제 작업을 정의합니다.
+ * @author 이경헌
+ * 배달과 관련된 서비스 인터페이스입니다.
  */
 public interface DeliveryService {
 	/**

@@ -6,10 +6,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * @author 이경헌
+ * 배송 상태를 나타내는 엔티티입니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,7 +26,9 @@ public class DeliveryStatus {
 	@Column(name = "delivery_status_id")
 	private Long deliveryStatusId;
 
-	@Column(name = "delivery_status_name")
+	@NotNull
+	@Size(min = 1, max = 10)
+	@Column(name = "delivery_status_name", nullable = false, length = 10)
 	private String deliveryStatusName;
 
 	public DeliveryStatus(String deliveryStatusName) {

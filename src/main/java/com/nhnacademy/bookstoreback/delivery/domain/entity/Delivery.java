@@ -15,10 +15,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * @author 이경헌
+ * 배송을 나타내는 엔티티입니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor
@@ -29,40 +35,51 @@ public class Delivery {
 	@Column(name = "delivery_id")
 	private Long deliveryId;
 
-	@Column(name = "delivery_sender_name")
+	@Size(max = 20)
+	@Column(name = "delivery_sender_name", length = 20)
 	private String deliverySenderName;
 
-	@Column(name = "delivery_sender_phone")
+	@Size(max = 20)
+	@Column(name = "delivery_sender_phone", length = 20)
 	private String deliverySenderPhone;
 
 	@Column(name = "delivery_sender_date")
 	private LocalDateTime deliverySenderDate;
 
-	@Column(name = "delivery_sender_address")
+	@Size(max = 100)
+	@Column(name = "delivery_sender_address", length = 100)
 	private String deliverySenderAddress;
 
-	@Column(name = "delivery_receiver")
+	@NotNull
+	@Size(min = 1, max = 20)
+	@Column(name = "delivery_receiver", nullable = false, length = 20)
 	private String deliveryReceiver;
 
-	@Column(name = "delivery_receiver_phone")
+	@NotNull
+	@Size(min = 1, max = 20)
+	@Column(name = "delivery_receiver_phone", nullable = false, length = 20)
 	private String deliveryReceiverPhone;
 
 	@Column(name = "delivery_receiver_date")
 	private LocalDateTime deliveryReceiverDate;
 
-	@Column(name = "delivery_receiver_address")
+	@NotNull
+	@Size(min = 1, max = 100)
+	@Column(name = "delivery_receiver_address", nullable = false, length = 100)
 	private String deliveryReceiverAddress;
 
 	@ManyToOne
 	@JoinColumn(name = "order_id")
 	private Order order;
 
+	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "delivery_status_id")
+	@JoinColumn(name = "delivery_status_id", nullable = false)
 	private DeliveryStatus deliveryStatus;
 
+	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "delivery_policy_id")
+	@JoinColumn(name = "delivery_policy_id", nullable = false)
 	private DeliveryPolicy deliveryPolicy;
 
 	@Builder
