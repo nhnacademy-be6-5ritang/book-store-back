@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Book {
 	private Long bookId;
-	private Long bookQuantity;
+	private Integer bookQuantity;
 
-	public void updateBookQuantity(Long bookQuantity) {
+	public void updateBookQuantity(Integer bookQuantity) {
 		this.bookQuantity = bookQuantity;
 	}
 }

@@ -43,7 +43,7 @@ public class BookCart {
 			.build();
 	}
 
-	public void updateBookQuantity(Long bookId, Long bookQuantity) {
+	public void updateBookQuantity(Long bookId, Integer bookQuantity) {
 		Optional<Book> bookOptional = books.stream()
 			.filter(book -> book.getBookId().equals(bookId))
 			.findFirst();

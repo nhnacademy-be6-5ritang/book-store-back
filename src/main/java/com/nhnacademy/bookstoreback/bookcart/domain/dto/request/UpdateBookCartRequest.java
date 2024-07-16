@@ -1,4 +1,4 @@
 package com.nhnacademy.bookstoreback.bookcart.domain.dto.request;
 
-public record UpdateBookCartRequest(Long bookQuantity) {
+public record UpdateBookCartRequest(Integer bookQuantity) {
 }
