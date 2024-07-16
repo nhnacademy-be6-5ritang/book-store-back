@@ -23,7 +23,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -63,11 +65,12 @@ public class Book {
 	@JoinColumn(name = "book_status_id")
 	private BookStatus bookStatus;
 
-	@NotNull
+	@NotBlank
+	@Size(max = 300)
 	@Column(name = "book_title", length = 300)
 	private String bookTitle;
 
-	@NotNull
+	@NotBlank
 	@Column(name = "book_description")
 	private String bookDescription;
 
@@ -80,7 +83,8 @@ public class Book {
 	@Temporal(TemporalType.DATE)
 	private Date bookPublishDate;
 
-	@NotNull
+	@NotBlank
+	@Size(max = 17)
 	@Column(name = "book_isbn", length = 17)
 	private String bookIsbn;
 

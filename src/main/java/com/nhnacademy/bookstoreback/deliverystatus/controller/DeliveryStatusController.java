@@ -20,6 +20,7 @@ import com.nhnacademy.bookstoreback.deliverystatus.domain.dto.response.GetDelive
 import com.nhnacademy.bookstoreback.deliverystatus.domain.dto.response.UpdateDeliveryStatusResponse;
 import com.nhnacademy.bookstoreback.deliverystatus.service.DeliveryStatusService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -63,7 +64,7 @@ public class DeliveryStatusController {
 	 */
 	@PostMapping
 	public ResponseEntity<CreateDeliveryStatusResponse> createDeliveryStatus(
-		@RequestBody CreateDeliveryStatusRequest request) {
+		@Valid @RequestBody CreateDeliveryStatusRequest request) {
 		CreateDeliveryStatusResponse response = deliveryStatusService.createDeliveryStatus(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
@@ -77,7 +78,7 @@ public class DeliveryStatusController {
 	 */
 	@PutMapping("/{deliveryStatusId}")
 	public ResponseEntity<UpdateDeliveryStatusResponse> updateDeliveryStatus(@PathVariable Long deliveryStatusId,
-		@RequestBody UpdateDeliveryStatusRequest request) {
+		@Valid @RequestBody UpdateDeliveryStatusRequest request) {
 		UpdateDeliveryStatusResponse response = deliveryStatusService.updateDeliveryStatus(deliveryStatusId, request);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}

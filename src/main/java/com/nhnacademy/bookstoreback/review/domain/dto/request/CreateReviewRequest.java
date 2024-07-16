@@ -1,8 +1,12 @@
 package com.nhnacademy.bookstoreback.review.domain.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public record CreateReviewRequest(
-	Long bookId,
-	int reviewScore,
-	String reviewComment,
+	@NotNull Long bookId,
+	@NotNull int reviewScore,
+	@NotBlank @Size(max = 400) String reviewComment,
 	String fileName) {
 }

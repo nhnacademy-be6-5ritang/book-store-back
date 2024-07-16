@@ -24,6 +24,7 @@ import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewReques
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
 import com.nhnacademy.bookstoreback.review.service.ReviewService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -143,7 +144,7 @@ public class ReviewController {
 	 */
 	@PostMapping("/reviews")
 	public ResponseEntity<Void> createReview(
-		@RequestBody CreateReviewRequest request,
+		@Valid @RequestBody CreateReviewRequest request,
 		@CurrentUser CurrentUserDetails currentUser) {
 		reviewService.createReview(request, currentUser);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -168,7 +169,7 @@ public class ReviewController {
 	 * @return 리뷰 수정 결과 (HTTP 상태 코드)
 	 */
 	@PutMapping("/reviews/{reviewId}")
-	public ResponseEntity<Void> updateReview(@RequestBody UpdateReviewRequest request,
+	public ResponseEntity<Void> updateReview(@Valid @RequestBody UpdateReviewRequest request,
 		@PathVariable Long reviewId) {
 		reviewService.updateReview(reviewId, request);
 		return ResponseEntity.status(HttpStatus.OK).build();

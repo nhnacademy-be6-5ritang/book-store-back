@@ -10,6 +10,8 @@ import org.springframework.data.redis.core.RedisHash;
 
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +26,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookCart {
 	@Id
+	@NotBlank
+	@Size(min = 1, max = 36)
 	private String cartId;
 	private List<Book> books = new ArrayList<>();
 

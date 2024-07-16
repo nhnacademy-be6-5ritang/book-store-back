@@ -1,6 +1,8 @@
 package com.nhnacademy.bookstoreback.bookcart.domain.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public record CreateBookCartRequest(
-	Long bookId,
-	Integer bookQuantity) {
+	@NotNull Long bookId,
+	@NotNull Integer bookQuantity) {
 }

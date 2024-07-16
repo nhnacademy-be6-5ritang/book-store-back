@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
 import com.nhnacademy.bookstoreback.author.service.impl.AuthorServiceImpl;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -73,7 +74,7 @@ public class AuthorController {
 	 */
 	@PostMapping
 	public ResponseEntity<AuthorDto> createAuthor(
-		@RequestBody AuthorDto request) {
+		@Valid @RequestBody AuthorDto request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(authorService.createAuthor(request));
 	}
 
@@ -86,7 +87,7 @@ public class AuthorController {
 	 */
 	@PutMapping("/{authorId}")
 	public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long authorId,
-		@RequestBody AuthorDto request) {
+		@Valid @RequestBody AuthorDto request) {
 		return ResponseEntity.status(HttpStatus.OK).body(authorService.updateAuthor(authorId, request));
 	}
 

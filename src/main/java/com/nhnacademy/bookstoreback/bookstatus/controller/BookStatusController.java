@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nhnacademy.bookstoreback.bookstatus.domain.dto.respnse.BookStatusDto;
 import com.nhnacademy.bookstoreback.bookstatus.service.impl.BookStatusServiceImpl;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -59,7 +60,7 @@ public class BookStatusController {
 	 */
 	@PostMapping
 	public ResponseEntity<BookStatusDto> createBookStatus(
-		@RequestBody BookStatusDto request) {
+		@Valid @RequestBody BookStatusDto request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookStatusService.createBookStatus(request));
 	}
 
@@ -72,7 +73,7 @@ public class BookStatusController {
 	 */
 	@PutMapping("/{bookStatusId}")
 	public ResponseEntity<BookStatusDto> updateBookStatus(@PathVariable Long bookStatusId,
-		@RequestBody BookStatusDto request) {
+		@Valid @RequestBody BookStatusDto request) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookStatusService.updateBookStatus(bookStatusId, request));
 	}
 

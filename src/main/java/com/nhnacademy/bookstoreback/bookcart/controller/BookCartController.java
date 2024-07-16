@@ -21,6 +21,7 @@ import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRe
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
 import com.nhnacademy.bookstoreback.bookcart.service.BookCartService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -57,7 +58,7 @@ public class BookCartController {
 	 */
 	@PostMapping
 	public ResponseEntity<Void> createBookCart(@CurrentUser CurrentUserDetails currentUser,
-		@RequestBody CreateBookCartRequest request,
+		@Valid @RequestBody CreateBookCartRequest request,
 		@CookieValue(name = "cartId", required = false) String cartId) {
 		bookCartService.createBookCart(currentUser, request, cartId);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -74,7 +75,7 @@ public class BookCartController {
 	 */
 	@PutMapping("/{bookId}")
 	public ResponseEntity<Void> updateBookCart(@CurrentUser CurrentUserDetails currentUser,
-		@PathVariable Long bookId, @RequestBody UpdateBookCartRequest request,
+		@PathVariable Long bookId, @Valid @RequestBody UpdateBookCartRequest request,
 		@CookieValue(name = "cartId", required = false) String cartId) {
 		bookCartService.updateBookCart(bookId, currentUser, request, cartId);
 		return ResponseEntity.status(HttpStatus.OK).build();

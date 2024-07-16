@@ -22,6 +22,7 @@ import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDelive
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.UpdateDeliveryPolicyResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.service.DeliveryPolicyService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -42,13 +43,13 @@ public class DeliveryPolicyController {
 
 	@PostMapping
 	public ResponseEntity<CreateDeliveryPolicyResponse> createDeliveryPolicy(
-		@RequestBody CreateDeliveryPolicyRequest request) {
+		@Valid @RequestBody CreateDeliveryPolicyRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(deliveryPolicyService.createDeliveryPolicy(request));
 	}
 
 	@PutMapping("/{deliveryPolicyId}")
 	public ResponseEntity<UpdateDeliveryPolicyResponse> updateDeliveryPolicy(@PathVariable Long deliveryPolicyId,
-		@RequestBody UpdateDeliveryPolicyRequest request) {
+		@Valid @RequestBody UpdateDeliveryPolicyRequest request) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(deliveryPolicyService.updateDeliveryPolicy(deliveryPolicyId, request));
 	}

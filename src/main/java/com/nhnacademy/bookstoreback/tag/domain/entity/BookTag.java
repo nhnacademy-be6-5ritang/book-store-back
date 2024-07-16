@@ -31,13 +31,13 @@ public class BookTag {
 	@Column(name = "book_tag_id")
 	private Long bookTagId;
 
-	@ManyToOne(optional = false)
 	@NotNull
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "book_id")
 	private Book book;
 
-	@ManyToOne(optional = false)
 	@NotNull
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "tag_id")
 	private Tag tag;
 

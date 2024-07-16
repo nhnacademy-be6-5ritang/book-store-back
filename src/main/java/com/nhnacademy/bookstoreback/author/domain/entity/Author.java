@@ -8,7 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +35,8 @@ public class Author {
 	@Column(name = "author_id")
 	private Long authorId;
 
-	@NotNull
+	@NotBlank
+	@Size(min = 1, max = 200)
 	@Column(name = "author_name", length = 200)
 	private String authorName;
 
