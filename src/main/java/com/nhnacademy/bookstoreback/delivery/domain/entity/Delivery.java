@@ -77,9 +77,8 @@ public class Delivery {
 	@JoinColumn(name = "delivery_status_id", nullable = false)
 	private DeliveryStatus deliveryStatus;
 
-	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "delivery_policy_id", nullable = false)
+	@JoinColumn(name = "delivery_policy_id")
 	private DeliveryPolicy deliveryPolicy;
 
 	@Builder

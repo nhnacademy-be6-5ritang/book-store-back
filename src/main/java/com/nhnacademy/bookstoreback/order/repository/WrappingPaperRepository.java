@@ -8,4 +8,6 @@ import com.nhnacademy.bookstoreback.order.domain.entity.WrappingPaper;
 
 public interface WrappingPaperRepository extends JpaRepository<WrappingPaper, Long> {
 	List<WrappingPaper> findAllByBookOrder_OrderListId(Long orderId);
+
+	List<WrappingPaper> findAllByBookOrder_Order_OrderInfoId(String orderInfoId);
 }

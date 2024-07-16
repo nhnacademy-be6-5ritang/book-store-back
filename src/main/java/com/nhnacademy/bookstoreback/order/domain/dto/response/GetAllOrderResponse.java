@@ -16,6 +16,9 @@ public record GetAllOrderResponse(
 	String name
 ) {
 	public static GetAllOrderResponse from(Order order) {
+		if (order.getOrderStatus() == null) {
+			return null;
+		}
 		return GetAllOrderResponse.builder()
 			.orderId(order.getOrderId())
 			.orderDate(order.getOrderDate())
