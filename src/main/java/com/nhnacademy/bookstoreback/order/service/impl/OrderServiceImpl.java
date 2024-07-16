@@ -52,18 +52,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OrderServiceImpl implements OrderService {
 
-	private final OrderRepository orderRepository;
-
-	private final OrderStatusRepository orderStatusRepository;
-
-	private final PointTransactionServiceImpl pointTransactionService;
-
-	private final UserRepository userRepository;
-
-	private final DeliveryRepository deliveryRepository;
-
-	private final DeliveryStatusRepository deliveryStatusRepository;
-
 	public static final String ERROR_STATUS_WAIT = "주문 상태를 대기로 지정할 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문을 가져올 수 없습니다";
 	public static final String ERROR_ORDERS_EXITS = "주문 내역을 가져올 수 없습니다";
@@ -71,6 +59,12 @@ public class OrderServiceImpl implements OrderService {
 	public static final String ERROR_USER_EXITS = "사용자 정보를 가져올 수 없습니다";
 	public static final String ERROR_DELIVERY_STATUS_NOTFUND = "배송 상태를 가져올 수 없습니다";
 	public static final String ERROR_ORDER_STATUS_NOTFUND = "주문 상태를 가져올 수 없습니다";
+	private final OrderRepository orderRepository;
+	private final OrderStatusRepository orderStatusRepository;
+	private final PointTransactionServiceImpl pointTransactionService;
+	private final UserRepository userRepository;
+	private final DeliveryRepository deliveryRepository;
+	private final DeliveryStatusRepository deliveryStatusRepository;
 
 	//카트 아이디를 가지고 있다면 그걸 사용해서 정보 추가로 가져오는 코드 추가 예정
 	@Override
@@ -293,12 +287,11 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional(readOnly = true)
 	public BigDecimal getTotalOrderPrice(CurrentUserDetails currentUser) {
 		BigDecimal totalPaymentAmount = BigDecimal.ZERO;
-		Long userId = currentUser.getUserId();
 
-		List<Order> currentUserOrders = orderRepository.findAllByUserId(userId);
+		GetAllListOrderResponse allOrders = findAllUserId(currentUser);
 
-		for (Order order : currentUserOrders) {
-			totalPaymentAmount = totalPaymentAmount.add(order.getOrderPrice());
+		for (GetAllOrderResponse order : allOrders.orders()) {
+			totalPaymentAmount = totalPaymentAmount.add(order.orderPrice());
 		}
 
 		return totalPaymentAmount;
