@@ -3,7 +3,6 @@ package com.nhnacademy.bookstoreback.review.repository;
 /**
  * @author 이경헌
  * 쿼리dsl 적용 커스텀레포지토리
- *
  */
 public interface CustomReviewRepository {
 	/**

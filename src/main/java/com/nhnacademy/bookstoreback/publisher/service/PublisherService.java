@@ -10,10 +10,6 @@ import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 
 /**
  * 출판사 관리 서비스 인터페이스입니다.
- *
- * 이 인터페이스는 출판사 관련 기능을 제공합니다.
- *
- * @version 1.0
  */
 public interface PublisherService {
 

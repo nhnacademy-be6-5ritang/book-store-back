@@ -15,6 +15,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * @author 이경헌
+ * Redis 에 저장되는 도서 장바구니 엔티티입니다.
+ */
 @RedisHash(value = "bookCarts")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
