@@ -17,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -38,8 +39,8 @@ public class Review {
 	@Column(name = "review_score", nullable = false)
 	private int reviewScore;
 
-	@NotNull
-	@Size(min = 1, max = 400)
+	@NotBlank
+	@Size(max = 400)
 	@Column(name = "review_comment", nullable = false, length = 400)
 	private String reviewComment;
 

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nhnacademy.bookstoreback.tag.domain.dto.respnse.TagDto;
 import com.nhnacademy.bookstoreback.tag.service.impl.TagServiceImpl;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -84,7 +85,7 @@ public class TagController {
 	 */
 	@PostMapping("/tags")
 	public ResponseEntity<TagDto> createTag(
-		@RequestBody TagDto request) {
+		@Valid @RequestBody TagDto request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(tagService.createTag(request));
 	}
 
@@ -97,7 +98,7 @@ public class TagController {
 	 */
 	@PutMapping("/tags/{tagId}")
 	public ResponseEntity<TagDto> updateTag(@PathVariable Long tagId,
-		@RequestBody TagDto request) {
+		@Valid @RequestBody TagDto request) {
 		return ResponseEntity.status(HttpStatus.OK).body(tagService.updateTag(tagId, request));
 	}
 

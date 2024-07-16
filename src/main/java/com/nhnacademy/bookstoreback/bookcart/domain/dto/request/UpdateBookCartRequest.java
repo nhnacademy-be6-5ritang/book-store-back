@@ -1,4 +1,7 @@
 package com.nhnacademy.bookstoreback.bookcart.domain.dto.request;
 
-public record UpdateBookCartRequest(Integer bookQuantity) {
+import jakarta.validation.constraints.NotNull;
+
+public record UpdateBookCartRequest(
+	@NotNull Integer bookQuantity) {
 }

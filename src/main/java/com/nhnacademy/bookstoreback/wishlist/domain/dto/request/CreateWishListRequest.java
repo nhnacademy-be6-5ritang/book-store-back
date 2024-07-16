@@ -1,4 +1,7 @@
 package com.nhnacademy.bookstoreback.wishlist.domain.dto.request;
 
-public record CreateWishListRequest(Long bookId) {
+import jakarta.validation.constraints.NotNull;
+
+public record CreateWishListRequest(
+	@NotNull Long bookId) {
 }

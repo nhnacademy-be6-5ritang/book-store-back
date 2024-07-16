@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -26,18 +27,18 @@ public class Image {
 	@Column(name = "image_id")
 	private Long imageId;
 
-	@Column(name = "image_name", nullable = false, length = 300)
-	@NotNull
+	@NotBlank
 	@Size(max = 300)
+	@Column(name = "image_name", nullable = false, length = 300)
 	private String imageName;
 
-	@Column(name = "image_url", nullable = false, length = 300)
-	@NotNull
+	@NotBlank
 	@Size(max = 300)
+	@Column(name = "image_url", nullable = false, length = 300)
 	private String imageUrl;
 
-	@Column(name = "image_created_at")
 	@NotNull
+	@Column(name = "image_created_at")
 	private LocalDateTime imageCreatedAt = LocalDateTime.now();
 
 	@Builder

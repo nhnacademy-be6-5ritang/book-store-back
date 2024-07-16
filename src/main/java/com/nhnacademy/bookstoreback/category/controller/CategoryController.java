@@ -25,6 +25,7 @@ import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryRespo
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.service.impl.CategoryServiceImpl;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -91,7 +92,7 @@ public class CategoryController {
 	 */
 	@PostMapping
 	public ResponseEntity<CreateCategoryResponse> createCategory(
-		@RequestBody CreateCategoryRequest request) {
+		@Valid @RequestBody CreateCategoryRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(request));
 	}
 
@@ -104,7 +105,7 @@ public class CategoryController {
 	 */
 	@PutMapping("/{categoryId}")
 	public ResponseEntity<UpdateCategoryResponse> updateCategory(@PathVariable Long categoryId,
-		@RequestBody UpdateCategoryRequest request) {
+		@Valid @RequestBody UpdateCategoryRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategory(categoryId, request));
 	}
 

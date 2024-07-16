@@ -8,7 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +34,8 @@ public class BookStatus {
 	@Column(name = "book_status_id")
 	private Long bookStatusId;
 
-	@NotNull
+	@NotBlank
+	@Size(max = 10)
 	@Column(name = "book_status_name", length = 10)    // ON_SALE, SOLD_OUT, DELETED, UNKNOWN
 	private String bookStatusName;
 

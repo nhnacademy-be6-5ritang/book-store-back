@@ -18,6 +18,7 @@ import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.CreateWishListRe
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.GetWishListResponse;
 import com.nhnacademy.bookstoreback.wishlist.service.WishListService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -51,7 +52,7 @@ public class WishListController {
 	 */
 	@PostMapping
 	public ResponseEntity<Void> createWishList(@CurrentUser CurrentUserDetails currentUser,
-		@RequestBody CreateWishListRequest request) {
+		@Valid @RequestBody CreateWishListRequest request) {
 		wishListService.createWishList(currentUser, request);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}

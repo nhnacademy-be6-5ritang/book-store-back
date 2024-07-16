@@ -8,7 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,7 +31,8 @@ public class Tag {
 	@Column(name = "tag_id")
 	private Long tagId;
 
-	@NotNull
+	@NotBlank
+	@Size(max = 20)
 	@Column(name = "tag_name", length = 20)
 	private String tagName;
 

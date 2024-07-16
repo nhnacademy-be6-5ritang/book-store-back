@@ -25,6 +25,7 @@ import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailRespon
 import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
 import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -141,7 +142,7 @@ public class BookController {
 	 */
 	@PostMapping
 	public ResponseEntity<CreateBookResponse> createBook(
-		@RequestBody CreateBookRequest request) {
+		@Valid @RequestBody CreateBookRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(request));
 	}
 
@@ -154,7 +155,7 @@ public class BookController {
 	 */
 	@PutMapping("/{bookId}")
 	public ResponseEntity<UpdateBookResponse> updateBookByBookId(@PathVariable Long bookId,
-		@RequestBody UpdateBookRequest request) {
+		@Valid @RequestBody UpdateBookRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBookById(bookId, request));
 	}
 

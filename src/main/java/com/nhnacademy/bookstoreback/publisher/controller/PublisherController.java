@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nhnacademy.bookstoreback.publisher.domain.dto.respnse.PublisherDto;
 import com.nhnacademy.bookstoreback.publisher.service.impl.PublisherServiceImpl;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -72,7 +73,7 @@ public class PublisherController {
 	 * @return 생성된 출판사 정보
 	 */
 	@PostMapping
-	public ResponseEntity<PublisherDto> createPublisher(@RequestBody PublisherDto request) {
+	public ResponseEntity<PublisherDto> createPublisher(@Valid @RequestBody PublisherDto request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(publisherService.createPublisher(request));
 	}
 
@@ -85,7 +86,7 @@ public class PublisherController {
 	 */
 	@PutMapping("/{publisherId}")
 	public ResponseEntity<PublisherDto> updatePublisher(@PathVariable Long publisherId,
-		@RequestBody PublisherDto request) {
+		@Valid @RequestBody PublisherDto request) {
 		return ResponseEntity.status(HttpStatus.OK).body(publisherService.updatePublisher(publisherId, request));
 	}
 
