@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author 이경헌
- * CartService는 장바구니와 관련된 비즈니스 로직을 처리하는 인터페이스입니다.
+ * 장바구니와 관련된 비즈니스 로직을 처리하는 인터페이스입니다.
  */
 
 public interface CartService {

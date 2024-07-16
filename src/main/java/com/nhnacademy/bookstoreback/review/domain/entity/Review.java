@@ -7,7 +7,6 @@ import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,6 +17,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,24 +34,30 @@ public class Review {
 	@Column(name = "review_id")
 	private Long reviewId;
 
+	@NotNull
 	@Column(name = "review_score", nullable = false)
 	private int reviewScore;
 
-	@Column(name = "review_comment", nullable = false)
+	@NotNull
+	@Size(min = 1, max = 400)
+	@Column(name = "review_comment", nullable = false, length = 400)
 	private String reviewComment;
 
+	@NotNull
 	@Column(name = "review_created_at", nullable = false)
 	private LocalDateTime reviewCreatedAt = LocalDateTime.now();
 
+	@NotNull
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "book_id", nullable = false)
 	private Book book;
 
+	@NotNull
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "review", fetch = FetchType.EAGER)
 	private List<ReviewImage> reviewImages;
 
 	@Builder

@@ -1,32 +1,64 @@
 package com.nhnacademy.bookstoreback.bookcart.domain.entity;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+
+import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
+
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * @author 이경헌
+ * Redis 에 저장되는 도서 장바구니 엔티티입니다.
+ */
+@RedisHash(value = "bookCarts")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookCart {
+	@Id
 	private String cartId;
-	private Long bookId;
-	private int bookQuantity;
+	private List<Book> books = new ArrayList<>();
 
-	public BookCart(String cartId) {
+	@Builder
+	public BookCart(String cartId, List<Book> books) {
 		this.cartId = cartId;
+		this.books = books;
 	}
 
-	public BookCart(Long bookId, int bookQuantity) {
-		this.bookId = bookId;
-		this.bookQuantity = bookQuantity;
+	public static BookCart toEntity(BookCart bookCart, CreateBookCartRequest request) {
+		Book book = new Book(request.bookId(), request.bookQuantity());
+		List<Book> books = bookCart.getBooks();
+		books.add(book);
+		return BookCart.builder()
+			.cartId(bookCart.cartId)
+			.books(books)
+			.build();
 	}
 
-	public BookCart(String cartId, Long bookId, int bookQuantity) {
-		this.cartId = cartId;
-		this.bookId = bookId;
-		this.bookQuantity = bookQuantity;
+	public void updateBookQuantity(Long bookId, Integer bookQuantity) {
+		Optional<Book> bookOptional = books.stream()
+			.filter(book -> book.getBookId().equals(bookId))
+			.findFirst();
+
+		bookOptional.ifPresent(book -> book.updateBookQuantity(bookQuantity));
 	}
 
-	public void updateBookQuantity(int bookQuantity) {
-		this.bookQuantity = bookQuantity;
+	public void removeBook(Long bookId) {
+		Iterator<Book> iterator = this.books.iterator();
+		while (iterator.hasNext()) {
+			Book book = iterator.next();
+			if (book.getBookId().equals(bookId)) {
+				iterator.remove();
+				break;
+			}
+		}
 	}
 }

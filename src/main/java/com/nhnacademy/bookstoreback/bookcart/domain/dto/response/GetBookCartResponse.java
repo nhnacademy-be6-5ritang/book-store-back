@@ -3,7 +3,6 @@ package com.nhnacademy.bookstoreback.bookcart.domain.dto.response;
 import java.math.BigDecimal;
 
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
-import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 
 import lombok.Builder;
 
@@ -19,9 +18,9 @@ public record GetBookCartResponse(
 	BigDecimal bookSalePrice,
 	BigDecimal bookSalePercent,
 	int inventorQuantity,
-	int bookQuantity
+	Integer bookQuantity
 ) {
-	public static GetBookCartResponse fromEntity(Book book, Cart cart) {
+	public static GetBookCartResponse fromEntity(Book book, Integer bookQuantity, String cartId) {
 		String imageUrl = book.getBookImages().stream()
 			.map(bookImage -> bookImage.getImage().getImageUrl())
 			.findFirst()
@@ -29,7 +28,7 @@ public record GetBookCartResponse(
 
 		return GetBookCartResponse.builder()
 			.bookId(book.getBookId())
-			.cartId(cart.getCartId())
+			.cartId(cartId)
 			.bookImageUrl(imageUrl)
 			.bookTitle(book.getBookTitle())
 			.authorName(book.getAuthor().getAuthorName())
@@ -38,7 +37,7 @@ public record GetBookCartResponse(
 			.bookSalePrice(book.getBookSalePrice())
 			.bookSalePercent(book.getBookSalePercent())
 			.inventorQuantity(book.getBookQuantity())
-			.bookQuantity(book.getBookQuantity())
+			.bookQuantity(bookQuantity)
 			.build();
 	}
 }

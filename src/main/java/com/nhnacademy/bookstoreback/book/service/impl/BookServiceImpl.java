@@ -3,7 +3,7 @@ package com.nhnacademy.bookstoreback.book.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -233,7 +233,14 @@ public class BookServiceImpl implements BookService {
 	public List<GetBookDetailResponse> getOrderedBooks() {
 		Pageable topTen = PageRequest.of(0, 10);
 		Page<Book> topOrderedBooksPage = bookRepository.findTopOrderedBooks(topTen);
-		List<Book> topOrderedBooks = topOrderedBooksPage.getContent();
+		List<Book> topOrderedBooks = new ArrayList<>(topOrderedBooksPage.getContent());
+
+		if (topOrderedBooks.size() < 10) {
+			int booksToAdd = 10 - topOrderedBooks.size();
+			List<Book> additionalBooks = bookRepository.findRandomOrderedBooks(Pageable.ofSize(booksToAdd));
+			topOrderedBooks.addAll(additionalBooks);
+		}
+
 		return topOrderedBooks.stream()
 			.map(GetBookDetailResponse::fromEntity)
 			.collect(Collectors.toList());
@@ -243,9 +250,16 @@ public class BookServiceImpl implements BookService {
 	@Override
 	public List<GetBookDetailResponse> getLikesBooks() {
 		Pageable topTen = PageRequest.of(0, 10);
-		Page<Book> topOrderedBooksPage = bookRepository.findTopLikedBooks(topTen);
-		List<Book> topOrderedBooks = topOrderedBooksPage.getContent();
-		return topOrderedBooks.stream()
+		Page<Book> topLikedBooksPage = bookRepository.findTopLikedBooks(topTen);
+		List<Book> topLikedBooks = new ArrayList<>(topLikedBooksPage.getContent());
+
+		if (topLikedBooks.size() < 10) {
+			int booksToAdd = 10 - topLikedBooks.size();
+			List<Book> additionalBooks = bookRepository.findRandomLikedBooks(Pageable.ofSize(booksToAdd));
+			topLikedBooks.addAll(additionalBooks);
+		}
+
+		return topLikedBooks.stream()
 			.map(GetBookDetailResponse::fromEntity)
 			.collect(Collectors.toList());
 	}

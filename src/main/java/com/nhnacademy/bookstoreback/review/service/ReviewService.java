@@ -110,7 +110,19 @@ public interface ReviewService {
 	 */
 	void deleteReview(Long reviewId);
 
+	/**
+	 * 특정 책의 리뷰 평균 점수를 조회합니다.
+	 *
+	 * @param bookId 책의 ID
+	 * @return 책의 리뷰 평균 점수
+	 */
 	double getReviewsAverageScoreByBookId(Long bookId);
 
+	/**
+	 * 특정 사용자가 완료한 주문에 따라 해당 사용자가 리뷰할 수 있는 책 목록을 조회합니다.
+	 *
+	 * @param currentUser 현재 사용자의 정보 (사용자 ID 등)
+	 * @return 사용자가 리뷰할 수 있는 책 목록
+	 */
 	List<GetBookTitleResponse> getBooksByOrderStatusCompletionAndUserId(CurrentUserDetails currentUser);
 }
