@@ -37,7 +37,7 @@ public class PaymentController {
 	 */
 	@GetMapping("/books-orders/{order_info_id}")
 	public ResponseEntity<GetBookOrderByInfoIdResponse> bookOrder(@PathVariable("order_info_id") String orderInfoId) {
-		return ResponseEntity.status(HttpStatus.OK).body(paymentServiceImpl.findByOrderInfoId(orderInfoId));
+		return ResponseEntity.status(HttpStatus.OK).body(paymentServiceImpl.findByCartOrderInfoId(orderInfoId));
 	}
 
 	/**
