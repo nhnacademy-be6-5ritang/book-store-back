@@ -120,4 +120,12 @@ public interface OrderService {
 	 * @return 주문 아이디
 	 */
 	CreateCartOrderResponse createCartOrder(@CurrentUser CurrentUserDetails currentUser);
+
+	/**
+	 * 카트 주문 주문 업데이트
+	 * @param createOrderRequest 카트 주문 업데이트 내용
+	 * @param orderId 주문 아이디
+	 * @return 주문 완료 페이지 내용
+	 */
+	CreateOrderResponse updateCartOrder(CreateOrderRequest createOrderRequest, Long orderId);
 }

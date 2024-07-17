@@ -119,7 +119,8 @@ public class BookOrderServiceImpl implements BookOrderService {
 		List<GetBookOrderResponse> bookOrderResponses = new ArrayList<>();
 		for (BookOrder bookOrderItem : bookOrder) {
 			bookOrderResponses.add(GetBookOrderResponse.from(GetBookOrderGetBookResponse.from(bookOrderItem.getBook()),
-				bookOrderItem.getBookQuantity(), bookOrderItem.getOrderListId()));
+				bookOrderItem.getBookQuantity(), bookOrderItem.getOrderListId(),
+				bookOrderItem.getOrder().getOrderId()));
 		}
 		return bookOrderResponses;
 	}

@@ -135,4 +135,16 @@ public class Order {
 	public void updateUser(User user) {
 		this.user = user;
 	}
+
+	public void updateCartOrder(CreateOrderRequest createOrderRequest, OrderStatus orderStatus) {
+		this.orderPayerName = createOrderRequest.payerName();
+		this.orderPayerEmail = createOrderRequest.payerEmail();
+		this.orderPayerNumber = createOrderRequest.payerNumber();
+		this.orderPayerAddress = createOrderRequest.payerAddress();
+		this.orderPrice = createOrderRequest.orderPrice();
+		this.orderPointSale = createOrderRequest.pointSale();
+		this.orderCouponSale = createOrderRequest.couponSale();
+		this.orderStatus = orderStatus;
+		this.orderDate = LocalDateTime.now();
+	}
 }

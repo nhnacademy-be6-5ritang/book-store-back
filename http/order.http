@@ -27,7 +27,55 @@ POST localhost:8083/api/orders/orderStatus
 Content-Type: application/json
 
 {
+  "orderStatusName": "대기"
+}
+
+### 주문 상태 생성
+POST localhost:8083/api/orders/orderStatus
+Content-Type: application/json
+
+{
+  "orderStatusName": "결제 대기"
+}
+
+### 주문 상태 생성
+POST localhost:8083/api/orders/orderStatus
+Content-Type: application/json
+
+{
   "orderStatusName": "결제 취소"
+}
+
+### 주문 상태 생성
+POST localhost:8083/api/orders/orderStatus
+Content-Type: application/json
+
+{
+  "orderStatusName": "배송중"
+}
+
+### 주문 상태 생성
+POST localhost:8083/api/orders/orderStatus
+Content-Type: application/json
+
+{
+  "orderStatusName": "배송 완료"
+}
+
+### 주문 상태 생성
+POST localhost:8083/api/orders/orderStatus
+Content-Type: application/json
+
+{
+  "orderStatusName": "반품"
+}
+
+### 주문 상태 생성
+POST localhost:8083/api/orders/orderStatus
+Content-Type: application/json
+
+{
+  "orderStatusName": "반품 요청중"
 }
 
 ### 특정 주문 가져오기
@@ -111,7 +159,7 @@ Content-Type: application/json
 }
 
 ### 북 패키지 설정
-GET localhost:8083/books/packaging/1
+GET localhost:8083/api/books/packaging/21
 
 ### 테스트
 GET localhost:8083/payment/books-orders/a871d365-c308-4313-9f29-f95f3f736559
