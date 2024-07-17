@@ -21,8 +21,6 @@ import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
 import com.nhnacademy.bookstoreback.global.exception.ParserFailException;
 import com.nhnacademy.bookstoreback.global.exception.PaymentFailException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.FindByInfoIdBookOrderGetBookResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.FindByInfoIdBookOrderGetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
@@ -204,15 +202,15 @@ public class PaymentServiceImpl implements PaymentService {
 				LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
 		}
-		BookOrder bookOrder = bookOrderRepository.findByOrder_OrderId(order.getOrderId());
+		List<BookOrder> bookOrder = bookOrderRepository.findByOrder_OrderInfoId(orderInfoId);
 		if (bookOrder == null) {
 			ErrorStatus errorStatus = ErrorStatus.from(ERROR_BOOKORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
 				LocalDateTime.now());
 			throw new BookOrderFailException(errorStatus);
 		}
-		return GetBookOrderByInfoIdResponse.from(bookOrder.getOrderListId(),
-			FindByInfoIdBookOrderGetBookResponse.from(bookOrder.getBook()),
-			FindByInfoIdBookOrderGetOrderResponse.from(bookOrder.getOrder()), bookOrder.getBookQuantity());
+		int quantity = bookOrder.size() - 1;
+		String title = bookOrder.getFirst().getBook().getBookTitle() + "외" + quantity;
+		return GetBookOrderByInfoIdResponse.from(title);
 	}
 
 	@Override

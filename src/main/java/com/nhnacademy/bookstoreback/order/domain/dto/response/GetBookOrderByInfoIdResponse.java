@@ -4,20 +4,11 @@ import lombok.Builder;
 
 @Builder
 public record GetBookOrderByInfoIdResponse(
-	Long orderListId,
-	FindByInfoIdBookOrderGetBookResponse getBookResponse,
-	FindByInfoIdBookOrderGetOrderResponse getOrderResponse,
-	Integer quantity
+	String title
 ) {
-	public static GetBookOrderByInfoIdResponse from(Long orderListId,
-		FindByInfoIdBookOrderGetBookResponse getBookResponse,
-		FindByInfoIdBookOrderGetOrderResponse getOrderResponse,
-		Integer quantity) {
+	public static GetBookOrderByInfoIdResponse from(String title) {
 		return GetBookOrderByInfoIdResponse.builder()
-			.orderListId(orderListId)
-			.getBookResponse(getBookResponse)
-			.getOrderResponse(getOrderResponse)
-			.quantity(quantity)
+			.title(title)
 			.build();
 	}
 }
