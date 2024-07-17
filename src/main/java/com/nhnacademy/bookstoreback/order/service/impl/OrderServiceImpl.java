@@ -310,7 +310,6 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional(readOnly = true)
 	public BigDecimal getTotalOrderPrice(CurrentUserDetails currentUser) {
 		BigDecimal totalPaymentAmount = BigDecimal.ZERO;
-
 		GetAllListOrderResponse allOrders = findAllUserId(currentUser);
 
 		for (GetAllOrderResponse order : allOrders.orders()) {
