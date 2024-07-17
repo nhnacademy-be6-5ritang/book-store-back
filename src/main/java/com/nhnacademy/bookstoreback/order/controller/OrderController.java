@@ -416,4 +416,10 @@ public class OrderController {
 		@CurrentUser CurrentUserDetails currentUserDetails) {
 		return ResponseEntity.ok(orderServiceImpl.createCartOrder(currentUserDetails));
 	}
+
+	@PutMapping("/cart-order/{orderId}")
+	public ResponseEntity<CreateOrderResponse> updateCartOrder(@RequestBody CreateOrderRequest createOrderRequest,
+		@PathVariable Long orderId) {
+		return ResponseEntity.ok(orderServiceImpl.updateCartOrder(createOrderRequest, orderId));
+	}
 }

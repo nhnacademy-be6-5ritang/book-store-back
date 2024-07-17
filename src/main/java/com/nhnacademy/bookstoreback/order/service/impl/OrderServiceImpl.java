@@ -105,6 +105,29 @@ public class OrderServiceImpl implements OrderService {
 		return CreateCartOrderResponse.from(order);
 	}
 
+	@Override
+	public CreateOrderResponse updateCartOrder(CreateOrderRequest createOrderRequest, Long orderId) {
+		List<OrderStatus> orderStatuses = orderStatusRepository.findAll();
+		for (OrderStatus orderStatus : orderStatuses) {
+			if (orderStatus.getOrderStatusName().equals("결제 대기")) {
+				Order order = orderRepository.findByOrderId(orderId);
+
+				if (order != null) {
+					order.updateCartOrder(createOrderRequest, orderStatus);
+					orderRepository.save(order);
+					return CreateOrderResponse.from(order);
+				} else {
+					ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND,
+						LocalDateTime.now());
+					throw new OrderFailException(errorStatus);
+				}
+			}
+		}
+		ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_WAIT, HttpStatus.UNPROCESSABLE_ENTITY,
+			LocalDateTime.now());
+		throw new OrderFailException(errorStatus);
+	}
+
 	// 특정 주문 가져오기
 	@Override
 	@Transactional(readOnly = true)
