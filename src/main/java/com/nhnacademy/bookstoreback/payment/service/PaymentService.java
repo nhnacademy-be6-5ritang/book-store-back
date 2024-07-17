@@ -52,4 +52,11 @@ public interface PaymentService {
 	 * @return 결제 취소된 결제 정보 리턴
 	 */
 	UpdatePaymentResponse updatePayment(String paymentResponseJson, Long paymentId);
+
+	/**
+	 * 카트 주문 찾기
+	 * @param orderInfoId 주문보안 아이디
+	 * @return 책 이름
+	 */
+	GetBookOrderByInfoIdResponse findByCartOrderInfoId(String orderInfoId);
 }

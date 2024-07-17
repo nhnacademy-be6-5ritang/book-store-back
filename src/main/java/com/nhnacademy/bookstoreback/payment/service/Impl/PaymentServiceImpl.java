@@ -21,6 +21,8 @@ import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
 import com.nhnacademy.bookstoreback.global.exception.ParserFailException;
 import com.nhnacademy.bookstoreback.global.exception.PaymentFailException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.FindByInfoIdBookOrderGetBookResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.FindByInfoIdBookOrderGetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
@@ -55,6 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public static final String ERROR_PARSER_FAIL = "파싱 실패";
 	public static final String ERROR_PAYMENT_EXITS = "결제를 찾을 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문 정보를 찾을 수 없습니다";
+	public static final String ERROR_ORDER_EXITS_POINT = "포인트 오류 테스트";
 	public static final String ERROR_BOOKORDER_EXITS = "주문리스트를 찾을 수 없습니다";
 	private final PaymentRepository paymentRepository;
 	private final OrderRepository orderRepository;
@@ -72,6 +75,11 @@ public class PaymentServiceImpl implements PaymentService {
 		Order order = orderRepository.findByOrderInfoId(paymentResponse.orderId());
 		if (order == null) {
 			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
+				LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
+		if (order.getOrderPointSale() == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS_POINT, HttpStatus.UNPROCESSABLE_ENTITY,
 				LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
 		}
@@ -196,6 +204,26 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetBookOrderByInfoIdResponse findByOrderInfoId(String orderInfoId) {
+		Order order = orderRepository.findByOrderInfoId(orderInfoId);
+		if (order == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
+				LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
+		BookOrder bookOrder = bookOrderRepository.findByOrder_OrderId(order.getOrderId());
+		if (bookOrder == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_BOOKORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
+				LocalDateTime.now());
+			throw new BookOrderFailException(errorStatus);
+		}
+		return GetBookOrderByInfoIdResponse.from(bookOrder.getOrderListId(),
+			FindByInfoIdBookOrderGetBookResponse.from(bookOrder.getBook()),
+			FindByInfoIdBookOrderGetOrderResponse.from(bookOrder.getOrder()), bookOrder.getBookQuantity());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GetBookOrderByInfoIdResponse findByCartOrderInfoId(String orderInfoId) {
 		Order order = orderRepository.findByOrderInfoId(orderInfoId);
 		if (order == null) {
 			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
