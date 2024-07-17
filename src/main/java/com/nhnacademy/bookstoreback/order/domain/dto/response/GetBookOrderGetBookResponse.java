@@ -10,13 +10,15 @@ import lombok.Builder;
 public record GetBookOrderGetBookResponse(
 	String bookTitle,
 	BigDecimal bookPrice,
-	String bookDescription
+	String bookDescription,
+	Long bookId
 ) {
 	public static GetBookOrderGetBookResponse from(Book book) {
 		return GetBookOrderGetBookResponse.builder()
 			.bookTitle(book.getBookTitle())
 			.bookPrice(book.getBookSalePrice())
 			.bookDescription(book.getBookDescription())
+			.bookId(book.getBookId())
 			.build();
 	}
 }

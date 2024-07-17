@@ -7,7 +7,8 @@ public record GetBookOrderByInfoIdResponse(
 	Long orderListId,
 	FindByInfoIdBookOrderGetBookResponse getBookResponse,
 	FindByInfoIdBookOrderGetOrderResponse getOrderResponse,
-	Integer quantity
+	Integer quantity,
+	String title
 ) {
 	public static GetBookOrderByInfoIdResponse from(Long orderListId,
 		FindByInfoIdBookOrderGetBookResponse getBookResponse,
@@ -20,4 +21,11 @@ public record GetBookOrderByInfoIdResponse(
 			.quantity(quantity)
 			.build();
 	}
+
+	public static GetBookOrderByInfoIdResponse from(String title) {
+		return GetBookOrderByInfoIdResponse.builder()
+			.title(title)
+			.build();
+	}
+
 }
