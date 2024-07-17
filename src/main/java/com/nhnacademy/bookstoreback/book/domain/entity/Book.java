@@ -10,7 +10,6 @@ import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -100,10 +99,10 @@ public class Book {
 	@Column(name = "book_sale_price")
 	private BigDecimal bookSalePrice;
 
-	@OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
 	private List<BookImage> bookImages;
 
-	@OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
 	private List<BookCategory> bookCategories;
 
 	@Builder
