@@ -400,8 +400,7 @@ public class BookServiceImpl implements BookService {
 			});
 		}
 
-		return UpdateBookResponse.fromEntity(
-			bookRepository.save(book));
+		return UpdateBookResponse.fromEntity(bookRepository.save(book));
 	}
 
 	@Override

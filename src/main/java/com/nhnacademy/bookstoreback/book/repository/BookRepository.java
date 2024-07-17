@@ -36,8 +36,21 @@ public interface BookRepository extends JpaRepository<Book, Long>, CustomBookRep
 	 */
 	boolean existsByBookTitle(String bookTitle);
 
+	/**
+	 * 특정 카테고리명을 기준으로 도서를 필터링하여 페이지 단위로 반환합니다.
+	 *
+	 * @param pageable      페이지네이션 정보를 포함하는 객체로, 페이지 번호, 페이지 크기, 정렬 순서를 설정합니다.
+	 * @param categoryName  도서가 포함된 카테고리의 이름으로 도서를 필터링합니다.
+	 * @return 특정 카테고리명을 기준으로 필터링된 도서의 페이지
+	 */
 	Page<Book> findAllByBookCategories_Category_CategoryName(Pageable pageable, String categoryName);
 
+	/**
+	 * 도서 발행일을 기준으로 내림차순으로 정렬된 페이지를 반환합니다.
+	 *
+	 * @param pageable  페이지네이션 정보를 포함하는 객체로, 페이지 번호, 페이지 크기, 정렬 순서를 설정합니다.
+	 * @return 도서 발행일을 기준으로 내림차순으로 정렬된 도서의 페이지
+	 */
 	Page<Book> findAllByOrderByBookPublishDateDesc(Pageable pageable);
 
 	@Query("SELECT b FROM Book b JOIN WishList wl ON b.bookId = wl.book.bookId " +

@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.book.domain.mapper;
+package com.nhnacademy.bookstoreback.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
  * @version 1.0
  */
 @Configuration
-public class AppConfig {
+public class RestTemplateConfig {
 
 	@Bean
 	public RestTemplate restTemplate() {
