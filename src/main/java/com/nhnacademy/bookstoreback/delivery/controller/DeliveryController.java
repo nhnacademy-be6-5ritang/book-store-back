@@ -23,6 +23,7 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryA
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.service.DeliveryService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -37,7 +38,7 @@ public class DeliveryController {
 
 	@GetMapping
 	public ResponseEntity<Page<GetDeliveryResponse>> getDeliveriesByUserId(Pageable pageable,
-		@RequestBody GetDeliveriesRequest request) {
+		@Valid @RequestBody GetDeliveriesRequest request) {
 
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.getDeliveriesByUserId(request, pageable));
 	}
@@ -60,7 +61,7 @@ public class DeliveryController {
 	 * @return 생성된 배달 정보를 포함하는 {@link ResponseEntity} 객체
 	 */
 	@PostMapping
-	public ResponseEntity<CreateDeliveryResponse> createDelivery(@RequestBody CreateDeliveryRequest request) {
+	public ResponseEntity<CreateDeliveryResponse> createDelivery(@Valid @RequestBody CreateDeliveryRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(deliveryService.createDelivery(request));
 	}
 
@@ -73,7 +74,7 @@ public class DeliveryController {
 	 */
 	@PutMapping("/{deliveryId}")
 	public ResponseEntity<UpdateDeliveryResponse> updateDelivery(@PathVariable Long deliveryId,
-		@RequestBody UpdateDeliveryRequest request) {
+		@Valid @RequestBody UpdateDeliveryRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.updateDelivery(deliveryId, request));
 	}
 
@@ -103,7 +104,7 @@ public class DeliveryController {
 
 	@PutMapping("/sender/{deliveryId}")
 	public ResponseEntity<Void> updateDeliveryByOrderId(@PathVariable Long deliveryId,
-		@RequestBody UpdateDeliveryByOrderIdRequest request) {
+		@Valid @RequestBody UpdateDeliveryByOrderIdRequest request) {
 		deliveryService.updateDeliveryByOrderId(deliveryId, request);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
