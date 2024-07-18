@@ -124,6 +124,7 @@ public class UserController {
 	@GetMapping("/self/total-order-price")
 	public ResponseEntity<BigDecimal> getTotalOrderPrice(@CurrentUser CurrentUserDetails currentUser) {
 		BigDecimal totalPaymentAmount = orderService.getTotalOrderPrice(currentUser);
+		
 		return ResponseEntity.status(HttpStatus.OK).body(totalPaymentAmount);
 	}
 
