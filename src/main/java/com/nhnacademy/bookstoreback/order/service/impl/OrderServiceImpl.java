@@ -207,7 +207,7 @@ public class OrderServiceImpl implements OrderService {
 		}
 		List<GetAllOrderResponse> orderResponses = new ArrayList<>();
 		for (Order order : orders) {
-			if (order.getOrderStatus() != null) {
+			if (order.getOrderPrice() != null) {
 				orderResponses.add(GetAllOrderResponse.from(order));
 			}
 		}

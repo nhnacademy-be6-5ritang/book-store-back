@@ -16,7 +16,9 @@ public record GetOrderByInfoResponse(
 	String payerAddress,
 	LocalDateTime orderDate,
 	String status,
-	BigDecimal price
+	BigDecimal price,
+	BigDecimal couponSale,
+	BigDecimal pointSale
 ) {
 	public static GetOrderByInfoResponse from(Order order) {
 		return GetOrderByInfoResponse.builder()
@@ -28,6 +30,8 @@ public record GetOrderByInfoResponse(
 			.orderDate(order.getOrderDate())
 			.status(order.getOrderStatus().getOrderStatusName())
 			.price(order.getOrderPrice())
+			.couponSale(order.getOrderCouponSale())
+			.pointSale(order.getOrderPointSale())
 			.build();
 	}
 }
