@@ -3,6 +3,7 @@ package com.nhnacademy.bookstoreback.order.service;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateWrappingTypeRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateWrappingTypeRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAdminAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetPaperResponse;
 
@@ -41,4 +42,10 @@ public interface PaperTypeService {
 	 * @param id 포장지 아이디
 	 */
 	void deletePaperTypeById(Long id);
+
+	/**
+	 * 관리자용 포장지 전부 가져오기
+	 * @return 포장지 전부
+	 */
+	GetAdminAllPaperResponse getAdminAllPaperTypes();
 }

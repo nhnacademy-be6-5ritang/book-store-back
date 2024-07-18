@@ -1,6 +1,8 @@
 package com.nhnacademy.bookstoreback.order.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -57,5 +59,13 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 			throw new OrderStatusFailException(errorStatus);
 		}
 		return GetOrderStatusResponse.from(orderStatus);
+	}
+
+	public List<GetOrderStatusResponse> findAll() {
+		List<GetOrderStatusResponse> list = new ArrayList<>();
+		for (OrderStatus orderStatus : orderStatusRepository.findAll()) {
+			list.add(GetOrderStatusResponse.from(orderStatus));
+		}
+		return list;
 	}
 }
