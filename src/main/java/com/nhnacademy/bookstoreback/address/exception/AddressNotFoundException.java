@@ -15,4 +15,12 @@ public class AddressNotFoundException extends NotFoundException {
 			LocalDateTime.now()
 		));
 	}
+
+	public AddressNotFoundException(Long userId) {
+		super(ErrorStatus.from(
+			String.format("해당 사용자의 주소를 찾을 수 없습니다. userId: %d", userId),
+			HttpStatus.NOT_FOUND,
+			LocalDateTime.now()
+		));
+	}
 }
