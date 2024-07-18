@@ -11,6 +11,7 @@ import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateWrappingTypeRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.UpdateWrappingTypeRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAdminAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.entity.PaperType;
@@ -40,6 +41,12 @@ public class PaperTypeServiceImpl implements PaperTypeService {
 
 	@Override
 	@Transactional(readOnly = true)
+	public GetAdminAllPaperResponse getAdminAllPaperTypes() {
+		return GetAdminAllPaperResponse.from(paperTypeRepository.findAll());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
 	public GetPaperResponse getPaperTypeById(Long id) {
 		PaperType paperType = paperTypeRepository.findById(id).orElse(null);
 		if (paperType == null) {
@@ -58,6 +65,7 @@ public class PaperTypeServiceImpl implements PaperTypeService {
 		}
 		paperType.update(updateWrappingTypeRequest.paperName(), updateWrappingTypeRequest.paperContent(),
 			updateWrappingTypeRequest.paperPrice());
+		paperTypeRepository.save(paperType);
 		return GetPaperResponse.from(paperType);
 	}
 
