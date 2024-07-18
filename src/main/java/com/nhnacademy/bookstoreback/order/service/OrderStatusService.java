@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.order.service;
 
+import java.util.List;
+
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderStatusResponse;
 
@@ -31,4 +33,10 @@ public interface OrderStatusService {
 	 * @return 주문 상태 이름
 	 */
 	GetOrderStatusResponse findById(Long id);
+
+	/**
+	 * 모든 주문 상태 가져오기
+	 * @return 모든 주문 상태
+	 */
+	List<GetOrderStatusResponse> findAll();
 }
