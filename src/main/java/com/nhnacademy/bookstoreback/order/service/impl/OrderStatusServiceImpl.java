@@ -61,6 +61,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 		return GetOrderStatusResponse.from(orderStatus);
 	}
 
+	@Override
 	public List<GetOrderStatusResponse> findAll() {
 		List<GetOrderStatusResponse> list = new ArrayList<>();
 		for (OrderStatus orderStatus : orderStatusRepository.findAll()) {

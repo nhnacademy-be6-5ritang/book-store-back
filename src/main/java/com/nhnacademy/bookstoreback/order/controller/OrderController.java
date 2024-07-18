@@ -51,6 +51,7 @@ import com.nhnacademy.bookstoreback.order.service.impl.PaperTypeServiceImpl;
 import com.nhnacademy.bookstoreback.order.service.impl.RefundPolicyServiceImpl;
 import com.nhnacademy.bookstoreback.order.service.impl.WrappingPaperServiceImpl;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -105,7 +106,7 @@ public class OrderController {
 	 */
 	@PostMapping("/orderStatus")
 	public ResponseEntity<GetOrderStatusResponse> createOrderStatus(
-		@RequestBody CreateOrderStatusRequest createOrderStatusRequest) {
+		@Valid @RequestBody CreateOrderStatusRequest createOrderStatusRequest) {
 		return ResponseEntity.ok(orderStatusServiceImpl.create(createOrderStatusRequest));
 	}
 
@@ -117,7 +118,7 @@ public class OrderController {
 	 */
 	@PutMapping("/orderStatus/{order_status_id}")
 	public ResponseEntity<GetOrderStatusResponse> updateOrderStatus(@PathVariable("order_status_id") Long orderStatusId,
-		@RequestBody CreateOrderStatusRequest createOrderStatusRequest) {
+		@Valid @RequestBody CreateOrderStatusRequest createOrderStatusRequest) {
 		return ResponseEntity.ok(orderStatusServiceImpl.update(createOrderStatusRequest, orderStatusId));
 	}
 
@@ -126,8 +127,18 @@ public class OrderController {
 	 * @param orderStatusId 주문 상태 아이디
 	 */
 	@DeleteMapping("/orderStatus/{order_status_id}")
-	public void deleteOrderStatus(@PathVariable("order_status_id") Long orderStatusId) {
+	public ResponseEntity<Void> deleteOrderStatus(@PathVariable("order_status_id") Long orderStatusId) {
 		orderStatusServiceImpl.delete(orderStatusId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	/**
+	 * 주문 상태 다 가져오기
+	 * @return 모든 주문 상태
+	 */
+	@GetMapping("/orderStatus/all")
+	public List<GetOrderStatusResponse> orderStatusAll() {
+		return orderStatusServiceImpl.findAll();
 	}
 
 	//주문상태 아이디로 주문상태 확인
@@ -178,7 +189,7 @@ public class OrderController {
 	 */
 	@PostMapping("/papers")
 	public ResponseEntity<CreatePaperResponse> createPaper(
-		@RequestBody CreateWrappingTypeRequest createWrappingTypeRequest) {
+		@Valid @RequestBody CreateWrappingTypeRequest createWrappingTypeRequest) {
 		return ResponseEntity.ok(paperTypeServiceImpl.createPaper(createWrappingTypeRequest));
 	}
 
@@ -190,7 +201,7 @@ public class OrderController {
 	 */
 	@PutMapping("/papers/{paper_type_id}")
 	public ResponseEntity<GetPaperResponse> updatePaper(
-		@RequestBody UpdateWrappingTypeRequest updateWrappingTypeRequest,
+		@Valid @RequestBody UpdateWrappingTypeRequest updateWrappingTypeRequest,
 		@PathVariable("paper_type_id") Long paperTypeId) {
 		return ResponseEntity.ok(paperTypeServiceImpl.updatePaperTypeById(paperTypeId, updateWrappingTypeRequest));
 	}
@@ -237,7 +248,7 @@ public class OrderController {
 	 */
 	@PostMapping("/books-orders")
 	public ResponseEntity<CreateBookOrderResponse> createBookOrder(
-		@RequestBody CreateBookOrderRequest createBookOrderRequest) {
+		@Valid @RequestBody CreateBookOrderRequest createBookOrderRequest) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookOrderServiceImpl.createBookOrder(createBookOrderRequest));
 	}
 
@@ -293,7 +304,7 @@ public class OrderController {
 	 * @return 주문 정보
 	 */
 	@PostMapping("/orders")
-	public ResponseEntity<CreateOrderResponse> createOrder(@RequestBody CreateOrderRequest createOrderRequest,
+	public ResponseEntity<CreateOrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest createOrderRequest,
 		@CurrentUser CurrentUserDetails currentUserDetails) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(orderServiceImpl.createOrder(createOrderRequest, currentUserDetails));
@@ -360,7 +371,7 @@ public class OrderController {
 
 	@PostMapping("order-info/Non")
 	public ResponseEntity<GetNonOrderByInfoResponse> getOrderByInfoNon(
-		@RequestBody OrderCheckNonRequest orderCheckNonRequest) {
+		@Valid @RequestBody OrderCheckNonRequest orderCheckNonRequest) {
 		return ResponseEntity.ok(orderServiceImpl.findByOrderInfoIdByEmail(orderCheckNonRequest.orderInfoId(),
 			orderCheckNonRequest.payerEmail()));
 	}
@@ -403,13 +414,13 @@ public class OrderController {
 
 	@PutMapping("/refund-policy/{refundPolicyId}")
 	public ResponseEntity<Void> updateRefundPolicy(@PathVariable("refundPolicyId") Long refundPolicyId,
-		@RequestBody UpdateRefundPolicyRequest updateRefundPolicyRequest) {
+		@Valid @RequestBody UpdateRefundPolicyRequest updateRefundPolicyRequest) {
 		refundPolicyServiceImpl.updateRefundPolicy(updateRefundPolicyRequest, refundPolicyId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@PostMapping("/refund-policy")
-	public ResponseEntity<Void> createRefundPolicy(@RequestBody CreateRefundPolicyRequest refundPolicyRequest) {
+	public ResponseEntity<Void> createRefundPolicy(@Valid @RequestBody CreateRefundPolicyRequest refundPolicyRequest) {
 		refundPolicyServiceImpl.createRefundPolicy(refundPolicyRequest);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
@@ -429,7 +440,8 @@ public class OrderController {
 	}
 
 	@PutMapping("/cart-order/{orderId}")
-	public ResponseEntity<CreateOrderResponse> updateCartOrder(@RequestBody CreateOrderRequest createOrderRequest,
+	public ResponseEntity<CreateOrderResponse> updateCartOrder(
+		@Valid @RequestBody CreateOrderRequest createOrderRequest,
 		@PathVariable Long orderId) {
 		return ResponseEntity.ok(orderServiceImpl.updateCartOrder(createOrderRequest, orderId));
 	}
