@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -313,7 +314,9 @@ public class OrderServiceImpl implements OrderService {
 		GetAllListOrderResponse allOrders = findAllUserId(currentUser);
 
 		for (GetAllOrderResponse order : allOrders.orders()) {
-			totalPaymentAmount = totalPaymentAmount.add(order.orderPrice());
+			if (Objects.nonNull(order.orderPrice())) {
+				totalPaymentAmount = totalPaymentAmount.add(order.orderPrice());
+			}
 		}
 
 		return totalPaymentAmount;
