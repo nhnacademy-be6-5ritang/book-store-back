@@ -1,11 +1,12 @@
 package com.nhnacademy.bookstoreback.order.domain.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record CreateBookOrderRequest(
-	Long bookId,
-	Long orderId,
-	Integer quantity
+	@NotNull Long bookId,
+	@NotNull Long orderId,
+	@NotNull Integer quantity
 ) {
 }

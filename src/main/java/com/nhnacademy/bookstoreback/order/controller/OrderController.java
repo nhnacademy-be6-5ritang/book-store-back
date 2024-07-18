@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,6 +28,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateBookOrderRes
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateCartOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAdminAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
@@ -151,7 +151,7 @@ public class OrderController {
 	 * @param paperId 포장지 종류 아이디
 	 * @return 포장지 종류 가져오기
 	 */
-	@GetMapping("/wrapping/{paper_id}")
+	@GetMapping("/papers/{paper_id}")
 	public ResponseEntity<GetPaperResponse> getWrappingPaper(
 		@PathVariable("paper_id") Long paperId) {
 		return ResponseEntity.ok(paperTypeServiceImpl.getPaperTypeById(paperId));
@@ -163,9 +163,10 @@ public class OrderController {
 	 * 포장지 삭제
 	 * @param wrappingPaperId 설정된 포장지 삭제
 	 */
-	@DeleteMapping("/wrapping/{wrapping_paper_id}")
-	public void deleteWrappingPaper(@PathVariable("wrapping_paper_id") Long wrappingPaperId) {
+	@DeleteMapping("/wrapping/{paper_type_id}")
+	public ResponseEntity<Void> deleteWrappingPaper(@PathVariable("paper_type_id") Long wrappingPaperId) {
 		wrappingPaperServiceImpl.deleteWrappingPapers(wrappingPaperId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	//포장지 종류 생성
@@ -189,7 +190,7 @@ public class OrderController {
 	 */
 	@PutMapping("/papers/{paper_type_id}")
 	public ResponseEntity<GetPaperResponse> updatePaper(
-		@ModelAttribute UpdateWrappingTypeRequest updateWrappingTypeRequest,
+		@RequestBody UpdateWrappingTypeRequest updateWrappingTypeRequest,
 		@PathVariable("paper_type_id") Long paperTypeId) {
 		return ResponseEntity.ok(paperTypeServiceImpl.updatePaperTypeById(paperTypeId, updateWrappingTypeRequest));
 	}
@@ -248,6 +249,16 @@ public class OrderController {
 	@GetMapping("/wrappings")
 	public ResponseEntity<GetAllPaperResponse> getAllWrappingPapers() {
 		return ResponseEntity.status(HttpStatus.OK).body(paperTypeServiceImpl.getAllPaperTypes());
+	}
+
+	/**
+	 * 포장지 종류 전부 가져오기
+	 * 페이징 처리 예정
+	 * @return 포장지 종류 전부
+	 */
+	@GetMapping("/papers/admin")
+	public ResponseEntity<GetAdminAllPaperResponse> getAdminAllWrappingPapers() {
+		return ResponseEntity.status(HttpStatus.OK).body(paperTypeServiceImpl.getAdminAllPaperTypes());
 	}
 
 	/**
