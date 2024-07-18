@@ -58,3 +58,7 @@ naver:
 
 server:
   port: 8083
+
+logging:
+  file:
+    path: ./logs
