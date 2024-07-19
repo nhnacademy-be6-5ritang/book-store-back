@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.address.service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -116,5 +117,18 @@ public class AddressService {
 
 		address.updateIsDefault(true);
 		addressRepository.save(address);
+	}
+
+	public Optional<GetAddressResponse> getDefaultAddress(CurrentUserDetails currentUser) {
+		Long userId = currentUser.getUserId();
+
+		Address address = addressRepository.findByUserIdAndIsDefault(userId, true)
+			.orElse(null);
+
+		if (address == null) {
+			return Optional.empty();
+		} else {
+			return Optional.of(GetAddressResponse.fromEntity(address));
+		}
 	}
 }
