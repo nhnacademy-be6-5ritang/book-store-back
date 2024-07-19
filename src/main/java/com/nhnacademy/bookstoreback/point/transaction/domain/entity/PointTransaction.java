@@ -31,20 +31,24 @@ public class PointTransaction {
 	@Column(name = "point_transaction_id")
 	private Long id;
 
+	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "point_earning_policy_id")
+	@JoinColumn(name = "point_earning_policy_id", nullable = false)
 	private PointEarningPolicy pointEarningPolicy;
 
+	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id", nullable = false)
 	@NotNull
 	private User user;
 
-	@Column(name = "point_transaction_amount")
+	@NotNull
+	@Column(name = "point_transaction_amount", nullable = false)
 	@NotNull
 	private BigDecimal pointTransactionAmount;
 
-	@Column(name = "point_transaction_date")
+	@NotNull
+	@Column(name = "point_transaction_date", nullable = false)
 	@NotNull
 	private LocalDateTime pointTransactionDate;
 

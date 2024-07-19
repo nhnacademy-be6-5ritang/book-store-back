@@ -13,7 +13,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,16 +32,19 @@ public class PointEarningPolicy {
 	@Column(name = "point_earning_policy_id")
 	private Long id;
 
-	@Column(name = "point_earning_policy_type")
-	@NotNull
+	@NotBlank
+	@Column(name = "point_earning_policy_type", nullable = false)
+	@Size(max = 15)
 	private String pointEarningPolicyType;
 
-	@Column(name = "point_earning_amount")
+	@NotNull
+	@Column(name = "point_earning_amount", nullable = false)
 	@NotNull
 	private BigDecimal pointEarningAmount;
 
-	@Column(name = "point_earning_policy_status")
-	@NotNull
+	@NotBlank
+	@Column(name = "point_earning_policy_status", nullable = false)
+	@Size(max = 20)
 	private String pointEarningPolicyStatus;
 
 	@Builder

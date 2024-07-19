@@ -6,7 +6,7 @@ import lombok.Builder;
 @Builder
 public record CreateBookOrderRequest(
 	@NotNull Long bookId,
-	@NotNull Long orderId,
+	Long orderId,
 	@NotNull Integer quantity
 ) {
 }
