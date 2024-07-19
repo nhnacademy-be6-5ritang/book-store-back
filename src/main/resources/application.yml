@@ -58,6 +58,11 @@ naver:
 
 server:
   port: 8083
+
+logging:
+  file:
+    path: ./logs
+
   servlet:
     encoding:
       charset: UTF-8
