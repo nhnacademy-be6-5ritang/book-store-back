@@ -1,6 +1,7 @@
 package com.nhnacademy.bookstoreback.address.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,12 @@ public class AddressController {
 	public ResponseEntity<List<GetAddressResponse>> getAddresses(@CurrentUser CurrentUserDetails currentUser) {
 		List<GetAddressResponse> addresses = addressService.getAddresses(currentUser);
 		return ResponseEntity.status(HttpStatus.OK).body(addresses);
+	}
+
+	@GetMapping("/default")
+	public ResponseEntity<Optional<GetAddressResponse>> getDefaultAddress(@CurrentUser CurrentUserDetails currentUser) {
+		Optional<GetAddressResponse> address = addressService.getDefaultAddress(currentUser);
+		return ResponseEntity.status(HttpStatus.OK).body(address);
 	}
 
 	@PutMapping("/{addressId}")
