@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,11 +27,13 @@ public class BookOrder {
 	@Column(name = "order_list_id")
 	private Long orderListId;
 
-	@Column(name = "book_quantity")
+	@NotNull
+	@Column(name = "book_quantity", nullable = false)
 	private Integer bookQuantity;
 
+	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "book_id")
+	@JoinColumn(name = "book_id", nullable = false)
 	private Book book;
 
 	@ManyToOne

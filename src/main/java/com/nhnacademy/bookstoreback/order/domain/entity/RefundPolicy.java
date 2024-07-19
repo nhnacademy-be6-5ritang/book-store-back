@@ -8,6 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,10 +26,13 @@ public class RefundPolicy {
 	@Column(name = "refund_policy_id")
 	private Long refundPolicyId;
 
-	@Column(name = "refund_policy_content")
+	@NotBlank
+	@Size(max = 300)
+	@Column(name = "refund_policy_content", nullable = false)
 	private String refundPolicyContent;
 
-	@Column(name = "refund_policy_date")
+	@NotNull
+	@Column(name = "refund_policy_date", nullable = false)
 	private int refundPolicyDate;
 
 	@Builder

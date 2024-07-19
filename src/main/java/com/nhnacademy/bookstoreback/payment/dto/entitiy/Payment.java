@@ -13,6 +13,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,19 +32,25 @@ public class Payment {
 	private Long paymentId;
 
 	@Column(name = "payment_Key")
+	@Size(max = 64)
 	private String paymentKey;
 
+	@NotNull
 	@OneToOne
-	@JoinColumn(name = "order_id")
+	@JoinColumn(name = "order_id", nullable = false)
 	private Order order;
 
-	@Column(name = "payment_status")
+	@NotBlank
+	@Size(max = 15)
+	@Column(name = "payment_status", nullable = false)
 	private String status;
 
-	@Column(name = "payemnt_amount")
+	@NotNull
+	@Column(name = "payemnt_amount", nullable = false)
 	private BigDecimal amount;
 
-	@Column(name = "payment_date")
+	@NotNull
+	@Column(name = "payment_date", nullable = false)
 	private LocalDateTime paymentDate;
 
 	@Builder
