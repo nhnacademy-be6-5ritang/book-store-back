@@ -121,9 +121,9 @@ public class PaymentServiceImpl implements PaymentService {
 							.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
 						MathContext.UNLIMITED));
 
-			// BigDecimal updatedOrderPrice = orderServiceImpl.getTotalOrderPrice(currentUser);
+			BigDecimal updatedOrderPrice = orderServiceImpl.getTotalOrderPrice(currentUser);
 
-			// TODO: updateUserGrade(updatedOrderPrice, user); FRONT 서버에서 결제가 완료되면 호출
+			updateUserGrade(updatedOrderPrice, user);
 
 			userRepository.save(user);
 		}
@@ -143,20 +143,6 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 		}
 	}
-
-	// private String getNextGrade(User user) {
-	// 	String gradeName = user.getUserGrade().getUserGradeName();
-	// 	String nextGrade = null;
-	// 	if ("REGULAR".equals(gradeName)) {
-	// 		nextGrade = "ROYAL";
-	// 	} else if ("ROYAL".equals(gradeName)) {
-	// 		nextGrade = "GRAND";
-	// 	} else if ("GRAND".equals(gradeName)) {
-	// 		nextGrade = "PRESTIGE";
-	// 	}
-	//
-	// 	return nextGrade;
-	// }
 
 	public PaymentResponse parsePaymentResponse(String paymentResponseJson) {
 		ObjectMapper objectMapper = new ObjectMapper();
