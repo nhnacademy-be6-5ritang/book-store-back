@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.publisher.domain.dto.respnse.PublisherDto;
 import com.nhnacademy.bookstoreback.publisher.service.impl.PublisherServiceImpl;
 
@@ -72,6 +73,7 @@ public class PublisherController {
 	 * @param request 생성할 출판사 정보 DTO
 	 * @return 생성된 출판사 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
 	public ResponseEntity<PublisherDto> createPublisher(@Valid @RequestBody PublisherDto request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(publisherService.createPublisher(request));
@@ -84,6 +86,7 @@ public class PublisherController {
 	 * @param request 업데이트할 출판사 정보 DTO
 	 * @return 업데이트된 출판사 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{publisherId}")
 	public ResponseEntity<PublisherDto> updatePublisher(@PathVariable Long publisherId,
 		@Valid @RequestBody PublisherDto request) {
@@ -96,6 +99,7 @@ public class PublisherController {
 	 * @param publisherId 삭제할 출판사 ID
 	 * @return 응답 상태 코드 (204 NO CONTENT)
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{publisherId}")
 	public ResponseEntity<Void> deletePublisher(@PathVariable Long publisherId) {
 		publisherService.deletePublisher(publisherId);
