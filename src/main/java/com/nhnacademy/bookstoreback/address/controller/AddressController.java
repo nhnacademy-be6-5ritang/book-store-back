@@ -20,6 +20,7 @@ import com.nhnacademy.bookstoreback.address.domain.dto.response.GetAddressRespon
 import com.nhnacademy.bookstoreback.address.domain.dto.response.RegisterAddressResponse;
 import com.nhnacademy.bookstoreback.address.domain.dto.response.UpdateAddressResponse;
 import com.nhnacademy.bookstoreback.address.service.AddressService;
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 
@@ -41,6 +42,7 @@ public class AddressController {
 	}
 
 	@GetMapping
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<List<GetAddressResponse>> getAddresses(@CurrentUser CurrentUserDetails currentUser) {
 		List<GetAddressResponse> addresses = addressService.getAddresses(currentUser);
 		return ResponseEntity.status(HttpStatus.OK).body(addresses);
