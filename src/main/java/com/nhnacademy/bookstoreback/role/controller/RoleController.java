@@ -17,6 +17,7 @@ import com.nhnacademy.bookstoreback.role.domain.dto.response.CreateRoleResponse;
 import com.nhnacademy.bookstoreback.role.domain.dto.response.GetRoleResponse;
 import com.nhnacademy.bookstoreback.role.service.RoleService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,7 +27,7 @@ public class RoleController {
 	private final RoleService roleService;
 
 	@PostMapping
-	public ResponseEntity<CreateRoleResponse> createRole(@RequestBody CreateRoleRequest createRoleRequest) {
+	public ResponseEntity<CreateRoleResponse> createRole(@Valid @RequestBody CreateRoleRequest createRoleRequest) {
 		CreateRoleResponse createRoleResponse = roleService.createRole(createRoleRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createRoleResponse);
 	}

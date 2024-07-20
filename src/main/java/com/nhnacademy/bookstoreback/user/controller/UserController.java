@@ -34,6 +34,7 @@ import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 import com.nhnacademy.bookstoreback.user.service.MailService;
 import com.nhnacademy.bookstoreback.user.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,7 +49,7 @@ public class UserController {
 	private final UserRepository userRepository;
 
 	@PostMapping
-	public ResponseEntity<CreateUserResponse> signUpUser(@RequestBody CreateUserRequest createUserRequest) {
+	public ResponseEntity<CreateUserResponse> signUpUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
 		CreateUserResponse createUserResponse = userService.createUser(createUserRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserResponse);
 	}
@@ -109,7 +110,7 @@ public class UserController {
 
 	@PutMapping
 	public ResponseEntity<UpdateUserInfoResponse> updateUser(
-		@CurrentUser CurrentUserDetails currentUser, @RequestBody UpdateUserInfoRequest updateUserInfoRequest
+		@CurrentUser CurrentUserDetails currentUser, @Valid @RequestBody UpdateUserInfoRequest updateUserInfoRequest
 	) {
 		UpdateUserInfoResponse updateUserInfoResponse = userService.updateUserInfo(currentUser, updateUserInfoRequest);
 		return ResponseEntity.status(HttpStatus.OK).body(updateUserInfoResponse);
@@ -124,13 +125,13 @@ public class UserController {
 	@GetMapping("/self/total-order-price")
 	public ResponseEntity<BigDecimal> getTotalOrderPrice(@CurrentUser CurrentUserDetails currentUser) {
 		BigDecimal totalPaymentAmount = orderService.getTotalOrderPrice(currentUser);
-		
+
 		return ResponseEntity.status(HttpStatus.OK).body(totalPaymentAmount);
 	}
 
 	@PatchMapping("/last-login-at")
 	public ResponseEntity<Void> updateLastLoginAt(
-		@CurrentUser CurrentUserDetails currentUser, @RequestBody LocalDateTime lastLoginAt
+		@CurrentUser CurrentUserDetails currentUser, @Valid @RequestBody LocalDateTime lastLoginAt
 	) {
 		userService.updateLastLoginAt(currentUser, lastLoginAt);
 		return ResponseEntity.status(HttpStatus.OK).build();

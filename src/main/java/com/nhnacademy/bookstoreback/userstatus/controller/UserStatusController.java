@@ -17,6 +17,7 @@ import com.nhnacademy.bookstoreback.userstatus.domain.dto.response.CreateUserSta
 import com.nhnacademy.bookstoreback.userstatus.domain.dto.response.GetUserStatusResponse;
 import com.nhnacademy.bookstoreback.userstatus.service.UserStatusService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -27,7 +28,7 @@ public class UserStatusController {
 
 	@PostMapping
 	public ResponseEntity<CreateUserStatusResponse> createUserStatus(
-		@RequestBody CreateUserStatusRequest createUserStatusRequest
+		@Valid @RequestBody CreateUserStatusRequest createUserStatusRequest
 	) {
 		CreateUserStatusResponse createUserStatusResponse = userStatusService.createUserStatus(createUserStatusRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserStatusResponse);

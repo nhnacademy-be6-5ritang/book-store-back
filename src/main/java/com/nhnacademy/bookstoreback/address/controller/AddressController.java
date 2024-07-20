@@ -24,6 +24,7 @@ import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -34,7 +35,7 @@ public class AddressController {
 
 	@PostMapping
 	public ResponseEntity<RegisterAddressResponse> registerAddress(
-		@CurrentUser CurrentUserDetails currentUser, @RequestBody RegisterAddressRequest registerAddressRequest
+		@CurrentUser CurrentUserDetails currentUser, @Valid @RequestBody RegisterAddressRequest registerAddressRequest
 	) {
 		RegisterAddressResponse registerAddressResponse
 			= addressService.registerAddress(currentUser, registerAddressRequest);
@@ -58,7 +59,7 @@ public class AddressController {
 	public ResponseEntity<UpdateAddressResponse> updateAddress(
 		@CurrentUser CurrentUserDetails currentUser,
 		@PathVariable Long addressId,
-		@RequestBody UpdateAddressRequest updateAddressRequest
+		@Valid @RequestBody UpdateAddressRequest updateAddressRequest
 	) {
 		UpdateAddressResponse updateAddressResponse
 			= addressService.updateAddress(currentUser, addressId, updateAddressRequest);

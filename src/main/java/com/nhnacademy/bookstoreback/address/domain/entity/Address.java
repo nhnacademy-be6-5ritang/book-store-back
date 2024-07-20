@@ -12,6 +12,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.ws.rs.DefaultValue;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,21 +33,31 @@ public class Address {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+	@NotNull
 	private User user;
 
 	@Column(name = "address_post_code")
+	@NotBlank
+	@Size(min = 5, max = 5)
 	private String postCode;
 
 	@Column(name = "address_base")
+	@NotBlank
+	@Size(max = 100)
 	private String base;
 
 	@Column(name = "address_detail")
+	@NotBlank
+	@Size(max = 50)
 	private String detail;
 
 	@Column(name = "address_alias")
+	@Size(max = 30)
 	private String alias;
 
 	@Column(name = "is_default")
+	@NotNull
+	@DefaultValue("false")
 	private Boolean isDefault;
 
 	@Builder

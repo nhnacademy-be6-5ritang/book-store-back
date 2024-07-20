@@ -9,7 +9,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +23,8 @@ import lombok.NoArgsConstructor;
 public class UserGrade {
 	@Id
 	@Column(name = "user_grade_name")
-	@NotNull
+	@NotBlank
+	@Size(max = 10)
 	private String userGradeName;
 
 	@Column(name = "user_grade_min_amount")
@@ -29,6 +32,7 @@ public class UserGrade {
 	private BigDecimal userGradeMinAmount;
 
 	@Column(name = "user_grade_max_amount")
+	@NotNull
 	private BigDecimal userGradeMaxAmount;
 
 	@Column(name = "user_grade_point_rate")

@@ -20,6 +20,7 @@ import com.nhnacademy.bookstoreback.usergrade.domain.dto.response.GetUserGradeRe
 import com.nhnacademy.bookstoreback.usergrade.domain.dto.response.UpdateUserGradeResponse;
 import com.nhnacademy.bookstoreback.usergrade.service.UserGradeService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,7 +31,7 @@ public class UserGradeController {
 
 	@PostMapping
 	public ResponseEntity<CreateUserGradeResponse> createUserGrade(
-		@RequestBody CreateUserGradeRequest createUserGradeRequest) {
+		@Valid @RequestBody CreateUserGradeRequest createUserGradeRequest) {
 		CreateUserGradeResponse createUserGradeResponse = userGradeService.createUserGrade(createUserGradeRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserGradeResponse);
 	}
@@ -49,7 +50,7 @@ public class UserGradeController {
 
 	@PutMapping("/{userGradeName}")
 	public ResponseEntity<UpdateUserGradeResponse> updateUserGrade(
-		@PathVariable String userGradeName, @RequestBody UpdateUserGradeRequest updateUserGradeRequest
+		@PathVariable String userGradeName, @Valid @RequestBody UpdateUserGradeRequest updateUserGradeRequest
 	) {
 		UpdateUserGradeResponse updateUserGradeResponse
 			= userGradeService.updateUserGrade(userGradeName, updateUserGradeRequest);
