@@ -24,7 +24,7 @@ public class SearchService {
 	public SearchResponse searchBooks(String query) throws IOException {
 		logger.info("책 검색 쿼리: " + query);
 
-		SearchRequest searchRequest = new SearchRequest("books_v2");
+		SearchRequest searchRequest = new SearchRequest("books");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		sourceBuilder.query(QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn")
 			.type("best_fields"));
@@ -59,7 +59,7 @@ public class SearchService {
 		}
 
 		// Step 2: 책 검색
-		SearchRequest bookSearchRequest = new SearchRequest("books_v2");
+		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
 		bookSourceBuilder.query(QueryBuilders.termQuery("author_id", authorId)); // author_id로 검색
 		bookSearchRequest.source(bookSourceBuilder);
@@ -90,7 +90,7 @@ public class SearchService {
 		logger.info("카테고리 ID: " + categoryId);
 
 		// Step 2: 책 카테고리 매핑 검색
-		SearchRequest bookCategorySearchRequest = new SearchRequest("books_and_categories");
+		SearchRequest bookCategorySearchRequest = new SearchRequest("index-books-and-categories");
 		SearchSourceBuilder bookCategorySourceBuilder = new SearchSourceBuilder();
 		bookCategorySourceBuilder.query(QueryBuilders.termQuery("category_id", categoryId));
 		bookCategorySearchRequest.source(bookCategorySourceBuilder);
@@ -107,7 +107,7 @@ public class SearchService {
 			boolQueryBuilder.should(QueryBuilders.termQuery("book_id", hit.getSourceAsMap().get("book_id")));
 		}
 
-		SearchRequest bookSearchRequest = new SearchRequest("books_v2");
+		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
 		bookSourceBuilder.query(boolQueryBuilder);
 		bookSearchRequest.source(bookSourceBuilder);
@@ -141,7 +141,7 @@ public class SearchService {
 		}
 
 		// Step 2: 책 검색
-		SearchRequest bookSearchRequest = new SearchRequest("books_v2");
+		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
 		bookSourceBuilder.query(QueryBuilders.termQuery("publisher_id", publisherID)); // publisher_id로 검색
 		bookSearchRequest.source(bookSourceBuilder);
@@ -172,7 +172,7 @@ public class SearchService {
 		logger.info("태그 ID: " + tagId);
 
 		// Step 2: 책 태그 매핑 검색
-		SearchRequest bookTagSearchRequest = new SearchRequest("books_and_tags");
+		SearchRequest bookTagSearchRequest = new SearchRequest("index-books-and-tags");
 		SearchSourceBuilder bookTagSourceBuilder = new SearchSourceBuilder();
 		bookTagSourceBuilder.query(QueryBuilders.termQuery("tag_id", tagId));
 		bookTagSearchRequest.source(bookTagSourceBuilder);
@@ -189,7 +189,7 @@ public class SearchService {
 			boolQueryBuilder.should(QueryBuilders.termQuery("book_id", hit.getSourceAsMap().get("book_id")));
 		}
 
-		SearchRequest bookSearchRequest = new SearchRequest("books_v2");
+		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
 		bookSourceBuilder.query(boolQueryBuilder);
 		bookSearchRequest.source(bookSourceBuilder);
