@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CategorySearchResult;
@@ -90,6 +91,7 @@ public class CategoryController {
 	 * @param request 생성할 카테고리 정보 DTO
 	 * @return 생성된 카테고리 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
 	public ResponseEntity<CreateCategoryResponse> createCategory(
 		@Valid @RequestBody CreateCategoryRequest request) {
@@ -103,6 +105,7 @@ public class CategoryController {
 	 * @param request 업데이트할 카테고리 정보 DTO
 	 * @return 업데이트된 카테고리 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{categoryId}")
 	public ResponseEntity<UpdateCategoryResponse> updateCategory(@PathVariable Long categoryId,
 		@Valid @RequestBody UpdateCategoryRequest request) {
@@ -115,6 +118,7 @@ public class CategoryController {
 	 * @param categoryId 삭제할 카테고리 ID
 	 * @return 응답 상태 코드 (204 NO CONTENT)
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{categoryId}")
 	public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
 		categoryService.deleteCategory(categoryId);

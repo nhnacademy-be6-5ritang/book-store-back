@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
@@ -45,6 +46,7 @@ public class BookController {
 	 *
 	 * @return 도서저장결과
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping("/fetch/book-lists")
 	public ResponseEntity<String> fetchAndSaveBooks(@RequestParam Long count) {
 		try {
@@ -67,6 +69,7 @@ public class BookController {
 	 *
 	 * @return 도서저장결과
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping("/fetch")
 	public String saveBookByIsbn(@RequestParam String isbn) {
 		try {
@@ -140,6 +143,7 @@ public class BookController {
 	 * @param request 생성할 도서의 정보
 	 * @return 생성된 도서의 응답 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
 	public ResponseEntity<CreateBookResponse> createBook(
 		@Valid @RequestBody CreateBookRequest request) {
@@ -153,12 +157,14 @@ public class BookController {
 	 * @param request 수정할 도서의 정보
 	 * @return 수정된 도서의 응답 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{bookId}")
 	public ResponseEntity<UpdateBookResponse> updateBookByBookId(@PathVariable Long bookId,
 		@Valid @RequestBody UpdateBookRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBookById(bookId, request));
 	}
 
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId) {
 		bookService.deleteBook(bookId);

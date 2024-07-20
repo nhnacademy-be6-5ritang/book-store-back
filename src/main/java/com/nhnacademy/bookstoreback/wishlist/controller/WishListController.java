@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.CreateWishListRequest;
@@ -38,6 +39,7 @@ public class WishListController {
 	 * @param currentUser 현재 사용자 정보
 	 * @return 현재 사용자의 위시리스트 목록
 	 */
+	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@GetMapping
 	public ResponseEntity<List<GetWishListResponse>> getWishLists(@CurrentUser CurrentUserDetails currentUser) {
 		return ResponseEntity.status(HttpStatus.OK).body(wishListService.getWishLists(currentUser));
@@ -50,6 +52,7 @@ public class WishListController {
 	 * @param request     위시리스트에 추가할 책 정보
 	 * @return HTTP 상태 코드 201(Created)
 	 */
+	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@PostMapping
 	public ResponseEntity<Void> createWishList(@CurrentUser CurrentUserDetails currentUser,
 		@Valid @RequestBody CreateWishListRequest request) {
@@ -64,6 +67,7 @@ public class WishListController {
 	 * @param currentUser 현재 사용자 정보
 	 * @return HTTP 상태 코드 200(OK)
 	 */
+	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@DeleteMapping("/{wishListId}")
 	public ResponseEntity<Void> deleteWishList(@PathVariable Long wishListId,
 		@CurrentUser CurrentUserDetails currentUser) {

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.bookstatus.domain.dto.respnse.BookStatusDto;
 import com.nhnacademy.bookstoreback.bookstatus.service.impl.BookStatusServiceImpl;
 
@@ -36,6 +37,7 @@ public class BookStatusController {
 	 *
 	 * @return 모든 도서 상태 정보 리스트
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@GetMapping
 	public ResponseEntity<List<BookStatusDto>> getBookStatuses() {
 		return ResponseEntity.status(HttpStatus.OK).body(bookStatusService.getBookStatuses());
@@ -47,6 +49,7 @@ public class BookStatusController {
 	 * @param bookStatusId 도서 상태 ID
 	 * @return 해당 도서 상태 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@GetMapping("/{bookStatusId}")
 	public ResponseEntity<BookStatusDto> getBookStatus(@PathVariable Long bookStatusId) {
 		return ResponseEntity.status(HttpStatus.OK).body(bookStatusService.getBookStatus(bookStatusId));
@@ -58,6 +61,7 @@ public class BookStatusController {
 	 * @param request 생성할 도서 상태 정보 DTO
 	 * @return 생성된 도서 상태 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
 	public ResponseEntity<BookStatusDto> createBookStatus(
 		@Valid @RequestBody BookStatusDto request) {
@@ -71,6 +75,7 @@ public class BookStatusController {
 	 * @param request 업데이트할 도서 상태 정보 DTO
 	 * @return 업데이트된 도서 상태 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{bookStatusId}")
 	public ResponseEntity<BookStatusDto> updateBookStatus(@PathVariable Long bookStatusId,
 		@Valid @RequestBody BookStatusDto request) {
@@ -83,6 +88,7 @@ public class BookStatusController {
 	 * @param bookStatusId 삭제할 도서 상태 ID
 	 * @return 응답 상태 코드 (204 NO CONTENT)
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{bookStatusId}")
 	public ResponseEntity<Void> deleteBookStatus(@PathVariable Long bookStatusId) {
 		bookStatusService.deleteBookStatus(bookStatusId);

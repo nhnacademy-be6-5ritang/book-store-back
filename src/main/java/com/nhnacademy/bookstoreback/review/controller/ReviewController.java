@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleResponse;
@@ -100,6 +101,7 @@ public class ReviewController {
 	 * @param currentUser 현재 사용자의 정보 (사용자 ID 등)
 	 * @return 페이지네이션된 특정 사용자의 리뷰 목록 (Page 객체)
 	 */
+	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@GetMapping("/users/me/reviews/all/page")
 	public ResponseEntity<Page<GetReviewResponse>> getReviewsByUserId(
 		@PageableDefault(page = 1, size = 5) Pageable pageable, @CurrentUser CurrentUserDetails currentUser) {
@@ -114,6 +116,7 @@ public class ReviewController {
 	 * @param currentUser 현재 사용자의 정보 (사용자 ID 등)
 	 * @return 페이지네이션된 특정 사용자의 일반 리뷰 목록 (Page 객체)
 	 */
+	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@GetMapping("/users/me/reviews/general/page")
 	public ResponseEntity<Page<GetReviewResponse>> getGeneralReviewsByUserId(
 		@PageableDefault(page = 1, size = 5) Pageable pageable, @CurrentUser CurrentUserDetails currentUser) {
@@ -128,6 +131,7 @@ public class ReviewController {
 	 * @param currentUser 현재 사용자의 정보 (사용자 ID 등)
 	 * @return 페이지네이션된 특정 사용자의 사진 리뷰 목록 (Page 객체)
 	 */
+	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@GetMapping("/users/me/reviews/photo/page")
 	public ResponseEntity<Page<GetReviewResponse>> getPhotoReviewsByUserId(
 		@PageableDefault(page = 1, size = 5) Pageable pageable, @CurrentUser CurrentUserDetails currentUser) {
@@ -142,6 +146,7 @@ public class ReviewController {
 	 * @param currentUser 현재 사용자의 정보 (사용자 ID 등)
 	 * @return 리뷰 생성 결과 (HTTP 상태 코드)
 	 */
+	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@PostMapping("/reviews")
 	public ResponseEntity<Void> createReview(
 		@Valid @RequestBody CreateReviewRequest request,
@@ -168,6 +173,7 @@ public class ReviewController {
 	 * @param reviewId 리뷰 ID
 	 * @return 리뷰 수정 결과 (HTTP 상태 코드)
 	 */
+	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@PutMapping("/reviews/{reviewId}")
 	public ResponseEntity<Void> updateReview(@Valid @RequestBody UpdateReviewRequest request,
 		@PathVariable Long reviewId) {
@@ -181,6 +187,7 @@ public class ReviewController {
 	 * @param reviewId 리뷰 ID
 	 * @return 리뷰 삭제 결과 (HTTP 상태 코드)
 	 */
+	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@DeleteMapping("/reviews/{reviewId}")
 	public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId) {
 		reviewService.deleteReview(reviewId);
@@ -204,6 +211,7 @@ public class ReviewController {
 	 * @param currentUser 현재 사용자의 정보 (사용자 ID 등)
 	 * @return 사용자가 리뷰할 수 있는 책 목록
 	 */
+	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@GetMapping("/reviews/create/possible")
 	ResponseEntity<List<GetBookTitleResponse>> getBooksByOrderStatusCompletionAndUserId(
 		@CurrentUser CurrentUserDetails currentUser) {
