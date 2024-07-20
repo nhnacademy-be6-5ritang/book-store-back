@@ -36,5 +36,21 @@ public class SearchController {
 		return searchService.searchAuthors(query);
 	}
 
-	// 추가로 다른 엔티티에 대한 검색 엔드포인트를 구현할 수 있습니다.
+	@GetMapping("/search/category")
+	public SearchResponse searchBooksByCategory(@RequestParam String query) throws IOException {
+		logger.info("Received request to search books by category with query: " + query);
+		return searchService.searchBooksByCategory(query);
+	}
+
+	@GetMapping("/search/publisher")
+	public SearchResponse searchPublishers(@RequestParam String query) throws IOException {
+		logger.info("Received request to search Publishers with query: " + query);
+		return searchService.searchPublishers(query);
+	}
+
+	@GetMapping("/search/tag")
+	public SearchResponse searchBooksByTag(@RequestParam String query) throws IOException {
+		logger.info("Received request to search books by tag with query: " + query);
+		return searchService.searchBooksByTag(query);
+	}
 }
