@@ -144,20 +144,6 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 	}
 
-	// private String getNextGrade(User user) {
-	// 	String gradeName = user.getUserGrade().getUserGradeName();
-	// 	String nextGrade = null;
-	// 	if ("REGULAR".equals(gradeName)) {
-	// 		nextGrade = "ROYAL";
-	// 	} else if ("ROYAL".equals(gradeName)) {
-	// 		nextGrade = "GRAND";
-	// 	} else if ("GRAND".equals(gradeName)) {
-	// 		nextGrade = "PRESTIGE";
-	// 	}
-	//
-	// 	return nextGrade;
-	// }
-
 	public PaymentResponse parsePaymentResponse(String paymentResponseJson) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
