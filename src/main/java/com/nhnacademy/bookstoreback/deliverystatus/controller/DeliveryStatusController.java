@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.deliverystatus.domain.dto.request.CreateDeliveryStatusRequest;
 import com.nhnacademy.bookstoreback.deliverystatus.domain.dto.request.UpdateDeliveryStatusRequest;
 import com.nhnacademy.bookstoreback.deliverystatus.domain.dto.response.CreateDeliveryStatusResponse;
@@ -62,6 +63,7 @@ public class DeliveryStatusController {
 	 * @param request 생성할 배송 상태 정보
 	 * @return 생성된 배송 상태 정보와 HTTP 상태 코드 201(CREATED)
 	 */
+	@AuthorizeRole({"DELIVERY_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
 	public ResponseEntity<CreateDeliveryStatusResponse> createDeliveryStatus(
 		@Valid @RequestBody CreateDeliveryStatusRequest request) {
@@ -76,6 +78,7 @@ public class DeliveryStatusController {
 	 * @param request 수정할 배송 상태 정보
 	 * @return 수정된 배송 상태 정보와 HTTP 상태 코드 200(OK)
 	 */
+	@AuthorizeRole({"DELIVERY_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{deliveryStatusId}")
 	public ResponseEntity<UpdateDeliveryStatusResponse> updateDeliveryStatus(@PathVariable Long deliveryStatusId,
 		@Valid @RequestBody UpdateDeliveryStatusRequest request) {
@@ -89,6 +92,7 @@ public class DeliveryStatusController {
 	 * @param deliveryStatusId 삭제할 배송 상태의 ID
 	 * @return HTTP 상태 코드 200(OK)
 	 */
+	@AuthorizeRole({"DELIVERY_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{deliveryStatusId}")
 	public ResponseEntity<Void> deleteDeliveryStatus(@PathVariable Long deliveryStatusId) {
 		deliveryStatusService.deleteDeliveryStatus(deliveryStatusId);

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
 import com.nhnacademy.bookstoreback.author.service.impl.AuthorServiceImpl;
 
@@ -72,6 +73,7 @@ public class AuthorController {
 	 * @param request 생성할 저자 정보 DTO
 	 * @return 생성된 저자 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
 	public ResponseEntity<AuthorDto> createAuthor(
 		@Valid @RequestBody AuthorDto request) {
@@ -85,6 +87,7 @@ public class AuthorController {
 	 * @param request  업데이트할 저자 정보 DTO
 	 * @return 업데이트된 저자 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{authorId}")
 	public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long authorId,
 		@Valid @RequestBody AuthorDto request) {
@@ -97,6 +100,7 @@ public class AuthorController {
 	 * @param authorId 삭제할 저자 ID
 	 * @return 응답 상태 코드 (204 NO CONTENT)
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{authorId}")
 	public ResponseEntity<Void> deleteAuthor(@PathVariable Long authorId) {
 		authorService.deleteAuthor(authorId);

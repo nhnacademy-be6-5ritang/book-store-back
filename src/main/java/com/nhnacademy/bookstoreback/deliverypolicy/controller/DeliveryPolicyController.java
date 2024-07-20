@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.CreateDeliveryPolicyRequest;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.UpdateDeliveryPolicyRequest;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.CreateDeliveryPolicyResponse;
@@ -41,12 +42,14 @@ public class DeliveryPolicyController {
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryPolicyService.getDeliveryPolicy(deliveryPolicyId));
 	}
 
+	@AuthorizeRole({"DELIVERY_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
 	public ResponseEntity<CreateDeliveryPolicyResponse> createDeliveryPolicy(
 		@Valid @RequestBody CreateDeliveryPolicyRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(deliveryPolicyService.createDeliveryPolicy(request));
 	}
 
+	@AuthorizeRole({"DELIVERY_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{deliveryPolicyId}")
 	public ResponseEntity<UpdateDeliveryPolicyResponse> updateDeliveryPolicy(@PathVariable Long deliveryPolicyId,
 		@Valid @RequestBody UpdateDeliveryPolicyRequest request) {
@@ -54,6 +57,7 @@ public class DeliveryPolicyController {
 			.body(deliveryPolicyService.updateDeliveryPolicy(deliveryPolicyId, request));
 	}
 
+	@AuthorizeRole({"DELIVERY_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{deliveryPolicyId}")
 	public ResponseEntity<Void> deleteDeliveryPolicy(@PathVariable Long deliveryPolicyId) {
 		deliveryPolicyService.deleteDeliveryPolicy(deliveryPolicyId);
