@@ -60,7 +60,7 @@ public class DeliveryPolicyController {
 	@DeleteMapping("/{deliveryPolicyId}")
 	public ResponseEntity<Void> deleteDeliveryPolicy(@PathVariable Long deliveryPolicyId) {
 		deliveryPolicyService.deleteDeliveryPolicy(deliveryPolicyId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/{deliveryId}/{price}/addPolicies")

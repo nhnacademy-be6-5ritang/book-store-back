@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.wishlist.service.impl;
+package com.nhnacademy.bookstoreback.wishlist.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -34,6 +34,7 @@ import com.nhnacademy.bookstoreback.wishlist.domain.entity.WishList;
 import com.nhnacademy.bookstoreback.wishlist.exception.WishListAlreadyExistsException;
 import com.nhnacademy.bookstoreback.wishlist.exception.WishListNotFoundException;
 import com.nhnacademy.bookstoreback.wishlist.repository.WishListRepository;
+import com.nhnacademy.bookstoreback.wishlist.service.impl.WishListServiceImpl;
 
 class WishListServiceImplTest {
 

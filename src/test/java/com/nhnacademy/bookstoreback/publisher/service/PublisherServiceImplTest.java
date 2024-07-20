@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.publisher.service.impl;
+package com.nhnacademy.bookstoreback.publisher.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -23,6 +23,7 @@ import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.publisher.exception.PublisherAlreadyExistsException;
 import com.nhnacademy.bookstoreback.publisher.exception.PublisherNotFoundException;
 import com.nhnacademy.bookstoreback.publisher.repository.PublisherRepository;
+import com.nhnacademy.bookstoreback.publisher.service.impl.PublisherServiceImpl;
 
 class PublisherServiceImplTest {
 
@@ -135,7 +136,7 @@ class PublisherServiceImplTest {
 	@Test
 	void updatePublisher_WhenPublisherExists_ShouldUpdatePublisher() {
 		when(publisherRepository.findById(1L)).thenReturn(Optional.empty());
-		
+
 		assertThrows(PublisherNotFoundException.class, () -> publisherService.updatePublisher(1L, publisherDto));
 	}
 

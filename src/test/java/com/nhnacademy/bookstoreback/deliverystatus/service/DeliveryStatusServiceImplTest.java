@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.deliverystatus.service.impl;
+package com.nhnacademy.bookstoreback.deliverystatus.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -21,6 +21,7 @@ import com.nhnacademy.bookstoreback.deliverystatus.domain.entity.DeliveryStatus;
 import com.nhnacademy.bookstoreback.deliverystatus.exception.DeliveryStatusAlreadyExistsException;
 import com.nhnacademy.bookstoreback.deliverystatus.exception.DeliveryStatusNotFoundException;
 import com.nhnacademy.bookstoreback.deliverystatus.repository.DeliveryStatusRepository;
+import com.nhnacademy.bookstoreback.deliverystatus.service.impl.DeliveryStatusServiceImpl;
 
 class DeliveryStatusServiceImplTest {
 

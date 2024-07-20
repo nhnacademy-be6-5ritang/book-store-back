@@ -1,10 +1,8 @@
 package com.nhnacademy.bookstoreback.deliverypolicy.service.impl;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +14,10 @@ import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.UpdateDeli
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDeliveryPoliciesResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDeliveryPolicyResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.entity.DeliveryPolicy;
+import com.nhnacademy.bookstoreback.deliverypolicy.exception.DeliveryPolicyAlreadyExistsException;
 import com.nhnacademy.bookstoreback.deliverypolicy.exception.DeliveryPolicyNotFoundException;
 import com.nhnacademy.bookstoreback.deliverypolicy.repository.DeliveryPolicyRepository;
 import com.nhnacademy.bookstoreback.deliverypolicy.service.DeliveryPolicyService;
-import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
-import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,8 +41,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	@Override
 	public List<GetDeliveryPoliciesResponse> getDeliveryPolicies() {
 		return deliveryPolicyRepository.findAll().stream()
-			.map(GetDeliveryPoliciesResponse::fromEntity)
-			.toList();
+			.map(GetDeliveryPoliciesResponse::fromEntity).toList();
 	}
 
 	/**
@@ -53,15 +49,12 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	 *
 	 * @param deliveryPolicyId 조회할 배송비 정책의 ID.
 	 * @return 조회된 배송비 정책의 정보.
-	 * @throws NotFoundException 배송비 정책이 존재하지 않는 경우 발생.
+	 * @throws DeliveryPolicyNotFoundException 배송비 정책이 존재하지 않는 경우 발생.
 	 */
 	@Override
 	public GetDeliveryPolicyResponse getDeliveryPolicy(Long deliveryPolicyId) {
-		DeliveryPolicy deliveryPolicy = deliveryPolicyRepository.findById(deliveryPolicyId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 배송비정책 '%d'는 존재하지 않는 배송비정책입니다.", deliveryPolicyId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
+		DeliveryPolicy deliveryPolicy = deliveryPolicyRepository.findById(deliveryPolicyId)
+			.orElseThrow(() -> new DeliveryPolicyNotFoundException(deliveryPolicyId));
 
 		return GetDeliveryPolicyResponse.fromEntity(deliveryPolicy);
 	}
@@ -70,27 +63,34 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	 * 새로운 배송비 정책을 생성합니다.
 	 *
 	 * @param request 생성할 배송비 정책의 정보.
+	 * @throws DeliveryPolicyAlreadyExistsException 동일한 이름의 배송비 정책이 이미 존재하는 경우 발생
 	 */
 	@Override
 	public void createDeliveryPolicy(CreateDeliveryPolicyRequest request) {
-		DeliveryPolicy deliveryPolicy = new DeliveryPolicy(request.deliveryPolicyName(), request.deliveryPolicyPrice(),
-			request.deliveryPolicyContent(), request.deliveryPolicyStandardPrice());
+		if (deliveryPolicyRepository.existsByDeliveryPolicyName(request.deliveryPolicyName())) {
+			throw new DeliveryPolicyAlreadyExistsException(request.deliveryPolicyName());
+		}
 
-		deliveryPolicyRepository.save(deliveryPolicy);
+		deliveryPolicyRepository.save(DeliveryPolicy.toEntity(request));
 	}
 
 	/**
 	 * 특정 배송비 정책을 업데이트합니다.
 	 *
-	 * @param deliveryPolicyId 업데이트할 배송비 정책의 ID.
-	 * @param request          업데이트할 배송비 정책의 정보.
-	 * @throws NotFoundException 배송비 정책이 존재하지 않는 경우 발생.
+	 * @param deliveryPolicyId 업데이트할 배송비 정책의 ID
+	 * @param request          배송비 정책의 업데이트 정보를 담고 있는 요청 객체
+	 * @throws DeliveryPolicyNotFoundException 배송비 정책이 존재하지 않는 경우 발생
+	 * @throws DeliveryPolicyAlreadyExistsException 배송비 정책의 이름이 이미 존재하는 경우 발생
 	 */
 	@Override
 	public void updateDeliveryPolicy(Long deliveryPolicyId,
 		UpdateDeliveryPolicyRequest request) {
 		DeliveryPolicy deliveryPolicy = deliveryPolicyRepository.findById(deliveryPolicyId)
 			.orElseThrow(() -> new DeliveryPolicyNotFoundException(deliveryPolicyId));
+
+		if (deliveryPolicyRepository.existsByDeliveryPolicyName(request.deliveryPolicyName())) {
+			throw new DeliveryPolicyAlreadyExistsException(request.deliveryPolicyName());
+		}
 
 		deliveryPolicy.updateDeliveryPolicy(request.deliveryPolicyName(), request.deliveryPolicyPrice(),
 			request.deliveryPolicyContent(), request.deliveryPolicyStandardPrice());

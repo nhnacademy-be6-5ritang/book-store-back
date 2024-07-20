@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.review.service.impl;
+package com.nhnacademy.bookstoreback.review.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -36,6 +36,7 @@ import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 import com.nhnacademy.bookstoreback.review.domain.entity.ReviewImage;
 import com.nhnacademy.bookstoreback.review.repository.ReviewImageRepository;
 import com.nhnacademy.bookstoreback.review.repository.ReviewRepository;
+import com.nhnacademy.bookstoreback.review.service.impl.ReviewServiceImpl;
 import com.nhnacademy.bookstoreback.role.domain.entity.Role;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
