@@ -50,9 +50,11 @@ public class SearchService {
 		// Author ID 추출
 		if (response.getHits().getTotalHits().value > 0) {
 			authorId = response.getHits().getHits()[0].getId(); // 첫 번째 저자 ID 사용
+			logger.info("authorId: " + authorId);
 		}
 
 		if (authorId == null) {
+			logger.info("Author Search response: " + response.toString());
 			return response; // 저자가 없을 경우 빈 리스트 반환
 		}
 
@@ -64,7 +66,7 @@ public class SearchService {
 
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
 
-		logger.info("Search response: " + response.toString());
+		logger.info("Book Search response: " + bookResponse.toString());
 
 		return bookResponse;
 	}
