@@ -140,7 +140,7 @@ public class User {
 			.name(createUserRequest.name())
 			.email(createUserRequest.email())
 			.password(encodedPassword)
-			.birth(createUserRequest.birth())
+			.birth(createUserRequest.getBirthDate())
 			.contact(createUserRequest.contact())
 			.points(BigDecimal.ZERO)
 			.createdAt(LocalDateTime.now())
