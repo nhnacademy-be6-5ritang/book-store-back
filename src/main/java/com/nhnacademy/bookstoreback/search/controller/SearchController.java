@@ -24,16 +24,10 @@ public class SearchController {
 	@Autowired
 	private SearchService searchService;
 
-	@GetMapping("/search/books")
+	@GetMapping("/searches")
 	public SearchResponse searchBooks(@RequestParam String query) throws IOException {
 		logger.info("Received request to search books with query: " + query);
 		return searchService.searchBooks(query);
-	}
-
-	@GetMapping("/search/authors")
-	public SearchResponse searchAuthors(@RequestParam String query) throws IOException {
-		logger.info("Received request to search authors with query: " + query);
-		return searchService.searchAuthors(query);
 	}
 
 	// 추가로 다른 엔티티에 대한 검색 엔드포인트를 구현할 수 있습니다.
