@@ -34,6 +34,7 @@ public class AddressController {
 	private final AddressService addressService;
 
 	@PostMapping
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<RegisterAddressResponse> registerAddress(
 		@CurrentUser CurrentUserDetails currentUser, @Valid @RequestBody RegisterAddressRequest registerAddressRequest
 	) {
@@ -50,12 +51,14 @@ public class AddressController {
 	}
 
 	@GetMapping("/default")
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<Optional<GetAddressResponse>> getDefaultAddress(@CurrentUser CurrentUserDetails currentUser) {
 		Optional<GetAddressResponse> address = addressService.getDefaultAddress(currentUser);
 		return ResponseEntity.status(HttpStatus.OK).body(address);
 	}
 
 	@PutMapping("/{addressId}")
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<UpdateAddressResponse> updateAddress(
 		@CurrentUser CurrentUserDetails currentUser,
 		@PathVariable Long addressId,
@@ -67,6 +70,7 @@ public class AddressController {
 	}
 
 	@DeleteMapping("/{addressId}")
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<Void> deleteAddress(
 		@CurrentUser CurrentUserDetails currentUser, @PathVariable Long addressId
 	) {
@@ -75,6 +79,7 @@ public class AddressController {
 	}
 
 	@PutMapping("/{addressId}/default")
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<Void> setDefaultAddress(
 		@CurrentUser CurrentUserDetails currentUser, @PathVariable Long addressId
 	) {

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.userstatus.domain.dto.request.CreateUserStatusRequest;
 import com.nhnacademy.bookstoreback.userstatus.domain.dto.response.CreateUserStatusResponse;
 import com.nhnacademy.bookstoreback.userstatus.domain.dto.response.GetUserStatusResponse;
@@ -27,6 +28,7 @@ public class UserStatusController {
 	private final UserStatusService userStatusService;
 
 	@PostMapping
+	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<CreateUserStatusResponse> createUserStatus(
 		@Valid @RequestBody CreateUserStatusRequest createUserStatusRequest
 	) {
@@ -35,12 +37,14 @@ public class UserStatusController {
 	}
 
 	@GetMapping
+	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<List<GetUserStatusResponse>> getUserStatuses() {
 		List<GetUserStatusResponse> getUserStatusResponses = userStatusService.getUserStatuses();
 		return ResponseEntity.status(HttpStatus.OK).body(getUserStatusResponses);
 	}
 
 	@DeleteMapping("/{userStatusName}")
+	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<Void> deleteUserStatus(@PathVariable String userStatusName) {
 		userStatusService.deleteUserStatus(userStatusName);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

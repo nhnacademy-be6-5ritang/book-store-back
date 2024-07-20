@@ -66,6 +66,7 @@ public class UserController {
 	}
 
 	@PostMapping("/send-email/dormant-to-active")
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<Void> sendMailDormantToActive(@RequestParam String email) {
 		String subject = "휴면계정 활성화";
 		mailService.sendMail(email, subject);
@@ -95,20 +96,22 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	}
 
-	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
 	@GetMapping
+	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<List<GetUserInfoResponse>> getUsers(@PageableDefault(size = 10) Pageable pageable) {
 		List<GetUserInfoResponse> getUserInfoResponses = userService.getUsers(pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(getUserInfoResponses);
 	}
 
 	@GetMapping("/self")
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<GetMyUserInfoResponse> getMyUserInfo(@CurrentUser CurrentUserDetails currentUser) {
 		GetMyUserInfoResponse getMyUserInfoResponse = userService.getMyUserInfo(currentUser);
 		return ResponseEntity.status(HttpStatus.OK).body(getMyUserInfoResponse);
 	}
 
 	@PutMapping
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<UpdateUserInfoResponse> updateUser(
 		@CurrentUser CurrentUserDetails currentUser, @Valid @RequestBody UpdateUserInfoRequest updateUserInfoRequest
 	) {
@@ -117,12 +120,14 @@ public class UserController {
 	}
 
 	@PatchMapping("/withdraw")
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<Void> withdrawUser(@CurrentUser CurrentUserDetails currentUser) {
 		userService.withdrawUser(currentUser);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@GetMapping("/self/total-order-price")
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<BigDecimal> getTotalOrderPrice(@CurrentUser CurrentUserDetails currentUser) {
 		BigDecimal totalPaymentAmount = orderService.getTotalOrderPrice(currentUser);
 
@@ -130,6 +135,7 @@ public class UserController {
 	}
 
 	@PatchMapping("/last-login-at")
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<Void> updateLastLoginAt(
 		@CurrentUser CurrentUserDetails currentUser, @Valid @RequestBody LocalDateTime lastLoginAt
 	) {
