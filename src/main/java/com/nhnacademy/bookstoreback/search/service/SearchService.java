@@ -25,7 +25,7 @@ public class SearchService {
 
 		SearchRequest searchRequest = new SearchRequest("books");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-		sourceBuilder.query(QueryBuilders.multiMatchQuery(query, "bookTitle", "bookDescription", "bookIsbn")
+		sourceBuilder.query(QueryBuilders.multiMatchQuery(query)
 			.type("best_fields"));
 		searchRequest.source(sourceBuilder);
 
