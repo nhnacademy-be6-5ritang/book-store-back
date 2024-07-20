@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.tag.domain.dto.respnse.TagDto;
 import com.nhnacademy.bookstoreback.tag.service.impl.TagServiceImpl;
 
@@ -83,6 +84,7 @@ public class TagController {
 	 * @param request 생성할 태그 정보 DTO
 	 * @return 생성된 태그 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping("/tags")
 	public ResponseEntity<TagDto> createTag(
 		@Valid @RequestBody TagDto request) {
@@ -96,6 +98,7 @@ public class TagController {
 	 * @param request 업데이트할 태그 정보 DTO
 	 * @return 업데이트된 태그 정보
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/tags/{tagId}")
 	public ResponseEntity<TagDto> updateTag(@PathVariable Long tagId,
 		@Valid @RequestBody TagDto request) {
@@ -108,6 +111,7 @@ public class TagController {
 	 * @param tagId 삭제할 태그 ID
 	 * @return 응답 상태 코드 (204 NO CONTENT)
 	 */
+	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/tags/{tagId}")
 	public ResponseEntity<Void> deleteTag(@PathVariable Long tagId) {
 		tagService.deleteTag(tagId);

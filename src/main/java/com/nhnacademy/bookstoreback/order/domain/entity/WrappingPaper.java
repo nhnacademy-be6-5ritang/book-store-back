@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,15 +24,18 @@ public class WrappingPaper {
 	@Column(name = "wrapping_paper_id")
 	private Long wrappingPaperId;
 
+	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "order_list_id")
+	@JoinColumn(name = "order_list_id", nullable = false)
 	private BookOrder bookOrder;
 
+	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "paper_type_id")
+	@JoinColumn(name = "paper_type_id", nullable = false)
 	private PaperType paperType;
 
-	@Column(name = "paper_quantity")
+	@NotNull
+	@Column(name = "paper_quantity", nullable = false)
 	private Integer paperQuantity;
 
 	@Builder

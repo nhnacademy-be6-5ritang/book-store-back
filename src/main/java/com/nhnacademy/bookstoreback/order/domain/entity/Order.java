@@ -24,6 +24,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,15 +41,19 @@ public class Order {
 	@Column(name = "order_id")
 	private Long orderId;
 
+	@Size(max = 10)
 	@Column(name = "order_payer_name")
 	private String orderPayerName;
 
+	@Size(max = 11)
 	@Column(name = "order_payer_number")
 	private String orderPayerNumber;
 
+	@Size(max = 30)
 	@Column(name = "order_payer_email")
 	private String orderPayerEmail;
 
+	@Size(max = 100)
 	@Column(name = "order_payer_address")
 	private String orderPayerAddress;
 
@@ -63,7 +69,9 @@ public class Order {
 	@Column(name = "order_coupon_sale")
 	private BigDecimal orderCouponSale;
 
-	@Column(name = "order_info_id")
+	@Size(max = 64)
+	@NotBlank
+	@Column(name = "order_info_id", nullable = false)
 	private String orderInfoId;
 
 	@ManyToOne

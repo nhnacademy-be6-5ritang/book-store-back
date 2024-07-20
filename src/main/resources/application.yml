@@ -62,3 +62,9 @@ server:
 logging:
   file:
     path: ./logs
+
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
