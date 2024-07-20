@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nhnacademy.bookstoreback.deliverystatus.domain.dto.request.CreateDeliveryStatusRequest;
 import com.nhnacademy.bookstoreback.deliverystatus.domain.dto.request.UpdateDeliveryStatusRequest;
-import com.nhnacademy.bookstoreback.deliverystatus.domain.dto.response.CreateDeliveryStatusResponse;
 import com.nhnacademy.bookstoreback.deliverystatus.domain.dto.response.GetDeliveryStatusResponse;
-import com.nhnacademy.bookstoreback.deliverystatus.domain.dto.response.UpdateDeliveryStatusResponse;
 import com.nhnacademy.bookstoreback.deliverystatus.service.DeliveryStatusService;
 
 import jakarta.validation.Valid;
@@ -62,11 +60,12 @@ public class DeliveryStatusController {
 	 * @param request 생성할 배송 상태 정보
 	 * @return 생성된 배송 상태 정보와 HTTP 상태 코드 201(CREATED)
 	 */
+
 	@PostMapping
-	public ResponseEntity<CreateDeliveryStatusResponse> createDeliveryStatus(
+	public ResponseEntity<Void> createDeliveryStatus(
 		@Valid @RequestBody CreateDeliveryStatusRequest request) {
-		CreateDeliveryStatusResponse response = deliveryStatusService.createDeliveryStatus(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		deliveryStatusService.createDeliveryStatus(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	/**
@@ -77,10 +76,10 @@ public class DeliveryStatusController {
 	 * @return 수정된 배송 상태 정보와 HTTP 상태 코드 200(OK)
 	 */
 	@PutMapping("/{deliveryStatusId}")
-	public ResponseEntity<UpdateDeliveryStatusResponse> updateDeliveryStatus(@PathVariable Long deliveryStatusId,
+	public ResponseEntity<Void> updateDeliveryStatus(@PathVariable Long deliveryStatusId,
 		@Valid @RequestBody UpdateDeliveryStatusRequest request) {
-		UpdateDeliveryStatusResponse response = deliveryStatusService.updateDeliveryStatus(deliveryStatusId, request);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		deliveryStatusService.updateDeliveryStatus(deliveryStatusId, request);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**

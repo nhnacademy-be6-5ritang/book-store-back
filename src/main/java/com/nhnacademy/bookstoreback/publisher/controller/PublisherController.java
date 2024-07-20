@@ -73,8 +73,9 @@ public class PublisherController {
 	 * @return 생성된 출판사 정보
 	 */
 	@PostMapping
-	public ResponseEntity<PublisherDto> createPublisher(@Valid @RequestBody PublisherDto request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(publisherService.createPublisher(request));
+	public ResponseEntity<Void> createPublisher(@Valid @RequestBody PublisherDto request) {
+		publisherService.createPublisher(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	/**
@@ -85,9 +86,10 @@ public class PublisherController {
 	 * @return 업데이트된 출판사 정보
 	 */
 	@PutMapping("/{publisherId}")
-	public ResponseEntity<PublisherDto> updatePublisher(@PathVariable Long publisherId,
+	public ResponseEntity<Void> updatePublisher(@PathVariable Long publisherId,
 		@Valid @RequestBody PublisherDto request) {
-		return ResponseEntity.status(HttpStatus.OK).body(publisherService.updatePublisher(publisherId, request));
+		publisherService.updatePublisher(publisherId, request);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**
@@ -99,6 +101,6 @@ public class PublisherController {
 	@DeleteMapping("/{publisherId}")
 	public ResponseEntity<Void> deletePublisher(@PathVariable Long publisherId) {
 		publisherService.deletePublisher(publisherId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }
