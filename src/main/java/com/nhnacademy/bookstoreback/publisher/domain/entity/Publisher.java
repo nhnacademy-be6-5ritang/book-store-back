@@ -14,6 +14,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
  * 출판사 Entity
@@ -34,6 +36,7 @@ public class Publisher {
 
 	@NotBlank
 	@Size(max = 100)
+	@Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
 	@Column(name = "publisher_name", length = 100)
 	private String publisherName;
 
