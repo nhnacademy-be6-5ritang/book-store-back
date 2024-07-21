@@ -74,6 +74,8 @@ class OrderControllerTest {
 
 	private ObjectMapper objectMapper;
 
+	public static final String ERROR_PAPER_EXITS = "포장지를 가져올 수 없습니다";
+
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
@@ -383,6 +385,106 @@ class OrderControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isNoContent()); // 응답 상태 코드가 204 No Content인지 확인
+	}
+
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void getWrappingPaper_success() throws Exception {
+		GetPaperResponse response = new GetPaperResponse(1L, "Gift Wrap", "A beautiful gift wrap",
+			new BigDecimal("15.00"));
+
+		when(paperTypeServiceImpl.getPaperTypeById(1L)).thenReturn(response);
+
+		mockMvc.perform(get("/api/orders/papers/{paper_id}", 1L)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().json(objectMapper.writeValueAsString(response)));
+	}
+
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void createBookOrder_success() throws Exception {
+		CreateBookOrderRequest request = new CreateBookOrderRequest(1L, 1L, 2);
+		CreateBookOrderResponse response = CreateBookOrderResponse.builder()
+			.orderListId(1L)
+			.quantity(2)
+			.build();
+
+		when(bookOrderServiceImpl.createBookOrder(any(CreateBookOrderRequest.class))).thenReturn(response);
+
+		mockMvc.perform(post("/api/orders/books-orders")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isOk())
+			.andExpect(content().json(objectMapper.writeValueAsString(response)));
+	}
+
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void getAllWrappingPapers_success() throws Exception {
+		GetPaperResponse paper1 = new GetPaperResponse(1L, "Gift Wrap", "A beautiful gift wrap",
+			new BigDecimal("15.00"));
+		GetPaperResponse paper2 = new GetPaperResponse(2L, "Holiday Wrap", "Festive holiday wrap",
+			new BigDecimal("20.00"));
+
+		GetAllPaperResponse response = GetAllPaperResponse.builder()
+			.papers(List.of(paper1, paper2))
+			.build();
+
+		when(paperTypeServiceImpl.getAllPaperTypes()).thenReturn(response);
+
+		mockMvc.perform(get("/api/orders/wrappings")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().json(objectMapper.writeValueAsString(response)));
+	}
+
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void getAllWrappingPapers_noContent() throws Exception {
+		when(paperTypeServiceImpl.getAllPaperTypes()).thenReturn(
+			GetAllPaperResponse.builder().papers(List.of()).build());
+
+		mockMvc.perform(get("/api/orders/wrappings")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.papers").isEmpty());
+	}
+
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void createBookOrder_badRequest() throws Exception {
+		CreateBookOrderRequest request = new CreateBookOrderRequest(null, null, 0); // 잘못된 데이터
+
+		mockMvc.perform(post("/api/orders/books-orders")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void createBookOrder_invalidRequest() throws Exception {
+		CreateBookOrderRequest request = new CreateBookOrderRequest(null, null, -1); // 잘못된 데이터
+
+		mockMvc.perform(post("/api/orders/books-orders")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void getWrappingPaper_withExpensivePaper_shouldHandleCorrectly() throws Exception {
+		GetPaperResponse response = new GetPaperResponse(1L, "Expensive Wrap", "A very expensive wrap",
+			new BigDecimal("1000.00"));
+
+		when(paperTypeServiceImpl.getPaperTypeById(1L)).thenReturn(response);
+
+		mockMvc.perform(get("/api/orders/papers/{paper_id}", 1L)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().json(objectMapper.writeValueAsString(response)));
 	}
 
 }

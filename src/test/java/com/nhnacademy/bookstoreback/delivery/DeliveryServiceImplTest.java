@@ -34,7 +34,7 @@ import com.nhnacademy.bookstoreback.order.domain.entity.Order;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.service.impl.OrderServiceImpl;
 
-public class DeliveryServiceImplTest {
+class DeliveryServiceImplTest {
 
 	@Mock
 	private DeliveryRepository deliveryRepository;
