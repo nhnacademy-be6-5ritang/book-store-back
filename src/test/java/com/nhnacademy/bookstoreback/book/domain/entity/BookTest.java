@@ -149,7 +149,7 @@ class BookTest {
 		Book book = new Book();
 		book.setBookQuantity(100);
 
-		book.updateQuantitiy(10);
+		book.updateQuantity(10);
 
 		assertEquals(90, book.getBookQuantity());
 	}
