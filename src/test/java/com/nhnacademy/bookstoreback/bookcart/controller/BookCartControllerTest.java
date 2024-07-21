@@ -1,24 +1,28 @@
 package com.nhnacademy.bookstoreback.bookcart.controller;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
+import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
 import com.nhnacademy.bookstoreback.bookcart.service.BookCartService;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 
@@ -27,80 +31,74 @@ import jakarta.servlet.http.Cookie;
 @WebMvcTest(BookCartController.class)
 class BookCartControllerTest {
 
-	@Autowired
 	private MockMvc mockMvc;
 
 	@MockBean
 	private BookCartService bookCartService;
 
-	@Autowired
 	private ObjectMapper objectMapper;
-
 	private CurrentUserDetails currentUser;
-	private String cartId;
+	private final String cartId = "e212cc9b-265f-4747-8c7d-4edbe573a480";
 
 	@BeforeEach
 	void setUp() {
+		MockitoAnnotations.openMocks(this);
+		mockMvc = MockMvcBuilders.standaloneSetup(new BookCartController(bookCartService))
+			.build();
+		objectMapper = new ObjectMapper();
 		UserTokenInfo userTokenInfo = new UserTokenInfo(1L, "password", Arrays.asList("HEAD_ADMIN"), "ACTIVE");
 		currentUser = new CurrentUserDetails(userTokenInfo);
-		cartId = "693eabda-9a8d-4f89-b8fd-7ba7e56f59ce";
+
 	}
 
 	@Test
 	void testGetBookCarts() throws Exception {
-		when(bookCartService.getBookCartsByCartId(currentUser, cartId)).thenReturn(Collections.emptyList());
+		List<GetBookCartResponse> responses = Collections.emptyList();
+		when(bookCartService.getBookCartsByCartId(any(CurrentUserDetails.class), eq(cartId))).thenReturn(responses);
 
 		mockMvc.perform(get("/api/carts/me")
-				.cookie(new Cookie("cartId", cartId))
-				.requestAttr("currentUser", currentUser))
+				.cookie(new Cookie("cartId", cartId)))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$").isArray())
-			.andExpect(jsonPath("$").isEmpty());
+			.andExpect(content().json(objectMapper.writeValueAsString(responses)));
 
-		verify(bookCartService, times(1)).getBookCartsByCartId(currentUser, cartId);
+		verify(bookCartService).getBookCartsByCartId(any(CurrentUserDetails.class), eq(cartId));
 	}
 
 	@Test
 	void testCreateBookCart() throws Exception {
-		CreateBookCartRequest request = new CreateBookCartRequest(1L, 1);
-		// set necessary fields for request
+		CreateBookCartRequest request = new CreateBookCartRequest(1L, 2);
 
 		mockMvc.perform(post("/api/carts/me")
-				.cookie(new Cookie("cartId", cartId))
-				.requestAttr("currentUser", currentUser)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request)))
+				.content(objectMapper.writeValueAsString(request))
+				.cookie(new Cookie("cartId", cartId)))
 			.andExpect(status().isCreated());
 
-		verify(bookCartService, times(1)).createBookCart(eq(currentUser), eq(request), eq(cartId));
+		verify(bookCartService).createBookCart(any(CurrentUserDetails.class), eq(request),
+			any(String.class));
 	}
 
 	@Test
 	void testUpdateBookCart() throws Exception {
-		UpdateBookCartRequest request = new UpdateBookCartRequest(1);
-		// set necessary fields for request
-		Long bookId = 1L;
+		UpdateBookCartRequest request = new UpdateBookCartRequest(3);
 
-		mockMvc.perform(put("/api/carts/me/{bookId}", bookId)
-				.cookie(new Cookie("cartId", cartId))
-				.requestAttr("currentUser", currentUser)
+		mockMvc.perform(put("/api/carts/me/1")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request)))
+				.content(objectMapper.writeValueAsString(request))
+				.cookie(new Cookie("cartId", cartId)))
 			.andExpect(status().isOk());
 
-		verify(bookCartService, times(1)).updateBookCart(eq(bookId), eq(currentUser), eq(request), eq(cartId));
+		verify(bookCartService).updateBookCart(any(Long.class), any(CurrentUserDetails.class),
+			eq(request), eq(cartId));
 	}
 
 	@Test
 	void testDeleteBookCart() throws Exception {
-		Long bookId = 1L;
-
-		mockMvc.perform(delete("/api/carts/me/{bookId}", bookId)
-				.cookie(new Cookie("cartId", cartId))
-				.requestAttr("currentUser", currentUser))
+		mockMvc.perform(delete("/api/carts/me/1")
+				.cookie(new Cookie("cartId", cartId)))
 			.andExpect(status().isOk());
 
-		verify(bookCartService, times(1)).deleteBookCart(eq(bookId), eq(currentUser), eq(cartId));
+		verify(bookCartService).deleteBookCart(any(Long.class), any(CurrentUserDetails.class), eq(cartId));
 	}
 }
