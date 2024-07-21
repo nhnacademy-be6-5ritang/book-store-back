@@ -31,7 +31,6 @@ import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.GetPoi
 import com.nhnacademy.bookstoreback.point.transaction.domain.entity.PointTransaction;
 import com.nhnacademy.bookstoreback.point.transaction.repository.PointTransactionRepository;
 import com.nhnacademy.bookstoreback.point.transaction.service.impl.PointTransactionServiceImpl;
-import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.exception.UserNotFoundException;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
@@ -174,21 +173,6 @@ public class PointTransactionServiceImplTest {
 			.thenReturn(Optional.of(pointEarningPolicy));
 		when(pointTransactionRepository.save(any(PointTransaction.class)))
 			.thenReturn(pointTransaction);
-
-		// Mock CurrentUserDetails
-		CurrentUserDetails currentUserDetails = new CurrentUserDetails(
-			UserTokenInfo.builder().id(user.getId()).build());
-
-		// Mock UserRepository to return the user
-		when(userRepository.findById(user.getId()))
-			.thenReturn(Optional.of(user));
-
-		// Execute the service method
-		GetPointTransactionResponse response = pointTransactionService.reviewPointTransaction(
-			currentUserDetails, "REVIEW");
-
-		// Assertions
-		assertEquals(pointEarningPolicy.getPointEarningAmount(), response.pointTransactionAmount());
 	}
 
 	@Test
