@@ -155,10 +155,4 @@ public class UserController {
 		List<BirthdayCouponTargetResponse> users = userService.getUsersWithBirthday(date);
 		return ResponseEntity.ok(users);
 	}
-
-	@AuthorizeRole({"ADMIN", "HEAD_ADMIN"})
-	@GetMapping("/test")
-	public ResponseEntity<String> test() {
-		return ResponseEntity.ok("ADMIN 권한이 필요한 API 테스트 성공");
-	}
 }
