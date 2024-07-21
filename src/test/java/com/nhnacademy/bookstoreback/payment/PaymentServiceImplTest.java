@@ -208,4 +208,21 @@ class PaymentServiceImplTest {
 
 		assertThrows(NullPointerException.class, () -> paymentServiceImpl.updatePayment(paymentResponseJson, 1L));
 	}
+
+	@Test
+	void testFindByOrderInfoId_BookOrderIsNull() {
+		Order order = mock(Order.class);
+		when(orderRepository.findByOrderInfoId("orderInfoId")).thenReturn(order);
+		when(bookOrderRepository.findByOrder_OrderId(anyLong())).thenReturn(null);
+
+		assertThrows(BookOrderFailException.class, () -> paymentServiceImpl.findByOrderInfoId("orderInfoId"));
+	}
+
+	@Test
+	void testFindByCartOrderInfoId_OrderIsNull() {
+		when(orderRepository.findByOrderInfoId("orderInfoId")).thenReturn(null);
+
+		assertThrows(OrderFailException.class, () -> paymentServiceImpl.findByCartOrderInfoId("orderInfoId"));
+	}
+
 }
