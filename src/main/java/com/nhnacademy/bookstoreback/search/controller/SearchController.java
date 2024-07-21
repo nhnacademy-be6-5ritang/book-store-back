@@ -3,6 +3,7 @@ package com.nhnacademy.bookstoreback.search.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +28,7 @@ public class SearchController {
 	private SearchService searchService;
 
 	@GetMapping("/books")
-	public Page<BookSearchResponse> searchBooks(@RequestParam String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchBooks(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
 		logger.info("Received request to search books with query: " + query);
 		return searchService.searchBooks(query, pageable);
 	}
