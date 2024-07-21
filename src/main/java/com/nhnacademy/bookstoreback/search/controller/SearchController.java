@@ -1,7 +1,8 @@
 package com.nhnacademy.bookstoreback.search.controller;
 
-import org.elasticsearch.action.search.SearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,13 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import com.nhnacademy.bookstoreback.search.dto.reponse.BookSearchResponse;
 import com.nhnacademy.bookstoreback.search.service.SearchService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/search")
 public class SearchController {
 
 	private static final Logger logger = Logger.getLogger(SearchController.class.getName());
@@ -24,17 +26,27 @@ public class SearchController {
 	@Autowired
 	private SearchService searchService;
 
-	@GetMapping("/search/books")
-	public SearchResponse searchBooks(@RequestParam String query) throws IOException {
+	@GetMapping("/books")
+	public Page<BookSearchResponse> searchBooks(@RequestParam String query, Pageable pageable) throws IOException {
 		logger.info("Received request to search books with query: " + query);
-		return searchService.searchBooks(query);
+		return searchService.searchBooks(query, pageable);
 	}
 
-	@GetMapping("/search/authors")
-	public SearchResponse searchAuthors(@RequestParam String query) throws IOException {
+	@GetMapping("/authors")
+	public Page<BookSearchResponse> searchAuthors(@RequestParam String query, Pageable pageable) throws IOException {
 		logger.info("Received request to search authors with query: " + query);
-		return searchService.searchAuthors(query);
+		return searchService.searchAuthors(query, pageable);
 	}
 
-	// 추가로 다른 엔티티에 대한 검색 엔드포인트를 구현할 수 있습니다.
+	@GetMapping("/publisher")
+	public Page<BookSearchResponse> searchPublishers(@RequestParam String query, Pageable pageable) throws IOException {
+		logger.info("Received request to search publishers with query: " + query);
+		return searchService.searchPublishers(query, pageable);
+	}
+
+	@GetMapping("/tag")
+	public Page<BookSearchResponse> searchBooksByTag(@RequestParam String query, Pageable pageable) throws IOException {
+		logger.info("Received request to search books by tag with query: " + query);
+		return searchService.searchBooksByTag(query, pageable);
+	}
 }

@@ -129,8 +129,8 @@ public class UserService {
 		@CurrentUser CurrentUserDetails currentUser,
 		UpdateUserInfoRequest updateUserInfoRequest
 	) {
-		User user = userRepository.findById(updateUserInfoRequest.id())
-			.orElseThrow(() -> new UserNotFoundException(updateUserInfoRequest.id()));
+		User user = userRepository.findById(currentUser.getUserId())
+			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
 
 		// if (Objects.isNull(currentUser) || !user.getId().equals(currentUser.getUserId())) {
 		// 	throw new AccessDeniedException(currentUser.getUserId(), user.getId());

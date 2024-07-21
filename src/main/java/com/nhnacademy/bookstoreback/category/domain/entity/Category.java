@@ -1,7 +1,6 @@
 package com.nhnacademy.bookstoreback.category.domain.entity;
 
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
  * 카테고리 Entity
@@ -39,6 +40,7 @@ public class Category {
 
 	@NotBlank
 	@Size(max = 20)
+	@Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
 	@Column(name = "category_name", length = 20)
 	private String categoryName;
 

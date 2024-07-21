@@ -1,7 +1,5 @@
 package com.nhnacademy.bookstoreback.category.domain.entity;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,10 +13,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+
 /**
  * 도서 카테고리 매핑 Entity
  *
- * @author 김기욱
  * @version 1.0
  */
 @Entity

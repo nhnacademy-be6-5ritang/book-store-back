@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 /**
  * 도서 태그 매핑 Entity
  *
- * @author 김기욱
  * @version 1.0
  */
 @Entity
@@ -31,13 +30,13 @@ public class BookTag {
 	@Column(name = "book_tag_id")
 	private Long bookTagId;
 
-	@NotNull
 	@ManyToOne(optional = false)
+	@NotNull
 	@JoinColumn(name = "book_id")
 	private Book book;
 
-	@NotNull
 	@ManyToOne(optional = false)
+	@NotNull
 	@JoinColumn(name = "tag_id")
 	private Tag tag;
 

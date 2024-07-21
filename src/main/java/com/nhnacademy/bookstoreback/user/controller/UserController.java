@@ -34,6 +34,7 @@ import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 import com.nhnacademy.bookstoreback.user.service.MailService;
 import com.nhnacademy.bookstoreback.user.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,7 +49,7 @@ public class UserController {
 	private final UserRepository userRepository;
 
 	@PostMapping
-	public ResponseEntity<CreateUserResponse> signUpUser(@RequestBody CreateUserRequest createUserRequest) {
+	public ResponseEntity<CreateUserResponse> signUpUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
 		CreateUserResponse createUserResponse = userService.createUser(createUserRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserResponse);
 	}
@@ -65,6 +66,7 @@ public class UserController {
 	}
 
 	@PostMapping("/send-email/dormant-to-active")
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<Void> sendMailDormantToActive(@RequestParam String email) {
 		String subject = "휴면계정 활성화";
 		mailService.sendMail(email, subject);
@@ -94,43 +96,48 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	}
 
-	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
 	@GetMapping
+	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<List<GetUserInfoResponse>> getUsers(@PageableDefault(size = 10) Pageable pageable) {
 		List<GetUserInfoResponse> getUserInfoResponses = userService.getUsers(pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(getUserInfoResponses);
 	}
 
 	@GetMapping("/self")
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<GetMyUserInfoResponse> getMyUserInfo(@CurrentUser CurrentUserDetails currentUser) {
 		GetMyUserInfoResponse getMyUserInfoResponse = userService.getMyUserInfo(currentUser);
 		return ResponseEntity.status(HttpStatus.OK).body(getMyUserInfoResponse);
 	}
 
 	@PutMapping
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<UpdateUserInfoResponse> updateUser(
-		@CurrentUser CurrentUserDetails currentUser, @RequestBody UpdateUserInfoRequest updateUserInfoRequest
+		@CurrentUser CurrentUserDetails currentUser, @Valid @RequestBody UpdateUserInfoRequest updateUserInfoRequest
 	) {
 		UpdateUserInfoResponse updateUserInfoResponse = userService.updateUserInfo(currentUser, updateUserInfoRequest);
 		return ResponseEntity.status(HttpStatus.OK).body(updateUserInfoResponse);
 	}
 
 	@PatchMapping("/withdraw")
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<Void> withdrawUser(@CurrentUser CurrentUserDetails currentUser) {
 		userService.withdrawUser(currentUser);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@GetMapping("/self/total-order-price")
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<BigDecimal> getTotalOrderPrice(@CurrentUser CurrentUserDetails currentUser) {
 		BigDecimal totalPaymentAmount = orderService.getTotalOrderPrice(currentUser);
-		
+
 		return ResponseEntity.status(HttpStatus.OK).body(totalPaymentAmount);
 	}
 
 	@PatchMapping("/last-login-at")
+	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<Void> updateLastLoginAt(
-		@CurrentUser CurrentUserDetails currentUser, @RequestBody LocalDateTime lastLoginAt
+		@CurrentUser CurrentUserDetails currentUser, @Valid @RequestBody LocalDateTime lastLoginAt
 	) {
 		userService.updateLastLoginAt(currentUser, lastLoginAt);
 		return ResponseEntity.status(HttpStatus.OK).build();
@@ -147,11 +154,5 @@ public class UserController {
 		log.warn("{} 생일쿠폰 발급 컨트롤러 실행", date);
 		List<BirthdayCouponTargetResponse> users = userService.getUsersWithBirthday(date);
 		return ResponseEntity.ok(users);
-	}
-
-	@AuthorizeRole({"ADMIN", "HEAD_ADMIN"})
-	@GetMapping("/test")
-	public ResponseEntity<String> test() {
-		return ResponseEntity.ok("ADMIN 권한이 필요한 API 테스트 성공");
 	}
 }
