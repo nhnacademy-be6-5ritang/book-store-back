@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryByOrderIdRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
@@ -31,7 +32,9 @@ import com.nhnacademy.bookstoreback.deliverystatus.repository.DeliveryStatusRepo
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.order.domain.entity.Order;
+import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
+import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
 import com.nhnacademy.bookstoreback.order.service.impl.OrderServiceImpl;
 
 class DeliveryServiceImplTest {
@@ -52,6 +55,9 @@ class DeliveryServiceImplTest {
 
 	@Mock
 	private OrderServiceImpl orderServiceImpl;
+
+	@Mock
+	private OrderStatusRepository orderStatusRepository;
 
 	@InjectMocks
 	private DeliveryServiceImpl deliveryService;
@@ -246,6 +252,46 @@ class DeliveryServiceImplTest {
 
 		verify(deliveryRepository, times(1)).save(any(Delivery.class));
 		assertNotNull(response);
+	}
+
+	@Test
+	void testUpdateDeliveryByOrderId_Success() {
+		Long orderId = 1L;
+		UpdateDeliveryByOrderIdRequest request = new UpdateDeliveryByOrderIdRequest(
+			"Sender Name", "1234567890", "123 Sender St", "123 Sender St");
+
+		Delivery delivery = mock(Delivery.class);
+		DeliveryStatus deliveryStatus = mock(DeliveryStatus.class);
+
+		when(deliveryRepository.findByOrder_OrderId(anyLong())).thenReturn(delivery);
+		when(deliveryStatusRepository.getReferenceById(anyLong())).thenReturn(deliveryStatus);
+
+		deliveryService.updateDeliveryByOrderId(orderId, request);
+
+		verify(delivery, times(1)).updateDeliverySender(
+			anyString(), anyString(), anyString(), any(DeliveryStatus.class));
+		verify(orderServiceImpl, times(1)).updateOrderStatus(anyLong(), anyLong());
+	}
+
+	@Test
+	void testCompleteDelivery_Success() {
+		Long orderId = 1L;
+		Delivery delivery = mock(Delivery.class);
+		Order order = mock(Order.class);
+		DeliveryStatus completedDeliveryStatus = mock(DeliveryStatus.class);
+		OrderStatus completedOrderStatus = mock(OrderStatus.class);
+
+		when(deliveryRepository.findByOrder_OrderId(anyLong())).thenReturn(delivery);
+		when(orderRepository.findByOrderId(anyLong())).thenReturn(order);
+		when(deliveryStatusRepository.getReferenceById(anyLong())).thenReturn(completedDeliveryStatus);
+		when(orderStatusRepository.getReferenceById(anyLong())).thenReturn(completedOrderStatus);
+
+		deliveryService.completeDelivery(orderId);
+
+		verify(delivery, times(1)).updateDeliveryStatus(any(DeliveryStatus.class));
+		verify(order, times(1)).updateOrderStatus(any(OrderStatus.class));
+		verify(deliveryRepository, times(1)).save(delivery);
+		verify(orderRepository, times(1)).save(order);
 	}
 
 }
