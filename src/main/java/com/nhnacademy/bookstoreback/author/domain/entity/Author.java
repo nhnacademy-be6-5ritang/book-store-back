@@ -1,7 +1,6 @@
 package com.nhnacademy.bookstoreback.author.domain.entity;
 
 import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +14,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
  * 작가 Entity
@@ -37,6 +38,7 @@ public class Author {
 
 	@NotBlank
 	@Size(min = 1, max = 200)
+	@Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
 	@Column(name = "author_name", length = 200)
 	private String authorName;
 

@@ -418,7 +418,7 @@ public class BookServiceImpl implements BookService {
 
 	public void updateQuantity(Long bookId, int quantity) {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
-		book.updateQuantitiy(quantity);
+		book.updateQuantity(quantity);
 		bookRepository.save(book);
 	}
 

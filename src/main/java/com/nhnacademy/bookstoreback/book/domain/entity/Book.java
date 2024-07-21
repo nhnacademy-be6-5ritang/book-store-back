@@ -30,6 +30,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
  * Book Entity
@@ -66,10 +68,12 @@ public class Book {
 
 	@NotBlank
 	@Size(max = 300)
+	@Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
 	@Column(name = "book_title", length = 300)
 	private String bookTitle;
 
 	@NotBlank
+	@Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
 	@Column(name = "book_description")
 	private String bookDescription;
 
@@ -161,10 +165,9 @@ public class Book {
 		this.bookPrice = bookPrice;
 		this.bookSalePercent = bookSalePercent;
 		this.bookSalePrice = bookSalePrice;
-
 	}
 
-	public void updateQuantitiy(int bookQuantity) {
+	public void updateQuantity(int bookQuantity) {
 		this.bookQuantity -= bookQuantity;
 	}
 }
