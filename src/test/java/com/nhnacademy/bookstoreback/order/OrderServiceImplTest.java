@@ -58,12 +58,12 @@ public class OrderServiceImplTest {
 	private DeliveryStatusRepository deliveryStatusRepository;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
-	public void testCreateOrder() {
+	void testCreateOrder() {
 		CreateOrderRequest request = mock(CreateOrderRequest.class);
 		OrderStatus orderStatus = mock(OrderStatus.class);
 		Order order = mock(Order.class);
@@ -81,7 +81,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateCartOrder() {
+	void testUpdateCartOrder() {
 		CreateOrderRequest request = mock(CreateOrderRequest.class);
 		OrderStatus orderStatus = mock(OrderStatus.class);
 		Order order = mock(Order.class);
@@ -100,7 +100,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetOrder() {
+	void testGetOrder() {
 		Order order = mock(Order.class);
 
 		when(orderRepository.findById(1L)).thenReturn(java.util.Optional.of(order));
@@ -113,7 +113,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetOrder_NotFound() {
+	void testGetOrder_NotFound() {
 		when(orderRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
 		assertThrows(OrderFailException.class, () -> orderService.getOrder(1L));
@@ -122,7 +122,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateOrderStatus() {
+	void testUpdateOrderStatus() {
 		Order order = mock(Order.class);
 		OrderStatus orderStatus = mock(OrderStatus.class);
 
@@ -139,7 +139,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testFindAllByUserId() {
+	void testFindAllByUserId() {
 		List<Order> orders = Collections.singletonList(mock(Order.class));
 
 		when(orderRepository.findAllByUserId(1L)).thenReturn(orders);
@@ -151,7 +151,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testFindAllUserId() {
+	void testFindAllUserId() {
 		List<Order> orders = Collections.singletonList(mock(Order.class));
 
 		when(orderRepository.findAllByUserId(1L)).thenReturn(orders);
@@ -163,7 +163,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testCreateOrder_NoOrderStatusFound() {
+	void testCreateOrder_NoOrderStatusFound() {
 		CreateOrderRequest request = mock(CreateOrderRequest.class);
 
 		when(orderStatusRepository.findAll()).thenReturn(Collections.emptyList()); // No order statuses found
@@ -172,21 +172,21 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetOrder_OrderNotFound() {
+	void testGetOrder_OrderNotFound() {
 		when(orderRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
 		assertThrows(OrderFailException.class, () -> orderService.getOrder(1L));
 	}
 
 	@Test
-	public void testUpdateOrderStatus_OrderNotFound() {
+	void testUpdateOrderStatus_OrderNotFound() {
 		when(orderRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
 		assertThrows(OrderFailException.class, () -> orderService.updateOrderStatus(1L, 1L));
 	}
 
 	@Test
-	public void testUpdateOrderStatus_OrderStatusNotFound() {
+	void testUpdateOrderStatus_OrderStatusNotFound() {
 		when(orderRepository.findById(1L)).thenReturn(java.util.Optional.of(mock(Order.class)));
 		when(orderStatusRepository.findById(1L)).thenReturn(java.util.Optional.empty()); // OrderStatus not found
 
@@ -194,33 +194,33 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testFindAllByUserId_NoOrdersFound() {
+	void testFindAllByUserId_NoOrdersFound() {
 		when(orderRepository.findAllByUserId(1L)).thenReturn(null); // No orders found
 
 		assertThrows(OrderFailException.class, () -> orderService.findAllByUserId(1L));
 	}
 
 	@Test
-	public void testFindAllUserId_CurrentUserNull() {
+	void testFindAllUserId_CurrentUserNull() {
 		assertThrows(OrderFailException.class, () -> orderService.findAllUserId(null));
 	}
 
 	@Test
-	public void testFindAllUserId_NoOrdersFound() {
+	void testFindAllUserId_NoOrdersFound() {
 		when(orderRepository.findAllByUserId(anyLong())).thenReturn(null); // No orders found
 
 		assertThrows(OrderFailException.class, () -> orderService.findAllUserId(mock(CurrentUserDetails.class)));
 	}
 
 	@Test
-	public void testFindByOrderInfoId_OrderNotFound() {
+	void testFindByOrderInfoId_OrderNotFound() {
 		when(orderRepository.findByOrderInfoId("order123")).thenReturn(null); // Order not found
 
 		assertThrows(OrderFailException.class, () -> orderService.findByOrderInfoId("order123"));
 	}
 
 	@Test
-	public void testRefundedOrder_DeliveryNotFound() {
+	void testRefundedOrder_DeliveryNotFound() {
 		Order order = mock(Order.class);
 
 		when(orderRepository.findByOrderInfoId("order123")).thenReturn(order);
@@ -230,7 +230,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testCreateOrder_NoCurrentUser() {
+	void testCreateOrder_NoCurrentUser() {
 		CreateOrderRequest request = mock(CreateOrderRequest.class);
 		OrderStatus orderStatus = mock(OrderStatus.class);
 		Order order = mock(Order.class);
@@ -248,7 +248,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testCreateCartOrder_WithCurrentUser() {
+	void testCreateCartOrder_WithCurrentUser() {
 		CurrentUserDetails currentUser = mock(CurrentUserDetails.class);
 		User user = mock(User.class);
 		Order order = mock(Order.class);
@@ -265,7 +265,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateCartOrder_OrderNotFound() {
+	void testUpdateCartOrder_OrderNotFound() {
 		CreateOrderRequest request = mock(CreateOrderRequest.class);
 		OrderStatus orderStatus = mock(OrderStatus.class);
 
@@ -279,7 +279,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateOrderStatus_OrderStatusNull() {
+	void testUpdateOrderStatus_OrderStatusNull() {
 		Order order = mock(Order.class);
 
 		when(orderRepository.findById(1L)).thenReturn(java.util.Optional.of(order));
@@ -291,7 +291,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testFindByOrderStatus_OrderStatusNull() {
+	void testFindByOrderStatus_OrderStatusNull() {
 		when(orderStatusRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
 		assertThrows(OrderFailException.class, () -> orderService.findByOrderStatus(1L));
@@ -299,7 +299,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testFindByOrderInfoIdByEmail_EmailMismatch() {
+	void testFindByOrderInfoIdByEmail_EmailMismatch() {
 		Order order = mock(Order.class);
 
 		when(orderRepository.findByOrderInfoId("order123")).thenReturn(order);
@@ -310,12 +310,12 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetUserPoint_NullCurrentUser() {
+	void testGetUserPoint_NullCurrentUser() {
 		assertThat(orderService.getUserPoint(null)).isNull();
 	}
 
 	@Test
-	public void testRefundingOrder_DeliveryStatusNotFound() {
+	void testRefundingOrder_DeliveryStatusNotFound() {
 		Order order = mock(Order.class);
 
 		when(orderRepository.findByOrderInfoId("order123")).thenReturn(order);
@@ -326,7 +326,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetTotalOrderPrice_WithNullOrderPrice() {
+	void testGetTotalOrderPrice_WithNullOrderPrice() {
 		CurrentUserDetails currentUser = mock(CurrentUserDetails.class);
 		Order order = mock(Order.class);
 
@@ -338,7 +338,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testCreateOrder_InvalidOrderStatus() {
+	void testCreateOrder_InvalidOrderStatus() {
 		CreateOrderRequest request = mock(CreateOrderRequest.class);
 		OrderStatus invalidOrderStatus = mock(OrderStatus.class);
 
@@ -349,14 +349,14 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetOrder_EmptyOptional() {
+	void testGetOrder_EmptyOptional() {
 		when(orderRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
 		assertThrows(OrderFailException.class, () -> orderService.getOrder(1L));
 	}
 
 	@Test
-	public void testCreateOrder_ValidRequestWithCurrentUser() {
+	void testCreateOrder_ValidRequestWithCurrentUser() {
 		CreateOrderRequest request = mock(CreateOrderRequest.class);
 		OrderStatus orderStatus = mock(OrderStatus.class);
 		Order order = mock(Order.class);
@@ -379,7 +379,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testCreateCartOrder_WithNullCurrentUser() {
+	void testCreateCartOrder_WithNullCurrentUser() {
 		Order order = mock(Order.class);
 
 		when(orderRepository.save(any(Order.class))).thenReturn(order);
@@ -391,7 +391,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateOrderStatus_WithValidStatus() {
+	void testUpdateOrderStatus_WithValidStatus() {
 		Order order = mock(Order.class);
 		OrderStatus orderStatus = mock(OrderStatus.class);
 
@@ -408,7 +408,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testRefundingOrder_DeliveryStatusAlreadyRefunded() {
+	void testRefundingOrder_DeliveryStatusAlreadyRefunded() {
 		Order order = mock(Order.class);
 		Delivery delivery = mock(Delivery.class);
 		DeliveryStatus refundRequestedStatus = mock(DeliveryStatus.class);
@@ -422,7 +422,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetTotalOrderPrice_NoOrdersFound() {
+	void testGetTotalOrderPrice_NoOrdersFound() {
 		CurrentUserDetails currentUser = mock(CurrentUserDetails.class);
 
 		when(currentUser.getUserId()).thenReturn(1L);
@@ -432,7 +432,7 @@ public class OrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetUserPoint_UserNotFound() {
+	void testGetUserPoint_UserNotFound() {
 		assertThat(orderService.getUserPoint(null)).isNull();
 	}
 }

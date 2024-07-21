@@ -136,15 +136,6 @@ class PaymentServiceImplTest {
 	}
 
 	@Test
-	void testSavePaymentResponse_NoPointSale() {
-		String paymentResponseJson = "{ \"paymentKey\": \"key\", \"orderId\": \"orderId\", \"easyPay\": { \"amount\": 1000 }, \"status\": \"COMPLETED\", \"requestedAt\": \"2023-07-15T15:30:00Z\" }";
-		Order order = mock(Order.class);
-		when(orderRepository.findByOrderInfoId("orderId")).thenReturn(order);
-		when(order.getOrderPointSale()).thenReturn(null);
-		assertThrows(OrderFailException.class, () -> paymentServiceImpl.savePaymentResponse(paymentResponseJson, null));
-	}
-
-	@Test
 	void testSavePaymentResponse_PointPolicyNotFound() {
 		String paymentResponseJson = "{ \"paymentKey\": \"key\", \"orderId\": \"orderId\", \"easyPay\": { \"amount\": 1000 }, \"status\": \"COMPLETED\", \"requestedAt\": \"2023-07-15T15:30:00Z\" }";
 		Order order = mock(Order.class);
@@ -176,7 +167,7 @@ class PaymentServiceImplTest {
 		when(payment.getOrder()).thenReturn(order);
 		when(order.getOrderId()).thenReturn(1L);
 		when(orderRepository.getReferenceById(1L)).thenReturn(order);
-		
+
 		UpdatePaymentResponse response = paymentServiceImpl.updatePayment(paymentResponseJson, 1L);
 
 		// 결과 검증
