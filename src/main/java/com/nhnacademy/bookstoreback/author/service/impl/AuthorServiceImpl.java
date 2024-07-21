@@ -66,16 +66,15 @@ public class AuthorServiceImpl implements AuthorService {
 	}
 
 	@Override
-	public AuthorDto createAuthor(AuthorDto request) {
+	public void createAuthor(AuthorDto request) {
 		if (authorRepository.existsByAuthorName(request.authorName())) {
 			throw new AuthorAlreadyExistsException(request.authorName());
 		}
-
-		return AuthorDto.fromEntity(authorRepository.save(Author.toEntity(request)));
+		authorRepository.save(Author.toEntity(request));
 	}
 
 	@Override
-	public AuthorDto updateAuthor(Long authorId, AuthorDto request) {
+	public void updateAuthor(Long authorId, AuthorDto request) {
 		Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(authorId));
 
 		if (authorRepository.existsByAuthorName(request.authorName())) {
@@ -83,7 +82,6 @@ public class AuthorServiceImpl implements AuthorService {
 		}
 
 		author.updateAuthorName(request.authorName());
-		return AuthorDto.fromEntity(author);
 	}
 
 	@Override

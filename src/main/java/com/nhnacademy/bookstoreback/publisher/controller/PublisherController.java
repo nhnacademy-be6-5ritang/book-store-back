@@ -75,8 +75,9 @@ public class PublisherController {
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
-	public ResponseEntity<PublisherDto> createPublisher(@Valid @RequestBody PublisherDto request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(publisherService.createPublisher(request));
+	public ResponseEntity<Void> createPublisher(@Valid @RequestBody PublisherDto request) {
+		publisherService.createPublisher(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	/**
@@ -88,9 +89,10 @@ public class PublisherController {
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{publisherId}")
-	public ResponseEntity<PublisherDto> updatePublisher(@PathVariable Long publisherId,
+	public ResponseEntity<Void> updatePublisher(@PathVariable Long publisherId,
 		@Valid @RequestBody PublisherDto request) {
-		return ResponseEntity.status(HttpStatus.OK).body(publisherService.updatePublisher(publisherId, request));
+		publisherService.updatePublisher(publisherId, request);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**
@@ -103,6 +105,6 @@ public class PublisherController {
 	@DeleteMapping("/{publisherId}")
 	public ResponseEntity<Void> deletePublisher(@PathVariable Long publisherId) {
 		publisherService.deletePublisher(publisherId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }

@@ -16,4 +16,12 @@ public interface DeliveryStatusRepository extends JpaRepository<DeliveryStatus, 
 	 * @return 해당 이름에 해당하는 배송 상태 엔티티
 	 */
 	DeliveryStatus findDeliveryStatusByDeliveryStatusName(String deliveryStatusName);
+
+	/**
+	 * 주어진 이름의 배송 상태가 저장소에 존재하는지 여부를 확인합니다.
+	 *
+	 * @param deliveryStatusName 확인할 배송 상태의 이름
+	 * @return 주어진 이름의 배송 상태가 존재하면 {@code true}, 그렇지 않으면 {@code false}
+	 */
+	boolean existsByDeliveryStatusName(String deliveryStatusName);
 }

@@ -60,8 +60,7 @@ public class BookStatusServiceImpl implements BookStatusService {
 		Optional<BookStatus> optionalStatus = findByBookStatusName(bookStatusName);
 
 		return optionalStatus.orElseGet(() -> {
-			BookStatus newStatus = new BookStatus();
-			newStatus.setBookStatusName(bookStatusName);
+			BookStatus newStatus = new BookStatus(bookStatusName);
 			entityManager.persist(newStatus);
 			return newStatus;
 		});
@@ -82,15 +81,16 @@ public class BookStatusServiceImpl implements BookStatusService {
 	}
 
 	@Override
-	public BookStatusDto createBookStatus(BookStatusDto request) {
+	public void createBookStatus(BookStatusDto request) {
 		if (bookStatusRepository.existsByBookStatusName(request.bookStatusName())) {
 			throw new BookStatusAlreadyExistsException(request.bookStatusName());
 		}
-		return BookStatusDto.fromEntity(bookStatusRepository.save(BookStatus.toEntity(request)));
+
+		bookStatusRepository.save(BookStatus.toEntity(request));
 	}
 
 	@Override
-	public BookStatusDto updateBookStatus(Long bookStatusId, BookStatusDto request) {
+	public void updateBookStatus(Long bookStatusId, BookStatusDto request) {
 		BookStatus bookStatus = bookStatusRepository.findById(bookStatusId)
 			.orElseThrow(() -> new BookStatusNotFoundException(bookStatusId));
 
@@ -98,7 +98,6 @@ public class BookStatusServiceImpl implements BookStatusService {
 			throw new BookStatusAlreadyExistsException(request.bookStatusName());
 		}
 		bookStatus.updateBookStatusName(request.bookStatusName());
-		return BookStatusDto.fromEntity(bookStatus);
 	}
 
 	@Override

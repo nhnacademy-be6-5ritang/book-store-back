@@ -49,18 +49,16 @@ public interface BookStatusService {
 	 * 새로운 도서 상태 생성
 	 *
 	 * @param request 도서 상태 정보
-	 * @return 생성된 도서 상태 정보
 	 */
-	BookStatusDto createBookStatus(BookStatusDto request);
+	void createBookStatus(BookStatusDto request);
 
 	/**
 	 * 도서 상태 업데이트
 	 *
 	 * @param bookStatusId 도서 상태 ID
 	 * @param request 도서 상태 정보
-	 * @return 업데이트된 도서 상태 정보
 	 */
-	BookStatusDto updateBookStatus(Long bookStatusId, BookStatusDto request);
+	void updateBookStatus(Long bookStatusId, BookStatusDto request);
 
 	/**
 	 * 도서 상태 삭제
