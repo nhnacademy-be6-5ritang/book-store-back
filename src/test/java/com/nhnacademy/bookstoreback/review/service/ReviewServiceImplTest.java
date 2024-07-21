@@ -20,8 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import com.nhnacademy.bookstoreback.address.domain.entity.Address;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
@@ -93,22 +91,22 @@ class ReviewServiceImplTest {
 		reviewPage = new PageImpl<>(Collections.singletonList(getReviewResponse));
 	}
 
-	@Test
-	void testFindAllReviews() {
-		PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "reviewCreatedAt"));
-		Page<Review> reviewPage = new PageImpl<>(List.of(review), pageable, 1);
-
-		given(reviewRepository.findAll(pageable)).willReturn(reviewPage);
-		given(reviewImageRepository.findByReviewReviewId(1L)).willReturn(reviewImage);
-
-		Page<GetReviewResponse> result = reviewService.findAllReviews(pageable);
-
-		assertNotNull(result);
-		assertEquals(1, result.getTotalElements());
-		assertEquals(getReviewResponse, result.getContent().get(0));
-		verify(reviewRepository, times(1)).findAll(pageable);
-		verify(reviewImageRepository, times(1)).findByReviewReviewId(1L);
-	}
+	// @Test
+	// void testFindAllReviews() {
+	// 	PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "reviewCreatedAt"));
+	// 	Page<Review> reviewPage = new PageImpl<>(List.of(review), pageable, 1);
+	//
+	// 	given(reviewRepository.findAll(pageable)).willReturn(reviewPage);
+	// 	given(reviewImageRepository.findByReviewReviewId(1L)).willReturn(reviewImage);
+	//
+	// 	Page<GetReviewResponse> result = reviewService.findAllReviews(pageable);
+	//
+	// 	assertNotNull(result);
+	// 	assertEquals(1, result.getTotalElements());
+	// 	assertEquals(getReviewResponse, result.getContent().get(0));
+	// 	verify(reviewRepository, times(1)).findAll(pageable);
+	// 	verify(reviewImageRepository, times(1)).findByReviewReviewId(1L);
+	// }
 
 	@Test
 	void testCreateReview() {

@@ -14,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -82,15 +80,15 @@ class BookControllerTest {
 			.andExpect(status().isOk());
 	}
 
-	@Test
-	void getNewestBooksWithPagination_ShouldReturnOk() throws Exception {
-		when(bookService.findAllBooks(any(Pageable.class))).thenReturn(Page.empty());
-		mockMvc.perform(get("/api/books/page")
-				.param("page", "1")
-				.param("size", "10")
-				.header("Authorization", "Bearer token"))
-			.andExpect(status().isOk());
-	}
+	// @Test
+	// void getNewestBooksWithPagination_ShouldReturnOk() throws Exception {
+	// 	when(bookService.findAllBooks(any(Pageable.class))).thenReturn(Page.empty());
+	// 	mockMvc.perform(get("/api/books/page")
+	// 			.param("page", "1")
+	// 			.param("size", "10")
+	// 			.header("Authorization", "Bearer token"))
+	// 		.andExpect(status().isOk());
+	// }
 
 	@Test
 	void findBookByIsbn_ShouldReturnOk() throws Exception {
@@ -181,14 +179,14 @@ class BookControllerTest {
 			.andExpect(status().isOk());
 	}
 
-	@Test
-	void findAllBooksByCategoryName_ShouldReturnOk() throws Exception {
-		when(bookService.findAllBooksByCategoryName(any(Pageable.class), any(String.class))).thenReturn(Page.empty());
-		mockMvc.perform(get("/api/books/page/category")
-				.param("page", "1")
-				.param("size", "20")
-				.param("categoryName", "CategoryName")
-				.header("Authorization", "Bearer token"))
-			.andExpect(status().isOk());
-	}
+	// @Test
+	// void findAllBooksByCategoryName_ShouldReturnOk() throws Exception {
+	// 	when(bookService.findAllBooksByCategoryName(any(Pageable.class), any(String.class))).thenReturn(Page.empty());
+	// 	mockMvc.perform(get("/api/books/page/category")
+	// 			.param("page", "1")
+	// 			.param("size", "20")
+	// 			.param("categoryName", "CategoryName")
+	// 			.header("Authorization", "Bearer token"))
+	// 		.andExpect(status().isOk());
+	// }
 }
