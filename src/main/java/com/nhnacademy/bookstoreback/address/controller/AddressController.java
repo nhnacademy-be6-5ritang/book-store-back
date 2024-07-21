@@ -20,9 +20,11 @@ import com.nhnacademy.bookstoreback.address.domain.dto.response.GetAddressRespon
 import com.nhnacademy.bookstoreback.address.domain.dto.response.RegisterAddressResponse;
 import com.nhnacademy.bookstoreback.address.domain.dto.response.UpdateAddressResponse;
 import com.nhnacademy.bookstoreback.address.service.AddressService;
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -32,8 +34,9 @@ public class AddressController {
 	private final AddressService addressService;
 
 	@PostMapping
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<RegisterAddressResponse> registerAddress(
-		@CurrentUser CurrentUserDetails currentUser, @RequestBody RegisterAddressRequest registerAddressRequest
+		@CurrentUser CurrentUserDetails currentUser, @Valid @RequestBody RegisterAddressRequest registerAddressRequest
 	) {
 		RegisterAddressResponse registerAddressResponse
 			= addressService.registerAddress(currentUser, registerAddressRequest);
@@ -41,22 +44,25 @@ public class AddressController {
 	}
 
 	@GetMapping
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<List<GetAddressResponse>> getAddresses(@CurrentUser CurrentUserDetails currentUser) {
 		List<GetAddressResponse> addresses = addressService.getAddresses(currentUser);
 		return ResponseEntity.status(HttpStatus.OK).body(addresses);
 	}
 
 	@GetMapping("/default")
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<Optional<GetAddressResponse>> getDefaultAddress(@CurrentUser CurrentUserDetails currentUser) {
 		Optional<GetAddressResponse> address = addressService.getDefaultAddress(currentUser);
 		return ResponseEntity.status(HttpStatus.OK).body(address);
 	}
 
 	@PutMapping("/{addressId}")
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<UpdateAddressResponse> updateAddress(
 		@CurrentUser CurrentUserDetails currentUser,
 		@PathVariable Long addressId,
-		@RequestBody UpdateAddressRequest updateAddressRequest
+		@Valid @RequestBody UpdateAddressRequest updateAddressRequest
 	) {
 		UpdateAddressResponse updateAddressResponse
 			= addressService.updateAddress(currentUser, addressId, updateAddressRequest);
@@ -64,6 +70,7 @@ public class AddressController {
 	}
 
 	@DeleteMapping("/{addressId}")
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<Void> deleteAddress(
 		@CurrentUser CurrentUserDetails currentUser, @PathVariable Long addressId
 	) {
@@ -72,6 +79,7 @@ public class AddressController {
 	}
 
 	@PutMapping("/{addressId}/default")
+	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<Void> setDefaultAddress(
 		@CurrentUser CurrentUserDetails currentUser, @PathVariable Long addressId
 	) {

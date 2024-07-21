@@ -25,6 +25,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,30 +59,42 @@ public class User {
 	private List<Address> addresses = new ArrayList<>();
 
 	@Column(name = "user_name")
+	@NotBlank
+	@Size(max = 10)
 	private String name;
 
 	@Column(name = "user_email")
+	@NotBlank
+	@Size(max = 30)
 	private String email;
 
 	@Column(name = "user_password")
+	@NotBlank
+	@Size(min = 8, max = 100)
 	private String password;
 
 	@Column(name = "user_birth")
+	// @NotNull
 	private LocalDate birth;
 
 	@Column(name = "user_contact")
+	@NotBlank
+	@Size(min = 11, max = 11)
 	private String contact;
 
 	@Column(name = "user_point")
+	@NotNull
 	private BigDecimal points;
 
 	@Column(name = "user_sso_id")
 	private String ssoId;
 
 	@Column(name = "user_created_date")
+	@NotNull
 	private LocalDateTime createdAt;
 
 	@Column(name = "user_updated_date")
+	@NotNull
 	private LocalDateTime updatedAt;
 
 	@Column(name = "user_last_login_date")
@@ -125,7 +140,7 @@ public class User {
 			.name(createUserRequest.name())
 			.email(createUserRequest.email())
 			.password(encodedPassword)
-			.birth(createUserRequest.birth())
+			.birth(createUserRequest.getBirthDate())
 			.contact(createUserRequest.contact())
 			.points(BigDecimal.ZERO)
 			.createdAt(LocalDateTime.now())

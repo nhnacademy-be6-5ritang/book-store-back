@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.role.domain.dto.request.CreateRoleRequest;
 import com.nhnacademy.bookstoreback.role.domain.dto.response.CreateRoleResponse;
 import com.nhnacademy.bookstoreback.role.domain.dto.response.GetRoleResponse;
 import com.nhnacademy.bookstoreback.role.service.RoleService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,18 +28,21 @@ public class RoleController {
 	private final RoleService roleService;
 
 	@PostMapping
-	public ResponseEntity<CreateRoleResponse> createRole(@RequestBody CreateRoleRequest createRoleRequest) {
+	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
+	public ResponseEntity<CreateRoleResponse> createRole(@Valid @RequestBody CreateRoleRequest createRoleRequest) {
 		CreateRoleResponse createRoleResponse = roleService.createRole(createRoleRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createRoleResponse);
 	}
 
 	@GetMapping
+	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<List<GetRoleResponse>> getRoles() {
 		List<GetRoleResponse> getRoleResponses = roleService.getRoles();
 		return ResponseEntity.ok(getRoleResponses);
 	}
 
 	@DeleteMapping("/{roleName}")
+	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<Void> deleteRole(@PathVariable String roleName) {
 		roleService.deleteRole(roleName);
 		return ResponseEntity.noContent().build();
