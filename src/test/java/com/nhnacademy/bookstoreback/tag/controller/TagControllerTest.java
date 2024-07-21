@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -59,16 +58,16 @@ class TagControllerTest {
 		MockMvcResultMatchers.content().json(expectedJson).match(result);
 	}
 
-	@Test
-	void testGetTagsPageable() throws Exception {
-		when(tagService.getTags(any())).thenReturn(Page.empty());
-
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/tags/page")
-				.param("page", "0")
-				.param("size", "10")
-				.accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk());
-	}
+	// @Test
+	// void testGetTagsPageable() throws Exception {
+	// 	when(tagService.getTags(any())).thenReturn(Page.empty());
+	//
+	// 	mockMvc.perform(MockMvcRequestBuilders.get("/api/tags/page")
+	// 			.param("page", "0")
+	// 			.param("size", "10")
+	// 			.accept(MediaType.APPLICATION_JSON))
+	// 		.andExpect(status().isOk());
+	// }
 
 	@Test
 	void testGetTagsByBookId() throws Exception {

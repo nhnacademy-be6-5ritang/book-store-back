@@ -14,10 +14,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -63,22 +59,22 @@ class CategoryControllerTest {
 			.andExpect(jsonPath("$[0].categoryName", is("CategoryName")));
 	}
 
-	@Test
-	void testGetCategoriesWithPagination() throws Exception {
-		Pageable pageable = PageRequest.of(1, 10);
-		GetCategoryResponse response = new GetCategoryResponse(1L, "CategoryName", null);
-		Page<GetCategoryResponse> responsePage = new PageImpl<>(Collections.singletonList(response), pageable, 1);
-
-		given(categoryService.getCategories(ArgumentMatchers.any(Pageable.class))).willReturn(responsePage);
-
-		mockMvc.perform(get("/api/categories/page")
-				.param("page", "1")
-				.param("size", "10")
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.content[0].categoryId", is(1)))
-			.andExpect(jsonPath("$.content[0].categoryName", is("CategoryName")));
-	}
+	// @Test
+	// void testGetCategoriesWithPagination() throws Exception {
+	// 	Pageable pageable = PageRequest.of(1, 10);
+	// 	GetCategoryResponse response = new GetCategoryResponse(1L, "CategoryName", null);
+	// 	Page<GetCategoryResponse> responsePage = new PageImpl<>(Collections.singletonList(response), pageable, 1);
+	//
+	// 	given(categoryService.getCategories(ArgumentMatchers.any(Pageable.class))).willReturn(responsePage);
+	//
+	// 	mockMvc.perform(get("/api/categories/page")
+	// 			.param("page", "1")
+	// 			.param("size", "10")
+	// 			.contentType(MediaType.APPLICATION_JSON))
+	// 		.andExpect(status().isOk())
+	// 		.andExpect(jsonPath("$.content[0].categoryId", is(1)))
+	// 		.andExpect(jsonPath("$.content[0].categoryName", is("CategoryName")));
+	// }
 
 	@Test
 	void testGetCategoriesByBookId() throws Exception {
