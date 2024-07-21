@@ -56,50 +56,46 @@ public class SearchService {
 	}
 
 	public Page<BookSearchResponse> searchAuthors(String query, Pageable pageable) throws IOException {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
 		logger.info("저자 검색 쿼리: " + query);
 
 		// Step 1: 저자 검색
 		SearchRequest searchRequest = new SearchRequest("index-author");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		sourceBuilder.query(QueryBuilders.matchQuery("author_name", query));
-		sourceBuilder.size(100); // 최대 100명의 저자를 검색
 		searchRequest.source(sourceBuilder);
 
 		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-		List<String> authorIds = new ArrayList<>();
+		String authorId = null;
 
-		// 모든 매치되는 저자 ID 추출
-		for (SearchHit hit : response.getHits().getHits()) {
-			authorIds.add(hit.getId());
+		// 저자 ID 추출
+		if (response.getHits().getTotalHits().value > 0) {
+			authorId = response.getHits().getHits()[0].getId(); // 첫 번째 저자 ID 사용
+			logger.info("저자 ID: " + authorId);
 		}
 
-		if (authorIds.isEmpty()) {
+		if (authorId == null) {
 			logger.info("저자 검색 응답: " + response.toString());
 			return new PageImpl<>(new ArrayList<>(), pageable, 0); // 저자가 없을 경우 빈 리스트 반환
 		}
 
-		logger.info("매치된 저자 ID 수: " + authorIds.size());
-
 		// Step 2: 책 검색
 		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
-		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-		for (String authorId : authorIds) {
-			boolQuery.should(QueryBuilders.termQuery("author_id", authorId));
-		}
-		bookSourceBuilder.query(boolQuery);
-		bookSourceBuilder.size(pageable.getPageSize());
-		bookSourceBuilder.from((int) pageable.getOffset());
+		bookSourceBuilder.query(QueryBuilders.termQuery("author_id", authorId)); // author_id로 검색
 		bookSearchRequest.source(bookSourceBuilder);
 
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
-		return new PageImpl<>(bookDetails, pageable, bookResponse.getHits().getTotalHits().value);
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), bookResponse.getHits().getTotalHits().value);
 	}
 
 	public Page<BookSearchResponse> searchPublishers(String query, Pageable pageable) throws IOException {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
 		logger.info("출판사 검색 쿼리: " + query);
 
 		// Step 1: 출판사 검색
@@ -119,7 +115,7 @@ public class SearchService {
 
 		if (publisherID == null) {
 			logger.info("출판사 검색 응답: " + response.toString());
-			return new PageImpl<>(new ArrayList<>(), pageable, 0); // 출판사가 없을 경우 빈 리스트 반환
+			return new PageImpl<>(new ArrayList<>(), PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), 0); // 출판사가 없을 경우 빈 리스트 반환
 		}
 
 		// Step 2: 책 검색
@@ -132,10 +128,12 @@ public class SearchService {
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
-		return new PageImpl<>(bookDetails, pageable, bookResponse.getHits().getTotalHits().value);
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), bookResponse.getHits().getTotalHits().value);
 	}
 
 	public Page<BookSearchResponse> searchBooksByTag(String query, Pageable pageable) throws IOException {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
 		logger.info("태그 검색 쿼리: " + query);
 
 		// Step 1: 태그 검색
@@ -162,7 +160,7 @@ public class SearchService {
 		SearchResponse bookTagResponse = client.search(bookTagSearchRequest, RequestOptions.DEFAULT);
 		if (bookTagResponse.getHits().getTotalHits().value == 0) {
 			logger.info("해당 태그에 책이 없습니다.");
-			return new PageImpl<>(new ArrayList<>(), pageable, 0); // 해당 태그의 책이 없을 경우 빈 리스트 반환
+			return new PageImpl<>(new ArrayList<>(), PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), 0); // 해당 태그의 책이 없을 경우 빈 리스트 반환
 		}
 
 		// Step 3: 책 검색
@@ -180,7 +178,7 @@ public class SearchService {
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
-		return new PageImpl<>(bookDetails, pageable, bookResponse.getHits().getTotalHits().value);
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), bookResponse.getHits().getTotalHits().value);
 	}
 
 	public List<BookSearchResponse> parseJsonResponse(String jsonResponse) throws IOException {
