@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
+import com.nhnacademy.bookstoreback.search.dto.reponse.BookSearchResponse;
 import com.nhnacademy.bookstoreback.search.service.SearchService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,25 +29,25 @@ public class SearchController {
 	private SearchService searchService;
 
 	@GetMapping("/search/books")
-	public Page<GetBookDetailResponse> searchBooks(@RequestParam String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchBooks(@RequestParam String query, Pageable pageable) throws IOException {
 		logger.info("Received request to search books with query: " + query);
 		return searchService.searchBooks(query, pageable);
 	}
 
 	@GetMapping("/search/authors")
-	public Page<GetBookDetailResponse> searchAuthors(@RequestParam String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchAuthors(@RequestParam String query, Pageable pageable) throws IOException {
 		logger.info("Received request to search authors with query: " + query);
 		return searchService.searchAuthors(query, pageable);
 	}
 
 	@GetMapping("/search/publisher")
-	public Page<GetBookDetailResponse> searchPublishers(@RequestParam String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchPublishers(@RequestParam String query, Pageable pageable) throws IOException {
 		logger.info("Received request to search publishers with query: " + query);
 		return searchService.searchPublishers(query, pageable);
 	}
 
 	@GetMapping("/search/tag")
-	public Page<GetBookDetailResponse> searchBooksByTag(@RequestParam String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchBooksByTag(@RequestParam String query, Pageable pageable) throws IOException {
 		logger.info("Received request to search books by tag with query: " + query);
 		return searchService.searchBooksByTag(query, pageable);
 	}
