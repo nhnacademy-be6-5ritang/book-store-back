@@ -6,11 +6,14 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -36,6 +39,8 @@ public class SearchService {
 	private BookRepository bookRepository;
 
 	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) throws IOException {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
 		logger.info("책 검색 쿼리: " + query);
 
 		SearchRequest searchRequest = new SearchRequest("books");
@@ -47,7 +52,7 @@ public class SearchService {
 		logger.info("책 검색 응답: " + response.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(response.toString());
-		return new PageImpl<>(bookDetails, pageable, response.getHits().getTotalHits().value);
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), response.getHits().getTotalHits().value);
 	}
 
 	public Page<BookSearchResponse> searchAuthors(String query, Pageable pageable) throws IOException {
@@ -57,26 +62,34 @@ public class SearchService {
 		SearchRequest searchRequest = new SearchRequest("index-author");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		sourceBuilder.query(QueryBuilders.matchQuery("author_name", query));
+		sourceBuilder.size(100); // 최대 100명의 저자를 검색
 		searchRequest.source(sourceBuilder);
 
 		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-		String authorId = null;
+		List<String> authorIds = new ArrayList<>();
 
-		// 저자 ID 추출
-		if (response.getHits().getTotalHits().value > 0) {
-			authorId = response.getHits().getHits()[0].getId(); // 첫 번째 저자 ID 사용
-			logger.info("저자 ID: " + authorId);
+		// 모든 매치되는 저자 ID 추출
+		for (SearchHit hit : response.getHits().getHits()) {
+			authorIds.add(hit.getId());
 		}
 
-		if (authorId == null) {
+		if (authorIds.isEmpty()) {
 			logger.info("저자 검색 응답: " + response.toString());
 			return new PageImpl<>(new ArrayList<>(), pageable, 0); // 저자가 없을 경우 빈 리스트 반환
 		}
 
+		logger.info("매치된 저자 ID 수: " + authorIds.size());
+
 		// Step 2: 책 검색
 		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
-		bookSourceBuilder.query(QueryBuilders.termQuery("author_id", authorId)); // author_id로 검색
+		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+		for (String authorId : authorIds) {
+			boolQuery.should(QueryBuilders.termQuery("author_id", authorId));
+		}
+		bookSourceBuilder.query(boolQuery);
+		bookSourceBuilder.size(pageable.getPageSize());
+		bookSourceBuilder.from((int) pageable.getOffset());
 		bookSearchRequest.source(bookSourceBuilder);
 
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
