@@ -34,19 +34,19 @@ public class SearchController {
 	}
 
 	@GetMapping("/authors")
-	public Page<BookSearchResponse> searchAuthors(@RequestParam String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchAuthors(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
 		logger.info("Received request to search authors with query: " + query);
 		return searchService.searchAuthors(query, pageable);
 	}
 
 	@GetMapping("/publisher")
-	public Page<BookSearchResponse> searchPublishers(@RequestParam String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchPublishers(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
 		logger.info("Received request to search publishers with query: " + query);
 		return searchService.searchPublishers(query, pageable);
 	}
 
 	@GetMapping("/tag")
-	public Page<BookSearchResponse> searchBooksByTag(@RequestParam String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchBooksByTag(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
 		logger.info("Received request to search books by tag with query: " + query);
 		return searchService.searchBooksByTag(query, pageable);
 	}
