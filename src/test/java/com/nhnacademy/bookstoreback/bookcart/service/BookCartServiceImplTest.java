@@ -1,9 +1,11 @@
 package com.nhnacademy.bookstoreback.bookcart.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -16,17 +18,23 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.author.domain.entity.Author;
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.book.domain.entity.BookImage;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.CreateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.request.UpdateBookCartRequest;
 import com.nhnacademy.bookstoreback.bookcart.domain.dto.response.GetBookCartResponse;
-import com.nhnacademy.bookstoreback.bookcart.domain.entity.Book;
+import com.nhnacademy.bookstoreback.bookcart.domain.entity.BookBundle;
 import com.nhnacademy.bookstoreback.bookcart.domain.entity.BookCart;
 import com.nhnacademy.bookstoreback.bookcart.exception.BookCartAlreadyExistsException;
 import com.nhnacademy.bookstoreback.bookcart.repository.BookCartRepository;
 import com.nhnacademy.bookstoreback.bookcart.service.impl.BookCartServiceImpl;
+import com.nhnacademy.bookstoreback.cart.domain.entity.Cart;
 import com.nhnacademy.bookstoreback.cart.repository.CartRepository;
 import com.nhnacademy.bookstoreback.cart.service.CartService;
+import com.nhnacademy.bookstoreback.image.domain.entity.Image;
+import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.UserTokenInfo;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -56,23 +64,56 @@ class BookCartServiceImplTest {
 
 	private CurrentUserDetails currentUser;
 	private String cartId = "e212cc9b-265f-4747-8c7d-4edbe573a480";
-	private com.nhnacademy.bookstoreback.book.domain.entity.Book book2 = mock(
-		com.nhnacademy.bookstoreback.book.domain.entity.Book.class);
+	private Book book;
+	private Author author;
+	private Publisher publisher;
+	private Image image;
+	private BookImage bookImage;
+	private Cart cart;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
 		currentUser = new CurrentUserDetails(new UserTokenInfo(1L, "password", Collections.emptyList(), "ACTIVE"));
+		book = mock(Book.class);
+		author = mock(Author.class);
+		publisher = mock(Publisher.class);
+		image = mock(Image.class);
+		bookImage = mock(BookImage.class);
+		cart = mock(Cart.class);
+
+		// Book related setup
+		when(book.getBookId()).thenReturn(1L);
+		when(book.getBookTitle()).thenReturn("Book Title");
+		when(book.getAuthor()).thenReturn(author);
+		when(author.getAuthorName()).thenReturn("Author Name");
+		when(book.getPublisher()).thenReturn(publisher);
+		when(publisher.getPublisherName()).thenReturn("Publisher Name");
+		when(book.getBookSalePrice()).thenReturn(BigDecimal.valueOf(100));
+		when(book.getBookSalePercent()).thenReturn(BigDecimal.valueOf(10));
+
+		// BookImage related setup
+		when(image.getImageUrl()).thenReturn("http://example.com/image.jpg");
+		when(bookImage.getImage()).thenReturn(image);
+		when(book.getBookImages()).thenReturn(Collections.singletonList(bookImage));
+
+		// CartService.createCart setup
+		when(cartService.createCart(any(CurrentUserDetails.class), any(HttpServletResponse.class)))
+			.thenReturn(cart);
+		when(cart.getCartId()).thenReturn(cartId);
 	}
 
 	@Test
 	void testGetBookCartsByCartId() {
-		Book book = new Book(1L, 10);
-		BookCart bookCart = new BookCart(cartId, Collections.singletonList(book));
-		when(bookCartRepository.findById(cartId)).thenReturn(Optional.of(bookCart));
-		when(bookRepository.findById(1L)).thenReturn(Optional.of(book2));
+		BookBundle bookBundle = new BookBundle(1L, 10); // Set the book quantity to 10
+		List<BookBundle> bookBundles = new ArrayList<>();
+		bookBundles.add(bookBundle);
+		BookCart bookCart = new BookCart(cartId, bookBundles);
 
-		GetBookCartResponse response = GetBookCartResponse.fromEntity(book, 2, cartId);
+		when(bookCartRepository.findById(cartId)).thenReturn(Optional.of(bookCart));
+		when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+
+		GetBookCartResponse response = GetBookCartResponse.fromEntity(book, 10, cartId);
 
 		List<GetBookCartResponse> expectedResponses = Collections.singletonList(response);
 		List<GetBookCartResponse> actualResponses = bookCartService.getBookCartsByCartId(currentUser, cartId);
@@ -84,8 +125,8 @@ class BookCartServiceImplTest {
 	@Test
 	void testCreateBookCart() {
 		CreateBookCartRequest request = new CreateBookCartRequest(1L, 2);
-		Book book = new Book(1L, 10);
-		BookCart bookCart = new BookCart(cartId, Collections.emptyList());
+		List<BookBundle> bookBundles = new ArrayList<>();
+		BookCart bookCart = new BookCart(cartId, bookBundles);
 
 		when(bookCartRepository.findById(cartId)).thenReturn(Optional.of(bookCart));
 		when(bookRepository.findById(request.bookId())).thenReturn(Optional.of(book));
@@ -98,8 +139,9 @@ class BookCartServiceImplTest {
 	@Test
 	void testCreateBookCart_WhenBookAlreadyExists() {
 		CreateBookCartRequest request = new CreateBookCartRequest(1L, 2);
-		Book book = new Book(1L, 10);
-		BookCart bookCart = new BookCart(cartId, Collections.singletonList(book));
+		List<BookBundle> bookBundles = new ArrayList<>();
+		bookBundles.add(new BookBundle(1L, 10)); // Existing book
+		BookCart bookCart = new BookCart(cartId, bookBundles);
 
 		when(bookCartRepository.findById(cartId)).thenReturn(Optional.of(bookCart));
 		when(bookRepository.findById(request.bookId())).thenReturn(Optional.of(book));
@@ -111,8 +153,9 @@ class BookCartServiceImplTest {
 	@Test
 	void testUpdateBookCart() {
 		UpdateBookCartRequest request = new UpdateBookCartRequest(5);
-		Book book = new Book(1L, 10);
-		BookCart bookCart = new BookCart(cartId, Collections.singletonList(book));
+		List<BookBundle> bookBundles = new ArrayList<>();
+		bookBundles.add(new BookBundle(1L, 10));
+		BookCart bookCart = new BookCart(cartId, bookBundles);
 
 		when(bookCartRepository.findById(cartId)).thenReturn(Optional.of(bookCart));
 
@@ -123,8 +166,9 @@ class BookCartServiceImplTest {
 
 	@Test
 	void testDeleteBookCart() {
-		Book book = new Book(1L, 10);
-		BookCart bookCart = new BookCart(cartId, Collections.singletonList(book));
+		List<BookBundle> bookBundles = new ArrayList<>();
+		bookBundles.add(new BookBundle(1L, 10));
+		BookCart bookCart = new BookCart(cartId, bookBundles);
 
 		when(bookCartRepository.findById(cartId)).thenReturn(Optional.of(bookCart));
 

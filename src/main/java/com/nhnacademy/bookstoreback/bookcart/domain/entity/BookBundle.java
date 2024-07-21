@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book {
+public class BookBundle {
 	private Long bookId;
 	private Integer bookQuantity;
 
