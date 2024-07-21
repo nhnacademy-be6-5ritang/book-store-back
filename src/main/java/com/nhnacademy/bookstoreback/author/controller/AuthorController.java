@@ -71,13 +71,14 @@ public class AuthorController {
 	 * 새로운 저자를 생성합니다.
 	 *
 	 * @param request 생성할 저자 정보 DTO
-	 * @return 생성된 저자 정보
+	 * @return 응답 상태 코드 (204 CREATED)
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
-	public ResponseEntity<AuthorDto> createAuthor(
+	public ResponseEntity<Void> createAuthor(
 		@Valid @RequestBody AuthorDto request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(authorService.createAuthor(request));
+		authorService.createAuthor(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	/**
@@ -85,25 +86,26 @@ public class AuthorController {
 	 *
 	 * @param authorId 저자 ID
 	 * @param request  업데이트할 저자 정보 DTO
-	 * @return 업데이트된 저자 정보
+	 * @return 응답 상태 코드 (200 OK)
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{authorId}")
-	public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long authorId,
+	public ResponseEntity<Void> updateAuthor(@PathVariable Long authorId,
 		@Valid @RequestBody AuthorDto request) {
-		return ResponseEntity.status(HttpStatus.OK).body(authorService.updateAuthor(authorId, request));
+		authorService.updateAuthor(authorId, request);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**
 	 * 주어진 저자 ID에 해당하는 저자를 삭제합니다.
 	 *
 	 * @param authorId 삭제할 저자 ID
-	 * @return 응답 상태 코드 (204 NO CONTENT)
+	 * @return 응답 상태 코드 (200 OK)
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{authorId}")
 	public ResponseEntity<Void> deleteAuthor(@PathVariable Long authorId) {
 		authorService.deleteAuthor(authorId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }

@@ -21,9 +21,7 @@ import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
 import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 
 import jakarta.validation.Valid;
@@ -145,9 +143,10 @@ public class BookController {
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
-	public ResponseEntity<CreateBookResponse> createBook(
+	public ResponseEntity<Void> createBook(
 		@Valid @RequestBody CreateBookRequest request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(request));
+		bookService.createBook(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	/**
@@ -159,22 +158,23 @@ public class BookController {
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{bookId}")
-	public ResponseEntity<UpdateBookResponse> updateBookByBookId(@PathVariable Long bookId,
+	public ResponseEntity<Void> updateBookByBookId(@PathVariable Long bookId,
 		@Valid @RequestBody UpdateBookRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBookById(bookId, request));
+		bookService.updateBookById(bookId, request);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId) {
 		bookService.deleteBook(bookId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/{bookId}/{quantity}")
 	public ResponseEntity<Void> updateQuantity(@PathVariable Long bookId, @PathVariable int quantity) {
 		bookService.updateQuantity(bookId, quantity);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**

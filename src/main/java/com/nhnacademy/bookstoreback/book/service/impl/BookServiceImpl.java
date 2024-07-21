@@ -27,9 +27,7 @@ import com.nhnacademy.bookstoreback.author.service.AuthorService;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.exception.BookAlreadyExistsException;
 import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
@@ -321,7 +319,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public CreateBookResponse createBook(CreateBookRequest request) {
+	public void createBook(CreateBookRequest request) {
 		if (bookRepository.existsByBookTitle(request.bookTitle())) {
 			throw new BookAlreadyExistsException(request.bookTitle());
 		}
@@ -353,13 +351,11 @@ public class BookServiceImpl implements BookService {
 					new BookTag(book, tagRepository.findById(tagId).orElse(null)));
 			});
 		}
-
-		return CreateBookResponse.fromEntity(
-			bookRepository.save(book));
+		bookRepository.save(book);
 	}
 
 	@Override
-	public UpdateBookResponse updateBookById(Long bookId, UpdateBookRequest request) {
+	public void updateBookById(Long bookId, UpdateBookRequest request) {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
 
 		Author author = authorRepository.findByAuthorName(request.authorName())
@@ -399,8 +395,6 @@ public class BookServiceImpl implements BookService {
 					new BookTag(book, tagRepository.findById(tagId).orElse(null)));
 			});
 		}
-
-		return UpdateBookResponse.fromEntity(bookRepository.save(book));
 	}
 
 	@Override
