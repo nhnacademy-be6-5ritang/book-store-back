@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.search.dto.reponse.BookSearchResponse;
 
 @Service
@@ -29,6 +31,9 @@ public class SearchService {
 
 	@Autowired
 	private RestHighLevelClient client;
+
+	@Autowired
+	private BookRepository bookRepository;
 
 	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) throws IOException {
 		logger.info("책 검색 쿼리: " + query);
@@ -173,25 +178,14 @@ public class SearchService {
 		List<BookSearchResponse> bookList = new ArrayList<>();
 		for (JsonNode hit : hitsNode) {
 			JsonNode sourceNode = hit.path("_source");
+			Long bookId = sourceNode.path("book_id").asLong();
 
-			// Manually map JSON fields to BookSearchResponse fields
-			BookSearchResponse bookDetail = BookSearchResponse.builder()
-				.bookId(sourceNode.path("book_id").asLong())
-				.authorName(sourceNode.path("author_id").asText())
-				.publisherName(sourceNode.path("publisher_id").asText())
-				.bookStatusName(sourceNode.path("book_status_id").asText())
-				.bookTitle(sourceNode.path("book_title").asText())
-				.bookDescription(sourceNode.path("book_description").asText())
-				.bookQuantity(sourceNode.path("book_quantity").asInt())
-				.bookPublishDate(new Date(sourceNode.path("book_publish_date").asLong()))
-				.bookIsbn(sourceNode.path("book_isbn").asText())
-				.bookPrice(new BigDecimal(sourceNode.path("book_price").asText()))
-				.bookSalePrice(new BigDecimal(sourceNode.path("book_sale_price").asText()))
-				.bookSalePercent(new BigDecimal(sourceNode.path("book_sale_percent").asText()))
-				.bookImageUrl(sourceNode.path("book_image_url").asText(null))
-				.build();
-
-			bookList.add(bookDetail);
+			Optional<Book> optionalBook = bookRepository.findById(bookId);
+			if (optionalBook.isPresent()) {
+				Book book = optionalBook.get();
+				BookSearchResponse bookDetail = BookSearchResponse.fromEntity(book);
+				bookList.add(bookDetail);
+			}
 		}
 		return bookList;
 	}
