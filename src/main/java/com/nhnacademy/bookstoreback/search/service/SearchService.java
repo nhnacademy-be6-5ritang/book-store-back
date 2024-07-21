@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
+import com.nhnacademy.bookstoreback.search.dto.reponse.BookSearchResponse;
 
 @Service
 public class SearchService {
@@ -29,7 +30,7 @@ public class SearchService {
 	@Autowired
 	private RestHighLevelClient client;
 
-	public Page<GetBookDetailResponse> searchBooks(String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) throws IOException {
 		logger.info("책 검색 쿼리: " + query);
 
 		SearchRequest searchRequest = new SearchRequest("books");
@@ -40,11 +41,11 @@ public class SearchService {
 		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 		logger.info("책 검색 응답: " + response.toString());
 
-		List<GetBookDetailResponse> bookDetails = parseJsonResponse(response.toString());
+		List<BookSearchResponse> bookDetails = parseJsonResponse(response.toString());
 		return new PageImpl<>(bookDetails, pageable, response.getHits().getTotalHits().value);
 	}
 
-	public Page<GetBookDetailResponse> searchAuthors(String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchAuthors(String query, Pageable pageable) throws IOException {
 		logger.info("저자 검색 쿼리: " + query);
 
 		// Step 1: 저자 검색
@@ -76,11 +77,11 @@ public class SearchService {
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
-		List<GetBookDetailResponse> bookDetails = parseJsonResponse(bookResponse.toString());
+		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
 		return new PageImpl<>(bookDetails, pageable, bookResponse.getHits().getTotalHits().value);
 	}
 
-	public Page<GetBookDetailResponse> searchPublishers(String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchPublishers(String query, Pageable pageable) throws IOException {
 		logger.info("출판사 검색 쿼리: " + query);
 
 		// Step 1: 출판사 검색
@@ -112,11 +113,11 @@ public class SearchService {
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
-		List<GetBookDetailResponse> bookDetails = parseJsonResponse(bookResponse.toString());
+		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
 		return new PageImpl<>(bookDetails, pageable, bookResponse.getHits().getTotalHits().value);
 	}
 
-	public Page<GetBookDetailResponse> searchBooksByTag(String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchBooksByTag(String query, Pageable pageable) throws IOException {
 		logger.info("태그 검색 쿼리: " + query);
 
 		// Step 1: 태그 검색
@@ -160,20 +161,19 @@ public class SearchService {
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
-		List<GetBookDetailResponse> bookDetails = parseJsonResponse(bookResponse.toString());
+		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
 		return new PageImpl<>(bookDetails, pageable, bookResponse.getHits().getTotalHits().value);
 	}
 
-	public List<GetBookDetailResponse> parseJsonResponse(String jsonResponse) throws IOException {
+	public List<BookSearchResponse> parseJsonResponse(String jsonResponse) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode rootNode = objectMapper.readTree(jsonResponse);
 		JsonNode hitsNode = rootNode.path("hits").path("hits");
 
-		List<GetBookDetailResponse> bookList = new ArrayList<>();
+		List<BookSearchResponse> bookList = new ArrayList<>();
 		for (JsonNode hit : hitsNode) {
 			JsonNode sourceNode = hit.path("_source");
 			GetBookDetailResponse bookDetail = objectMapper.treeToValue(sourceNode, GetBookDetailResponse.class);
-			bookList.add(bookDetail);
 		}
 		return bookList;
 	}
