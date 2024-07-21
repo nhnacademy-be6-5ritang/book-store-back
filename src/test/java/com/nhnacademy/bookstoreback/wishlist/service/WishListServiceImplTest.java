@@ -150,11 +150,16 @@ class WishListServiceImplTest {
 
 	@Test
 	void testDeleteWishList() {
-		wishList = new WishList(book, user);
+		WishList wishList = new WishList(book, user);
 		when(wishListRepository.findById(1L)).thenReturn(Optional.of(wishList));
 
 		wishListService.deleteWishList(1L, currentUser);
 
+		verify(wishListRepository, times(1)).deleteById(1L);
+
+		when(wishListRepository.findById(1L)).thenReturn(Optional.empty());
+		Optional<WishList> deletedWishList = wishListRepository.findById(1L);
+		assertTrue(deletedWishList.isEmpty(), "WishList should be deleted");
 	}
 
 	@Test
