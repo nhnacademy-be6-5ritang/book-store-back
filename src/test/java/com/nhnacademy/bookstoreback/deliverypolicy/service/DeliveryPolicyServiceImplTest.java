@@ -146,6 +146,8 @@ class DeliveryPolicyServiceImplTest {
 		doNothing().when(deliveryPolicyRepository).deleteById(anyLong());
 
 		deliveryPolicyService.deleteDeliveryPolicy(1L);
+
+		verify(deliveryPolicyRepository, times(1)).deleteById(1L);
 	}
 
 	@Test
