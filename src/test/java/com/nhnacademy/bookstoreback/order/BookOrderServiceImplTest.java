@@ -3,7 +3,6 @@ package com.nhnacademy.bookstoreback.order;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.*;
 
 import java.util.Collections;
@@ -46,12 +45,12 @@ public class BookOrderServiceImplTest {
 	private BookRepository bookRepository;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
-	public void testCreateBookOrder() {
+	void testCreateBookOrder() {
 		CreateBookOrderRequest request = mock(CreateBookOrderRequest.class);
 		Book book = mock(Book.class);
 		Order order = mock(Order.class);
@@ -74,7 +73,7 @@ public class BookOrderServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateOrder_BookOrderNotFound() {
+	void testUpdateOrder_BookOrderNotFound() {
 		when(bookOrderRepository.getReferenceById(1L)).thenThrow(EntityNotFoundException.class);
 
 		assertThrows(BookOrderFailException.class, () -> bookOrderService.updateOrder(1L, 1L));
@@ -84,7 +83,7 @@ public class BookOrderServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateOrder_OrderNotFound() {
+	void testUpdateOrder_OrderNotFound() {
 		BookOrder bookOrder = mock(BookOrder.class);
 
 		when(bookOrderRepository.getReferenceById(1L)).thenReturn(bookOrder);
@@ -99,7 +98,7 @@ public class BookOrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetBookOrder() {
+	void testGetBookOrder() {
 		BookOrder bookOrder = mock(BookOrder.class);
 		Book book = mock(Book.class);
 
@@ -115,7 +114,7 @@ public class BookOrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetBookOrder_NotFound() {
+	void testGetBookOrder_NotFound() {
 		when(bookOrderRepository.getReferenceById(1L)).thenThrow(EntityNotFoundException.class);
 
 		assertThrows(BookOrderFailException.class, () -> bookOrderService.getBookOrder(1L));
@@ -124,7 +123,7 @@ public class BookOrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetBookAndCategoryByOrderListId() {
+	void testGetBookAndCategoryByOrderListId() {
 		GetBookByOrderCouponResponse response = mock(GetBookByOrderCouponResponse.class);
 
 		when(bookOrderRepository.findBooksByOrderListId(1L)).thenReturn(response);
@@ -136,7 +135,7 @@ public class BookOrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetBookOrderByOrderId() {
+	void testGetBookOrderByOrderId() {
 		BookOrder bookOrder = mock(BookOrder.class);
 		Book book = mock(Book.class);
 		Order order = mock(Order.class);
@@ -155,7 +154,7 @@ public class BookOrderServiceImplTest {
 	}
 
 	@Test
-	public void testGetBookOrderByOrderId_EmptyList() {
+	void testGetBookOrderByOrderId_EmptyList() {
 		when(bookOrderRepository.findByOrder_OrderInfoId("order123")).thenReturn(Collections.emptyList());
 
 		List<GetBookOrderResponse> responses = bookOrderService.getBookOrderByOrderId("order123");

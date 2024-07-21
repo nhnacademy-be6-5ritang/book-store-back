@@ -37,12 +37,12 @@ public class PaperTypeServiceImplTest {
 	private PaperTypeRepository paperTypeRepository;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
-	public void testCreatePaper() {
+	void testCreatePaper() {
 		CreateWrappingTypeRequest request = new CreateWrappingTypeRequest("Paper Name", "Paper Content",
 			BigDecimal.TEN);
 		PaperType paperType = PaperType.toEntity(request);
@@ -62,7 +62,7 @@ public class PaperTypeServiceImplTest {
 	}
 
 	@Test
-	public void testGetAllPaperTypes() {
+	void testGetAllPaperTypes() {
 		PaperType paperType = new PaperType("Paper Name", "Paper Content", BigDecimal.TEN);
 		when(paperTypeRepository.findAll()).thenReturn(Collections.singletonList(paperType));
 
@@ -83,7 +83,7 @@ public class PaperTypeServiceImplTest {
 	}
 
 	@Test
-	public void testGetAdminAllPaperTypes() {
+	void testGetAdminAllPaperTypes() {
 		PaperType paperType = new PaperType("Paper Name", "Paper Content", BigDecimal.TEN);
 		when(paperTypeRepository.findAll()).thenReturn(Collections.singletonList(paperType));
 
@@ -104,7 +104,7 @@ public class PaperTypeServiceImplTest {
 	}
 
 	@Test
-	public void testGetPaperTypeById_Success() {
+	void testGetPaperTypeById_Success() {
 		PaperType paperType = new PaperType("Paper Name", "Paper Content", BigDecimal.TEN);
 		when(paperTypeRepository.findById(1L)).thenReturn(Optional.of(paperType));
 
@@ -121,7 +121,7 @@ public class PaperTypeServiceImplTest {
 	}
 
 	@Test
-	public void testGetPaperTypeById_NotFound() {
+	void testGetPaperTypeById_NotFound() {
 		when(paperTypeRepository.findById(1L)).thenReturn(Optional.empty());
 
 		ErrorStatus expectedErrorStatus = ErrorStatus.from(
@@ -135,13 +135,11 @@ public class PaperTypeServiceImplTest {
 
 		assertThat(actualErrorStatus.getMessage()).isEqualTo(expectedErrorStatus.getMessage());
 		assertThat(actualErrorStatus.getStatus()).isEqualTo(expectedErrorStatus.getStatus());
-		// timestamp는 현재 시간이므로 정확한 일치 검사는 불가능합니다.
-		// assertThat(actualErrorStatus.getTimestamp()).isCloseTo(expectedErrorStatus.getTimestamp(), within(1, ChronoUnit.SECONDS));
 		verify(paperTypeRepository).findById(1L);
 	}
 
 	@Test
-	public void testUpdatePaperTypeById_Success() {
+	void testUpdatePaperTypeById_Success() {
 		Long id = 1L;
 		UpdateWrappingTypeRequest request = new UpdateWrappingTypeRequest("Updated Name", "Updated Content",
 			BigDecimal.ONE);
@@ -165,7 +163,7 @@ public class PaperTypeServiceImplTest {
 	}
 
 	@Test
-	public void testUpdatePaperTypeById_NotFound() {
+	void testUpdatePaperTypeById_NotFound() {
 		Long id = 1L;
 		UpdateWrappingTypeRequest request = new UpdateWrappingTypeRequest("Updated Name", "Updated Content",
 			BigDecimal.ONE);
@@ -184,14 +182,12 @@ public class PaperTypeServiceImplTest {
 
 		assertThat(actualErrorStatus.getMessage()).isEqualTo(expectedErrorStatus.getMessage());
 		assertThat(actualErrorStatus.getStatus()).isEqualTo(expectedErrorStatus.getStatus());
-		// timestamp는 현재 시간이므로 정확한 일치 검사는 불가능합니다.
-		// assertThat(actualErrorStatus.getTimestamp()).isCloseTo(expectedErrorStatus.getTimestamp(), within(1, ChronoUnit.SECONDS));
 		verify(paperTypeRepository).findById(id);
 		verify(paperTypeRepository, never()).save(any(PaperType.class));
 	}
 
 	@Test
-	public void testDeletePaperTypeById() {
+	void testDeletePaperTypeById() {
 		doNothing().when(paperTypeRepository).deleteById(1L);
 
 		paperTypeService.deletePaperTypeById(1L);

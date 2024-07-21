@@ -38,7 +38,7 @@ class TagControllerTest {
 	private TagDto tagDto;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		objectMapper = new ObjectMapper();
 		mockMvc = MockMvcBuilders.standaloneSetup(tagController).build();
 		tagDto = new TagDto(1L, "Sample Tag");

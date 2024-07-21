@@ -78,11 +78,6 @@ public class PaymentServiceImpl implements PaymentService {
 				LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
 		}
-		if (order.getOrderPointSale() == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS_POINT, HttpStatus.UNPROCESSABLE_ENTITY,
-				LocalDateTime.now());
-			throw new OrderFailException(errorStatus);
-		}
 		if (currentUser != null) {
 			User user = userRepository.getReferenceById(currentUser.getUserId());
 
@@ -142,7 +137,7 @@ public class PaymentServiceImpl implements PaymentService {
 				break;
 			}
 		}
-		
+
 	}
 
 	public PaymentResponse parsePaymentResponse(String paymentResponseJson) {
