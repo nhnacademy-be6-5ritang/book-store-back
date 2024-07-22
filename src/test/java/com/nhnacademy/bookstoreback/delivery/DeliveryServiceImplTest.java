@@ -474,7 +474,7 @@ class DeliveryServiceImplTest {
 	}
 
 	@Test
-	public void testScheduleDeliveries() {
+	void testScheduleDeliveries() {
 		// Arrange
 		Delivery delivery = mock(Delivery.class);
 		DeliveryStatus status = mock(DeliveryStatus.class);
@@ -495,7 +495,7 @@ class DeliveryServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateDeliveryAddOrder() {
+	void testUpdateDeliveryAddOrder() {
 		Long deliveryId = 1L;
 		Long orderId = 2L;
 
@@ -523,7 +523,7 @@ class DeliveryServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateDeliveryAddOrder_DeliveryNotFound() {
+	void testUpdateDeliveryAddOrder_DeliveryNotFound() {
 		Long deliveryId = 1L;
 		Long orderId = 2L;
 
