@@ -11,7 +11,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -23,6 +25,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "books_images")
 public class BookImage {
 	@Id
@@ -39,4 +42,10 @@ public class BookImage {
 	@JoinColumn(name = "image_id")
 	@NotNull
 	private Image image;
+
+	@Builder
+	public BookImage(Book book, Image image) {
+		this.book = book;
+		this.image = image;
+	}
 }
