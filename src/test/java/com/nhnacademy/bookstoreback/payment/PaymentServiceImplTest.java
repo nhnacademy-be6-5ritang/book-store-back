@@ -225,4 +225,42 @@ class PaymentServiceImplTest {
 		assertThrows(OrderFailException.class, () -> paymentServiceImpl.findByCartOrderInfoId("orderInfoId"));
 	}
 
+	@Test
+	void testSavePaymentResponse_NoPointEarningPolicy() {
+		String paymentResponseJson = "{ \"paymentKey\": \"key\", \"orderId\": \"orderId\", \"easyPay\": { \"amount\": 1000 }, \"status\": \"COMPLETED\", \"requestedAt\": \"2023-07-15T15:30:00Z\" }";
+		Order order = mock(Order.class);
+		User user = mock(User.class);
+		when(orderRepository.findByOrderInfoId("orderId")).thenReturn(order);
+		when(order.getOrderPointSale()).thenReturn(BigDecimal.TEN);
+		when(userRepository.getReferenceById(anyLong())).thenReturn(user);
+		when(pointEarningPolicyRepository.findByPointEarningPolicyType("포인트 사용")).thenReturn(Optional.empty());
+
+		assertThrows(PointEarningPolicyNotFoundException.class,
+			() -> paymentServiceImpl.savePaymentResponse(paymentResponseJson, mock(CurrentUserDetails.class)));
+	}
+
+	@Test
+	void testUpdatePayment_NoPaymentFound() throws JsonProcessingException {
+		String paymentResponseJson = "{ \"status\": \"COMPLETED\" }";
+		when(paymentRepository.getReferenceById(1L)).thenThrow(new RuntimeException("Payment not found"));
+
+		assertThrows(RuntimeException.class, () -> paymentServiceImpl.updatePayment(paymentResponseJson, 1L));
+	}
+
+	@Test
+	void testUpdatePayment_NoOrderFound() throws JsonProcessingException {
+		String paymentResponseJson = "{ \"status\": \"COMPLETED\" }";
+		Payment payment = mock(Payment.class);
+		when(paymentRepository.getReferenceById(1L)).thenReturn(payment);
+		when(payment.getOrder()).thenReturn(mock(Order.class));
+		when(orderRepository.getReferenceById(anyLong())).thenThrow(new RuntimeException("Order not found"));
+
+		assertThrows(RuntimeException.class, () -> paymentServiceImpl.updatePayment(paymentResponseJson, 1L));
+	}
+
+	@Test
+	void testTransactions_InvalidJson() {
+		String paymentResponseJson = "{ invalid json }";
+		assertThrows(ParserFailException.class, () -> paymentServiceImpl.transactions(paymentResponseJson));
+	}
 }
