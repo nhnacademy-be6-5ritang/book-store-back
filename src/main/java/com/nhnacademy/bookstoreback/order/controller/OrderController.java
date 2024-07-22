@@ -211,8 +211,9 @@ public class OrderController {
 	 * @param paperTypeId 포장지 종류 아이디
 	 */
 	@DeleteMapping("/papers/{paper_type_id}")
-	public void deletePaper(@PathVariable("paper_type_id") Long paperTypeId) {
+	public ResponseEntity<Void> deletePaper(@PathVariable("paper_type_id") Long paperTypeId) {
 		paperTypeServiceImpl.deletePaperTypeById(paperTypeId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	//TODO 도서 주문

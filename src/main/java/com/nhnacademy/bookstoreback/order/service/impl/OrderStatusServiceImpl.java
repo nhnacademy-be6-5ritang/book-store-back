@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 	private final OrderStatusRepository orderStatusRepository;
 
 	public static final String ERROR_STATUS_EXITS = "주문 상태를 가져올 수 없습니다";
+	public static final String ERROR_STATUS_DELETE = "주문 상태를 가져올 수 없습니다";
 
 	@Override
 	public GetOrderStatusResponse create(CreateOrderStatusRequest createOrderStatusRequest) {
@@ -47,7 +49,13 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 
 	@Override
 	public void delete(Long id) {
-		orderStatusRepository.deleteById(id);
+		try {
+			orderStatusRepository.deleteById(id);
+		} catch (DataAccessException e) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_DELETE, HttpStatus.INTERNAL_SERVER_ERROR,
+				LocalDateTime.now());
+			throw new OrderStatusFailException(errorStatus);
+		}
 	}
 
 	@Override
