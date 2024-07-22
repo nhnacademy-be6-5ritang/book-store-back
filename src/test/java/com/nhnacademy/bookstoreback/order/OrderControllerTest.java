@@ -568,7 +568,7 @@ class OrderControllerTest {
 
 		GetPaperResponse response = GetPaperResponse.from(paperType);
 
-		when(paperTypeServiceImpl.updatePaperTypeById(eq(1L), any(UpdateWrappingTypeRequest.class))).thenReturn(
+		when(paperTypeServiceImpl.updatePaperTypeById(anyLong(), any(UpdateWrappingTypeRequest.class))).thenReturn(
 			response);
 
 		// Act & Assert: PUT 요청을 수행하고 성공 응답 검증
@@ -587,7 +587,7 @@ class OrderControllerTest {
 		UpdateWrappingTypeRequest request = new UpdateWrappingTypeRequest("Updated Paper Name", "Updated Paper Content",
 			new BigDecimal(200));
 
-		when(paperTypeServiceImpl.updatePaperTypeById(eq(1L), any(UpdateWrappingTypeRequest.class)))
+		when(paperTypeServiceImpl.updatePaperTypeById(anyLong(), any(UpdateWrappingTypeRequest.class)))
 			.thenThrow(
 				new PaperFailException(ErrorStatus.from("포장지가 존재하지 않습니다", HttpStatus.NOT_FOUND, LocalDateTime.now())));
 
@@ -800,7 +800,7 @@ class OrderControllerTest {
 
 		GetWrappingResponse getWrappingResponse = GetWrappingResponse.from(wrappingPaper);
 
-		when(wrappingPaperServiceImpl.createWrappingPapers(eq(paperId), eq(bookOrderId), eq(quantity)))
+		when(wrappingPaperServiceImpl.createWrappingPapers(paperId, bookOrderId, quantity))
 			.thenReturn(getWrappingResponse);
 
 		// Act & Assert: POST 요청을 수행하고 성공 응답 검증
@@ -828,7 +828,7 @@ class OrderControllerTest {
 
 		GetListWrappingResponse getListWrappingResponse = GetListWrappingResponse.from(wrappingPapers);
 
-		when(wrappingPaperServiceImpl.getWrappingPaperByOrderListId(eq(orderListId)))
+		when(wrappingPaperServiceImpl.getWrappingPaperByOrderListId(orderListId))
 			.thenReturn(getListWrappingResponse);
 
 		// Act & Assert: GET 요청을 수행하고 성공 응답 검증
@@ -894,7 +894,7 @@ class OrderControllerTest {
 
 		UpdateBookOrderResponse updateBookOrderResponse = UpdateBookOrderResponse.from(bookOrder);
 
-		when(bookOrderServiceImpl.updateOrder(eq(bookListId), eq(orderId)))
+		when(bookOrderServiceImpl.updateOrder(bookListId, orderId))
 			.thenReturn(updateBookOrderResponse);
 
 		// Act & Assert: PUT 요청을 수행하고 성공 응답 검증
