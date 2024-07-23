@@ -5,8 +5,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.nhnacademy.bookstoreback.book.controller.BookController;
-import com.nhnacademy.bookstoreback.image.controller.BookImageController;
-import com.nhnacademy.bookstoreback.image.controller.CoverImageController;
 
 /**
  * @version 1.0
@@ -21,18 +19,11 @@ import com.nhnacademy.bookstoreback.image.controller.CoverImageController;
  */
 @Component
 public class DataInitializer implements CommandLineRunner {
-
 	private final BookController bookController;
-	private final CoverImageController coverImageController;
-	private final BookImageController bookImageController;
 
 	@Autowired
-	public DataInitializer(BookController bookController,
-		CoverImageController coverImageController,
-		BookImageController bookImageController) {
+	public DataInitializer(BookController bookController) {
 		this.bookController = bookController;
-		this.coverImageController = coverImageController;
-		this.bookImageController = bookImageController;
 	}
 
 	@Override

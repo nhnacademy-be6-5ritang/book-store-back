@@ -17,7 +17,7 @@ public interface UploadService {
 	 * @return 업로드된 이미지의 URL
 	 * @throws FileUploadException 업로드 중 발생한 예외
 	 */
-	String upload(MultipartFile file) throws FileUploadException;
+	String upload(MultipartFile file, String folderName) throws FileUploadException;
 
 	/**
 	 * 이미지 업로드 API의 응답 본문에서 이미지 URL을 추출합니다.

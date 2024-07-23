@@ -146,8 +146,9 @@ class BookTest {
 
 	@Test
 	void testUpdateQuantity() {
-		Book book = new Book();
-		book.setBookQuantity(100);
+		Book book = Book.builder()
+			.bookQuantity(100)
+			.build();
 
 		book.updateQuantity(10);
 

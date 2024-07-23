@@ -26,6 +26,7 @@ import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Book Controller
@@ -33,6 +34,7 @@ import lombok.RequiredArgsConstructor;
  * @author 김기욱
  * @version 1.0
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/books")
@@ -44,7 +46,7 @@ public class BookController {
 	 *
 	 * @return 도서저장결과
 	 */
-	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
+	// @AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping("/fetch/book-lists")
 	public ResponseEntity<String> fetchAndSaveBooks(@RequestParam Long count) {
 		try {
@@ -63,21 +65,23 @@ public class BookController {
 	}
 
 	/**
-	 * ISBN을 통한 도서 한권 조회 및 저장
+	 * ISBN 을 통한 도서 한권 조회 및 저장
 	 *
 	 * @return 도서저장결과
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping("/fetch")
-	public String saveBookByIsbn(@RequestParam String isbn) {
+	public ResponseEntity<Void> saveBookByIsbn(@RequestParam String isbn) {
 		try {
 			String apiUrl =
 				"http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttb2897robo0933001&itemIdType=ISBN&ItemId="
 					+ isbn + "&output=js&Version=20131101";
 			bookService.saveBookByIsbn(apiUrl);
-			return "ISBN을 기반으로 한 도서정보가 성공적으로 저장되었습니다.";
+			log.info("ISBN: {} 기반으로 한 도서정보가 성공적으로 저장되었습니다.", isbn);
+			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (Exception e) {
-			return "ISBN을 기반으로 도서 저장 중 오류 발생 : " + e.getMessage();
+			log.error("ISBN: {} 기반으로 도서 저장 중 오류 발생 : ", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 
