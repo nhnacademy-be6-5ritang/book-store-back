@@ -14,8 +14,8 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
-import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryByOrderIdRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
@@ -23,6 +23,7 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResp
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryAddOrderPolicyResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
+import com.nhnacademy.bookstoreback.delivery.exception.DeliveryNotFoundException;
 import com.nhnacademy.bookstoreback.delivery.repository.DeliveryRepository;
 import com.nhnacademy.bookstoreback.delivery.service.DeliveryService;
 import com.nhnacademy.bookstoreback.deliverystatus.domain.entity.DeliveryStatus;
@@ -66,17 +67,17 @@ public class DeliveryServiceImpl implements DeliveryService {
 	/**
 	 * 사용자의 배송 목록을 페이지로 반환합니다.
 	 *
-	 * @param request  사용자의 배송 요청 정보.
 	 * @param pageable 페이지 정보.
 	 * @return 페이지로 반환된 사용자의 배송 목록.
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetDeliveryResponse> getDeliveriesByUserId(GetDeliveriesRequest request, Pageable pageable) {
+	public Page<GetDeliveryResponse> getDeliveriesByUserId(CurrentUserDetails currentUser, Pageable pageable) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = 10;
 
-		return deliveryRepository.findAllByOrder_User_Id(request.userId(),
+		return deliveryRepository.findAllByOrder_User_Id(userId,
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "delivery_sender_date")))
 			.map(GetDeliveryResponse::fromEntity);
 	}
@@ -91,12 +92,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetDeliveryResponse getDelivery(Long deliveryId) {
-		Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow(() -> {
-			String errorMessage = String.format("해당 배송 '%s'은 존재하지 않는 배송입니다.", deliveryId);
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			return new NotFoundException(errorStatus);
-		});
-
+		Delivery delivery = deliveryRepository.findById(deliveryId)
+			.orElseThrow(() -> new DeliveryNotFoundException(deliveryId));
 		return GetDeliveryResponse.fromEntity(delivery);
 	}
 

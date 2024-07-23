@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
-import com.nhnacademy.bookstoreback.delivery.domain.dto.request.GetDeliveriesRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryByOrderIdRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
@@ -37,10 +38,11 @@ public class DeliveryController {
 	private final DeliveryService deliveryService;
 
 	@GetMapping
-	public ResponseEntity<Page<GetDeliveryResponse>> getDeliveriesByUserId(Pageable pageable,
-		@Valid @RequestBody GetDeliveriesRequest request) {
+	public ResponseEntity<Page<GetDeliveryResponse>> getDeliveriesByUserId(@CurrentUser CurrentUserDetails currentUser,
+		Pageable pageable) {
 
-		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.getDeliveriesByUserId(request, pageable));
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(deliveryService.getDeliveriesByUserId(currentUser, pageable));
 	}
 
 	/**
