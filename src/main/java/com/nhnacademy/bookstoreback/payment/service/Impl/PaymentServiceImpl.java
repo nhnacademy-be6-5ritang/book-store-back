@@ -92,7 +92,8 @@ public class PaymentServiceImpl implements PaymentService {
 					.pointEarningPolicy(pointEarningPolicy)
 					.pointTransactionAmount(
 						order.getOrderPointSale()
-							.multiply(pointEarningPolicy.getPointEarningAmount(), MathContext.UNLIMITED))
+							.multiply(pointEarningPolicy.getPointEarningAmount(), MathContext.UNLIMITED)
+							.setScale(0, RoundingMode.CEILING))
 					.build());
 				user.updateOutPoints(order.getOrderPointSale());
 			}
@@ -108,13 +109,13 @@ public class PaymentServiceImpl implements PaymentService {
 					order.getOrderPrice()
 						.multiply(pointEarningPolicy.getPointEarningAmount()
 								.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
-							MathContext.UNLIMITED))
+							MathContext.UNLIMITED).setScale(0, RoundingMode.CEILING))
 				.build());
 			user.updatePoints(
 				order.getOrderPrice()
 					.multiply(pointEarningPolicy.getPointEarningAmount()
 							.divide(new BigDecimal(100), new MathContext(1, RoundingMode.HALF_UP)),
-						MathContext.UNLIMITED));
+						MathContext.UNLIMITED).setScale(0, RoundingMode.CEILING));
 
 			BigDecimal updatedOrderPrice = orderServiceImpl.getTotalOrderPrice(currentUser);
 
