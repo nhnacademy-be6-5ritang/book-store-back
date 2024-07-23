@@ -9,6 +9,7 @@ import lombok.Builder;
 
 @Builder
 public record GetDeliveryResponse(
+	Long deliveryId,
 	String deliverySenderName,
 	String deliverySenderPhone,
 	LocalDateTime deliverySenderDate,
@@ -24,6 +25,7 @@ public record GetDeliveryResponse(
 
 	public static GetDeliveryResponse fromEntity(Delivery delivery) {
 		return GetDeliveryResponse.builder()
+			.deliveryId(delivery.getDeliveryId())
 			.deliverySenderName(delivery.getDeliverySenderName())
 			.deliverySenderPhone(delivery.getDeliverySenderPhone())
 			.deliverySenderDate(delivery.getDeliverySenderDate())

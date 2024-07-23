@@ -53,6 +53,7 @@ import com.nhnacademy.bookstoreback.tag.domain.entity.BookTag;
 import com.nhnacademy.bookstoreback.tag.exception.TagNotFoundException;
 import com.nhnacademy.bookstoreback.tag.repository.BookTagRepository;
 import com.nhnacademy.bookstoreback.tag.repository.TagRepository;
+import com.nhnacademy.bookstoreback.wishlist.repository.WishListRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,6 +85,7 @@ public class BookServiceImpl implements BookService {
 	private final CategoryService categoryService;
 	private final BookImageService bookImageService;
 	private final CloudImageService cloudImageService;
+	private final WishListRepository wishListRepository;
 
 	/**
 	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
@@ -379,7 +381,8 @@ public class BookServiceImpl implements BookService {
 		List<Long> categories = request.categories();
 		List<Long> tags = request.tags();
 
-		// 기존 카테고리, 태그 매핑 제거
+		// 기존 위시리스트, 카테고리, 태그 매핑 제거
+		wishListRepository.deleteAllByBookBookId(bookId);
 		bookCategoryRepository.deleteAllByBookBookId(bookId);
 		bookTagRepository.deleteAllByBookBookId(bookId);
 
