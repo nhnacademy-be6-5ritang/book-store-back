@@ -3,7 +3,6 @@ package com.nhnacademy.bookstoreback.book.repository.impl;
 import static com.nhnacademy.bookstoreback.book.domain.entity.QBook.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -36,7 +35,7 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
 			.fetch()
 			.stream()
 			.map(b -> new BookSearchResult(b.getBookId(), b.getBookTitle()))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Override

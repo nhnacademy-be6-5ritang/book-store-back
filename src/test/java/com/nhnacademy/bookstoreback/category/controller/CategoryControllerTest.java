@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -22,9 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CategorySearchResult;
-import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
-import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.service.impl.CategoryServiceImpl;
 
 class CategoryControllerTest {
@@ -106,9 +103,6 @@ class CategoryControllerTest {
 	@Test
 	void testCreateCategory() throws Exception {
 		CreateCategoryRequest request = new CreateCategoryRequest("NewCategory", null);
-		CreateCategoryResponse response = new CreateCategoryResponse("NewCategory", null);
-
-		given(categoryService.createCategory(ArgumentMatchers.any(CreateCategoryRequest.class))).willReturn(response);
 
 		mockMvc.perform(post("/api/categories")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -119,11 +113,6 @@ class CategoryControllerTest {
 	@Test
 	void testUpdateCategory() throws Exception {
 		UpdateCategoryRequest request = new UpdateCategoryRequest("UpdatedCategory", null);
-		UpdateCategoryResponse response = new UpdateCategoryResponse("UpdatedCategory", null);
-
-		given(categoryService.updateCategory(ArgumentMatchers.anyLong(),
-			ArgumentMatchers.any(UpdateCategoryRequest.class)))
-			.willReturn(response);
 
 		mockMvc.perform(put("/api/categories/1")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -134,7 +123,7 @@ class CategoryControllerTest {
 	@Test
 	void testDeleteCategory() throws Exception {
 		mockMvc.perform(delete("/api/categories/1"))
-			.andExpect(status().isNoContent());
+			.andExpect(status().isOk());
 
 		verify(categoryService).deleteCategory(1L);
 	}

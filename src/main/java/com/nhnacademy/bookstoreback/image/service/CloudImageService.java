@@ -1,39 +1,46 @@
 package com.nhnacademy.bookstoreback.image.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
-import com.nhnacademy.bookstoreback.book.repository.BookRepository;
-import com.nhnacademy.bookstoreback.image.domain.entity.Image;
-import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import javax.imageio.ImageIO;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.global.util.CustomMultipartFile;
+import com.nhnacademy.bookstoreback.upload.service.UploadService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * 클라우드 이미지 서비스를 제공하는 클래스입니다.
+ * 네이버 API를 통해 책의 표지 이미지를 가져와서 업로드합니다.
+ */
+@Slf4j
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class CloudImageService {
+	private static final int MAX_RETRY_COUNT = 3; // 최대 재시도 횟수
+	private static final int RETRY_DELAY_MS = 2000; // 재시도 간 대기 시간 (밀리초)
 
-	@Value("${nhncloud.appkey}")
-	private String appKey;
-
-	@Value("${nhncloud.secretkey}")
-	private String secretKey;
+	private final RestTemplate restTemplate;
+	private final UploadService uploadService;
 
 	@Value("${naver.client.id}")
 	private String naverClientId;
@@ -41,34 +48,13 @@ public class CloudImageService {
 	@Value("${naver.client.secret}")
 	private String naverClientSecret;
 
-	private final RestTemplate restTemplate;
-	private final ObjectMapper objectMapper;
-
-	private static final String LOCAL_DIRECTORY = "cover_images"; // 로컬 저장 디렉토리
-	private static final String CLOUD_PATH = "/5ritang/books"; // NHN 클라우드 저장 경로
-	private static final int MAX_RETRY_COUNT = 3; // 최대 재시도 횟수
-	private static final int RETRY_DELAY_MS = 2000; // 재시도 간 대기 시간 (밀리초)
-
-	@Autowired
-	private BookRepository bookRepository;
-
-	@Autowired
-	private ImageRepository imageRepository;
-
-	@Autowired
-	public CloudImageService(RestTemplate restTemplate, ObjectMapper objectMapper) {
-		this.restTemplate = restTemplate;
-		this.objectMapper = objectMapper;
-	}
-
-	@Transactional
-	public void downloadAndSaveImageForBook(Book book) {
-		// 디렉토리 생성
-		File directory = new File(LOCAL_DIRECTORY);
-		if (!directory.exists()) {
-			directory.mkdirs();
-		}
-
+	/**
+	 * 네이버 API 를 통해 책의 표지 이미지를 가져와서 업로드합니다.
+	 *
+	 * @param book 이미지가 업로드될 책 엔티티
+	 * @return 업로드된 이미지의 URL, 업로드 실패 시 {@code null}
+	 */
+	public String uploadImageForBookByNaverApi(Book book) {
 		String isbn = book.getBookIsbn();
 		String apiUrl = "https://openapi.naver.com/v1/search/book.json?query=" + isbn;
 
@@ -78,158 +64,71 @@ public class CloudImageService {
 
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
+		ResponseEntity<Map> response = executeApiCall(apiUrl, requestEntity);
+		if (response == null) {
+			log.error("ISBN {}에 대한 API 응답을 받지 못했습니다.", isbn);
+			return null;
+		}
+
+		Map<String, Object> body = response.getBody();
+		List<Object> items = (List<Object>)body.get("items");
+		if (items == null || items.isEmpty()) {
+			log.error("ISBN {}에 대한 API 응답에서 항목을 찾을 수 없습니다.", isbn);
+			return null;
+		}
+
+		Map<String, Object> item = (Map<String, Object>)items.get(0);
+		String coverUrl = (String)item.get("image");
+
+		return downloadAndUploadImage(book, coverUrl);
+	}
+
+	private ResponseEntity<Map> executeApiCall(String apiUrl, HttpEntity<String> requestEntity) {
 		int attempt = 0;
-		boolean success = false;
-
-		while (!success && attempt < MAX_RETRY_COUNT) {
+		while (attempt < MAX_RETRY_COUNT) {
 			try {
-				ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.GET, requestEntity, Map.class);
-
-				Map<String, Object> body = response.getBody();
-				if (body == null) {
-					System.out.println("Failed to get API response for ISBN: " + isbn);
-					break;
-				}
-
-				List<Object> items = (List<Object>) body.get("items");
-				if (items == null || items.isEmpty()) {
-					System.out.println("No items found in API response for ISBN: " + isbn);
-					break;
-				}
-
-				Map<String, Object> item = (Map<String, Object>) items.get(0);
-				String coverUrl = (String) item.get("image");
-
-				try {
-					URL url = new URL(coverUrl);
-					BufferedImage image = ImageIO.read(url);
-					String fileName = book.getBookTitle() + ".jpg";
-					File outputfile = new File(LOCAL_DIRECTORY + File.separator + fileName);
-					ImageIO.write(image, "jpg", outputfile);
-					System.out.println("Saved image for book: " + book.getBookTitle());
-
-					// 이미지 업로드 후 Image 엔티티 저장
-					String imageUrl = uploadImage(outputfile.getAbsolutePath(), fileName);
-					if (imageUrl != null) {
-						Image savedImage = new Image(book.getBookTitle(), imageUrl);
-						if (imageRepository.findByImageName(book.getBookTitle()).isEmpty()) {
-							imageRepository.save(savedImage);
-							System.out.println("Saved image information to database: " + savedImage);
-						} else {
-							System.out.println("Image with name " + fileName + " already exists in the database. Skipping save.");
-						}
-					}
-
-					success = true;
-
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.out.println("Failed to download or save image for book: " + book.getBookTitle());
-				}
-
+				return restTemplate.exchange(apiUrl, HttpMethod.GET, requestEntity, Map.class);
 			} catch (HttpClientErrorException.TooManyRequests e) {
 				attempt++;
 				if (attempt < MAX_RETRY_COUNT) {
 					try {
 						Thread.sleep(RETRY_DELAY_MS);
 					} catch (InterruptedException interruptedException) {
-						interruptedException.printStackTrace();
-						break;
+						log.error("인터럽트 예외: {}", interruptedException.getMessage());
+						return null;
 					}
 				} else {
-					System.out.println("Failed to get API response for ISBN: " + isbn + " after " + MAX_RETRY_COUNT + " attempts.");
+					log.error("최대 {}번 시도 후에도 ISBN {}에 대한 API 응답을 받지 못했습니다.", MAX_RETRY_COUNT, apiUrl);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				break;
+				log.error("오류: {}", e.getMessage());
+				return null;
 			}
 		}
-
-		if (!success) {
-			System.out.println("Giving up on ISBN: " + isbn + " after " + MAX_RETRY_COUNT + " attempts.");
-		}
+		return null;
 	}
 
-	@Transactional
-	public void downloadCoverImagesForAllBooks() {
-		List<Book> books = bookRepository.findAll();
-		for (Book book : books) {
-			downloadAndSaveImageForBook(book);
-		}
-	}
-
-	@Transactional
-	public void downloadCoverImageForBook(Book book) {
-		downloadAndSaveImageForBook(book);
-	}
-
-	public String uploadImage(String localFilePath, String imageName) {
+	private String downloadAndUploadImage(Book book, String coverUrl) {
 		try {
-			// 이미지 제목으로 이미지 조회
-			Optional<Image> existingImage = imageRepository.findByImageName(imageName);
-			if (existingImage.isPresent()) {
-				System.out.println("Image with name " + imageName + " already exists in the database. Skipping upload.");
-				return existingImage.get().getImageUrl();
-			}
+			URI uri = new URI(coverUrl);
+			BufferedImage image = ImageIO.read(uri.toURL());
+			String fileName = book.getBookTitle() + ".jpg";
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-			headers.set("Authorization", secretKey);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(image, "jpg", baos);
+			byte[] imageData = baos.toByteArray();
 
-			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			body.add("files", new FileSystemResource(new File(localFilePath)));
+			MultipartFile multipartFile = new CustomMultipartFile(imageData, fileName, "image/jpeg");
 
-			Map<String, Object> params = new HashMap<>();
-			params.put("basepath", CLOUD_PATH);
-			params.put("overwrite", true);
+			log.info("책 {}에 대한 MultipartFile 준비 완료", fileName);
 
-			body.add("params", objectMapper.writeValueAsString(params));
-
-			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-			String url = "https://api-image.nhncloudservice.com/image/v2.0/appkeys/" + appKey + "/images";
-
-			ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-
-			String jsonResponse = response.getBody();
-
-			// JSON 응답을 파싱하여 URL 필드를 추출
-			Map<String, Object> responseMap = objectMapper.readValue(jsonResponse, Map.class);
-
-			// 응답 내용 로깅
-			System.out.println("Upload response: " + responseMap);
-
-			// "successes" 배열에서 첫 번째 객체의 "url" 필드 추출
-			if (responseMap != null && responseMap.containsKey("successes")) {
-				List<Map<String, Object>> successes = (List<Map<String, Object>>) responseMap.get("successes");
-				if (!successes.isEmpty()) {
-					Map<String, Object> firstSuccess = successes.get(0);
-					return (String) firstSuccess.get("url");
-				} else {
-					throw new RuntimeException("No successes found in the response");
-				}
-			} else {
-				throw new RuntimeException("Successes array not found in the response");
-			}
+			return uploadService.upload(multipartFile, "books");
+		} catch (IOException e) {
+			log.error("책 {}에 대한 이미지를 다운로드하거나 저장하는 데 실패했습니다.", book.getBookTitle());
+			return null;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Failed to upload image to NHN Cloud", e);
-		}
-	}
-
-	public void uploadAllImages() {
-		String localDirectoryPath = LOCAL_DIRECTORY;
-
-		// 상대 경로를 절대 경로로 변환
-		String absolutePath = new File(localDirectoryPath).getAbsolutePath();
-		File directory = new File(absolutePath);
-
-		File[] files = directory.listFiles((dir, name) -> name.toLowerCase().endsWith(".jpg"));
-
-		if (files != null) {
-			for (File file : files) {
-				uploadImage(file.getAbsolutePath(), file.getName());
-			}
+			log.error("오류: {}", e.getMessage());
+			return null;
 		}
 	}
 }

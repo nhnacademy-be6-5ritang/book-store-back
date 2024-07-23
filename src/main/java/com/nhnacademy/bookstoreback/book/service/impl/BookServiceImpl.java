@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,11 +41,10 @@ import com.nhnacademy.bookstoreback.category.domain.entity.Category;
 import com.nhnacademy.bookstoreback.category.exception.CategoryNotFoundException;
 import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
 import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
-import com.nhnacademy.bookstoreback.category.service.BookCategoryService;
 import com.nhnacademy.bookstoreback.category.service.CategoryService;
-import com.nhnacademy.bookstoreback.image.controller.BookImageController;
-import com.nhnacademy.bookstoreback.image.controller.CoverImageController;
 import com.nhnacademy.bookstoreback.image.repository.BookImageRepository;
+import com.nhnacademy.bookstoreback.image.service.BookImageService;
+import com.nhnacademy.bookstoreback.image.service.CloudImageService;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 import com.nhnacademy.bookstoreback.publisher.exception.PublisherNotFoundException;
 import com.nhnacademy.bookstoreback.publisher.repository.PublisherRepository;
@@ -57,6 +55,7 @@ import com.nhnacademy.bookstoreback.tag.repository.BookTagRepository;
 import com.nhnacademy.bookstoreback.tag.repository.TagRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 도서 Service
@@ -64,6 +63,7 @@ import lombok.RequiredArgsConstructor;
  * @author 김기욱
  * @version 1.0
  */
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -75,21 +75,20 @@ public class BookServiceImpl implements BookService {
 	private final BookStatusRepository bookStatusRepository;
 	private final CategoryRepository categoryRepository;
 	private final BookCategoryRepository bookCategoryRepository;
+	private final BookImageRepository bookImageRepository;
 	private final AuthorService authorService;
 	private final PublisherService publisherService;
 	private final BookStatusService bookStatusService;
 	private final TagRepository tagRepository;
 	private final BookTagRepository bookTagRepository;
 	private final CategoryService categoryService;
-	private final BookCategoryService bookCategoryService;
-	private final BookImageRepository bookImageRepository;
-	private final CoverImageController coverImageController;
-	private final BookImageController bookImageController;
+	private final BookImageService bookImageService;
+	private final CloudImageService cloudImageService;
 
 	/**
 	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
 	 *
-	 * @param apiUrl 도서 정보 API URL
+	 * @param apiUrl 도서 정보 API url
 	 */
 	@Override
 	public void fetchAndSaveBooks(String apiUrl) {
@@ -101,31 +100,36 @@ public class BookServiceImpl implements BookService {
 			JsonNode items = root.path("item");
 
 			for (JsonNode item : items) {
-				saveBook(item);
+				try {
+					saveBook(item);
+				} catch (BookAlreadyExistsException e) {
+					log.error("이미 존재하는 도서 입니다. {}", item.toString());
+				}
+
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("도서 저장 실패: {}", e.getMessage());
 		}
 	}
 
 	/**
-	 * ISBN을 기준으로 도서 조회 및 저장
+	 * ISBN 을 기준으로 도서 조회 및 저장
 	 *
-	 * @param apiURL 도서 정보 API URL
+	 * @param apiUrl 도서 정보 API Url
 	 */
 	@Override
-	public void saveBookByIsbn(String apiURL) {
+	public void saveBookByIsbn(String apiUrl) {
 		try {
-			// API URL을 이용하여 도서 정보를 조회
-			String response = restTemplate.getForObject(apiURL, String.class);
+			// API Url 울 이용하여 도서 정보를 조회
+			String response = restTemplate.getForObject(apiUrl, String.class);
 
 			ObjectMapper objectMapper = new ObjectMapper();
 			JsonNode root = objectMapper.readTree(response);
 			JsonNode item = root.path("item").get(0);
 
-			Book book = saveBook(item);
+			saveBook(item);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("도서 저장 실패: {}", e.getMessage());
 		}
 	}
 
@@ -135,13 +139,14 @@ public class BookServiceImpl implements BookService {
 	 * @param item 도서 정보
 	 */
 	@Override
-	public Book saveBook(JsonNode item) throws Exception {
+	public void saveBook(JsonNode item) throws Exception {
 		// Book 정보 파싱
 		String bookIsbn = item.path("isbn13").asText("");
 
-		// ISBN을 기준으로 책이 이미 존재하는지 확인
+		// ISBN 을 기준으로 책이 이미 존재하는지 확인
 		if (bookRepository.findByBookIsbn(bookIsbn).isPresent()) {
-			return null; // 이미 존재하는 책이면 저장하지 않음
+			// 이미 존재하는 책이면 저장하지 않음
+			throw new BookAlreadyExistsException(bookIsbn);
 		}
 
 		String bookTitle = item.path("title").asText();
@@ -187,27 +192,26 @@ public class BookServiceImpl implements BookService {
 		Category category = categoryService.findOrCreateCategory(categoryName, parentCategoryId);
 
 		// 새로운 Book 엔티티 생성 및 저장
-		Book book = new Book();
-		book.setBookTitle(bookTitle);
-		book.setBookDescription(bookDescription);
-		book.setBookPublishDate(bookPublishDate);
-		book.setBookIsbn(bookIsbn);
-		book.setBookPrice(bookPrice);
-		book.setBookSalePercent(bookSalePercent);
-		book.setBookSalePrice(bookSalePrice);
-		book.setAuthor(author);
-		book.setPublisher(publisher);
-		book.setBookStatus(bookStatus);
+		Book book = Book.builder()
+			.bookTitle(bookTitle)
+			.bookDescription(bookDescription)
+			.bookPublishDate(bookPublishDate)
+			.bookIsbn(bookIsbn)
+			.bookPrice(bookPrice)
+			.bookSalePercent(bookSalePercent)
+			.bookSalePrice(bookSalePrice)
+			.author(author)
+			.publisher(publisher)
+			.bookStatus(bookStatus)
+			.build();
 
 		bookRepository.save(book);
 
 		// BookCategory 엔티티 생성 및 저장
-		bookCategoryService.saveBookCategory(book, category);
+		bookCategoryRepository.save(new BookCategory(book, category));
 
-		coverImageController.downloadImage(book);
-		bookImageController.mapImageForSingleBook(book);
-
-		return book;
+		String imageUrl = cloudImageService.uploadImageForBookByNaverApi(book);
+		bookImageService.mapImageToBook(book, imageUrl);
 	}
 
 	/**
@@ -223,7 +227,7 @@ public class BookServiceImpl implements BookService {
 		List<Book> newestBooks = newestBooksPage.getContent();
 		return newestBooks.stream()
 			.map(GetBookDetailResponse::fromEntity)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Transactional(readOnly = true)
@@ -241,7 +245,7 @@ public class BookServiceImpl implements BookService {
 
 		return topOrderedBooks.stream()
 			.map(GetBookDetailResponse::fromEntity)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Transactional(readOnly = true)
@@ -259,7 +263,7 @@ public class BookServiceImpl implements BookService {
 
 		return topLikedBooks.stream()
 			.map(GetBookDetailResponse::fromEntity)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	/**
@@ -303,7 +307,7 @@ public class BookServiceImpl implements BookService {
 	@Transactional(readOnly = true)
 	@Override
 	public GetBookDetailResponse findBookByIsbn(String isbn) {
-		// ISBN을 기준으로 책을 조회합니다.
+		// ISBN 을 기준으로 책을 조회합니다.
 		Optional<Book> optionalBook = bookRepository.findByBookIsbn(isbn);
 
 		if (optionalBook.isEmpty()) {
@@ -312,9 +316,9 @@ public class BookServiceImpl implements BookService {
 
 		Book book = optionalBook.get();
 
-		// 조회된 책을 BookDetailResponse DTO로 변환합니다.
+		// 조회된 책을 BookDetailResponse DTO 로 변환합니다.
 
-		// 변환된 DTO를 반환합니다.
+		// 변환된 DTO 를 반환합니다.
 		return GetBookDetailResponse.fromEntity(book);
 	}
 
@@ -420,7 +424,6 @@ public class BookServiceImpl implements BookService {
 	@Override
 	public List<BookSearchResult> searchBooks(String title) {
 		return bookRepository.findByBookTitleContainingIgnoreCaseCustom(title);
-
 	}
 
 	@Transactional(readOnly = true)

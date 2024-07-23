@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
@@ -25,13 +28,11 @@ import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
  * Book Entity
@@ -41,9 +42,8 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
  */
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @Table(name = "books")
 public class Book {
 	@Id
@@ -71,8 +71,7 @@ public class Book {
 	@Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
 	@Column(name = "book_title", length = 300)
 	private String bookTitle;
-
-	@NotBlank
+	
 	@Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
 	@Column(name = "book_description")
 	private String bookDescription;

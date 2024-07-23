@@ -8,9 +8,7 @@ import org.springframework.data.domain.Pageable;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CategorySearchResult;
-import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
-import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.entity.Category;
 
 /**
@@ -56,18 +54,16 @@ public interface CategoryService {
 	 * 새로운 카테고리 생성
 	 *
 	 * @param request 카테고리 생성 요청 정보
-	 * @return 생성된 카테고리 정보
 	 */
-	CreateCategoryResponse createCategory(CreateCategoryRequest request);
+	void createCategory(CreateCategoryRequest request);
 
 	/**
 	 * 카테고리 업데이트
 	 *
 	 * @param categoryId 카테고리 ID
 	 * @param request 카테고리 업데이트 요청 정보
-	 * @return 업데이트된 카테고리 정보
 	 */
-	UpdateCategoryResponse updateCategory(Long categoryId, UpdateCategoryRequest request);
+	void updateCategory(Long categoryId, UpdateCategoryRequest request);
 
 	/**
 	 * 카테고리 삭제

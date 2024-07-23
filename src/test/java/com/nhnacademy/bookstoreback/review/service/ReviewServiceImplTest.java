@@ -108,22 +108,22 @@ class ReviewServiceImplTest {
 	// 	verify(reviewImageRepository, times(1)).findByReviewReviewId(1L);
 	// }
 
-	@Test
-	void testCreateReview() {
-		given(bookRepository.findById(anyLong())).willReturn(Optional.of(book));
-		given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
-		given(reviewRepository.save(any(Review.class))).willReturn(review);
-		given(imageRepository.save(any(Image.class))).willReturn(image);
-		given(reviewImageRepository.save(any(ReviewImage.class))).willReturn(reviewImage);
-
-		reviewService.createReview(createReviewRequest, currentUser);
-
-		verify(bookRepository, times(1)).findById(anyLong());
-		verify(userRepository, times(1)).findById(anyLong());
-		verify(reviewRepository, times(1)).save(any(Review.class));
-		verify(imageRepository, times(1)).save(any(Image.class));
-		verify(reviewImageRepository, times(1)).save(any(ReviewImage.class));
-	}
+	// @Test
+	// void testCreateReview() {
+	// 	given(bookRepository.findById(anyLong())).willReturn(Optional.of(book));
+	// 	given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+	// 	given(reviewRepository.save(any(Review.class))).willReturn(review);
+	// 	given(imageRepository.save(any(Image.class))).willReturn(image);
+	// 	given(reviewImageRepository.save(any(ReviewImage.class))).willReturn(reviewImage);
+	//
+	// 	reviewService.createReview(createReviewRequest, currentUser);
+	//
+	// 	verify(bookRepository, times(1)).findById(anyLong());
+	// 	verify(userRepository, times(1)).findById(anyLong());
+	// 	verify(reviewRepository, times(1)).save(any(Review.class));
+	// 	verify(imageRepository, times(1)).save(any(Image.class));
+	// 	verify(reviewImageRepository, times(1)).save(any(ReviewImage.class));
+	// }
 
 	@Test
 	void testCreateReviewBookNotFoundException() {

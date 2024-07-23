@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,6 +71,8 @@ class BookCartServiceImplTest {
 	private Image image;
 	private BookImage bookImage;
 	private Cart cart;
+	private BookCart bookCart;
+	private long ttl = 3600; // 1 hour in seconds
 
 	@BeforeEach
 	void setUp() {
@@ -81,8 +84,8 @@ class BookCartServiceImplTest {
 		image = mock(Image.class);
 		bookImage = mock(BookImage.class);
 		cart = mock(Cart.class);
+		bookCart = new BookCart(cartId, null);
 
-		// Book related setup
 		when(book.getBookId()).thenReturn(1L);
 		when(book.getBookTitle()).thenReturn("Book Title");
 		when(book.getAuthor()).thenReturn(author);
@@ -92,12 +95,10 @@ class BookCartServiceImplTest {
 		when(book.getBookSalePrice()).thenReturn(BigDecimal.valueOf(100));
 		when(book.getBookSalePercent()).thenReturn(BigDecimal.valueOf(10));
 
-		// BookImage related setup
 		when(image.getImageUrl()).thenReturn("http://example.com/image.jpg");
 		when(bookImage.getImage()).thenReturn(image);
 		when(book.getBookImages()).thenReturn(Collections.singletonList(bookImage));
 
-		// CartService.createCart setup
 		when(cartService.createCart(any(CurrentUserDetails.class), any(HttpServletResponse.class)))
 			.thenReturn(cart);
 		when(cart.getCartId()).thenReturn(cartId);
@@ -105,7 +106,7 @@ class BookCartServiceImplTest {
 
 	@Test
 	void testGetBookCartsByCartId() {
-		BookBundle bookBundle = new BookBundle(1L, 10); // Set the book quantity to 10
+		BookBundle bookBundle = new BookBundle(1L, 10);
 		List<BookBundle> bookBundles = new ArrayList<>();
 		bookBundles.add(bookBundle);
 		BookCart bookCart = new BookCart(cartId, bookBundles);
@@ -140,7 +141,7 @@ class BookCartServiceImplTest {
 	void testCreateBookCart_WhenBookAlreadyExists() {
 		CreateBookCartRequest request = new CreateBookCartRequest(1L, 2);
 		List<BookBundle> bookBundles = new ArrayList<>();
-		bookBundles.add(new BookBundle(1L, 10)); // Existing book
+		bookBundles.add(new BookBundle(1L, 10));
 		BookCart bookCart = new BookCart(cartId, bookBundles);
 
 		when(bookCartRepository.findById(cartId)).thenReturn(Optional.of(bookCart));
@@ -175,5 +176,72 @@ class BookCartServiceImplTest {
 		bookCartService.deleteBookCart(1L, currentUser, cartId);
 
 		verify(bookCartRepository).save(any(BookCart.class));
+	}
+
+	@Test
+	void testSetupCart_NoCartIdForGuest() {
+		CurrentUserDetails guestUserDetails = new CurrentUserDetails(
+			new UserTokenInfo(null, "password", Collections.emptyList(), "ACTIVE"));
+
+		when(cartRepository.findById(anyString())).thenReturn(Optional.empty());
+
+		String resultCartId = bookCartService.setupCart(guestUserDetails, "");
+
+		assertThat(resultCartId).isEqualTo(cartId);
+		verify(cartService).createCart(guestUserDetails, resp);
+	}
+
+	@Test
+	void testSetupCart_HasCartIdForGuest() {
+		CurrentUserDetails guestUserDetails = new CurrentUserDetails(
+			new UserTokenInfo(null, "password", Collections.emptyList(), "ACTIVE")
+		);
+
+		String resultCartId = bookCartService.setupCart(guestUserDetails, cartId);
+
+		assertThat(resultCartId).isEqualTo(cartId);
+		verify(cartService, never()).createCart(any(CurrentUserDetails.class), any(HttpServletResponse.class));
+	}
+
+	@Test
+	void testSetupCart_NoCartForUser() {
+		when(cartRepository.existsByUserId(1L)).thenReturn(false);
+		when(cartRepository.findByUserId(1L)).thenReturn(Optional.empty());
+
+		String resultCartId = bookCartService.setupCart(currentUser, "");
+
+		assertThat(resultCartId).isEqualTo(cartId);
+		verify(cartService).createCart(currentUser, resp);
+	}
+
+	@Test
+	void testSetupCart_HasCartForUser() {
+		when(cartRepository.existsByUserId(1L)).thenReturn(true);
+		when(cartRepository.findByUserId(1L)).thenReturn(Optional.of(cart));
+
+		String resultCartId = bookCartService.setupCart(currentUser, "");
+
+		assertThat(resultCartId).isEqualTo(cartId);
+		verify(cartService, never()).createCart(any(CurrentUserDetails.class), any(HttpServletResponse.class));
+	}
+
+	@Test
+	void testSaveWithTtl_ExistingTTL() {
+		when(cartRedisTemplate.getExpire(anyString(), any(TimeUnit.class))).thenReturn(ttl);
+
+		bookCartService.saveWithTtl(bookCart);
+
+		verify(bookCartRepository).save(bookCart);
+		verify(cartRedisTemplate).expire(anyString(), eq(ttl), eq(TimeUnit.SECONDS));
+	}
+
+	@Test
+	void testSaveWithTtl_NoTTL() {
+		when(cartRedisTemplate.getExpire(anyString(), any(TimeUnit.class))).thenReturn(null);
+
+		bookCartService.saveWithTtl(bookCart);
+
+		verify(bookCartRepository).save(bookCart);
+		verify(cartRedisTemplate, never()).expire(anyString(), anyLong(), any(TimeUnit.class));
 	}
 }

@@ -88,7 +88,7 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 	}
 
 	@Override
-	public GetPointTransactionResponse reviewPointTransaction(CurrentUserDetails currentUser, String reviewType) {
+	public void reviewPointTransaction(CurrentUserDetails currentUser, String reviewType) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
@@ -113,8 +113,6 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 		user.updatePoints(pointEarningPolicy.getPointEarningAmount());
 
 		userRepository.save(user);
-
-		return GetPointTransactionResponse.fromEntity(pointTransaction);
 	}
 
 	@Override
