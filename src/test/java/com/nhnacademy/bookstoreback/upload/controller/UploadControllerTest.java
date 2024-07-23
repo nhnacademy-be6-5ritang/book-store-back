@@ -41,7 +41,7 @@ class UploadControllerTest {
 			"test image content".getBytes()
 		);
 
-		when(uploadService.upload(any(MultipartFile.class))).thenReturn("Image uploaded successfully");
+		when(uploadService.upload(any(MultipartFile.class), anyString())).thenReturn("Image uploaded successfully");
 
 		mockMvc.perform(multipart("/api/uploads")
 				.file(mockFile))
