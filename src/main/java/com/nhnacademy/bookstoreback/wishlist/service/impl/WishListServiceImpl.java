@@ -35,7 +35,7 @@ public class WishListServiceImpl implements WishListService {
 	public List<GetWishListResponse> getWishLists(CurrentUserDetails currentUser) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 		if (userId == null) {
-			throw new UserNotFoundException(0L);
+			throw new UserNotFoundException("비회원");
 		}
 
 		return wishListRepository.findAllByUserId(userId).stream()
