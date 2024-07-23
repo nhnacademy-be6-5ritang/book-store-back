@@ -433,9 +433,10 @@ public class BookServiceImpl implements BookService {
 	public Page<GetBookDetailResponse> findAllBooksByCategoryName(Pageable pageable, String categoryName) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
+		Sort sort = pageable.getSort();
 
 		return bookRepository.findAllByBookCategories_Category_CategoryName(
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), categoryName)
+				PageRequest.of(page, pageSize, sort), categoryName)
 			.map(GetBookDetailResponse::fromEntity);
 	}
 
