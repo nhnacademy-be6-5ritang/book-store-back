@@ -1,6 +1,7 @@
 package com.nhnacademy.bookstoreback.author.domain.entity;
 
 import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,9 +27,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
  */
 @Entity
 @Getter
-@Setter
-@Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "authors")
 public class Author {

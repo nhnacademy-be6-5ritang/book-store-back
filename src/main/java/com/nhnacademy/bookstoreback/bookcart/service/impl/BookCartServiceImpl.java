@@ -42,7 +42,7 @@ public class BookCartServiceImpl implements BookCartService {
 
 		return bookCartRepository.findById(nowCartId)
 			.orElseThrow(() -> new BookCartNotFoundException(nowCartId))
-			.getBooks()
+			.getBookBundles()
 			.stream()
 			.map(book -> GetBookCartResponse.fromEntity(bookRepository.findById(book.getBookId())
 				.orElseThrow(() -> new BookNotFoundException(book.getBookId())), book.getBookQuantity(), nowCartId))
@@ -59,7 +59,7 @@ public class BookCartServiceImpl implements BookCartService {
 		BookCart bookCart = bookCartRepository.findById(nowCartId)
 			.orElseThrow(() -> new BookCartNotFoundException(nowCartId));
 
-		if (bookCart.getBooks().stream()
+		if (bookCart.getBookBundles().stream()
 			.anyMatch(book -> book.getBookId().equals(request.bookId()))) {
 			throw new BookCartAlreadyExistsException(request.bookId());
 		}

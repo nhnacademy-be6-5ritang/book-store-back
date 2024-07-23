@@ -48,18 +48,16 @@ public interface PublisherService {
 	 * 새로운 출판사를 생성합니다.
 	 *
 	 * @param request 생성할 출판사 정보
-	 * @return 생성된 출판사 정보
 	 */
-	PublisherDto createPublisher(PublisherDto request);
+	void createPublisher(PublisherDto request);
 
 	/**
 	 * 주어진 출판사 ID에 해당하는 출판사 정보를 업데이트합니다.
 	 *
 	 * @param publisherId 업데이트할 출판사 ID
 	 * @param request 업데이트할 출판사 정보
-	 * @return 업데이트된 출판사 정보
 	 */
-	PublisherDto updatePublisher(Long publisherId, PublisherDto request);
+	void updatePublisher(Long publisherId, PublisherDto request);
 
 	/**
 	 * 주어진 출판사 ID에 해당하는 출판사를 삭제합니다.

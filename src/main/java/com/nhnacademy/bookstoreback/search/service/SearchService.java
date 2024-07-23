@@ -6,11 +6,14 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -36,6 +39,8 @@ public class SearchService {
 	private BookRepository bookRepository;
 
 	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) throws IOException {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
 		logger.info("책 검색 쿼리: " + query);
 
 		SearchRequest searchRequest = new SearchRequest("books");
@@ -47,10 +52,12 @@ public class SearchService {
 		logger.info("책 검색 응답: " + response.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(response.toString());
-		return new PageImpl<>(bookDetails, pageable, response.getHits().getTotalHits().value);
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), response.getHits().getTotalHits().value);
 	}
 
 	public Page<BookSearchResponse> searchAuthors(String query, Pageable pageable) throws IOException {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
 		logger.info("저자 검색 쿼리: " + query);
 
 		// Step 1: 저자 검색
@@ -83,10 +90,12 @@ public class SearchService {
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
-		return new PageImpl<>(bookDetails, pageable, bookResponse.getHits().getTotalHits().value);
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), bookResponse.getHits().getTotalHits().value);
 	}
 
 	public Page<BookSearchResponse> searchPublishers(String query, Pageable pageable) throws IOException {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
 		logger.info("출판사 검색 쿼리: " + query);
 
 		// Step 1: 출판사 검색
@@ -106,7 +115,7 @@ public class SearchService {
 
 		if (publisherID == null) {
 			logger.info("출판사 검색 응답: " + response.toString());
-			return new PageImpl<>(new ArrayList<>(), pageable, 0); // 출판사가 없을 경우 빈 리스트 반환
+			return new PageImpl<>(new ArrayList<>(), PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), 0); // 출판사가 없을 경우 빈 리스트 반환
 		}
 
 		// Step 2: 책 검색
@@ -119,10 +128,12 @@ public class SearchService {
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
-		return new PageImpl<>(bookDetails, pageable, bookResponse.getHits().getTotalHits().value);
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), bookResponse.getHits().getTotalHits().value);
 	}
 
 	public Page<BookSearchResponse> searchBooksByTag(String query, Pageable pageable) throws IOException {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
 		logger.info("태그 검색 쿼리: " + query);
 
 		// Step 1: 태그 검색
@@ -149,7 +160,7 @@ public class SearchService {
 		SearchResponse bookTagResponse = client.search(bookTagSearchRequest, RequestOptions.DEFAULT);
 		if (bookTagResponse.getHits().getTotalHits().value == 0) {
 			logger.info("해당 태그에 책이 없습니다.");
-			return new PageImpl<>(new ArrayList<>(), pageable, 0); // 해당 태그의 책이 없을 경우 빈 리스트 반환
+			return new PageImpl<>(new ArrayList<>(), PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), 0); // 해당 태그의 책이 없을 경우 빈 리스트 반환
 		}
 
 		// Step 3: 책 검색
@@ -167,7 +178,7 @@ public class SearchService {
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
-		return new PageImpl<>(bookDetails, pageable, bookResponse.getHits().getTotalHits().value);
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), bookResponse.getHits().getTotalHits().value);
 	}
 
 	public List<BookSearchResponse> parseJsonResponse(String jsonResponse) throws IOException {

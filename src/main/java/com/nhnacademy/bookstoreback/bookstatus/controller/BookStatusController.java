@@ -59,13 +59,14 @@ public class BookStatusController {
 	 * 새로운 도서 상태를 생성합니다.
 	 *
 	 * @param request 생성할 도서 상태 정보 DTO
-	 * @return 생성된 도서 상태 정보
+	 * @return 응답 상태 코드 (204 CREATED)
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
-	public ResponseEntity<BookStatusDto> createBookStatus(
+	public ResponseEntity<Void> createBookStatus(
 		@Valid @RequestBody BookStatusDto request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(bookStatusService.createBookStatus(request));
+		bookStatusService.createBookStatus(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	/**
@@ -73,25 +74,26 @@ public class BookStatusController {
 	 *
 	 * @param bookStatusId 도서 상태 ID
 	 * @param request 업데이트할 도서 상태 정보 DTO
-	 * @return 업데이트된 도서 상태 정보
+	 * @return 응답 상태 코드 (200 OK)
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{bookStatusId}")
-	public ResponseEntity<BookStatusDto> updateBookStatus(@PathVariable Long bookStatusId,
+	public ResponseEntity<Void> updateBookStatus(@PathVariable Long bookStatusId,
 		@Valid @RequestBody BookStatusDto request) {
-		return ResponseEntity.status(HttpStatus.OK).body(bookStatusService.updateBookStatus(bookStatusId, request));
+		bookStatusService.updateBookStatus(bookStatusId, request);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**
 	 * 주어진 도서 상태 ID에 해당하는 도서 상태를 삭제합니다.
 	 *
 	 * @param bookStatusId 삭제할 도서 상태 ID
-	 * @return 응답 상태 코드 (204 NO CONTENT)
+	 * @return 응답 상태 코드 (200 OK)
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{bookStatusId}")
 	public ResponseEntity<Void> deleteBookStatus(@PathVariable Long bookStatusId) {
 		bookStatusService.deleteBookStatus(bookStatusId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }

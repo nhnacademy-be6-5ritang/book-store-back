@@ -36,12 +36,12 @@ public class RefundPolicyServiceImplTest {
 	private RefundPolicyRepository refundPolicyRepository;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
-	public void testCreateRefundPolicy() {
+	void testCreateRefundPolicy() {
 		CreateRefundPolicyRequest request = new CreateRefundPolicyRequest("Refund Content", 30);
 		RefundPolicy refundPolicy = RefundPolicy.toEntity("Refund Content", 30);
 
@@ -53,7 +53,7 @@ public class RefundPolicyServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateRefundPolicy_Success() {
+	void testUpdateRefundPolicy_Success() {
 		Long refundPolicyId = 1L;
 		UpdateRefundPolicyRequest request = new UpdateRefundPolicyRequest("Updated Content", 60);
 		RefundPolicy existingPolicy = RefundPolicy.toEntity("Old Content", 30);
@@ -77,7 +77,7 @@ public class RefundPolicyServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateRefundPolicy_NotFound() {
+	void testUpdateRefundPolicy_NotFound() {
 		Long refundPolicyId = 1L;
 		UpdateRefundPolicyRequest request = new UpdateRefundPolicyRequest("Updated Content", 60);
 
@@ -92,14 +92,12 @@ public class RefundPolicyServiceImplTest {
 
 		assertThat(actualErrorStatus.getMessage()).isEqualTo(expectedErrorStatus.getMessage());
 		assertThat(actualErrorStatus.getStatus()).isEqualTo(expectedErrorStatus.getStatus());
-		// timestamp는 현재 시간이므로 정확한 일치 검사는 불가능합니다.
-		// assertThat(actualErrorStatus.getTimestamp()).isCloseTo(expectedErrorStatus.getTimestamp(), within(1, ChronoUnit.SECONDS));
 		verify(refundPolicyRepository).findById(refundPolicyId);
 		verify(refundPolicyRepository, never()).save(any(RefundPolicy.class));
 	}
 
 	@Test
-	public void testDeleteRefundPolicy() {
+	void testDeleteRefundPolicy() {
 		Long refundPolicyId = 1L;
 		doNothing().when(refundPolicyRepository).deleteById(refundPolicyId);
 
@@ -109,7 +107,7 @@ public class RefundPolicyServiceImplTest {
 	}
 
 	@Test
-	public void testGetAllRefundPolicies() {
+	void testGetAllRefundPolicies() {
 		RefundPolicy refundPolicy = RefundPolicy.toEntity("Refund Content", 30);
 		List<RefundPolicy> refundPolicies = Collections.singletonList(refundPolicy);
 
@@ -127,7 +125,7 @@ public class RefundPolicyServiceImplTest {
 	}
 
 	@Test
-	public void testGetAllRefundPolicies_EmptyList() {
+	void testGetAllRefundPolicies_EmptyList() {
 		when(refundPolicyRepository.findAll()).thenReturn(Collections.emptyList());
 
 		GetAllRefundResponse response = refundPolicyService.getAllRefundPolicies();

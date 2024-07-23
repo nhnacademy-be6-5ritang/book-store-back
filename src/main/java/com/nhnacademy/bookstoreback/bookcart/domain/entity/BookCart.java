@@ -29,37 +29,37 @@ public class BookCart {
 	@NotBlank
 	@Size(min = 1, max = 36)
 	private String cartId;
-	private List<Book> books = new ArrayList<>();
+	private List<BookBundle> bookBundles = new ArrayList<>();
 
 	@Builder
-	public BookCart(String cartId, List<Book> books) {
+	public BookCart(String cartId, List<BookBundle> bookBundles) {
 		this.cartId = cartId;
-		this.books = books;
+		this.bookBundles = bookBundles;
 	}
 
 	public static BookCart toEntity(BookCart bookCart, CreateBookCartRequest request) {
-		Book book = new Book(request.bookId(), request.bookQuantity());
-		List<Book> books = bookCart.getBooks();
-		books.add(book);
+		BookBundle bookBundle = new BookBundle(request.bookId(), request.bookQuantity());
+		List<BookBundle> bookBundles = bookCart.getBookBundles();
+		bookBundles.add(bookBundle);
 		return BookCart.builder()
 			.cartId(bookCart.cartId)
-			.books(books)
+			.bookBundles(bookBundles)
 			.build();
 	}
 
 	public void updateBookQuantity(Long bookId, Integer bookQuantity) {
-		Optional<Book> bookOptional = books.stream()
-			.filter(book -> book.getBookId().equals(bookId))
+		Optional<BookBundle> bookOptional = bookBundles.stream()
+			.filter(bookBundle -> bookBundle.getBookId().equals(bookId))
 			.findFirst();
 
-		bookOptional.ifPresent(book -> book.updateBookQuantity(bookQuantity));
+		bookOptional.ifPresent(bookBundle -> bookBundle.updateBookQuantity(bookQuantity));
 	}
 
 	public void removeBook(Long bookId) {
-		Iterator<Book> iterator = this.books.iterator();
+		Iterator<BookBundle> iterator = this.bookBundles.iterator();
 		while (iterator.hasNext()) {
-			Book book = iterator.next();
-			if (book.getBookId().equals(bookId)) {
+			BookBundle bookBundle = iterator.next();
+			if (bookBundle.getBookId().equals(bookId)) {
 				iterator.remove();
 				break;
 			}

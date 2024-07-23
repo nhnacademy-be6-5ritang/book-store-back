@@ -5,10 +5,8 @@ import java.util.List;
 
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.CreateDeliveryPolicyRequest;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.UpdateDeliveryPolicyRequest;
-import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.CreateDeliveryPolicyResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDeliveryPoliciesResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDeliveryPolicyResponse;
-import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.UpdateDeliveryPolicyResponse;
 
 /**
  * @author 이경헌
@@ -35,18 +33,16 @@ public interface DeliveryPolicyService {
 	 * 새로운 배송비 정책을 생성합니다.
 	 *
 	 * @param request 생성할 배송비 정책의 정보.
-	 * @return 생성된 배송비 정책의 정보.
 	 */
-	CreateDeliveryPolicyResponse createDeliveryPolicy(CreateDeliveryPolicyRequest request);
+	void createDeliveryPolicy(CreateDeliveryPolicyRequest request);
 
 	/**
 	 * 특정 배송비 정책을 업데이트합니다.
 	 *
 	 * @param deliveryPolicyId 업데이트할 배송비 정책의 ID.
 	 * @param request          업데이트할 배송비 정책의 정보.
-	 * @return 업데이트된 배송비 정책의 정보.
 	 */
-	UpdateDeliveryPolicyResponse updateDeliveryPolicy(Long deliveryPolicyId, UpdateDeliveryPolicyRequest request);
+	void updateDeliveryPolicy(Long deliveryPolicyId, UpdateDeliveryPolicyRequest request);
 
 	/**
 	 * 특정 배송비 정책을 삭제합니다.

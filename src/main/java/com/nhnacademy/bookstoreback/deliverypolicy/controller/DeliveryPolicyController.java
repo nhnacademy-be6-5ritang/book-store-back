@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.CreateDeliveryPolicyRequest;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.request.UpdateDeliveryPolicyRequest;
-import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.CreateDeliveryPolicyResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDeliveryPoliciesResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDeliveryPolicyResponse;
-import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.UpdateDeliveryPolicyResponse;
 import com.nhnacademy.bookstoreback.deliverypolicy.service.DeliveryPolicyService;
 
 import jakarta.validation.Valid;
@@ -44,24 +42,25 @@ public class DeliveryPolicyController {
 
 	@AuthorizeRole({"DELIVERY_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
-	public ResponseEntity<CreateDeliveryPolicyResponse> createDeliveryPolicy(
+	public ResponseEntity<Void> createDeliveryPolicy(
 		@Valid @RequestBody CreateDeliveryPolicyRequest request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(deliveryPolicyService.createDeliveryPolicy(request));
+		deliveryPolicyService.createDeliveryPolicy(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@AuthorizeRole({"DELIVERY_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{deliveryPolicyId}")
-	public ResponseEntity<UpdateDeliveryPolicyResponse> updateDeliveryPolicy(@PathVariable Long deliveryPolicyId,
+	public ResponseEntity<Void> updateDeliveryPolicy(@PathVariable Long deliveryPolicyId,
 		@Valid @RequestBody UpdateDeliveryPolicyRequest request) {
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(deliveryPolicyService.updateDeliveryPolicy(deliveryPolicyId, request));
+		deliveryPolicyService.updateDeliveryPolicy(deliveryPolicyId, request);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@AuthorizeRole({"DELIVERY_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{deliveryPolicyId}")
 	public ResponseEntity<Void> deleteDeliveryPolicy(@PathVariable Long deliveryPolicyId) {
 		deliveryPolicyService.deleteDeliveryPolicy(deliveryPolicyId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/{deliveryId}/{price}/addPolicies")

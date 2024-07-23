@@ -9,9 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.CreateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.UpdateBookResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 
 /**
@@ -78,18 +76,16 @@ public interface BookService {
 	 * 도서 생성
 	 *
 	 * @param request 생성할 도서 정보
-	 * @return 생성된 도서 정보
 	 */
-	CreateBookResponse createBook(CreateBookRequest request);
+	void createBook(CreateBookRequest request);
 
 	/**
 	 * 도서 정보 수정
 	 *
 	 * @param bookId 수정할 도서 ID
 	 * @param request 수정할 도서 정보
-	 * @return 수정된 도서 정보
 	 */
-	UpdateBookResponse updateBookById(Long bookId, UpdateBookRequest request);
+	void updateBookById(Long bookId, UpdateBookRequest request);
 
 	/**
 	 * 주어진 ID를 가진 도서를 삭제합니다.

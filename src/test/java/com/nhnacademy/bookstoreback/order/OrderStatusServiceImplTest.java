@@ -26,7 +26,7 @@ public class OrderStatusServiceImplTest {
 	private final OrderStatusServiceImpl orderStatusService = new OrderStatusServiceImpl(orderStatusRepository);
 
 	@Test
-	public void testCreateOrderStatus() {
+	void testCreateOrderStatus() {
 		CreateOrderStatusRequest request = mock(CreateOrderStatusRequest.class);
 		OrderStatus orderStatus = mock(OrderStatus.class);
 
@@ -50,7 +50,7 @@ public class OrderStatusServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateOrderStatus_Success() {
+	void testUpdateOrderStatus_Success() {
 		Long id = 1L;
 		String newName = "Updated Status";
 		CreateOrderStatusRequest request = mock(CreateOrderStatusRequest.class);
@@ -75,7 +75,7 @@ public class OrderStatusServiceImplTest {
 	}
 
 	@Test
-	public void testUpdateOrderStatus_NotFound() {
+	void testUpdateOrderStatus_NotFound() {
 		CreateOrderStatusRequest request = mock(CreateOrderStatusRequest.class);
 
 		when(orderStatusRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -86,7 +86,7 @@ public class OrderStatusServiceImplTest {
 	}
 
 	@Test
-	public void testFindById_Success() {
+	void testFindById_Success() {
 		OrderStatus orderStatus = mock(OrderStatus.class);
 
 		when(orderStatusRepository.findById(anyLong())).thenReturn(Optional.of(orderStatus));
@@ -98,7 +98,7 @@ public class OrderStatusServiceImplTest {
 	}
 
 	@Test
-	public void testFindById_NotFound() {
+	void testFindById_NotFound() {
 		when(orderStatusRepository.findById(anyLong())).thenReturn(Optional.empty());
 
 		assertThrows(OrderStatusFailException.class, () -> orderStatusService.findById(1L));
@@ -107,7 +107,7 @@ public class OrderStatusServiceImplTest {
 	}
 
 	@Test
-	public void testFindAll() {
+	void testFindAll() {
 		OrderStatus orderStatus = mock(OrderStatus.class);
 		when(orderStatusRepository.findAll()).thenReturn(Collections.singletonList(orderStatus));
 

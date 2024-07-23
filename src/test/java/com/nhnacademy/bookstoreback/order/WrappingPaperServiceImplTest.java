@@ -47,7 +47,7 @@ public class WrappingPaperServiceImplTest {
 	private Book book;
 
 	@BeforeEach
-	public void setup() throws
+	void setup() throws
 		NoSuchMethodException,
 		InvocationTargetException,
 		InstantiationException,
@@ -64,7 +64,7 @@ public class WrappingPaperServiceImplTest {
 	}
 
 	@Test
-	public void testCreateWrappingPapers_WithQuantity() {
+	void testCreateWrappingPapers_WithQuantity() {
 		Long paperId = 1L;
 		Long bookOrderId = 2L;
 		Integer quantity = 10;
@@ -90,10 +90,7 @@ public class WrappingPaperServiceImplTest {
 	}
 
 	@Test
-	public void testCreateWrappingPapers_WithoutQuantity() throws
-		InvocationTargetException,
-		InstantiationException,
-		IllegalAccessException {
+	void testCreateWrappingPapers_WithoutQuantity() {
 		Long paperId = 1L;
 		Long bookOrderId = 2L;
 
@@ -118,7 +115,7 @@ public class WrappingPaperServiceImplTest {
 	}
 
 	@Test
-	public void testDeleteWrappingPapers() {
+	void testDeleteWrappingPapers() {
 		Long id = 1L;
 
 		wrappingPaperService.deleteWrappingPapers(id);
@@ -127,10 +124,7 @@ public class WrappingPaperServiceImplTest {
 	}
 
 	@Test
-	public void testGetWrappingPaperByOrderListId() throws
-		InvocationTargetException,
-		InstantiationException,
-		IllegalAccessException {
+	void testGetWrappingPaperByOrderListId() {
 		Long orderListId = 1L;
 		WrappingPaper wrappingPaper = WrappingPaper.toEntity(new BookOrder(5, book, order),
 			new PaperType("Name", "Content", BigDecimal.TEN), 5);
@@ -141,7 +135,7 @@ public class WrappingPaperServiceImplTest {
 
 		assertThat(response).isNotNull();
 		assertThat(response.wrapping()).hasSize(1);
-		assertThat(response.wrapping().get(0)).isEqualTo(GetWrappingResponse.from(wrappingPaper));
+		assertThat(response.wrapping().getFirst()).isEqualTo(GetWrappingResponse.from(wrappingPaper));
 		verify(wrappingPaperRepository).findAllByBookOrder_OrderListId(orderListId);
 	}
 }

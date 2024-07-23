@@ -32,11 +32,8 @@ public class PublisherServiceImpl implements PublisherService {
 
 	@Override
 	public Publisher findOrCreatePublisher(String publisherName) {
-		return publisherRepository.findByPublisherName(publisherName).orElseGet(() -> {
-			Publisher newPublisher = new Publisher();
-			newPublisher.setPublisherName(publisherName);
-			return publisherRepository.save(newPublisher);
-		});
+		return publisherRepository.findByPublisherName(publisherName)
+			.orElseGet(() -> publisherRepository.save(new Publisher(publisherName)));
 	}
 
 	@Transactional(readOnly = true)
@@ -63,15 +60,15 @@ public class PublisherServiceImpl implements PublisherService {
 	}
 
 	@Override
-	public PublisherDto createPublisher(PublisherDto request) {
+	public void createPublisher(PublisherDto request) {
 		if (publisherRepository.existsByPublisherName(request.publisherName())) {
 			throw new PublisherAlreadyExistsException(request.publisherName());
 		}
-		return PublisherDto.fromEntity(publisherRepository.save(Publisher.toEntity(request)));
+		publisherRepository.save(Publisher.toEntity(request));
 	}
 
 	@Override
-	public PublisherDto updatePublisher(Long publisherId, PublisherDto request) {
+	public void updatePublisher(Long publisherId, PublisherDto request) {
 		Publisher publisher = publisherRepository.findById(publisherId)
 			.orElseThrow(() -> new PublisherNotFoundException(publisherId));
 
@@ -79,7 +76,6 @@ public class PublisherServiceImpl implements PublisherService {
 			throw new PublisherAlreadyExistsException(request.publisherName());
 		}
 		publisher.updatePublisherName(request.publisherName());
-		return PublisherDto.fromEntity(publisher);
 	}
 
 	@Override
