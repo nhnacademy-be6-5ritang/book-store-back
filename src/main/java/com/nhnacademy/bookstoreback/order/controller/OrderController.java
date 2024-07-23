@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
@@ -104,6 +105,7 @@ public class OrderController {
 	 * @param createOrderStatusRequest 주문 정보
 	 * @return 주문 정보 리턴
 	 */
+	@AuthorizeRole({"ORDER_STATUS_ADMIN", "HEAD_ADMIN"})
 	@PostMapping("/orderStatus")
 	public ResponseEntity<GetOrderStatusResponse> createOrderStatus(
 		@Valid @RequestBody CreateOrderStatusRequest createOrderStatusRequest) {
@@ -116,6 +118,7 @@ public class OrderController {
 	 * @param createOrderStatusRequest 주문 상태 정보
 	 * @return 주문 상태 정보
 	 */
+	@AuthorizeRole({"ORDER_STATUS_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/orderStatus/{order_status_id}")
 	public ResponseEntity<GetOrderStatusResponse> updateOrderStatus(@PathVariable("order_status_id") Long orderStatusId,
 		@Valid @RequestBody CreateOrderStatusRequest createOrderStatusRequest) {
@@ -126,6 +129,7 @@ public class OrderController {
 	 * 주문 상태 삭제
 	 * @param orderStatusId 주문 상태 아이디
 	 */
+	@AuthorizeRole({"ORDER_STATUS_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/orderStatus/{order_status_id}")
 	public ResponseEntity<Void> deleteOrderStatus(@PathVariable("order_status_id") Long orderStatusId) {
 		orderStatusServiceImpl.delete(orderStatusId);
@@ -187,6 +191,7 @@ public class OrderController {
 	 * @param createWrappingTypeRequest 포장지 종류 정보
 	 * @return 포장지 종류 정보
 	 */
+	@AuthorizeRole({"PAPER_ADMIN", "HEAD_ADMIN"})
 	@PostMapping("/papers")
 	public ResponseEntity<CreatePaperResponse> createPaper(
 		@Valid @RequestBody CreateWrappingTypeRequest createWrappingTypeRequest) {
@@ -199,6 +204,7 @@ public class OrderController {
 	 * @param paperTypeId 포장지 종류 아이디
 	 * @return 포장지 종류 정보
 	 */
+	@AuthorizeRole({"PAPER_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/papers/{paper_type_id}")
 	public ResponseEntity<GetPaperResponse> updatePaper(
 		@Valid @RequestBody UpdateWrappingTypeRequest updateWrappingTypeRequest,
@@ -210,9 +216,11 @@ public class OrderController {
 	 * 포장지 종류 삭제
 	 * @param paperTypeId 포장지 종류 아이디
 	 */
+	@AuthorizeRole({"PAPER_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/papers/{paper_type_id}")
-	public void deletePaper(@PathVariable("paper_type_id") Long paperTypeId) {
+	public ResponseEntity<Void> deletePaper(@PathVariable("paper_type_id") Long paperTypeId) {
 		paperTypeServiceImpl.deletePaperTypeById(paperTypeId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	//TODO 도서 주문
@@ -267,6 +275,7 @@ public class OrderController {
 	 * 페이징 처리 예정
 	 * @return 포장지 종류 전부
 	 */
+	@AuthorizeRole({"PAPER_ADMIN", "HEAD_ADMIN"})
 	@GetMapping("/papers/admin")
 	public ResponseEntity<GetAdminAllPaperResponse> getAdminAllWrappingPapers() {
 		return ResponseEntity.status(HttpStatus.OK).body(paperTypeServiceImpl.getAdminAllPaperTypes());
@@ -343,27 +352,31 @@ public class OrderController {
 		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findByOrderInfoId(orderInfoId));
 	}
 
-	// 이거 이름으로 바꿀 예정
+	@AuthorizeRole({"ORDER_STATUS_ADMIN", "HEAD_ADMIN"})
 	@GetMapping("/order-status/wait")
 	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusWait() {
 		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(1L));
 	}
 
+	@AuthorizeRole({"ORDER_STATUS_ADMIN", "HEAD_ADMIN"})
 	@GetMapping("/order-status/going")
 	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusGoing() {
 		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(4L));
 	}
 
+	@AuthorizeRole({"ORDER_STATUS_ADMIN", "HEAD_ADMIN"})
 	@GetMapping("/order-status/complete")
 	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusComplete() {
 		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(5L));
 	}
 
+	@AuthorizeRole({"ORDER_STATUS_ADMIN", "HEAD_ADMIN"})
 	@GetMapping("/order-status/refunded")
 	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusRefunded() {
 		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(6L));
 	}
 
+	@AuthorizeRole({"ORDER_STATUS_ADMIN", "HEAD_ADMIN"})
 	@GetMapping("/order-status/refunding")
 	public ResponseEntity<GetAllListOrderByStatusResponse> getOrderStatusRefunding() {
 		return ResponseEntity.ok(orderServiceImpl.findByOrderStatus(7L));
@@ -412,6 +425,7 @@ public class OrderController {
 		return ResponseEntity.ok(refundPolicyServiceImpl.getAllRefundPolicies());
 	}
 
+	@AuthorizeRole({"REFUND_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/refund-policy/{refundPolicyId}")
 	public ResponseEntity<Void> updateRefundPolicy(@PathVariable("refundPolicyId") Long refundPolicyId,
 		@Valid @RequestBody UpdateRefundPolicyRequest updateRefundPolicyRequest) {
@@ -419,12 +433,14 @@ public class OrderController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
+	@AuthorizeRole({"REFUND_ADMIN", "HEAD_ADMIN"})
 	@PostMapping("/refund-policy")
 	public ResponseEntity<Void> createRefundPolicy(@Valid @RequestBody CreateRefundPolicyRequest refundPolicyRequest) {
 		refundPolicyServiceImpl.createRefundPolicy(refundPolicyRequest);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
+	@AuthorizeRole({"REFUND_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/refund-policy/{refundPolicyId}")
 	public ResponseEntity<Void> deleteRefundPolicy(@PathVariable Long refundPolicyId) {
 		refundPolicyServiceImpl.deleteRefundPolicy(refundPolicyId);
