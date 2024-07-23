@@ -195,7 +195,7 @@ public class BookController {
 
 	@GetMapping("/page/category")
 	public ResponseEntity<Page<GetBookDetailResponse>> findAllBooksByCategoryName(
-		@PageableDefault(page = 1, size = 20) Pageable pageable, @RequestParam String categoryName) {
+		@PageableDefault(page = 1, size = 12) Pageable pageable, @RequestParam String categoryName) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(bookService.findAllBooksByCategoryName(pageable, categoryName));
 	}
