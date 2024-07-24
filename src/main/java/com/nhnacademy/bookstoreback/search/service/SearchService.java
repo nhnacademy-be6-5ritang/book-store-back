@@ -122,7 +122,7 @@ public class SearchService {
 		if (publisherID == null) {
 			logger.info("출판사 검색 응답: " + response.toString());
 			return new PageImpl<>(new ArrayList<>(),
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")), 0); // 출판사가 없을 경우 빈 리스트 반환
+				PageRequest.of(page, pageSize, sort), 0); // 출판사가 없을 경우 빈 리스트 반환
 		}
 
 		// Step 2: 책 검색
@@ -170,8 +170,7 @@ public class SearchService {
 		if (bookTagResponse.getHits().getTotalHits().value == 0) {
 			logger.info("해당 태그에 책이 없습니다.");
 			return new PageImpl<>(new ArrayList<>(),
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookTitle")),
-				0); // 해당 태그의 책이 없을 경우 빈 리스트 반환
+				PageRequest.of(page, pageSize, sort), 0); // 해당 태그의 책이 없을 경우 빈 리스트 반환
 		}
 
 		// Step 3: 책 검색
