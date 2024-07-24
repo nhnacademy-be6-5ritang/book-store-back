@@ -11,10 +11,8 @@ class BookImageTest {
 	@Test
 	void testBookImageCreation() {
 		Book book = new Book();
-		book.setBookId(1L);
 
-		Image image = new Image();
-		image.setImageId(1L);
+		Image image = Image.builder().build();
 
 		BookImage bookImage = new BookImage();
 		bookImage.setBook(book);
@@ -29,17 +27,13 @@ class BookImageTest {
 	@Test
 	void testBookImageFieldSettersAndGetters() {
 		Book book = new Book();
-		book.setBookId(2L);
 
-		Image image = new Image();
-		image.setImageId(2L);
+		Image image = Image.builder().build();
 
 		BookImage bookImage = new BookImage();
 		bookImage.setBook(book);
 		bookImage.setImage(image);
-
-		assertEquals(2L, book.getBookId());
-		assertEquals(2L, image.getImageId());
+		
 		assertEquals(book, bookImage.getBook());
 		assertEquals(image, bookImage.getImage());
 	}

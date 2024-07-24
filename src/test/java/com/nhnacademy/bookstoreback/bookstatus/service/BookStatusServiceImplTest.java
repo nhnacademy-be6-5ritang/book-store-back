@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.bookstatus.service.impl;
+package com.nhnacademy.bookstoreback.bookstatus.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -20,10 +20,17 @@ import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
 import com.nhnacademy.bookstoreback.bookstatus.exception.BookStatusAlreadyExistsException;
 import com.nhnacademy.bookstoreback.bookstatus.exception.BookStatusNotFoundException;
 import com.nhnacademy.bookstoreback.bookstatus.repository.BookStatusRepository;
+import com.nhnacademy.bookstoreback.bookstatus.service.impl.BookStatusServiceImpl;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 @ExtendWith(MockitoExtension.class)
 class BookStatusServiceImplTest {
 
+	@Mock
+	private EntityManager entityManager;
+	
 	@Mock
 	private BookStatusRepository bookStatusRepository;
 
@@ -120,6 +127,31 @@ class BookStatusServiceImplTest {
 		when(bookStatusRepository.findById(anyLong())).thenReturn(Optional.empty());
 
 		assertThrows(BookStatusNotFoundException.class, () -> bookStatusService.deleteBookStatus(1L));
+	}
+
+	@Test
+	void testFindOrCreateBookStatus_Existing() {
+		TypedQuery<BookStatus> mockQuery = mock(TypedQuery.class);
+		when(entityManager.createQuery(anyString(), eq(BookStatus.class))).thenReturn(mockQuery);
+		when(mockQuery.setParameter(anyString(), anyString())).thenReturn(mockQuery);
+		when(mockQuery.getResultList()).thenReturn(List.of(bookStatus));
+
+		BookStatus result = bookStatusService.findOrCreateBookStatus("ON_SALE");
+		assertEquals("ON_SALE", result.getBookStatusName());
+	}
+
+	@Test
+	void testFindOrCreateBookStatus_New() {
+		TypedQuery<BookStatus> mockQuery = mock(TypedQuery.class);
+		when(entityManager.createQuery(anyString(), eq(BookStatus.class))).thenReturn(mockQuery);
+		when(mockQuery.setParameter(anyString(), anyString())).thenReturn(mockQuery);
+		when(mockQuery.getResultList()).thenReturn(List.of());
+
+		doNothing().when(entityManager).persist(any(BookStatus.class));
+
+		BookStatus result = bookStatusService.findOrCreateBookStatus("NEW_STATUS");
+		assertEquals("NEW_STATUS", result.getBookStatusName());
+		verify(entityManager, times(1)).persist(any(BookStatus.class));
 	}
 
 }

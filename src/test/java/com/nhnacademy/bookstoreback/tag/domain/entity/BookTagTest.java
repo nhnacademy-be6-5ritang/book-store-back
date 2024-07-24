@@ -24,7 +24,7 @@ class BookTagTest {
 
 	@Test
 	void testBookTagConstructor() {
-		Book book = new Book();  // Book 객체는 테스트를 위해 간단하게 생성합니다.
+		Book book = new Book();
 		Tag tag = new Tag("exampleTag");
 
 		BookTag bookTag = new BookTag(book, tag);

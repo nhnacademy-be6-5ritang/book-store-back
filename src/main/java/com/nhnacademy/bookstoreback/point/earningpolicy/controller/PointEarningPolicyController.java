@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.point.earningpolicy.domain.dto.request.CreatePointEarningPolicyRequest;
 import com.nhnacademy.bookstoreback.point.earningpolicy.domain.dto.request.UpdatePointEarningPolicyRequest;
 import com.nhnacademy.bookstoreback.point.earningpolicy.domain.dto.response.CreatePointEarningPolicyResponse;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class PointEarningPolicyController {
 	private final PointEarningPolicyService pointEarningPolicyService;
 
+	@AuthorizeRole({"POINT_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
 	public ResponseEntity<CreatePointEarningPolicyResponse> createPointEarningPolicy(
 		@RequestBody CreatePointEarningPolicyRequest createPointEarningPolicyRequest
@@ -44,7 +46,7 @@ public class PointEarningPolicyController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(getPointEarningPolicyResponseList);
 	}
-
+	
 	@GetMapping("/{pointEarningPolicyId}")
 	public ResponseEntity<GetPointEarningPolicyResponse> getPointEarningPolicy(
 		@PathVariable Long pointEarningPolicyId
@@ -54,6 +56,7 @@ public class PointEarningPolicyController {
 		return ResponseEntity.status(HttpStatus.OK).body(getPointEarningPolicyResponse);
 	}
 
+	@AuthorizeRole({"POINT_ADMIN", "HEAD_ADMIN"})
 	@PatchMapping("/{pointEarningPolicyId}")
 	public ResponseEntity<UpdatePointEarningPolicyResponse> updatePointEarningPolicy(
 		@PathVariable Long pointEarningPolicyId,
@@ -64,18 +67,21 @@ public class PointEarningPolicyController {
 		return ResponseEntity.status(HttpStatus.OK).body(updatePointEarningPolicyResponse);
 	}
 
+	@AuthorizeRole({"POINT_ADMIN", "HEAD_ADMIN"})
 	@PatchMapping("/{pointEarningPolicyId}/activate")
 	public ResponseEntity<Void> activatePointEarningPolicy(@PathVariable Long pointEarningPolicyId) {
 		pointEarningPolicyService.activatePointEarningPolicy(pointEarningPolicyId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
+	@AuthorizeRole({"POINT_ADMIN", "HEAD_ADMIN"})
 	@PatchMapping("/{pointEarningPolicyId}/deactivate")
 	public ResponseEntity<Void> deactivatePointEarningPolicy(@PathVariable Long pointEarningPolicyId) {
 		pointEarningPolicyService.deactivatePointEarningPolicy(pointEarningPolicyId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
+	@AuthorizeRole({"POINT_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{pointEarningPolicyId}")
 	public ResponseEntity<Void> deletePointEarningPolicy(@PathVariable Long pointEarningPolicyId) {
 		pointEarningPolicyService.deletePointEarningPolicy(pointEarningPolicyId);

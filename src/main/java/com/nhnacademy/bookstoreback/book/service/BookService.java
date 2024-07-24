@@ -10,7 +10,6 @@ import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 
 /**
  * BookService 인터페이스
@@ -28,18 +27,18 @@ public interface BookService {
 	void fetchAndSaveBooks(String apiUrl);
 
 	/**
-	 * ISBN을 기준으로 도서 조회 및 저장
+	 * ISBN 을 기준으로 도서 조회 및 저장
 	 *
-	 * @param apiURL 도서 정보 API URL
+	 * @param apiUrl 도서 정보 API URL
 	 */
-	void saveBookByIsbn(String apiURL);
+	void saveBookByIsbn(String apiUrl);
 
 	/**
 	 * 도서 저장
 	 *
 	 * @param item 도서 정보
 	 */
-	Book saveBook(JsonNode item) throws Exception;
+	void saveBook(JsonNode item) throws Exception;
 
 	/**
 	 * 모든 도서를 조회

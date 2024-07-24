@@ -5,4 +5,7 @@ package com.nhnacademy.bookstoreback.book.domain.dto.response;
  *
  * @author 이기훈
  */
-public record BookSearchResult(Long bookId, String bookTitle) {}
+public record BookSearchResult(
+	Long bookId,
+	String bookTitle) {
+}

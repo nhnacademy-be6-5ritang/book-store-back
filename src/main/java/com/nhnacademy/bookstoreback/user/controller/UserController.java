@@ -110,6 +110,12 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(getMyUserInfoResponse);
 	}
 
+	@GetMapping("/orders/self")
+	public ResponseEntity<GetMyUserInfoResponse> getMyUserInfoByInfo(@CurrentUser CurrentUserDetails currentUser) {
+		GetMyUserInfoResponse getMyUserInfoResponse = userService.getMyUserInfoByOrder(currentUser);
+		return ResponseEntity.status(HttpStatus.OK).body(getMyUserInfoResponse);
+	}
+
 	@PutMapping
 	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<UpdateUserInfoResponse> updateUser(

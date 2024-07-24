@@ -2,27 +2,18 @@ package com.nhnacademy.bookstoreback.order.domain.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -82,19 +73,6 @@ public class Order {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
-	@Fetch(FetchMode.SUBSELECT)
-	@JsonManagedReference(value = "order-delivery")
-	private List<Delivery> deliveries = new ArrayList<>();
-
-	public void addDelivery(Delivery delivery) {
-		this.deliveries.add(delivery);
-	}
-
-	public void removeDelivery(Delivery delivery) {
-		this.deliveries.remove(delivery);
-	}
-
 	@Builder
 	public Order(
 		String orderPayerName,
@@ -106,8 +84,7 @@ public class Order {
 		BigDecimal orderCouponSale,
 		String orderInfoId,
 		LocalDateTime orderDate,
-		OrderStatus orderStatus,
-		WrappingPaper wrappingPaper) {
+		OrderStatus orderStatus) {
 		this.orderPayerName = orderPayerName;
 		this.orderPayerNumber = orderPayerNumber;
 		this.orderPayerEmail = orderPayerEmail;

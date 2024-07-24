@@ -36,10 +36,8 @@ class BookCategoryServiceImplTest {
 
 		when(bookCategoryRepository.save(any(BookCategory.class))).thenReturn(bookCategory);
 
-		// Act
 		BookCategory savedBookCategory = bookCategoryService.saveBookCategory(book, category);
 
-		// Assert
 		assertEquals(book, savedBookCategory.getBook());
 		assertEquals(category, savedBookCategory.getCategory());
 		verify(bookCategoryRepository, times(1)).save(any(BookCategory.class));

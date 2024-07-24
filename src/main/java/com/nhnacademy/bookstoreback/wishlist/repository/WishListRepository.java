@@ -27,4 +27,11 @@ public interface WishListRepository extends JpaRepository<WishList, Long> {
 	 * @return 주어진 사용자와 책에 대해 wish list 항목이 존재하면 {@code true}, 그렇지 않으면 {@code false}
 	 */
 	boolean existsByUserIdAndBookBookId(Long userId, Long bookId);
+
+	/**
+	 * 주어진 책 ID에 연관된 모든 wish list 항목을 삭제합니다.
+	 *
+	 * @param bookId 삭제할 wish list 항목들과 연관된 책의 ID
+	 */
+	void deleteAllByBookBookId(Long bookId);
 }

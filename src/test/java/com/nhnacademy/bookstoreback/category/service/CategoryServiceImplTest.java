@@ -1,14 +1,14 @@
 package com.nhnacademy.bookstoreback.category.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -16,13 +16,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CategorySearchResult;
-import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
-import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
 import com.nhnacademy.bookstoreback.category.domain.entity.Category;
 import com.nhnacademy.bookstoreback.category.exception.CategoryAlreadyExistsException;
@@ -41,157 +41,194 @@ class CategoryServiceImplTest {
 	@InjectMocks
 	private CategoryServiceImpl categoryService;
 
+	private Category category;
+	private Category parentCategory;
+	private BookCategory bookCategory;
+
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
+		parentCategory = Category.builder()
+			.categoryName("Parent Category")
+			.build();
+		category = Category.builder()
+			.categoryName("Fiction")
+			.parentCategory(parentCategory)
+			.build();
+		bookCategory = new BookCategory(mock(Book.class), category);
 	}
 
 	@Test
 	void testGetCategories() {
-		Category category = new Category("CategoryName", null);
-		given(categoryRepository.findAll()).willReturn(List.of(category));
-
-		List<GetCategoryResponse> response = categoryService.getCategories();
-
-		assertEquals(1, response.size());
-		assertEquals("CategoryName", response.get(0).categoryName());
+		when(categoryRepository.findAll()).thenReturn(List.of(category));
+		List<GetCategoryResponse> categories = categoryService.getCategories();
+		assertNotNull(categories);
+		assertEquals(1, categories.size());
+		assertEquals("Fiction", categories.get(0).categoryName());
+		assertEquals("Parent Category", categories.get(0).parentCategoryName());
 	}
 
 	@Test
 	void testGetCategoriesWithPagination() {
-		Pageable pageable = PageRequest.of(0, 10);
-		Category category = new Category("CategoryName", null);
-		Page<Category> categoryPage = new PageImpl<>(List.of(category), pageable, 1);
-		given(categoryRepository.findAll(ArgumentMatchers.any(Pageable.class))).willReturn(categoryPage);
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "categoryId"));
+		Page<Category> page = new PageImpl<>(List.of(category), pageable, 1);
 
-		Page<GetCategoryResponse> responsePage = categoryService.getCategories(pageable);
+		when(categoryRepository.findAll(any(Pageable.class))).thenReturn(page);
 
-		assertEquals(1, responsePage.getTotalElements());
-		assertEquals("CategoryName", responsePage.getContent().get(0).categoryName());
+		Page<GetCategoryResponse> result = categoryService.getCategories(pageable);
+
+		assertNotNull(result);
+		assertEquals(1, result.getTotalElements());
+		assertEquals(1, result.getContent().size());
+		assertEquals("Fiction", result.getContent().get(0).categoryName());
 	}
 
 	@Test
 	void testGetCategoriesByBookId() {
-		Category category = new Category("CategoryName", null);
-		BookCategory bookCategory = new BookCategory(null, category);
-		given(bookCategoryRepository.findAllByBookBookId(1L)).willReturn(List.of(bookCategory));
+		when(bookCategoryRepository.findAllByBookBookId(anyLong())).thenReturn(List.of(bookCategory));
 
-		List<GetCategoryResponse> response = categoryService.getCategoriesByBookId(1L);
+		List<GetCategoryResponse> categories = categoryService.getCategoriesByBookId(1L);
 
-		assertEquals(1, response.size());
-		assertEquals("CategoryName", response.get(0).categoryName());
+		assertNotNull(categories);
+		assertEquals(1, categories.size());
+		assertEquals("Fiction", categories.get(0).categoryName());
 	}
 
 	@Test
 	void testGetCategory() {
-		Category category = new Category("CategoryName", null);
-		given(categoryRepository.findById(1L)).willReturn(Optional.of(category));
-
-		GetCategoryResponse response = categoryService.getCategory(1L);
-
-		assertEquals("CategoryName", response.categoryName());
-	}
-
-	@Test
-	void testGetCategoryNotFound() {
-		given(categoryRepository.findById(1L)).willReturn(Optional.empty());
-
-		assertThrows(CategoryNotFoundException.class, () -> categoryService.getCategory(1L));
+		Long categoryId = 1L;
+		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+		GetCategoryResponse response = categoryService.getCategory(categoryId);
+		assertNotNull(response);
+		assertEquals("Fiction", response.categoryName());
+		assertEquals("Parent Category", response.parentCategoryName());
 	}
 
 	@Test
 	void testCreateCategory() {
-		CreateCategoryRequest request = new CreateCategoryRequest("NewCategory", null);
-		Category category = new Category("NewCategory", null);
-		given(categoryRepository.existsByCategoryName("NewCategory")).willReturn(false);
-		given(categoryRepository.save(ArgumentMatchers.any(Category.class))).willReturn(category);
+		CreateCategoryRequest request = new CreateCategoryRequest("Science", null);
+		when(categoryRepository.existsByCategoryName("Science")).thenReturn(false);
+		when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
-		CreateCategoryResponse response = categoryService.createCategory(request);
+		categoryService.createCategory(request);
 
-		assertEquals("NewCategory", response.categoryName());
+		verify(categoryRepository).save(any(Category.class));
 	}
 
 	@Test
-	void testCreateCategoryAlreadyExists() {
-		CreateCategoryRequest request = new CreateCategoryRequest("ExistingCategory", null);
-		given(categoryRepository.existsByCategoryName("ExistingCategory")).willReturn(true);
+	void testCreateCategoryWhenAlreadyExists() {
+		CreateCategoryRequest request = new CreateCategoryRequest("Fiction", null);
+		when(categoryRepository.existsByCategoryName("Fiction")).thenReturn(true);
 
 		assertThrows(CategoryAlreadyExistsException.class, () -> categoryService.createCategory(request));
 	}
 
 	@Test
-	void testUpdateCategory() {
-		Category existingCategory = new Category("OldCategory", null);
-		UpdateCategoryRequest request = new UpdateCategoryRequest("UpdatedCategory", null);
-		given(categoryRepository.findById(1L)).willReturn(Optional.of(existingCategory));
-		given(categoryRepository.findAllByCategoryNameNot("OldCategory")).willReturn(List.of());
-		given(categoryRepository.save(ArgumentMatchers.any(Category.class))).willReturn(existingCategory);
+	void updateCategory_ShouldThrowCategoryNotFoundException_WhenCategoryNotExists() {
+		Long categoryId = 1L;
+		UpdateCategoryRequest request = new UpdateCategoryRequest("New Name", null);
 
-		UpdateCategoryResponse response = categoryService.updateCategory(1L, request);
+		when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 
-		assertEquals("UpdatedCategory", response.categoryName());
+		assertThrows(CategoryNotFoundException.class, () ->
+			categoryService.updateCategory(categoryId, request)
+		);
 	}
 
 	@Test
-	void testUpdateCategoryNotFound() {
-		UpdateCategoryRequest request = new UpdateCategoryRequest("UpdatedCategory", null);
-		given(categoryRepository.findById(1L)).willReturn(Optional.empty());
+	void updateCategory_ShouldThrowCategoryAlreadyExistsException_WhenCategoryNameIsDuplicate() {
+		Long categoryId = 1L;
+		Category category = new Category("Existing Name", null);
 
-		assertThrows(CategoryNotFoundException.class, () -> categoryService.updateCategory(1L, request));
+		UpdateCategoryRequest request = new UpdateCategoryRequest("Existing Name", null);
+
+		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+		when(categoryRepository.findAllByCategoryNameNot("Existing Name"))
+			.thenReturn(List.of(new Category("Existing Name", null)));
+
+		assertThrows(CategoryAlreadyExistsException.class, () ->
+			categoryService.updateCategory(categoryId, request)
+		);
 	}
 
 	@Test
-	void testUpdateCategoryAlreadyExists() {
-		Category existingCategory = new Category("OldCategory", null);
-		UpdateCategoryRequest request = new UpdateCategoryRequest("ExistingCategory", null);
-		given(categoryRepository.findById(1L)).willReturn(Optional.of(existingCategory));
-		given(categoryRepository.findAllByCategoryNameNot("OldCategory")).willReturn(
-			List.of(new Category("ExistingCategory", null)));
+	void updateCategory_ShouldThrowCategoryNotFoundException_WhenParentCategoryNotExists() {
+		Long categoryId = 1L;
+		Long parentCategoryId = 2L;
+		Category category = new Category("Old Name", null);
 
-		assertThrows(CategoryAlreadyExistsException.class, () -> categoryService.updateCategory(1L, request));
+		UpdateCategoryRequest request = new UpdateCategoryRequest("New Name", parentCategoryId);
+
+		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+		when(categoryRepository.findAllByCategoryNameNot("Old Name")).thenReturn(List.of());
+		when(categoryRepository.findById(parentCategoryId)).thenReturn(Optional.empty());
+
+		assertThrows(CategoryNotFoundException.class, () ->
+			categoryService.updateCategory(categoryId, request)
+		);
+	}
+
+	@Test
+	void updateCategory_ShouldNotThrowException_WhenParentCategoryIsSameAsCurrentCategory() {
+		Long categoryId = 1L;
+		Category category = new Category("Old Name", null);
+
+		UpdateCategoryRequest request = new UpdateCategoryRequest("New Name", categoryId);
+
+		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+		when(categoryRepository.findAllByCategoryNameNot("Old Name")).thenReturn(List.of());
+
+		// 예외가 발생하지 않는지 확인
+		categoryService.updateCategory(categoryId, request);
+	}
+
+	@Test
+	void testUpdateCategoryWhenNameAlreadyExists() {
+		Long categoryId = 1L;
+		UpdateCategoryRequest request = new UpdateCategoryRequest("Fiction", null);
+		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+		when(categoryRepository.findAllByCategoryNameNot(anyString())).thenReturn(List.of(category));
+
+		assertThrows(CategoryAlreadyExistsException.class, () -> categoryService.updateCategory(categoryId, request));
 	}
 
 	@Test
 	void testDeleteCategory() {
-		given(categoryRepository.findById(1L)).willReturn(Optional.of(new Category("CategoryToDelete", null)));
+		Long categoryId = 1L;
+		when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
 
-		categoryService.deleteCategory(1L);
+		categoryService.deleteCategory(categoryId);
 
-		verify(bookCategoryRepository).deleteALlByCategoryCategoryId(1L);
-		verify(categoryRepository).deleteById(1L);
+		verify(bookCategoryRepository).deleteALlByCategoryCategoryId(categoryId);
+		verify(categoryRepository).deleteById(categoryId);
 	}
 
 	@Test
 	void testFindOrCreateCategory() {
-		Category parentCategory = new Category("ParentCategory", null);
-		Category newCategory = new Category("NewCategory", parentCategory);
-		given(categoryRepository.findByCategoryName("NewCategory")).willReturn(Optional.empty());
-		given(categoryRepository.findById(1L)).willReturn(Optional.of(parentCategory));
-		given(categoryRepository.save(ArgumentMatchers.any(Category.class))).willReturn(newCategory);
+		String categoryName = "Drama";
+		Long parentCategoryId = 2L;
+		when(categoryRepository.findByCategoryName(categoryName)).thenReturn(Optional.empty());
+		when(categoryRepository.findById(parentCategoryId)).thenReturn(Optional.of(parentCategory));
+		when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
-		Category result = categoryService.findOrCreateCategory("NewCategory", 1L);
+		Category foundOrCreatedCategory = categoryService.findOrCreateCategory(categoryName, parentCategoryId);
 
-		assertEquals("NewCategory", result.getCategoryName());
-	}
-
-	@Test
-	void testFindOrCreateCategoryExisting() {
-		Category existingCategory = new Category("ExistingCategory", null);
-		given(categoryRepository.findByCategoryName("ExistingCategory")).willReturn(Optional.of(existingCategory));
-
-		Category result = categoryService.findOrCreateCategory("ExistingCategory", null);
-
-		assertEquals("ExistingCategory", result.getCategoryName());
+		assertNotNull(foundOrCreatedCategory);
+		assertEquals("Fiction", foundOrCreatedCategory.getCategoryName());
+		assertEquals(parentCategory, foundOrCreatedCategory.getParentCategory());
 	}
 
 	@Test
 	void testSearchCategories() {
-		CategorySearchResult searchResult = new CategorySearchResult(1L, "SearchResult");
-		given(categoryRepository.findCategoriesByPartialName("query")).willReturn(List.of(searchResult));
+		String query = "Fiction";
+		when(categoryRepository.findCategoriesByPartialName(query)).thenReturn(List.of(
+			new CategorySearchResult(1L, "Fiction")
+		));
 
-		List<CategorySearchResult> results = categoryService.searchCategories("query");
+		List<CategorySearchResult> results = categoryService.searchCategories(query);
 
+		assertNotNull(results);
 		assertEquals(1, results.size());
-		assertEquals("SearchResult", results.get(0).categoryName());
+		assertEquals("Fiction", results.get(0).categoryName());
 	}
 }
