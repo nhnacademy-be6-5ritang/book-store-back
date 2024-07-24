@@ -880,10 +880,10 @@ class OrderControllerTest {
 		Long bookListId = 1L;
 		Long orderId = 2L;
 
-		Book book = new Book(); // 필요한 필드를 설정
-		book.setBookId(10L);
-		book.setBookTitle("Sample Book Title");
-		book.setBookPrice(new BigDecimal("50.00"));
+		Book book = Book.builder()
+			.bookTitle("Sample Book Title")
+			.bookPrice(new BigDecimal("50.00"))
+			.build();
 
 		Order order = mock(Order.class);
 

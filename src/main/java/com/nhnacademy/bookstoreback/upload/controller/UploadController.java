@@ -22,6 +22,6 @@ public class UploadController {
 	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@PostMapping
 	public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(uploadService.upload(file));
+		return ResponseEntity.status(HttpStatus.CREATED).body(uploadService.upload(file, "reviews"));
 	}
 }

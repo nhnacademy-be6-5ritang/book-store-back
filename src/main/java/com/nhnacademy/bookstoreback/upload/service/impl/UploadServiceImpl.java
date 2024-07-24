@@ -1,7 +1,5 @@
 package com.nhnacademy.bookstoreback.upload.service.impl;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -37,26 +35,23 @@ public class UploadServiceImpl implements UploadService {
 	@Value("${nhncloud.secretkey}")
 	private String secretKey;
 
-	public String upload(MultipartFile file) {
+	public String upload(MultipartFile file, String folderName) {
 		// 파일 확장자 검사
 		checkFileExtension(file.getContentType());
 
 		try {
 			String fileName = String.format("%s_%s", UUID.randomUUID(), file.getOriginalFilename());
-			Path tempFile = Files.createTempFile(UUID.randomUUID().toString(), file.getOriginalFilename());
-			Files.write(tempFile, file.getBytes());
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 			headers.add("Authorization", secretKey);
 
-			String url =
-				"https://api-image.nhncloudservice.com/image/v2.0/appkeys/" + appKey + "/images?path=/5ritang/reviews/"
-					+ fileName + "&overwrite=true";
+			String url = "https://api-image.nhncloudservice.com/image/v2.0/appkeys/" + appKey + "/images?path=/5ritang/"
+				+ folderName + "/" + fileName + "&overwrite=true";
 
 			log.info("Uploading to URL: {}", url);
 
-			HttpEntity<byte[]> requestEntity = new HttpEntity<>(Files.readAllBytes(tempFile), headers);
+			HttpEntity<byte[]> requestEntity = new HttpEntity<>(file.getBytes(), headers);
 
 			ResponseEntity<String> response = restTemplate.exchange(
 				url,

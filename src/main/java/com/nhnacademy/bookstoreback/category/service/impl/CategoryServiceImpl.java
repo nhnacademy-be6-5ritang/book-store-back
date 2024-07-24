@@ -12,9 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CategorySearchResult;
-import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
-import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
 import com.nhnacademy.bookstoreback.category.domain.entity.Category;
 import com.nhnacademy.bookstoreback.category.exception.CategoryAlreadyExistsException;
@@ -66,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public CreateCategoryResponse createCategory(CreateCategoryRequest request) {
+	public void createCategory(CreateCategoryRequest request) {
 		if (categoryRepository.existsByCategoryName(request.categoryName())) {
 			throw new CategoryAlreadyExistsException(request.categoryName());
 		}
@@ -76,11 +74,12 @@ public class CategoryServiceImpl implements CategoryService {
 			parentCategory = categoryRepository.findById(request.parentCategoryId())
 				.orElseThrow(() -> new CategoryNotFoundException(request.parentCategoryId()));
 		}
-		return CreateCategoryResponse.fromEntity(categoryRepository.save(Category.toEntity(request, parentCategory)));
+
+		categoryRepository.save(Category.toEntity(request, parentCategory));
 	}
 
 	@Override
-	public UpdateCategoryResponse updateCategory(Long categoryId, UpdateCategoryRequest request) {
+	public void updateCategory(Long categoryId, UpdateCategoryRequest request) {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
@@ -99,7 +98,6 @@ public class CategoryServiceImpl implements CategoryService {
 				.orElseThrow(() -> new CategoryNotFoundException(categoryId));
 		}
 		category.updateCategoryName(request.categoryName(), parentCategory);
-		return UpdateCategoryResponse.fromEntity(category);
 	}
 
 	@Override

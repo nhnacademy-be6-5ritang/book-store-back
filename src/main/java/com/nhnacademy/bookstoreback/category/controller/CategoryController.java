@@ -21,9 +21,7 @@ import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.request.UpdateCategoryRequest;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CategorySearchResult;
-import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CreateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.GetCategoryResponse;
-import com.nhnacademy.bookstoreback.category.domain.dto.respnse.UpdateCategoryResponse;
 import com.nhnacademy.bookstoreback.category.service.impl.CategoryServiceImpl;
 
 import jakarta.validation.Valid;
@@ -89,13 +87,14 @@ public class CategoryController {
 	 * 새로운 카테고리를 생성합니다.
 	 *
 	 * @param request 생성할 카테고리 정보 DTO
-	 * @return 생성된 카테고리 정보
+	 * @return 응답 상태 코드 (200 OK)
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PostMapping
-	public ResponseEntity<CreateCategoryResponse> createCategory(
+	public ResponseEntity<Void> createCategory(
 		@Valid @RequestBody CreateCategoryRequest request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(request));
+		categoryService.createCategory(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	/**
@@ -103,26 +102,27 @@ public class CategoryController {
 	 *
 	 * @param categoryId 업데이트할 카테고리 ID
 	 * @param request 업데이트할 카테고리 정보 DTO
-	 * @return 업데이트된 카테고리 정보
+	 * @return 응답 상태 코드 (200 OK)
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@PutMapping("/{categoryId}")
-	public ResponseEntity<UpdateCategoryResponse> updateCategory(@PathVariable Long categoryId,
+	public ResponseEntity<Void> updateCategory(@PathVariable Long categoryId,
 		@Valid @RequestBody UpdateCategoryRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategory(categoryId, request));
+		categoryService.updateCategory(categoryId, request);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**
 	 * 주어진 카테고리 ID에 해당하는 카테고리를 삭제합니다.
 	 *
 	 * @param categoryId 삭제할 카테고리 ID
-	 * @return 응답 상태 코드 (204 NO CONTENT)
+	 * @return 응답 상태 코드 (200 OK)
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
 	@DeleteMapping("/{categoryId}")
 	public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
 		categoryService.deleteCategory(categoryId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	/**

@@ -10,7 +10,7 @@ class ReviewImageTest {
 
 	@Test
 	void testReviewImageCreation() {
-		Image image = new Image();
+		Image image = Image.builder().build();
 		Review review = new Review();
 
 		ReviewImage reviewImage = ReviewImage.toEntity(review, image);
@@ -23,7 +23,7 @@ class ReviewImageTest {
 
 	@Test
 	void testReviewImageBuilder() {
-		Image image = new Image();
+		Image image = Image.builder().build();
 		Review review = new Review();
 
 		ReviewImage reviewImage = ReviewImage.builder()

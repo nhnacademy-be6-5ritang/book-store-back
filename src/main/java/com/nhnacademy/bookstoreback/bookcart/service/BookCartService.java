@@ -53,6 +53,14 @@ public interface BookCartService {
 	void deleteBookCart(Long bookId, CurrentUserDetails currentUser, String cartId);
 
 	/**
+	 * 장바구니에있는 모든 책 항목을 삭제합니다.
+	 *
+	 * @param currentUser 현재 인증된 사용자의 정보를 담고 있는 객체입니다.
+	 * @param cartId      사용자의 장바구니 ID 입니다.
+	 */
+	void deleteAllBookCart(CurrentUserDetails currentUser, String cartId);
+
+	/**
 	 * 현재 사용자의 새로운 장바구니를 설정하고, 설정된 장바구니를 HTTP 응답에 쿠키로 추가합니다.
 	 *
 	 * @param currentUser 현재 인증된 사용자의 정보를 담고 있는 객체입니다.

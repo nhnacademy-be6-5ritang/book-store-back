@@ -28,10 +28,8 @@ public interface PointTransactionService {
 	 *
 	 * @param currentUser 현재 사용자의 상세 정보.
 	 * @param reviewType 리뷰 타입입니다. 포인트 적립 정책을 결정합니다.
-	 * @return 포인트 거래의 세부 정보를 담고 있는 {@link GetPointTransactionResponse} 객체입니다.
-	 *         포인트 적립 정책 유형, 거래 금액, 거래 일자 등의 정보를 포함합니다.
 	 */
-	GetPointTransactionResponse reviewPointTransaction(CurrentUserDetails currentUser, String reviewType);
+	void reviewPointTransaction(CurrentUserDetails currentUser, String reviewType);
 
 	/**
 	 * 주문 시 주문자의 회원 등급에 따른 포인트 거래 생성

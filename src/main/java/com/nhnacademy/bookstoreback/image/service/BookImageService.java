@@ -1,58 +1,37 @@
 package com.nhnacademy.bookstoreback.image.service;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
-import com.nhnacademy.bookstoreback.book.repository.BookRepository;
-import com.nhnacademy.bookstoreback.image.domain.entity.Image;
-import com.nhnacademy.bookstoreback.book.domain.entity.BookImage;
-import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
-import com.nhnacademy.bookstoreback.image.repository.BookImageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.book.domain.entity.BookImage;
+import com.nhnacademy.bookstoreback.image.domain.entity.Image;
+import com.nhnacademy.bookstoreback.image.repository.BookImageRepository;
+import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 책과 이미지를 매핑하는 작업을 처리하는 서비스 클래스입니다.
+ */
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BookImageService {
-
-	private final BookRepository bookRepository;
 	private final ImageRepository imageRepository;
 	private final BookImageRepository bookImageRepository;
 
-	@Transactional
-	public void mapImageToBook(Book book) {
-		Optional<Image> existingImageOptional = imageRepository.findByImageName(book.getBookTitle());
-
+	public void mapImageToBook(Book book, String imageUrl) {
+		String fileName = book.getBookTitle() + ".jpg";
 		Image image;
-		if (existingImageOptional.isPresent()) {
-			image = existingImageOptional.get();
+		if (imageUrl == null || imageUrl.isEmpty()) {
+			image = new Image(fileName,
+				"http://image.toast.com/aaaacuf/5ritang/books/null.jpg"); // 기본 Url 을 사용
 		} else {
-			image = new Image(book.getBookTitle(), "http://image.toast.com/aaaacuf/5ritang/books/null.jpg"); // 기본 URL을 사용
-			imageRepository.save(image);
+			image = new Image(fileName, imageUrl);
 		}
 
-		if (!bookImageRepository.existsByBookAndImage(book, image)) {
-			BookImage bookImage = new BookImage();
-			bookImage.setBook(book);
-			bookImage.setImage(image);
-			bookImageRepository.save(bookImage);
-		}
-	}
-
-	@Transactional
-	public void mapAllBooksToImages() {
-		List<Book> books = bookRepository.findAll();
-		for (Book book : books) {
-			mapImageToBook(book);
-		}
-	}
-
-	@Transactional
-	public void mapImageForSingleBook(Book book) {
-		mapImageToBook(book);
+		imageRepository.save(image);
+		bookImageRepository.save(new BookImage(book, image));
 	}
 }

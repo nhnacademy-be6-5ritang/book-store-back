@@ -14,6 +14,7 @@ import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleRespons
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
+import com.nhnacademy.bookstoreback.global.util.ImageUtil;
 import com.nhnacademy.bookstoreback.image.domain.entity.Image;
 import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
@@ -171,7 +172,8 @@ public class ReviewServiceImpl implements ReviewService {
 
 		// 파일 이름이 비어있지 않으면 이미지 저장
 		if (request.fileName() != null) {
-			Image image = imageRepository.save(new Image(ImageNameParser(request.fileName()), request.fileName()));
+			Image image = imageRepository.save(
+				new Image(ImageUtil.fileNameParser(request.fileName()), request.fileName()));
 			reviewImageRepository.save(ReviewImage.toEntity(review, image));
 		}
 
@@ -196,7 +198,6 @@ public class ReviewServiceImpl implements ReviewService {
 	 *
 	 * @param reviewId 리뷰의 ID
 	 * @param request 리뷰 업데이트 요청 DTO
-	 * @return 업데이트된 리뷰 응답 DTO
 	 */
 	@Override
 	public void updateReview(Long reviewId, UpdateReviewRequest request) {
@@ -223,31 +224,6 @@ public class ReviewServiceImpl implements ReviewService {
 	public List<GetBookTitleResponse> getBooksByOrderStatusCompletionAndUserId(CurrentUserDetails currentUser) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 		return bookRepository.getBooksByOrderStatusCompletionAndUserId("배송 완료", userId);
-	}
-
-	public static String ImageNameParser(String fileName) {
-		// 파일 이름을 "_"로 분리하여 배열로 만듭니다.
-		String[] parts = fileName.split("_", 2);
-
-		// parts 배열의 두 번째 요소가 실제 파일 이름이 포함된 부분입니다.
-		if (parts.length > 1) {
-			String filePart = parts[1];
-
-			// 파일 이름에서 마지막 "."의 위치를 찾습니다.
-			int lastDotIndex = filePart.lastIndexOf('.');
-
-			// 마지막 "."이 있는 경우
-			if (lastDotIndex != -1) {
-				// 파일 이름의 확장자를 제외한 부분을 반환합니다.
-				return filePart.substring(0, lastDotIndex);
-			} else {
-				// 마지막 "."이 없는 경우 전체 파일 이름을 반환합니다.
-				return filePart;
-			}
-		}
-
-		// "_"가 없거나 제대로 분리되지 않은 경우 빈 문자열 반환
-		return "";
 	}
 
 }

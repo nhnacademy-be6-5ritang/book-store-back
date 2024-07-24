@@ -95,4 +95,18 @@ public class BookCartController {
 		bookCartService.deleteBookCart(bookId, currentUser, cartId);
 		return ResponseEntity.ok().build();
 	}
+
+	/**
+	 * 현재 사용자의 장바구니에서 모든 도서를 삭제합니다.
+	 *
+	 * @param currentUser 현재 사용자의 인증 및 정보
+	 * @param cartId      쿠키에서 가져온 장바구니 ID (선택적)
+	 * @return HTTP 상태 코드 200(OK)
+	 */
+	@DeleteMapping("/all")
+	public ResponseEntity<Void> deleteAllBookCart(@CurrentUser CurrentUserDetails currentUser,
+		@CookieValue(name = "cartId", required = false) String cartId) {
+		bookCartService.deleteAllBookCart(currentUser, cartId);
+		return ResponseEntity.ok().build();
+	}
 }

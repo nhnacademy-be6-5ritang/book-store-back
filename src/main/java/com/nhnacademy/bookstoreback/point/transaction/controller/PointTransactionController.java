@@ -41,10 +41,10 @@ public class PointTransactionController {
 	}
 
 	@PostMapping("/reviews")
-	public ResponseEntity<GetPointTransactionResponse> generalReviewPointTransaction(
+	public ResponseEntity<Void> reviewPointTransaction(
 		@CurrentUser CurrentUserDetails currentUser, @RequestParam String reviewType) {
-		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(pointTransactionService.reviewPointTransaction(currentUser, reviewType));
+		pointTransactionService.reviewPointTransaction(currentUser, reviewType);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 }
