@@ -91,6 +91,17 @@ public class BookCartServiceImpl implements BookCartService {
 		saveWithTtl(bookCart);
 	}
 
+	@Override
+	public void deleteAllBookCart(CurrentUserDetails currentUser, String cartId) {
+		String nowCartId = setupCart(currentUser, cartId);
+
+		BookCart bookCart = bookCartRepository.findById(nowCartId)
+			.orElseThrow(() -> new BookCartNotFoundException(nowCartId));
+
+		bookCart.removeAll();
+		bookCartRepository.save(bookCart);
+	}
+
 	public String setupCart(CurrentUserDetails currentUser, String cartId) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 

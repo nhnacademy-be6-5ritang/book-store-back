@@ -65,4 +65,8 @@ public class BookCart {
 			}
 		}
 	}
+
+	public void removeAll() {
+		bookBundles = new ArrayList<>();
+	}
 }
