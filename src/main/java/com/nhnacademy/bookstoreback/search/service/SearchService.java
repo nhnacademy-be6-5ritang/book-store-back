@@ -13,7 +13,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,16 +26,14 @@ import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.search.dto.reponse.BookSearchResponse;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class SearchService {
-
+	private final RestHighLevelClient client;
+	private final BookRepository bookRepository;
 	private static final Logger logger = Logger.getLogger(SearchService.class.getName());
-
-	@Autowired
-	private RestHighLevelClient client;
-
-	@Autowired
-	private BookRepository bookRepository;
 
 	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) throws IOException {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
