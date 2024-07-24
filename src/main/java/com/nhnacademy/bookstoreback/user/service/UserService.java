@@ -118,6 +118,16 @@ public class UserService {
 		return GetMyUserInfoResponse.fromEntity(user);
 	}
 
+	public GetMyUserInfoResponse getMyUserInfoByOrder(@CurrentUser CurrentUserDetails currentUser) {
+		if (currentUser == null) {
+			return null;
+		}
+
+		User user = userRepository.findById(currentUser.getUserId())
+			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
+		return GetMyUserInfoResponse.fromEntity(user);
+	}
+
 	/**
 	 * 사용자 정보를 수정합니다.
 	 *
