@@ -13,7 +13,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -46,14 +45,6 @@ public class SearchService {
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		sourceBuilder.query(
 			QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn").type("best_fields"));
-
-		// 정렬 설정
-		for (Sort.Order order : sort) {
-			String field = order.getProperty();
-			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-			sourceBuilder.sort(field, sortOrder);
-		}
-
 		searchRequest.source(sourceBuilder);
 
 		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -74,14 +65,6 @@ public class SearchService {
 		SearchRequest searchRequest = new SearchRequest("index-author");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		sourceBuilder.query(QueryBuilders.matchQuery("author_name", query));
-
-		// 정렬 설정
-		for (Sort.Order order : sort) {
-			String field = order.getProperty();
-			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-			sourceBuilder.sort(field, sortOrder);
-		}
-
 		searchRequest.source(sourceBuilder);
 
 		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -102,14 +85,6 @@ public class SearchService {
 		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
 		bookSourceBuilder.query(QueryBuilders.termQuery("author_id", authorId)); // author_id로 검색
-
-		// 정렬 설정
-		for (Sort.Order order : sort) {
-			String field = order.getProperty();
-			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-			bookSourceBuilder.sort(field, sortOrder);
-		}
-
 		bookSearchRequest.source(bookSourceBuilder);
 
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
@@ -130,14 +105,6 @@ public class SearchService {
 		SearchRequest searchRequest = new SearchRequest("index-publisher");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		sourceBuilder.query(QueryBuilders.matchQuery("publisher_name", query));
-
-		// 정렬 설정
-		for (Sort.Order order : sort) {
-			String field = order.getProperty();
-			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-			sourceBuilder.sort(field, sortOrder);
-		}
-
 		searchRequest.source(sourceBuilder);
 
 		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -159,14 +126,6 @@ public class SearchService {
 		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
 		bookSourceBuilder.query(QueryBuilders.termQuery("publisher_id", publisherID)); // publisher_id로 검색
-
-		// 정렬 설정
-		for (Sort.Order order : sort) {
-			String field = order.getProperty();
-			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-			bookSourceBuilder.sort(field, sortOrder);
-		}
-
 		bookSearchRequest.source(bookSourceBuilder);
 
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
@@ -187,14 +146,6 @@ public class SearchService {
 		SearchRequest tagSearchRequest = new SearchRequest("index-tag");
 		SearchSourceBuilder tagSourceBuilder = new SearchSourceBuilder();
 		tagSourceBuilder.query(QueryBuilders.matchQuery("tag_name", query));
-
-		// 정렬 설정
-		for (Sort.Order order : sort) {
-			String field = order.getProperty();
-			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-			tagSourceBuilder.sort(field, sortOrder);
-		}
-
 		tagSearchRequest.source(tagSourceBuilder);
 
 		SearchResponse tagResponse = client.search(tagSearchRequest, RequestOptions.DEFAULT);
@@ -210,14 +161,6 @@ public class SearchService {
 		SearchRequest bookTagSearchRequest = new SearchRequest("index-books-and-tags");
 		SearchSourceBuilder bookTagSourceBuilder = new SearchSourceBuilder();
 		bookTagSourceBuilder.query(QueryBuilders.termQuery("tag_id", tagId));
-
-		// 정렬 설정
-		for (Sort.Order order : sort) {
-			String field = order.getProperty();
-			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-			bookTagSourceBuilder.sort(field, sortOrder);
-		}
-
 		bookTagSearchRequest.source(bookTagSourceBuilder);
 
 		SearchResponse bookTagResponse = client.search(bookTagSearchRequest, RequestOptions.DEFAULT);
@@ -236,14 +179,6 @@ public class SearchService {
 		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
 		bookSourceBuilder.query(boolQueryBuilder);
-
-		// 정렬 설정
-		for (Sort.Order order : sort) {
-			String field = order.getProperty();
-			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-			bookSourceBuilder.sort(field, sortOrder);
-		}
-
 		bookSearchRequest.source(bookSourceBuilder);
 
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
