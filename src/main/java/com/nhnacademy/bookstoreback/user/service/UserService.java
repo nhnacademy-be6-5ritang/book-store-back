@@ -125,7 +125,6 @@ public class UserService {
 
 		User user = userRepository.findById(currentUser.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
-
 		return GetMyUserInfoResponse.fromEntity(user);
 	}
 
