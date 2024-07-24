@@ -120,6 +120,9 @@ public class AddressService {
 	}
 
 	public Optional<GetAddressResponse> getDefaultAddress(CurrentUserDetails currentUser) {
+		if (currentUser == null) {
+			return Optional.empty();
+		}
 		Long userId = currentUser.getUserId();
 
 		Address address = addressRepository.findByUserIdAndIsDefault(userId, true)

@@ -51,7 +51,6 @@ public class AddressController {
 	}
 
 	@GetMapping("/default")
-	@AuthorizeRole({"MEMBER"})
 	public ResponseEntity<Optional<GetAddressResponse>> getDefaultAddress(@CurrentUser CurrentUserDetails currentUser) {
 		Optional<GetAddressResponse> address = addressService.getDefaultAddress(currentUser);
 		return ResponseEntity.status(HttpStatus.OK).body(address);
