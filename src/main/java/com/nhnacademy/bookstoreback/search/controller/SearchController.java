@@ -24,14 +24,19 @@ public class SearchController {
 
 	private static final Logger logger = Logger.getLogger(SearchController.class.getName());
 
-	@Autowired
 	private SearchService searchService;
 
 	@GetMapping("/books")
-	public Page<BookSearchResponse> searchBooks(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchBooks(
+		@RequestParam String query,
+		@PageableDefault(page = 1, size = 20) Pageable pageable,
+		@RequestParam(required = false, defaultValue = "bookTitle") String sortBy,
+		@RequestParam(required = false, defaultValue = "asc") String sortOrder
+	) throws IOException {
 		logger.info("Received request to search books with query: " + query);
-		return searchService.searchBooks(query, pageable);
+		return searchService.searchBooks(query, pageable, sortBy, sortOrder);
 	}
+
 
 	@GetMapping("/authors")
 	public Page<BookSearchResponse> searchAuthors(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
