@@ -53,7 +53,7 @@ public class RoleControllerTest {
 
 		when(roleService.createRole(any(CreateRoleRequest.class))).thenReturn(response);
 
-		mockMvc.perform(post("/roles")
+		mockMvc.perform(post("/api/roles")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 				.with(csrf())
@@ -76,7 +76,7 @@ public class RoleControllerTest {
 
 		when(roleService.getRoles()).thenReturn(responses);
 
-		mockMvc.perform(get("/roles"))
+		mockMvc.perform(get("/api/roles"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].roleName").value("TEST_MEMBER"))
 			.andExpect(jsonPath("$[1].roleName").value("TEST_MEMBER_ADMIN"));
@@ -89,7 +89,7 @@ public class RoleControllerTest {
 
 		doNothing().when(roleService).deleteRole(roleName);
 
-		mockMvc.perform(delete("/roles/{roleName}", roleName)
+		mockMvc.perform(delete("/api/roles/{roleName}", roleName)
 				.with(csrf())
 			)
 			.andExpect(status().isNoContent());

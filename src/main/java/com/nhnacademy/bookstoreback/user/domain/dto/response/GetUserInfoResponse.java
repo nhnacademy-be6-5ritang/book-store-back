@@ -6,6 +6,9 @@ import java.util.List;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.userrole.domain.entity.UserRole;
 
+import lombok.Builder;
+
+@Builder
 public record GetUserInfoResponse(
 	Long userId,
 	String name,

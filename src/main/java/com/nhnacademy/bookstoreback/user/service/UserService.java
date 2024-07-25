@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -213,12 +214,11 @@ public class UserService {
 		return GetPaycoUserTokenInfoResponse.fromEntity(user);
 	}
 
-	public List<GetUserInfoResponse> getUsers(Pageable pageable) {
+	public Page<GetUserInfoResponse> getUsers(Pageable pageable) {
 		int page = pageable.getPageNumber() > 0 ? pageable.getPageNumber() - 1 : 0;
 		int size = pageable.isPaged() && pageable.getPageSize() > 0 ? pageable.getPageSize() : 10;
 
 		return userRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")))
-			.map(GetUserInfoResponse::fromEntity)
-			.getContent();
+			.map(GetUserInfoResponse::fromEntity);
 	}
 }
