@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CreateReviewRequest(
-	@NotNull Long bookId,
+	@NotNull Long orderListId,
 	@NotNull int reviewScore,
 	@NotBlank @Size(max = 400) String reviewComment,
 	String fileName) {

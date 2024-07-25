@@ -3,7 +3,7 @@ package com.nhnacademy.bookstoreback.review.domain.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -49,9 +50,9 @@ public class Review {
 	private LocalDateTime reviewCreatedAt = LocalDateTime.now();
 
 	@NotNull
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "book_id", nullable = false)
-	private Book book;
+	@OneToOne(optional = false)
+	@JoinColumn(name = "order_list_id", nullable = false)
+	private BookOrder bookOrder;
 
 	@NotNull
 	@ManyToOne(optional = false)
@@ -62,18 +63,18 @@ public class Review {
 	private List<ReviewImage> reviewImages;
 
 	@Builder
-	public Review(int reviewScore, String reviewComment, Book book, User user) {
+	public Review(int reviewScore, String reviewComment, BookOrder bookOrder, User user) {
 		this.reviewScore = reviewScore;
 		this.reviewComment = reviewComment;
-		this.book = book;
+		this.bookOrder = bookOrder;
 		this.user = user;
 	}
 
-	public static Review toEntity(CreateReviewRequest request, Book book, User user) {
+	public static Review toEntity(CreateReviewRequest request, BookOrder bookOrder, User user) {
 		return Review.builder()
 			.reviewScore(request.reviewScore())
 			.reviewComment(request.reviewComment())
-			.book(book)
+			.bookOrder(bookOrder)
 			.user(user)
 			.build();
 	}
