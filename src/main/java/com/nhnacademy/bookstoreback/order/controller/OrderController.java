@@ -2,8 +2,6 @@ package com.nhnacademy.bookstoreback.order.controller;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,7 +32,6 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.CreatePaperRespons
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAdminAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllRefundResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookByOrderCouponResponse;
@@ -343,13 +340,6 @@ public class OrderController {
 	@GetMapping("/users/all")
 	public ResponseEntity<GetAllListOrderResponse> findAllByUserId(@CurrentUser CurrentUserDetails currentUserDetails) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findAllUserId(currentUserDetails));
-	}
-
-	@GetMapping("/users/all/Page")
-	public ResponseEntity<Page<GetAllOrderResponse>> findAllPageByUserId(
-		@CurrentUser CurrentUserDetails currentUserDetails, Pageable pageable) {
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(orderServiceImpl.findAllPageByUserId(currentUserDetails, pageable));
 	}
 
 	/**

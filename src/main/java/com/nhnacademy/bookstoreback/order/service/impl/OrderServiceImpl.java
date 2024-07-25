@@ -8,9 +8,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -214,25 +212,6 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 		return new GetAllListOrderResponse(orderResponses);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public Page<GetAllOrderResponse> findAllPageByUserId(@CurrentUser CurrentUserDetails currentUserDetails,
-		Pageable pageable) {
-		if (currentUserDetails == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_USER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new OrderFailException(errorStatus);
-		}
-		int page = pageable.getPageNumber() > 0 ? pageable.getPageNumber() - 1 : 0;
-		int size = pageable.isPaged() && pageable.getPageSize() > 0 ? pageable.getPageSize() : 10;
-		Page<Order> orders = orderRepository.findAllByUser_Id(currentUserDetails.getUserId(),
-			PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "orderDate")));
-		if (orders == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDERS_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new OrderFailException(errorStatus);
-		}
-		return orders.map(GetAllOrderResponse::from);
 	}
 
 	@Override

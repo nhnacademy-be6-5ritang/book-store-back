@@ -2,7 +2,6 @@ package com.nhnacademy.bookstoreback.order.service;
 
 import java.math.BigDecimal;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
@@ -12,7 +11,6 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateCartOrderRes
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderByStatusResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
-import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetNonOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
@@ -130,13 +128,4 @@ public interface OrderService {
 	 * @return 주문 완료 페이지 내용
 	 */
 	CreateOrderResponse updateCartOrder(CreateOrderRequest createOrderRequest, Long orderId);
-
-	/**
-	 * 유저 주문 내역 다 가져오기
-	 * @param currentUserDetails 유저 정보
-	 * @param pageable 페이징 처리
-	 * @return 유저 주문 내역
-	 */
-	Page<GetAllOrderResponse> findAllPageByUserId(@CurrentUser CurrentUserDetails currentUserDetails,
-		Pageable pageable);
 }
