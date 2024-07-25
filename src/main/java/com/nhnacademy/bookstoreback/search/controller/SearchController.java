@@ -27,16 +27,10 @@ public class SearchController {
 	private SearchService searchService;
 
 	@GetMapping("/books")
-	public Page<BookSearchResponse> searchBooks(
-		@RequestParam String query,
-		@PageableDefault(page = 1, size = 20) Pageable pageable,
-		@RequestParam(required = false, defaultValue = "bookTitle") String sortBy,
-		@RequestParam(required = false, defaultValue = "asc") String sortOrder
-	) throws IOException {
+	public Page<BookSearchResponse> searchBooks(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
 		logger.info("Received request to search books with query: " + query);
-		return searchService.searchBooks(query, pageable, sortBy, sortOrder);
+		return searchService.searchBooks(query, pageable);
 	}
-
 
 	@GetMapping("/authors")
 	public Page<BookSearchResponse> searchAuthors(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
