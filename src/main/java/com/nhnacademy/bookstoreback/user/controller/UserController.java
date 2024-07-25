@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -98,8 +99,8 @@ public class UserController {
 
 	@GetMapping
 	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
-	public ResponseEntity<List<GetUserInfoResponse>> getUsers(@PageableDefault(size = 10) Pageable pageable) {
-		List<GetUserInfoResponse> getUserInfoResponses = userService.getUsers(pageable);
+	public ResponseEntity<Page<GetUserInfoResponse>> getUsers(@PageableDefault(size = 10) Pageable pageable) {
+		Page<GetUserInfoResponse> getUserInfoResponses = userService.getUsers(pageable);
 		return ResponseEntity.status(HttpStatus.OK).body(getUserInfoResponses);
 	}
 
