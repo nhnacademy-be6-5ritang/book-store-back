@@ -22,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1341,7 +1340,7 @@ class OrderControllerTest {
 
 		mockMvc.perform(get("/api/orders/refunded/{orderInfoId}", orderInfoId)
 				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(MockMvcResultMatchers.status().isNoContent());
+			.andExpect(status().isNoContent());
 	}
 
 	@Test
@@ -1397,7 +1396,7 @@ class OrderControllerTest {
 
 		RefundPolicy refundPolicy = new RefundPolicy(refundPolicyId, "Original content", 30);
 
-		when(refundPolicyRepository.findById(refundPolicyId)).thenReturn(java.util.Optional.of(refundPolicy));
+		when(refundPolicyRepository.findById(refundPolicyId)).thenReturn(Optional.of(refundPolicy));
 		doNothing().when(refundPolicyServiceImpl).updateRefundPolicy(any(UpdateRefundPolicyRequest.class), anyLong());
 
 		// Act & Assert

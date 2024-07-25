@@ -18,4 +18,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	Order findByOrderId(Long orderId);
 
 	List<Order> findAllByOrderStatus_OrderStatusId(Long orderStatusId);
+
+	Page<Order> findAllByUser_Id(Long userId, Pageable page);
 }
