@@ -1,5 +1,7 @@
 package com.nhnacademy.bookstoreback.review.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +13,22 @@ import com.nhnacademy.bookstoreback.review.domain.entity.Review;
  * Review 엔티티를 관리하는 Spring Data JPA 리포지토리입니다.
  */
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+
+	/**
+	 * 모든 리뷰중 이미지가 없는 리뷰(Review)들을 페이지네이션하여 조회합니다.
+	 *
+	 * @param pageable 페이지네이션 정보 (페이지 번호, 페이지 크기 등)
+	 * @return 이미지가 없는 해당 책의 리뷰들을 페이지네이션한 결과 (Page 객체)
+	 */
+	Page<Review> findAllByReviewImagesEmpty(Pageable pageable);
+
+	/**
+	 * 모든 리뷰중 이미지가 있는 리뷰(Review)들을 페이지네이션하여 조회합니다.
+	 *
+	 * @param pageable 페이지네이션 정보 (페이지 번호, 페이지 크기 등)
+	 * @return 이미지가 있는 해당 책의 리뷰들을 페이지네이션한 결과 (Page 객체)
+	 */
+	Page<Review> findAllByReviewImagesNotEmpty(Pageable pageable);
 
 	/**
 	 * 책(Book)의 ID를 기반으로 리뷰(Review)들을 페이지네이션하여 조회합니다.
@@ -65,4 +83,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	 * @return 이미지가 있는 해당 사용자의 리뷰들을 페이지네이션한 결과 (Page 객체)
 	 */
 	Page<Review> findAllByUserIdAndReviewImagesNotEmpty(Long userId, Pageable pageable);
+
+	boolean existsByBookOrderOrderListId(Long orderListId);
+
+	List<Review> findAllByUserId(Long userId);
 }

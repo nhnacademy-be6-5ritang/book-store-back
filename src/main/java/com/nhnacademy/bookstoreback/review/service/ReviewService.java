@@ -6,9 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
+import com.nhnacademy.bookstoreback.review.domain.dto.response.GetBookOrderWithoutReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
 
 /**
@@ -23,7 +23,23 @@ public interface ReviewService {
 	 * @param pageable 페이지네이션 정보 (페이지 번호, 페이지 크기 등)
 	 * @return 페이지네이션된 모든 리뷰 목록 (Page 객체)
 	 */
-	Page<GetReviewResponse> findAllReviews(Pageable pageable);
+	Page<GetReviewResponse> getReviews(Pageable pageable);
+
+	/**
+	 * 모든 사진 리뷰들을 페이지네이션하여 조회합니다.
+	 *
+	 * @param pageable 페이지네이션 정보 (페이지 번호, 페이지 크기 등)
+	 * @return 페이지네이션된 특정 책의 사진 리뷰 목록 (Page 객체)
+	 */
+	Page<GetReviewResponse> getPhotoReviews(Pageable pageable);
+
+	/**
+	 * 모든 일반 리뷰들을 페이지네이션하여 조회합니다.
+	 *
+	 * @param pageable 페이지네이션 정보 (페이지 번호, 페이지 크기 등)
+	 * @return 페이지네이션된 특정 책의 일반 리뷰 목록 (Page 객체)
+	 */
+	Page<GetReviewResponse> getGeneralReviews(Pageable pageable);
 
 	/**
 	 * 특정 책의 리뷰들을 페이지네이션하여 조회합니다.
@@ -124,5 +140,5 @@ public interface ReviewService {
 	 * @param currentUser 현재 사용자의 정보 (사용자 ID 등)
 	 * @return 사용자가 리뷰할 수 있는 책 목록
 	 */
-	List<GetBookTitleResponse> getBooksByOrderStatusCompletionAndUserId(CurrentUserDetails currentUser);
+	List<GetBookOrderWithoutReviewResponse> getBooksWithoutReviews(CurrentUserDetails currentUser);
 }
