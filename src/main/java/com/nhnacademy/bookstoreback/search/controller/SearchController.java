@@ -24,7 +24,6 @@ public class SearchController {
 
 	private static final Logger logger = Logger.getLogger(SearchController.class.getName());
 
-	@Autowired
 	private SearchService searchService;
 
 	@GetMapping("/books")
