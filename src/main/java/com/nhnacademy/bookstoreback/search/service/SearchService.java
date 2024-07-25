@@ -13,7 +13,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -36,32 +35,23 @@ public class SearchService {
 	private final BookRepository bookRepository;
 	private static final Logger logger = Logger.getLogger(SearchService.class.getName());
 
-	public Page<BookSearchResponse> searchBooks(
-		String query,
-		Pageable pageable,
-		String sortBy,
-		String sortOrder
-	) throws IOException {
+	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) throws IOException {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
+		Sort sort = pageable.getSort();
 		logger.info("책 검색 쿼리: " + query);
 
 		SearchRequest searchRequest = new SearchRequest("books");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		sourceBuilder.query(
-			QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn").type("best_fields")
-		);
-
-		// Apply sorting
-		sourceBuilder.sort(sortBy, sortOrder.equalsIgnoreCase("asc") ? SortOrder.ASC : SortOrder.DESC);
-
+			QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn").type("best_fields"));
 		searchRequest.source(sourceBuilder);
 
 		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 		logger.info("책 검색 응답: " + response.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(response.toString());
-		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, pageable.getSort()),
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
 			response.getHits().getTotalHits().value);
 	}
 
