@@ -67,7 +67,7 @@ class ReviewControllerTest {
 	void testGetReviews() throws Exception {
 		when(reviewService.getReviews(any())).thenReturn(new PageImpl<>(Collections.singletonList(reviewResponse)));
 
-		mockMvc.perform(get("/api/reviews/page"))
+		mockMvc.perform(get("/api/reviews/all/page"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.length()").value(11));
