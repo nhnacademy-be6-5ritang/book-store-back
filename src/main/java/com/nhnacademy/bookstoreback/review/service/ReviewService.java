@@ -117,7 +117,7 @@ public interface ReviewService {
 	 * @param reviewId 리뷰 ID
 	 * @param request  수정할 리뷰의 정보 (수정할 평점, 코멘트 등)
 	 */
-	void updateReview(Long reviewId, UpdateReviewRequest request);
+	void updateReview(Long reviewId, UpdateReviewRequest request, CurrentUserDetails currentUser);
 
 	/**
 	 * 주어진 ID에 해당하는 리뷰를 삭제합니다.

@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
-import com.nhnacademy.bookstoreback.book.repository.BookRepository;
+import com.nhnacademy.bookstoreback.global.exception.AccessDeniedException;
 import com.nhnacademy.bookstoreback.global.util.ImageUtil;
 import com.nhnacademy.bookstoreback.image.domain.entity.Image;
 import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
@@ -46,11 +46,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class ReviewServiceImpl implements ReviewService {
-	private final ReviewRepository reviewRepository;
-	private final BookRepository bookRepository;
 	private final UserRepository userRepository;
-	private final ImageRepository imageRepository;
+	private final ReviewRepository reviewRepository;
 	private final ReviewImageRepository reviewImageRepository;
+	private final ImageRepository imageRepository;
 	private final BookOrderRepository bookOrderRepository;
 
 	/**
@@ -251,8 +250,28 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param request 리뷰 업데이트 요청 DTO
 	 */
 	@Override
-	public void updateReview(Long reviewId, UpdateReviewRequest request) {
+	public void updateReview(Long reviewId, UpdateReviewRequest request, CurrentUserDetails currentUser) {
+		Long userId = currentUser != null ? currentUser.getUserId() : null;
+
+		userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
 		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
+		Long requestId = review.getUser().getId();
+
+		if (!requestId.equals(userId)) {
+			throw new AccessDeniedException(requestId, userId);
+		}
+
+		// 기존 리뷰 이미지 매핑 제거
+		reviewImageRepository.deleteAllByReview_ReviewId(reviewId);
+
+		// 파일 이름이 비어있지 않으면 이미지 저장
+		if (request.fileName() != null) {
+			Image image = imageRepository.save(
+				new Image(ImageUtil.fileNameParser(request.fileName()), request.fileName()));
+			reviewImageRepository.save(ReviewImage.toEntity(review, image));
+		}
+		
 		review.updateReviewScore(request.reviewScore(), request.reviewComment());
 	}
 
@@ -263,6 +282,7 @@ public class ReviewServiceImpl implements ReviewService {
 	 */
 	@Override
 	public void deleteReview(Long reviewId) {
+		reviewImageRepository.deleteAllByReview_ReviewId(reviewId);
 		reviewRepository.deleteById(reviewId);
 	}
 

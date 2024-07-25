@@ -60,7 +60,7 @@ public class ReviewController {
 		@PageableDefault(page = 1, size = 5) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getPhotoReviews(pageable));
 	}
-	
+
 	/**
 	 * 모든 일반 리뷰를 페이지네이션하여 조회합니다.
 	 *
@@ -200,8 +200,8 @@ public class ReviewController {
 	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@PutMapping("/reviews/{reviewId}")
 	public ResponseEntity<Void> updateReview(@Valid @RequestBody UpdateReviewRequest request,
-		@PathVariable Long reviewId) {
-		reviewService.updateReview(reviewId, request);
+		@PathVariable Long reviewId, @CurrentUser CurrentUserDetails currentUser) {
+		reviewService.updateReview(reviewId, request, currentUser);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
@@ -215,7 +215,7 @@ public class ReviewController {
 	@DeleteMapping("/reviews/{reviewId}")
 	public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId) {
 		reviewService.deleteReview(reviewId);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok().build();
 	}
 
 	/**
