@@ -105,7 +105,7 @@ class ReviewControllerTest {
 	@Test
 	@WithMockUser(roles = "MEMBER")
 	void testUpdateReview() throws Exception {
-		UpdateReviewRequest updateReviewRequest = new UpdateReviewRequest(1, "update comment");
+		UpdateReviewRequest updateReviewRequest = new UpdateReviewRequest(1, "update comment", "test.png");
 		mockMvc.perform(put("/api/reviews/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateReviewRequest)))
@@ -116,7 +116,7 @@ class ReviewControllerTest {
 	@WithMockUser(roles = "MEMBER")
 	void testDeleteReview() throws Exception {
 		mockMvc.perform(delete("/api/reviews/1"))
-			.andExpect(status().isNoContent());
+			.andExpect(status().isOk());
 	}
 
 	@Test
