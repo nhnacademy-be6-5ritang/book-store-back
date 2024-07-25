@@ -17,8 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -231,40 +234,32 @@ public class UserControllerTest {
 	}
 
 	@Test
-	void getUsers() throws Exception {
-		GetUserInfoResponse userInfoResponse1 = new GetUserInfoResponse(
-			1L, "User1", "user1@example.com", LocalDateTime.now(), List.of("ROLE_USER"), "REGULAR", "ACTIVE"
-		);
-		GetUserInfoResponse userInfoResponse2 = new GetUserInfoResponse(
-			2L, "User2", "user2@example.com", LocalDateTime.now(), List.of("ROLE_USER"), "REGULAR", "ACTIVE"
+	void testGetUsers() throws Exception {
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+		List<GetUserInfoResponse> userList = List.of(
+			GetUserInfoResponse.builder().userId(1L).name("User 1").email("user1@example.com").build(),
+			GetUserInfoResponse.builder().userId(2L).name("User 2").email("user2@example.com").build()
 		);
 
-		List<GetUserInfoResponse> userInfoResponseList = List.of(userInfoResponse1, userInfoResponse2);
-		PageImpl<GetUserInfoResponse> userPage = new PageImpl<>(userInfoResponseList);
+		Page<GetUserInfoResponse> userPage = new PageImpl<>(userList, pageable, userList.size());
 
-		when(userService.getUsers(any(Pageable.class))).thenReturn(userInfoResponseList);
+		when(userService.getUsers(any(Pageable.class))).thenReturn(userPage);
 
 		mockMvc.perform(get("/api/users")
 				.param("page", "0")
 				.param("size", "10")
-				.with(csrf())
-				.with(user(currentUser))
-			)
+				.param("sort", "createdAt,desc")
+				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$[0].userId").value(userInfoResponse1.userId()))
-			.andExpect(jsonPath("$[0].name").value(userInfoResponse1.name()))
-			.andExpect(jsonPath("$[0].email").value(userInfoResponse1.email()))
-			.andExpect(jsonPath("$[0].createdAt").exists())
-			.andExpect(jsonPath("$[0].roles[0]").value("ROLE_USER"))
-			.andExpect(jsonPath("$[0].userGradeName").value(userInfoResponse1.userGradeName()))
-			.andExpect(jsonPath("$[0].userStatusName").value(userInfoResponse1.userStatusName()))
-			.andExpect(jsonPath("$[1].userId").value(userInfoResponse2.userId()))
-			.andExpect(jsonPath("$[1].name").value(userInfoResponse2.name()))
-			.andExpect(jsonPath("$[1].email").value(userInfoResponse2.email()))
-			.andExpect(jsonPath("$[1].createdAt").exists())
-			.andExpect(jsonPath("$[1].roles[0]").value("ROLE_USER"))
-			.andExpect(jsonPath("$[1].userGradeName").value(userInfoResponse2.userGradeName()))
-			.andExpect(jsonPath("$[1].userStatusName").value(userInfoResponse2.userStatusName()));
+			.andExpect(jsonPath("$.content[0].name").value("User 1"))
+			.andExpect(jsonPath("$.content[1].name").value("User 2"))
+			.andExpect(jsonPath("$.size").value(10))
+			.andExpect(jsonPath("$.totalElements").value(userList.size()))
+			.andExpect(jsonPath("$.totalPages").value(1))
+			.andExpect(jsonPath("$.number").value(0));
+
+		verify(userService, times(1)).getUsers(any(Pageable.class));
 	}
 
 	@Test

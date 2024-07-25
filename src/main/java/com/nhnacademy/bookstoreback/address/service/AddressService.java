@@ -89,7 +89,8 @@ public class AddressService {
 		List<Address> otherAddresses = addressRepository.findAllByUserId(userId);
 
 		for (Address otherAddress : otherAddresses) {
-			if (updateAddressRequest.alias().equals(otherAddress.getAlias())) {
+			if (!addressId.equals(otherAddress.getId())
+				&& updateAddressRequest.alias().equals(otherAddress.getAlias())) {
 				throw new AliasAlreadyExistsException(updateAddressRequest.alias());
 			}
 		}

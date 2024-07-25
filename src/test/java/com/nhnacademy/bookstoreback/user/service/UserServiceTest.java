@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -389,65 +390,11 @@ class UserServiceTest {
 
 		when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
 
-		List<GetUserInfoResponse> result = userService.getUsers(pageable);
+		Page<GetUserInfoResponse> result = userService.getUsers(pageable);
 
 		assertThat(result).isNotNull();
-		assertThat(result.size()).isEqualTo(10);
-		assertThat(result.getFirst().name()).isEqualTo("User 0");
-		assertThat(result.getFirst().email()).isEqualTo("user0@example.com");
+		assertThat(result.getContent().size()).isEqualTo(10);
+		assertThat(result.getContent().get(0).name()).isEqualTo("User 0");
+		assertThat(result.getContent().get(0).email()).isEqualTo("user0@example.com");
 	}
-
-	// @Test
-	// void testGetUsersWithNoPaging() {
-	// 	Pageable pageable = Pageable.unpaged();
-	//
-	// 	List<User> userList = IntStream.range(0, 10)
-	// 		.mapToObj(i -> User.builder()
-	// 			.id((long)i)
-	// 			.name("User " + i)
-	// 			.email("user" + i + "@example.com")
-	// 			.createdAt(LocalDateTime.now().minusDays(i))
-	// 			.status(userStatus)
-	// 			.userGrade(userGrade)
-	// 			.build())
-	// 		.collect(Collectors.toList());
-	//
-	// 	PageImpl<User> userPage = new PageImpl<>(userList);
-	//
-	// 	when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
-	//
-	// 	List<GetUserInfoResponse> result = userService.getUsers(pageable);
-	//
-	// 	assertThat(result).isNotNull();
-	// 	assertThat(result.size()).isEqualTo(10);
-	// 	assertThat(result.getFirst().name()).isEqualTo("User 0");
-	// 	assertThat(result.getFirst().email()).isEqualTo("user0@example.com");
-	// }
-	//
-	// @Test
-	// void testGetUsersWithZeroPageSize() {
-	// 	Pageable pageable = PageRequest.of(0, 0, Sort.by(Sort.Direction.DESC, "createdAt"));
-	//
-	// 	List<User> userList = IntStream.range(0, 10)
-	// 		.mapToObj(i -> User.builder()
-	// 			.id((long)i)
-	// 			.name("User " + i)
-	// 			.email("user" + i + "@example.com")
-	// 			.createdAt(LocalDateTime.now().minusDays(i))
-	// 			.status(userStatus)
-	// 			.userGrade(userGrade)
-	// 			.build())
-	// 		.collect(Collectors.toList());
-	//
-	// 	PageImpl<User> userPage = new PageImpl<>(userList);
-	//
-	// 	when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
-	//
-	// 	List<GetUserInfoResponse> result = userService.getUsers(pageable);
-	//
-	// 	assertThat(result).isNotNull();
-	// 	assertThat(result.size()).isEqualTo(10);
-	// 	assertThat(result.getFirst().name()).isEqualTo("User 0");
-	// 	assertThat(result.getFirst().email()).isEqualTo("user0@example.com");
-	// }
 }
