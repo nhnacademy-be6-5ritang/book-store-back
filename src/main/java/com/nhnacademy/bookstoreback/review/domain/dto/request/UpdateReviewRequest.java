@@ -8,5 +8,6 @@ import lombok.Builder;
 @Builder
 public record UpdateReviewRequest(
 	@NotNull int reviewScore,
-	@NotBlank @Size(max = 400) String reviewComment) {
+	@NotBlank @Size(max = 400) String reviewComment,
+	String fileName) {
 }

@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
+import com.nhnacademy.bookstoreback.review.domain.dto.response.GetBookOrderWithoutReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
 import com.nhnacademy.bookstoreback.review.service.ReviewService;
 
@@ -44,9 +44,33 @@ public class ReviewController {
 	 * @param pageable 페이지네이션 정보 (페이지 번호, 페이지 크기 등)
 	 * @return 페이지네이션된 모든 리뷰 목록 (Page 객체)
 	 */
-	@GetMapping("/reviews/page")
+	@GetMapping("/reviews/all/page")
 	public ResponseEntity<Page<GetReviewResponse>> getReviews(@PageableDefault(page = 1, size = 5) Pageable pageable) {
-		return ResponseEntity.status(HttpStatus.OK).body(reviewService.findAllReviews(pageable));
+		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getReviews(pageable));
+	}
+
+	/**
+	 * 모든 사진 리뷰를 페이지네이션하여 조회합니다.
+	 *
+	 * @param pageable 페이지네이션 정보 (페이지 번호, 페이지 크기 등)
+	 * @return 페이지네이션된 모든 리뷰 목록 (Page 객체)
+	 */
+	@GetMapping("/reviews/photo/page")
+	public ResponseEntity<Page<GetReviewResponse>> getPhotoReviews(
+		@PageableDefault(page = 1, size = 5) Pageable pageable) {
+		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getPhotoReviews(pageable));
+	}
+
+	/**
+	 * 모든 일반 리뷰를 페이지네이션하여 조회합니다.
+	 *
+	 * @param pageable 페이지네이션 정보 (페이지 번호, 페이지 크기 등)
+	 * @return 페이지네이션된 모든 리뷰 목록 (Page 객체)
+	 */
+	@GetMapping("/reviews/general/page")
+	public ResponseEntity<Page<GetReviewResponse>> getGeneralReviews(
+		@PageableDefault(page = 1, size = 5) Pageable pageable) {
+		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getGeneralReviews(pageable));
 	}
 
 	/**
@@ -176,8 +200,8 @@ public class ReviewController {
 	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@PutMapping("/reviews/{reviewId}")
 	public ResponseEntity<Void> updateReview(@Valid @RequestBody UpdateReviewRequest request,
-		@PathVariable Long reviewId) {
-		reviewService.updateReview(reviewId, request);
+		@PathVariable Long reviewId, @CurrentUser CurrentUserDetails currentUser) {
+		reviewService.updateReview(reviewId, request, currentUser);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
@@ -191,7 +215,7 @@ public class ReviewController {
 	@DeleteMapping("/reviews/{reviewId}")
 	public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId) {
 		reviewService.deleteReview(reviewId);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok().build();
 	}
 
 	/**
@@ -213,9 +237,9 @@ public class ReviewController {
 	 */
 	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@GetMapping("/reviews/create/possible")
-	ResponseEntity<List<GetBookTitleResponse>> getBooksByOrderStatusCompletionAndUserId(
+	ResponseEntity<List<GetBookOrderWithoutReviewResponse>> getBooksWithoutReviews(
 		@CurrentUser CurrentUserDetails currentUser) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(reviewService.getBooksByOrderStatusCompletionAndUserId(currentUser));
+			.body(reviewService.getBooksWithoutReviews(currentUser));
 	}
 }

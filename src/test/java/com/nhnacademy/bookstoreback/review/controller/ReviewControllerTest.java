@@ -23,11 +23,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
-import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleResponse;
 import com.nhnacademy.bookstoreback.image.domain.entity.Image;
 import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
+import com.nhnacademy.bookstoreback.review.domain.dto.response.GetBookOrderWithoutReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
 import com.nhnacademy.bookstoreback.review.domain.entity.ReviewImage;
@@ -65,9 +65,9 @@ class ReviewControllerTest {
 
 	@Test
 	void testGetReviews() throws Exception {
-		when(reviewService.findAllReviews(any())).thenReturn(new PageImpl<>(Collections.singletonList(reviewResponse)));
+		when(reviewService.getReviews(any())).thenReturn(new PageImpl<>(Collections.singletonList(reviewResponse)));
 
-		mockMvc.perform(get("/api/reviews/page"))
+		mockMvc.perform(get("/api/reviews/all/page"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.length()").value(11));
@@ -105,7 +105,7 @@ class ReviewControllerTest {
 	@Test
 	@WithMockUser(roles = "MEMBER")
 	void testUpdateReview() throws Exception {
-		UpdateReviewRequest updateReviewRequest = new UpdateReviewRequest(1, "update comment");
+		UpdateReviewRequest updateReviewRequest = new UpdateReviewRequest(1, "update comment", "test.png");
 		mockMvc.perform(put("/api/reviews/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateReviewRequest)))
@@ -116,7 +116,7 @@ class ReviewControllerTest {
 	@WithMockUser(roles = "MEMBER")
 	void testDeleteReview() throws Exception {
 		mockMvc.perform(delete("/api/reviews/1"))
-			.andExpect(status().isNoContent());
+			.andExpect(status().isOk());
 	}
 
 	@Test
@@ -131,8 +131,9 @@ class ReviewControllerTest {
 	@Test
 	@WithMockUser(roles = "MEMBER")
 	void testGetBooksByOrderStatusCompletionAndUserId() throws Exception {
-		List<GetBookTitleResponse> books = Collections.singletonList(new GetBookTitleResponse(1L, "Book Title"));
-		when(reviewService.getBooksByOrderStatusCompletionAndUserId(any(CurrentUserDetails.class))).thenReturn(books);
+		List<GetBookOrderWithoutReviewResponse> books = Collections.singletonList(
+			new GetBookOrderWithoutReviewResponse(1L, "Book Title"));
+		when(reviewService.getBooksWithoutReviews(any(CurrentUserDetails.class))).thenReturn(books);
 
 		mockMvc.perform(get("/api/reviews/create/possible"))
 			.andExpect(status().isOk())
