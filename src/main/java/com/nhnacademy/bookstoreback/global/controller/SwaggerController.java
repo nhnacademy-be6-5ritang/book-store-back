@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/coupons/api")
+@RequestMapping("/api")
 public class SwaggerController {
 	private final OpenApiResource openApiResource;
 
