@@ -24,8 +24,8 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleResponse;
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.image.domain.entity.Image;
+import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
@@ -56,7 +56,7 @@ class ReviewControllerTest {
 	@BeforeEach
 	void setUp() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-		review = new Review(3, "comment", mock(Book.class), mock(User.class));
+		review = new Review(3, "comment", mock(BookOrder.class), mock(User.class));
 		reviewImage = new ReviewImage(new Image("fileName", "imageUrl"), review);
 
 		reviewResponse = GetReviewResponse.fromEntity(review, reviewImage);

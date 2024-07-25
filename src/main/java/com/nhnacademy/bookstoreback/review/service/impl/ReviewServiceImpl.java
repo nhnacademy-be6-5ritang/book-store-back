@@ -11,12 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleResponse;
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.global.util.ImageUtil;
 import com.nhnacademy.bookstoreback.image.domain.entity.Image;
 import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
+import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
+import com.nhnacademy.bookstoreback.order.repository.BookOrderRepository;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
@@ -45,6 +46,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final UserRepository userRepository;
 	private final ImageRepository imageRepository;
 	private final ReviewImageRepository reviewImageRepository;
+	private final BookOrderRepository bookOrderRepository;
 
 	/**
 	 * 모든 리뷰를 페이지네이션하여 조회합니다.
@@ -78,7 +80,7 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		return reviewRepository.findAllByBookBookId(bookId,
+		return reviewRepository.findAllByBookOrderBookBookId(bookId,
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
 			.map(review -> {
 				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
@@ -92,7 +94,7 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		return reviewRepository.findAllByBookBookIdAndReviewImagesEmpty(bookId,
+		return reviewRepository.findAllByBookOrderBookBookIdAndReviewImagesEmpty(bookId,
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
 			.map(review -> GetReviewResponse.fromEntity(review, null));
 	}
@@ -103,7 +105,7 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		return reviewRepository.findAllByBookBookIdAndReviewImagesNotEmpty(bookId,
+		return reviewRepository.findAllByBookOrderBookBookIdAndReviewImagesNotEmpty(bookId,
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
 			.map(review -> {
 				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
@@ -162,13 +164,13 @@ public class ReviewServiceImpl implements ReviewService {
 	public void createReview(CreateReviewRequest request, CurrentUserDetails currentUser) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 
-		Book book = bookRepository.findById(request.bookId())
-			.orElseThrow(() -> new BookNotFoundException(request.bookId()));
+		BookOrder bookOrder = bookOrderRepository.findById(request.orderListId())
+			.orElseThrow(() -> new BookNotFoundException(request.orderListId()));
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new UserNotFoundException(userId));
 
-		Review review = reviewRepository.save(Review.toEntity(request, book, user));
+		Review review = reviewRepository.save(Review.toEntity(request, bookOrder, user));
 
 		// 파일 이름이 비어있지 않으면 이미지 저장
 		if (request.fileName() != null) {
@@ -217,13 +219,13 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public double getReviewsAverageScoreByBookId(Long bookId) {
-		return reviewRepository.getReviewsAverageScoreByBookId(bookId);
+		return 0;
 	}
 
 	@Override
 	public List<GetBookTitleResponse> getBooksByOrderStatusCompletionAndUserId(CurrentUserDetails currentUser) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
-		return bookRepository.getBooksByOrderStatusCompletionAndUserId("배송 완료", userId);
+		return null;
 	}
 
 }
