@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -198,7 +197,7 @@ public class ReviewController {
 	 * @return 리뷰 수정 결과 (HTTP 상태 코드)
 	 */
 	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
-	@PutMapping("/reviews/{reviewId}")
+	@PostMapping("/reviews/{reviewId}")
 	public ResponseEntity<Void> updateReview(@Valid @RequestBody UpdateReviewRequest request,
 		@PathVariable Long reviewId, @CurrentUser CurrentUserDetails currentUser) {
 		reviewService.updateReview(reviewId, request, currentUser);
