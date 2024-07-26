@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
 				}
 			}
 		}
-		ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_WAIT, HttpStatus.UNPROCESSABLE_ENTITY,
+		ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_WAIT, HttpStatus.NOT_FOUND,
 			LocalDateTime.now());
 		throw new OrderFailException(errorStatus);
 	}
@@ -126,7 +126,7 @@ public class OrderServiceImpl implements OrderService {
 				}
 			}
 		}
-		ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_WAIT, HttpStatus.UNPROCESSABLE_ENTITY,
+		ErrorStatus errorStatus = ErrorStatus.from(ERROR_STATUS_WAIT, HttpStatus.NOT_FOUND,
 			LocalDateTime.now());
 		throw new OrderFailException(errorStatus);
 	}

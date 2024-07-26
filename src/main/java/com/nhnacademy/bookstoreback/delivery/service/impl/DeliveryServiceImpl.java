@@ -170,12 +170,22 @@ public class DeliveryServiceImpl implements DeliveryService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetDeliveryResponse getDeliveryByOrderId(Long orderId) {
+		if (deliveryRepository.findByOrder_OrderId(orderId) == null) {
+			String errorMessage = "배송 정보를 찾을 수 없습니다.";
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new NotFoundException(errorStatus);
+		}
 		return GetDeliveryResponse.fromEntity(deliveryRepository.findByOrder_OrderId(orderId));
 	}
 
 	@Override
 	public void updateDeliveryByOrderId(Long orderId, UpdateDeliveryByOrderIdRequest request) {
 		Delivery delivery = deliveryRepository.findByOrder_OrderId(orderId);
+		if (deliveryRepository.findByOrder_OrderId(orderId) == null) {
+			String errorMessage = "배송 정보를 찾을 수 없습니다.";
+			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new NotFoundException(errorStatus);
+		}
 		DeliveryStatus deliveryStatus = deliveryStatusRepository.getReferenceById(2L);
 		delivery.updateDeliverySender(request.senderName(), request.senderPhone(),
 			request.senderAddress() + " " + request.senderAddress2(), deliveryStatus);

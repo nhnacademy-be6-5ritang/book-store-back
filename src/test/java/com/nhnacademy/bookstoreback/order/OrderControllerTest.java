@@ -665,13 +665,13 @@ class OrderControllerTest {
 		when(bookOrderServiceImpl.getBookOrder(orderListId))
 			.thenThrow(new BookOrderFailException(ErrorStatus.from(
 				"주문 리스트를 찾을 수 없습니다",
-				HttpStatus.UNPROCESSABLE_ENTITY,
+				HttpStatus.NOT_FOUND,
 				LocalDateTime.now()
 			)));
 
 		// Act & Assert: GET 요청을 수행하고 예외 응답 검증
 		mockMvc.perform(get("/api/orders/books-orders/{order_list_id}", orderListId))
-			.andExpect(status().isUnprocessableEntity())
+			.andExpect(status().isNotFound())
 			.andExpect(jsonPath("$.message").value("주문 리스트를 찾을 수 없습니다"));
 	}
 
