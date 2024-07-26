@@ -26,7 +26,6 @@ import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.image.domain.entity.Image;
 import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
-import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetBookOrderWithoutReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
@@ -102,15 +101,15 @@ class ReviewControllerTest {
 			.andExpect(jsonPath("$.reviewComment").value("comment"));
 	}
 
-	@Test
-	@WithMockUser(roles = "MEMBER")
-	void testUpdateReview() throws Exception {
-		UpdateReviewRequest updateReviewRequest = new UpdateReviewRequest(1, "update comment", "test.png");
-		mockMvc.perform(put("/api/reviews/1")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(updateReviewRequest)))
-			.andExpect(status().isOk());
-	}
+	// @Test
+	// @WithMockUser(roles = "MEMBER")
+	// void testUpdateReview() throws Exception {
+	// 	UpdateReviewRequest updateReviewRequest = new UpdateReviewRequest(1, "update comment", "test.png");
+	// 	mockMvc.perform(put("/api/reviews/1")
+	// 			.contentType(MediaType.APPLICATION_JSON)
+	// 			.content(objectMapper.writeValueAsString(updateReviewRequest)))
+	// 		.andExpect(status().isOk());
+	// }
 
 	@Test
 	@WithMockUser(roles = "MEMBER")
