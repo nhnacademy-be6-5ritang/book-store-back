@@ -22,22 +22,30 @@ import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
 import com.nhnacademy.bookstoreback.global.exception.ParserFailException;
 import com.nhnacademy.bookstoreback.global.exception.PaymentFailException;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
 import com.nhnacademy.bookstoreback.order.domain.entity.Order;
+import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.BookOrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.service.impl.OrderServiceImpl;
 import com.nhnacademy.bookstoreback.payment.dto.entitiy.Payment;
 import com.nhnacademy.bookstoreback.payment.dto.response.CancelResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.PaymentResponse;
+import com.nhnacademy.bookstoreback.payment.dto.response.PaymentSaveResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.TransactionsResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.UpdatePaymentResponse;
 import com.nhnacademy.bookstoreback.payment.repository.PaymentRepository;
 import com.nhnacademy.bookstoreback.payment.service.Impl.PaymentServiceImpl;
+import com.nhnacademy.bookstoreback.point.earningpolicy.domain.entity.PointEarningPolicy;
 import com.nhnacademy.bookstoreback.point.earningpolicy.exception.PointEarningPolicyNotFoundException;
 import com.nhnacademy.bookstoreback.point.earningpolicy.repository.PointEarningPolicyRepository;
+import com.nhnacademy.bookstoreback.point.transaction.domain.entity.PointTransaction;
+import com.nhnacademy.bookstoreback.point.transaction.repository.PointTransactionRepository;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
+import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
+import com.nhnacademy.bookstoreback.usergrade.repository.UserGradeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceImplTest {
@@ -61,6 +69,12 @@ class PaymentServiceImplTest {
 
 	@Mock
 	private OrderServiceImpl orderServiceImpl;
+
+	@Mock
+	private PointTransactionRepository pointTransactionRepository;
+
+	@Mock
+	private UserGradeRepository userGradeRepository;
 
 	@BeforeEach
 	void setUp() {
@@ -94,6 +108,12 @@ class PaymentServiceImplTest {
 	}
 
 	@Test
+	void testTransactions_InvalidJson() {
+		String paymentResponseJson = "{ invalid json }";
+		assertThrows(ParserFailException.class, () -> paymentServiceImpl.transactions(paymentResponseJson));
+	}
+
+	@Test
 	void testFindByOrderInfoId() {
 		Order order = mock(Order.class);
 		BookOrder bookOrder = mock(BookOrder.class);
@@ -107,6 +127,22 @@ class PaymentServiceImplTest {
 		GetBookOrderByInfoIdResponse response = paymentServiceImpl.findByOrderInfoId("orderInfoId");
 		assertNotNull(response);
 		assertEquals(1L, response.orderListId());
+	}
+
+	@Test
+	void testFindByOrderInfoId_BookOrderIsNull() {
+		Order order = mock(Order.class);
+		when(orderRepository.findByOrderInfoId("orderInfoId")).thenReturn(order);
+		when(bookOrderRepository.findByOrder_OrderId(anyLong())).thenReturn(null);
+
+		assertThrows(BookOrderFailException.class, () -> paymentServiceImpl.findByOrderInfoId("orderInfoId"));
+	}
+
+	@Test
+	void testFindByOrderInfoId_OrderIsNull() {
+		when(orderRepository.findByOrderInfoId("orderInfoId")).thenReturn(null);
+
+		assertThrows(OrderFailException.class, () -> paymentServiceImpl.findByOrderInfoId("orderInfoId"));
 	}
 
 	@Test
@@ -145,8 +181,7 @@ class PaymentServiceImplTest {
 		when(userRepository.getReferenceById(anyLong())).thenReturn(user);
 		when(pointEarningPolicyRepository.findByPointEarningPolicyType("포인트 사용")).thenReturn(Optional.empty());
 		assertThrows(PointEarningPolicyNotFoundException.class,
-			() -> paymentServiceImpl.savePaymentResponse(paymentResponseJson, mock(
-				CurrentUserDetails.class)));
+			() -> paymentServiceImpl.savePaymentResponse(paymentResponseJson, mock(CurrentUserDetails.class)));
 	}
 
 	@Test
@@ -157,12 +192,10 @@ class PaymentServiceImplTest {
 
 	@Test
 	void testUpdatePayment_Success() throws JsonProcessingException {
-		// JSON 응답과 Mock 객체 생성
 		String paymentResponseJson = "{ \"status\": \"COMPLETED\" }";
 		Payment payment = mock(Payment.class);
 		Order order = mock(Order.class);
 
-		// Mock 설정
 		when(paymentRepository.getReferenceById(1L)).thenReturn(payment);
 		when(payment.getOrder()).thenReturn(order);
 		when(order.getOrderId()).thenReturn(1L);
@@ -170,9 +203,19 @@ class PaymentServiceImplTest {
 
 		UpdatePaymentResponse response = paymentServiceImpl.updatePayment(paymentResponseJson, 1L);
 
-		// 결과 검증
 		assertNotNull(response);
 		assertEquals("COMPLETED", response.status());
+	}
+
+	@Test
+	void testUpdatePayment_ThrowsOrderFailException() throws JsonProcessingException {
+		String paymentResponseJson = "{ \"status\": \"COMPLETED\" }";
+		Payment payment = mock(Payment.class);
+
+		when(paymentRepository.getReferenceById(1L)).thenReturn(payment);
+		when(payment.getOrder()).thenReturn(null);
+
+		assertThrows(NullPointerException.class, () -> paymentServiceImpl.updatePayment(paymentResponseJson, 1L));
 	}
 
 	@Test
@@ -196,26 +239,6 @@ class PaymentServiceImplTest {
 		when(bookOrderRepository.findByOrder_OrderInfoId("orderInfoId")).thenReturn(null);
 
 		assertThrows(BookOrderFailException.class, () -> paymentServiceImpl.findByCartOrderInfoId("orderInfoId"));
-	}
-
-	@Test
-	void testUpdatePayment_ThrowsOrderFailException() throws JsonProcessingException {
-		String paymentResponseJson = "{ \"status\": \"COMPLETED\" }";
-		Payment payment = mock(Payment.class);
-
-		when(paymentRepository.getReferenceById(1L)).thenReturn(payment);
-		when(payment.getOrder()).thenReturn(null);
-
-		assertThrows(NullPointerException.class, () -> paymentServiceImpl.updatePayment(paymentResponseJson, 1L));
-	}
-
-	@Test
-	void testFindByOrderInfoId_BookOrderIsNull() {
-		Order order = mock(Order.class);
-		when(orderRepository.findByOrderInfoId("orderInfoId")).thenReturn(order);
-		when(bookOrderRepository.findByOrder_OrderId(anyLong())).thenReturn(null);
-
-		assertThrows(BookOrderFailException.class, () -> paymentServiceImpl.findByOrderInfoId("orderInfoId"));
 	}
 
 	@Test
@@ -259,8 +282,119 @@ class PaymentServiceImplTest {
 	}
 
 	@Test
-	void testTransactions_InvalidJson() {
-		String paymentResponseJson = "{ invalid json }";
-		assertThrows(ParserFailException.class, () -> paymentServiceImpl.transactions(paymentResponseJson));
+	void testSavePaymentResponse_Success() {
+		String paymentResponseJson = "{ \"paymentKey\": \"key\", \"orderId\": \"orderId\", \"easyPay\": { \"amount\": 1000 }, \"status\": \"COMPLETED\", \"requestedAt\": \"2023-07-15T15:30:00Z\" }";
+		Order order = mock(Order.class);
+		User user = mock(User.class);
+		UserGrade userGrade = mock(UserGrade.class);
+		PointEarningPolicy pointEarningPolicy = mock(PointEarningPolicy.class);
+		CurrentUserDetails currentUser = mock(CurrentUserDetails.class);
+		Payment savedPayment = mock(Payment.class);
+
+		when(orderRepository.findByOrderInfoId("orderId")).thenReturn(order);
+		when(order.getOrderPointSale()).thenReturn(BigDecimal.ZERO);
+		when(userRepository.getReferenceById(anyLong())).thenReturn(user);
+		when(pointEarningPolicyRepository.findByPointEarningPolicyType(anyString())).thenReturn(
+			Optional.of(pointEarningPolicy));
+		when(orderServiceImpl.getTotalOrderPrice(currentUser)).thenReturn(BigDecimal.TEN);
+
+		when(user.getUserGrade()).thenReturn(userGrade);
+		when(userGrade.getUserGradeName()).thenReturn("USER_GRADE_NAME");
+		when(pointEarningPolicy.getPointEarningAmount()).thenReturn(BigDecimal.TEN);
+		when(order.getOrderPrice()).thenReturn(BigDecimal.TEN);
+		when(paymentRepository.save(any(Payment.class))).thenReturn(savedPayment);
+		PaymentSaveResponse response = paymentServiceImpl.savePaymentResponse(paymentResponseJson, currentUser);
+
+		assertNotNull(response);
+		verify(paymentRepository, times(1)).save(any(Payment.class));
 	}
+
+	@Test
+	void testSavePaymentResponse_WithPoints() {
+		String paymentResponseJson = "{ \"paymentKey\": \"key\", \"orderId\": \"orderId\", \"easyPay\": { \"amount\": 1000 }, \"status\": \"COMPLETED\", \"requestedAt\": \"2023-07-15T15:30:00Z\" }";
+		Order order = mock(Order.class);
+		User user = mock(User.class);
+		UserGrade userGrade = mock(UserGrade.class);
+		PointEarningPolicy pointUsagePolicy = mock(PointEarningPolicy.class);
+		PointEarningPolicy userGradePolicy = mock(PointEarningPolicy.class);
+		CurrentUserDetails currentUser = mock(CurrentUserDetails.class);
+		Payment savedPayment = mock(Payment.class);  // Mock the saved Payment object
+
+		when(orderRepository.findByOrderInfoId("orderId")).thenReturn(order);
+		when(order.getOrderPointSale()).thenReturn(BigDecimal.TEN);
+		when(order.getOrderPrice()).thenReturn(BigDecimal.TEN);
+		when(userRepository.getReferenceById(anyLong())).thenReturn(user);
+		when(pointEarningPolicyRepository.findByPointEarningPolicyType("포인트 사용")).thenReturn(
+			Optional.of(pointUsagePolicy));
+		when(pointUsagePolicy.getPointEarningAmount()).thenReturn(BigDecimal.TEN);
+		when(orderServiceImpl.getTotalOrderPrice(currentUser)).thenReturn(BigDecimal.TEN);
+
+		when(user.getUserGrade()).thenReturn(userGrade);
+		when(userGrade.getUserGradeName()).thenReturn("USER_GRADE_NAME");
+		when(pointEarningPolicyRepository.findByPointEarningPolicyType("USER_GRADE_NAME")).thenReturn(
+			Optional.of(userGradePolicy));
+		when(userGradePolicy.getPointEarningAmount()).thenReturn(BigDecimal.valueOf(10));
+		when(userGrade.getUserGradeMinAmount()).thenReturn(BigDecimal.ZERO);
+		when(userGrade.getUserGradeMaxAmount()).thenReturn(BigDecimal.valueOf(1000));
+
+		when(paymentRepository.save(any(Payment.class))).thenReturn(
+			savedPayment);  // Set the return value of save method
+		when(userGradeRepository.findAll()).thenReturn(List.of(userGrade));
+
+		PaymentSaveResponse response = paymentServiceImpl.savePaymentResponse(paymentResponseJson, currentUser);
+
+		assertNotNull(response);
+		verify(paymentRepository, times(1)).save(any(Payment.class));
+		verify(pointTransactionRepository, times(2)).save(any(PointTransaction.class));
+		verify(user, times(1)).updateOutPoints(BigDecimal.TEN);
+		verify(user, times(1)).updatePoints(any(BigDecimal.class));
+	}
+
+	@Test
+	void testUpdatePayment_InvalidPaymentId() throws JsonProcessingException {
+		String paymentResponseJson = "{ \"status\": \"COMPLETED\" }";
+		when(paymentRepository.getReferenceById(anyLong())).thenThrow(new RuntimeException("Payment not found"));
+
+		assertThrows(RuntimeException.class, () -> paymentServiceImpl.updatePayment(paymentResponseJson, 1L));
+	}
+
+	@Test
+	void testUpdatePayment_InvalidOrderId() throws JsonProcessingException {
+		String paymentResponseJson = "{ \"status\": \"COMPLETED\" }";
+		Payment payment = mock(Payment.class);
+		when(paymentRepository.getReferenceById(anyLong())).thenReturn(payment);
+		when(payment.getOrder()).thenReturn(null);
+
+		assertThrows(NullPointerException.class, () -> paymentServiceImpl.updatePayment(paymentResponseJson, 1L));
+	}
+
+	@Test
+	void testFindByOrder_Success() {
+		OrderStatus orderStatus = mock(OrderStatus.class);
+		Order order = Order.builder().orderStatus(orderStatus).build();
+		when(orderRepository.findByOrderInfoId("orderInfoId")).thenReturn(order);
+
+		GetOrderByInfoResponse response = paymentServiceImpl.findByOrder("orderInfoId");
+
+		assertNotNull(response);
+		assertEquals(order.getOrderId(), response.orderId());
+	}
+
+	@Test
+	void testFindByOrder_OrderNotFound() {
+		when(orderRepository.findByOrderInfoId("orderInfoId")).thenReturn(null);
+
+		assertThrows(OrderFailException.class, () -> paymentServiceImpl.findByOrder("orderInfoId"));
+	}
+
+	@Test
+	void testTransactions_InvalidProvider() {
+		String paymentResponseJson = "{ \"orderId\": \"orderId\", \"easyPay\": { \"amount\": 1000, \"provider\": \"UNKNOWN\" }, \"status\": \"COMPLETED\", \"orderName\": \"Book Order\", \"requestedAt\": \"2023-07-15T15:30:00Z\" }";
+
+		TransactionsResponse response = paymentServiceImpl.transactions(paymentResponseJson);
+
+		assertNotNull(response);
+		assertEquals("UNKNOWN", response.provider());
+	}
+
 }
