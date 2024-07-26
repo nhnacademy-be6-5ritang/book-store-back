@@ -74,7 +74,7 @@ public class PaymentServiceImpl implements PaymentService {
 		PaymentResponse paymentResponse = parsePaymentResponse(paymentResponseJson);
 		Order order = orderRepository.findByOrderInfoId(paymentResponse.orderId());
 		if (order == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND,
 				LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
 		}
@@ -189,13 +189,13 @@ public class PaymentServiceImpl implements PaymentService {
 	public GetBookOrderByInfoIdResponse findByOrderInfoId(String orderInfoId) {
 		Order order = orderRepository.findByOrderInfoId(orderInfoId);
 		if (order == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND,
 				LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
 		}
 		BookOrder bookOrder = bookOrderRepository.findByOrder_OrderId(order.getOrderId());
 		if (bookOrder == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_BOOKORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_BOOKORDER_EXITS, HttpStatus.NOT_FOUND,
 				LocalDateTime.now());
 			throw new BookOrderFailException(errorStatus);
 		}
@@ -209,13 +209,13 @@ public class PaymentServiceImpl implements PaymentService {
 	public GetBookOrderByInfoIdResponse findByCartOrderInfoId(String orderInfoId) {
 		Order order = orderRepository.findByOrderInfoId(orderInfoId);
 		if (order == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND,
 				LocalDateTime.now());
 			throw new OrderFailException(errorStatus);
 		}
 		List<BookOrder> bookOrder = bookOrderRepository.findByOrder_OrderInfoId(orderInfoId);
 		if (bookOrder == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_BOOKORDER_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_BOOKORDER_EXITS, HttpStatus.NOT_FOUND,
 				LocalDateTime.now());
 			throw new BookOrderFailException(errorStatus);
 		}
@@ -227,6 +227,11 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetOrderByInfoResponse findByOrder(String orderInfoId) {
+		if (orderRepository.findByOrderInfoId(orderInfoId) == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND,
+				LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
 		return GetOrderByInfoResponse.from(orderRepository.findByOrderInfoId(orderInfoId));
 	}
 
@@ -235,7 +240,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public CancelResponse paymentFindByOrderInfoId(String orderInfoId) {
 		Payment payment = paymentRepository.findByOrder_OrderInfoId(orderInfoId);
 		if (payment == null) {
-			ErrorStatus errorStatus = ErrorStatus.from(ERROR_PAYMENT_EXITS, HttpStatus.UNPROCESSABLE_ENTITY,
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_PAYMENT_EXITS, HttpStatus.NOT_FOUND,
 				LocalDateTime.now());
 			throw new PaymentFailException(errorStatus);
 		}

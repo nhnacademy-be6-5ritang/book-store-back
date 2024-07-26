@@ -24,6 +24,10 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryA
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.service.DeliveryService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +35,7 @@ import lombok.RequiredArgsConstructor;
  * 배달 정보를 관리하는 컨트롤러입니다.
  * 배달 생성, 조회, 업데이트, 삭제 기능을 제공합니다.
  */
+@Tag(name = "Delivery", description = "배송 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/deliveries")
@@ -98,15 +103,29 @@ public class DeliveryController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
+	@Operation(
+		summary = "주문 아이디로 배송 정보 가져오기",
+		description = "주문 아이디로 배송 정보를 가져옵니다"
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "404", description = "배송 정보를 찾을 수 없습니다")
+	})
 	@GetMapping("/{orderId}/orders")
 	public ResponseEntity<GetDeliveryResponse> getDeliveryByOrder(@PathVariable Long orderId) {
 		return ResponseEntity.status(HttpStatus.OK).body(deliveryService.getDeliveryByOrderId(orderId));
 	}
 
-	@PutMapping("/sender/{deliveryId}")
-	public ResponseEntity<Void> updateDeliveryByOrderId(@PathVariable Long deliveryId,
+	@Operation(
+		summary = "관리자 배송 승인",
+		description = "관리자가 배송중으로 배송 상태를 변경시킵니다."
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "404", description = "배송 정보를 찾을 수 없습니다")
+	})
+	@PutMapping("/sender/{orderId}")
+	public ResponseEntity<Void> updateDeliveryByOrderId(@PathVariable Long orderId,
 		@Valid @RequestBody UpdateDeliveryByOrderIdRequest request) {
-		deliveryService.updateDeliveryByOrderId(deliveryId, request);
+		deliveryService.updateDeliveryByOrderId(orderId, request);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
