@@ -49,6 +49,12 @@ public class UserController {
 	private final OrderService orderService;
 	private final UserRepository userRepository;
 
+	@GetMapping("/admin-page")
+	@AuthorizeRole({"MEMBER_ADMIN", "BOOK_ADMIN", "ORDER_ADMIN", "COUPON_ADMIN", "DELIVERY_ADMIN", "HEAD_ADMIN"})
+	public ResponseEntity<Void> adminPage() {
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
 	@PostMapping
 	public ResponseEntity<CreateUserResponse> signUpUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
 		CreateUserResponse createUserResponse = userService.createUser(createUserRequest);
