@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.tag.service.impl;
+package com.nhnacademy.bookstoreback.tag.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -26,6 +26,7 @@ import com.nhnacademy.bookstoreback.tag.exception.TagAlreadyExistsException;
 import com.nhnacademy.bookstoreback.tag.exception.TagNotFoundException;
 import com.nhnacademy.bookstoreback.tag.repository.BookTagRepository;
 import com.nhnacademy.bookstoreback.tag.repository.TagRepository;
+import com.nhnacademy.bookstoreback.tag.service.impl.TagServiceImpl;
 
 class TagServiceImplTest {
 

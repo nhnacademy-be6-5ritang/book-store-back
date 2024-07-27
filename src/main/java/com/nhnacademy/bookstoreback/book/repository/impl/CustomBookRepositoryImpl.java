@@ -24,12 +24,15 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
 	@Override
 	public List<BookSearchResult> findByBookTitleContainingIgnoreCaseCustom(String title) {
 		return queryFactory
-			.select(book)
+			.select(book.bookId, book.bookTitle)
 			.from(book)
 			.where(book.bookTitle.toLowerCase().contains(title.toLowerCase()))
 			.fetch()
 			.stream()
-			.map(b -> new BookSearchResult(b.getBookId(), b.getBookTitle()))
+			.map(b -> new BookSearchResult(b.get(book.bookId), b.get(book.bookTitle)))
 			.toList();
 	}
 }
+
+
+

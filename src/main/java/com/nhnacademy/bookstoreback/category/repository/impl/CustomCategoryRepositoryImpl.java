@@ -24,12 +24,12 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 	@Override
 	public List<CategorySearchResult> findCategoriesByPartialName(String name) {
 		return queryFactory
-			.select(category)
+			.select(category.categoryId, category.categoryName)
 			.from(category)
 			.where(category.categoryName.toLowerCase().contains(name.toLowerCase()))
 			.fetch()
 			.stream()
-			.map(c -> new CategorySearchResult(c.getCategoryId(), c.getCategoryName()))
+			.map(c -> new CategorySearchResult(c.get(category.categoryId), c.get(category.categoryName)))
 			.collect(Collectors.toList());
 	}
 }
