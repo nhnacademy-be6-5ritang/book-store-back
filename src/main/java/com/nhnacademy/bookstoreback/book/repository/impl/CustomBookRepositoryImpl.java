@@ -4,15 +4,12 @@ import static com.nhnacademy.bookstoreback.book.domain.entity.QBook.*;
 
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
 import com.nhnacademy.bookstoreback.book.repository.CustomBookRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
 
-@Repository
 public class CustomBookRepositoryImpl implements CustomBookRepository {
 
 	private final JPAQueryFactory queryFactory;
