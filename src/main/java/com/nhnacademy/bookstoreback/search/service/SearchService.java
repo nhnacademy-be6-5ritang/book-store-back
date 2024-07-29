@@ -13,6 +13,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +36,7 @@ public class SearchService {
 	private final BookRepository bookRepository;
 	private static final Logger logger = Logger.getLogger(SearchService.class.getName());
 
-	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		Sort sort = pageable.getSort();
@@ -43,16 +44,44 @@ public class SearchService {
 
 		SearchRequest searchRequest = new SearchRequest("books");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
+		// sourceBuilder.query(
+		// 	QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn").type("best_fields"));
+		// searchRequest.source(sourceBuilder);
+		//
+		// SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+		// logger.info("책 검색 응답: " + response.toString());
+		//
+		// List<BookSearchResponse> bookDetails = parseJsonResponse(response.toString());
+		// return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
+		// 	response.getHits().getTotalHits().value);
+
+		// Add sorting
+		sort.forEach(order -> {
+			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
+			sourceBuilder.sort(order.getProperty(), sortOrder);
+		});
+
+		// Add pagination
+		sourceBuilder.from(page * pageSize);
+		sourceBuilder.size(pageSize);
+
+		// Add query
 		sourceBuilder.query(
 			QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn").type("best_fields"));
 		searchRequest.source(sourceBuilder);
 
-		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-		logger.info("책 검색 응답: " + response.toString());
+		try {
+			SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+			logger.info("책 검색 응답: " + response.toString());
 
-		List<BookSearchResponse> bookDetails = parseJsonResponse(response.toString());
-		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
-			response.getHits().getTotalHits().value);
+			List<BookSearchResponse> bookDetails = parseJsonResponse(response.toString());
+			return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
+				response.getHits().getTotalHits().value);
+		} catch (IOException e) {
+			logger.severe("Elasticsearch 검색 요청 중 오류 발생: " + e.getMessage());
+			throw new RuntimeException("검색 중 오류가 발생했습니다.", e);
+		}
 	}
 
 	public Page<BookSearchResponse> searchAuthors(String query, Pageable pageable) throws IOException {
