@@ -185,15 +185,6 @@ public class SearchService {
 		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
 		bookSourceBuilder.query(boolQueryBuilder);
-
-		// Apply sorting
-		if (sort != null && !sort.isEmpty()) {
-			for (Sort.Order order : sort) {
-				bookSourceBuilder.sort(order.getProperty(),
-					order.isAscending() ? SortOrder.ASC : SortOrder.DESC);
-			}
-		}
-
 		bookSearchRequest.source(bookSourceBuilder);
 
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
