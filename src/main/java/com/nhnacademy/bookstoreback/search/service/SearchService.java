@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -17,6 +17,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -56,8 +57,7 @@ public class SearchService {
 		logger.info("책 검색 응답: " + response.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(response.toString());
-		List<BookSearchResponse> sortedBookDetails = sortBookDetails(bookDetails, sort);
-		return new PageImpl<>(sortedBookDetails, PageRequest.of(page, pageSize, sort),
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
 			response.getHits().getTotalHits().value);
 	}
 
@@ -97,8 +97,7 @@ public class SearchService {
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
-		List<BookSearchResponse> sortedBookDetails = sortBookDetails(bookDetails, sort);
-		return new PageImpl<>(sortedBookDetails, PageRequest.of(page, pageSize, sort),
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
 			bookResponse.getHits().getTotalHits().value);
 	}
 
@@ -139,8 +138,7 @@ public class SearchService {
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
 		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
-		List<BookSearchResponse> sortedBookDetails = sortBookDetails(bookDetails, sort);
-		return new PageImpl<>(sortedBookDetails, PageRequest.of(page, pageSize, sort),
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
 			bookResponse.getHits().getTotalHits().value);
 	}
 
@@ -179,19 +177,31 @@ public class SearchService {
 		}
 
 		// Step 3: 책 검색
-		List<String> bookIds = new ArrayList<>();
-		for (SearchHit hit : bookTagResponse.getHits().getHits()) {
-			bookIds.add((String) hit.getSourceAsMap().get("book_id"));
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+		for (var hit : bookTagResponse.getHits().getHits()) {
+			boolQueryBuilder.should(QueryBuilders.termQuery("book_id", hit.getSourceAsMap().get("book_id")));
 		}
 
-		List<Book> books = bookRepository.findAllById(bookIds);
-		List<BookSearchResponse> bookDetails = books.stream()
-			.map(BookSearchResponse::fromEntity)
-			.collect(Collectors.toList());
+		SearchRequest bookSearchRequest = new SearchRequest("books");
+		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
+		bookSourceBuilder.query(boolQueryBuilder);
 
-		List<BookSearchResponse> sortedBookDetails = sortBookDetails(bookDetails, sort);
+		// Apply sorting
+		if (sort != null && !sort.isEmpty()) {
+			for (Sort.Order order : sort) {
+				bookSourceBuilder.sort(order.getProperty(),
+					order.isAscending() ? SortOrder.ASC : SortOrder.DESC);
+			}
+		}
 
-		return new PageImpl<>(sortedBookDetails, PageRequest.of(page, pageSize, sort), sortedBookDetails.size());
+		bookSearchRequest.source(bookSourceBuilder);
+
+		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
+		logger.info("책 검색 응답: " + bookResponse.toString());
+
+		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
+			bookResponse.getHits().getTotalHits().value);
 	}
 
 	public List<BookSearchResponse> parseJsonResponse(String jsonResponse) throws IOException {
@@ -212,38 +222,5 @@ public class SearchService {
 			}
 		}
 		return bookList;
-	}
-
-	private List<BookSearchResponse> sortBookDetails(List<BookSearchResponse> bookDetails, Sort sort) {
-		return bookDetails.stream()
-			.sorted((b1, b2) -> {
-				for (Sort.Order order : sort) {
-					int comparison;
-					switch (order.getProperty()) {
-						case "bookSalePrice":
-							comparison = b1.getBookSalePrice().compareTo(b2.getBookSalePrice());
-							break;
-						case "bookPublishDate":
-							comparison = b1.getBookPublishDate().compareTo(b2.getBookPublishDate());
-							break;
-						case "authorName":
-							comparison = b1.getAuthorName().compareTo(b2.getAuthorName());
-							break;
-						case "bookTitle":
-							comparison = b1.getBookTitle().compareTo(b2.getBookTitle());
-							break;
-						case "publisherName":
-							comparison = b1.getPublisherName().compareTo(b2.getPublisherName());
-							break;
-						default:
-							comparison = 0;
-					}
-					if (comparison != 0) {
-						return order.isAscending() ? comparison : -comparison;
-					}
-				}
-				return 0;
-			})
-			.collect(Collectors.toList());
 	}
 }
