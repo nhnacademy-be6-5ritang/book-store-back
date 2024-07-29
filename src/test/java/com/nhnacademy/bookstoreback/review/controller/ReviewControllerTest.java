@@ -26,6 +26,7 @@ import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.image.domain.entity.Image;
 import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
 import com.nhnacademy.bookstoreback.review.domain.dto.request.CreateReviewRequest;
+import com.nhnacademy.bookstoreback.review.domain.dto.request.UpdateReviewRequest;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetBookOrderWithoutReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.dto.response.GetReviewResponse;
 import com.nhnacademy.bookstoreback.review.domain.entity.Review;
@@ -73,6 +74,34 @@ class ReviewControllerTest {
 	}
 
 	@Test
+	void testGetPhotoReviews() throws Exception {
+		when(reviewService.getPhotoReviews(any())).thenReturn(
+			new PageImpl<>(Collections.singletonList(reviewResponse)));
+
+		mockMvc.perform(get("/api/reviews/photo/page")
+				.param("page", "1")
+				.param("size", "5"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.content.length()").value(1));
+	}
+
+	@Test
+	void testGetGeneralReviews() throws Exception {
+		when(reviewService.getGeneralReviews(any(Pageable.class))).thenReturn(
+			new PageImpl<>(Collections.singletonList(reviewResponse)));
+
+		mockMvc.perform(get("/api/reviews/general/page")
+				.param("page", "1")
+				.param("size", "5"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.content.length()").value(1))
+			.andExpect(jsonPath("$.content[0].reviewComment").value("comment"))
+			.andExpect(jsonPath("$.content[0].reviewScore").value(3));
+	}
+
+	@Test
 	void testGetReviewsByBookId() throws Exception {
 		when(reviewService.getReviewsByBookId(anyLong(), any(Pageable.class))).thenReturn(reviewPage);
 
@@ -101,15 +130,15 @@ class ReviewControllerTest {
 			.andExpect(jsonPath("$.reviewComment").value("comment"));
 	}
 
-	// @Test
-	// @WithMockUser(roles = "MEMBER")
-	// void testUpdateReview() throws Exception {
-	// 	UpdateReviewRequest updateReviewRequest = new UpdateReviewRequest(1, "update comment", "test.png");
-	// 	mockMvc.perform(put("/api/reviews/1")
-	// 			.contentType(MediaType.APPLICATION_JSON)
-	// 			.content(objectMapper.writeValueAsString(updateReviewRequest)))
-	// 		.andExpect(status().isOk());
-	// }
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void testUpdateReview() throws Exception {
+		UpdateReviewRequest updateReviewRequest = new UpdateReviewRequest(1, "update comment", "test.png");
+		mockMvc.perform(post("/api/reviews/1")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateReviewRequest)))
+			.andExpect(status().isOk());
+	}
 
 	@Test
 	@WithMockUser(roles = "MEMBER")

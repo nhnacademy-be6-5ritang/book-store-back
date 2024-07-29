@@ -161,7 +161,7 @@ public class BookController {
 	 * @return 수정된 도서의 응답 정보
 	 */
 	@AuthorizeRole({"BOOK_ADMIN", "HEAD_ADMIN"})
-	@PutMapping("/{bookId}")
+	@PostMapping("/{bookId}")
 	public ResponseEntity<Void> updateBookByBookId(@PathVariable Long bookId,
 		@Valid @RequestBody UpdateBookRequest request) {
 		bookService.updateBookById(bookId, request);

@@ -9,18 +9,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
+import com.nhnacademy.bookstoreback.global.exception.OrderFailException;
+import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
 import com.nhnacademy.bookstoreback.point.transaction.service.PointTransactionService;
 import com.nhnacademy.bookstoreback.role.domain.entity.Role;
 import com.nhnacademy.bookstoreback.role.exception.RoleNotFoundException;
 import com.nhnacademy.bookstoreback.role.repository.RoleRepository;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
+import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserRoleRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
@@ -140,13 +144,18 @@ public class UserService {
 		@CurrentUser CurrentUserDetails currentUser,
 		UpdateUserInfoRequest updateUserInfoRequest
 	) {
+		if (currentUser == null) {
+			ErrorStatus errorStatus = ErrorStatus.from("유저를 찾을 수 없습니다.", HttpStatus.NOT_FOUND, LocalDateTime.now());
+			throw new OrderFailException(errorStatus);
+		}
 		User user = userRepository.findById(currentUser.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
 
-		// if (Objects.isNull(currentUser) || !user.getId().equals(currentUser.getUserId())) {
-		// 	throw new AccessDeniedException(currentUser.getUserId(), user.getId());
-		// }
-
+		if (updateUserInfoRequest.password() == null || updateUserInfoRequest.password().isEmpty()) {
+			user.updateNotPassword(updateUserInfoRequest);
+			User updatedUser = userRepository.save(user);
+			return UpdateUserInfoResponse.fromEntity(updatedUser);
+		}
 		UpdateUserInfoRequest updateUserInfoRequestWithEncodedPassword
 			= updateUserInfoRequest.encodePassword(passwordEncoder);
 		user.update(updateUserInfoRequestWithEncodedPassword);
@@ -220,5 +229,22 @@ public class UserService {
 
 		return userRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")))
 			.map(GetUserInfoResponse::fromEntity);
+	}
+
+	public void updateUserRoleByRoleName(UpdateUserRoleRequest updateUserRoleRequest) {
+		User user = userRepository.findById(updateUserRoleRequest.userId()).orElse(null);
+
+		List<UserRole> userRoles = userRoleRepository.findByUser(user);
+		userRoleRepository.deleteAll(userRoles);
+
+		for (String roleName : updateUserRoleRequest.roleName()) {
+			Role role = roleRepository.findByRoleName(roleName)
+				.orElseThrow(() -> new RoleNotFoundException(roleName));
+			UserRole userRole = UserRole.builder()
+				.user(user)
+				.role(role)
+				.build();
+			userRoleRepository.save(userRole);
+		}
 	}
 }

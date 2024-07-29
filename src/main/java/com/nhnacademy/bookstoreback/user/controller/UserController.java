@@ -25,6 +25,7 @@ import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.order.service.OrderService;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
+import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserRoleRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
@@ -48,6 +49,12 @@ public class UserController {
 	private final MailService mailService;
 	private final OrderService orderService;
 	private final UserRepository userRepository;
+
+	@GetMapping("/admin-page")
+	@AuthorizeRole({"MEMBER_ADMIN", "BOOK_ADMIN", "ORDER_ADMIN", "COUPON_ADMIN", "DELIVERY_ADMIN", "HEAD_ADMIN"})
+	public ResponseEntity<Void> adminPage() {
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
 
 	@PostMapping
 	public ResponseEntity<CreateUserResponse> signUpUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
@@ -161,5 +168,11 @@ public class UserController {
 		log.warn("{} 생일쿠폰 발급 컨트롤러 실행", date);
 		List<BirthdayCouponTargetResponse> users = userService.getUsersWithBirthday(date);
 		return ResponseEntity.ok(users);
+	}
+
+	@PutMapping("/role")
+	public ResponseEntity<Void> updateRole(@RequestBody UpdateUserRoleRequest updateUserRoleRequest) {
+		userService.updateUserRoleByRoleName(updateUserRoleRequest);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

@@ -25,7 +25,7 @@ public class BookImageService {
 		String fileName = book.getBookTitle() + ".jpg";
 		Image image;
 		if (imageUrl == null || imageUrl.isEmpty()) {
-			image = new Image(fileName,
+			image = new Image("null.jpg",
 				"http://image.toast.com/aaaacuf/5ritang/books/null.jpg"); // 기본 Url 을 사용
 		} else {
 			image = new Image(fileName, imageUrl);

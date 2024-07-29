@@ -15,6 +15,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.global.exception.InavailableAuthorizationException;
+import com.nhnacademy.bookstoreback.global.exception.UnauthorizedException;
 
 @Aspect
 @Component
@@ -25,7 +26,7 @@ public class RoleAuthorizationAspect {
 		CurrentUserDetails currentUserDetails = getCurrentUserDetails();
 
 		if (currentUserDetails == null) {
-			throw new InavailableAuthorizationException();
+			throw new UnauthorizedException();
 		}
 
 		List<String> roles = Arrays.asList(authorizeRole.value());

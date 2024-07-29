@@ -57,6 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public static final String ERROR_PARSER_FAIL = "파싱 실패";
 	public static final String ERROR_PAYMENT_EXITS = "결제를 찾을 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문 정보를 찾을 수 없습니다";
+	public static final String ERROR_USER_EXITS = "사용자를 찾을 수 없습니다";
 	public static final String ERROR_ORDER_EXITS_POINT = "포인트 오류 테스트";
 	public static final String ERROR_BOOKORDER_EXITS = "주문리스트를 찾을 수 없습니다";
 	private final PaymentRepository paymentRepository;
@@ -255,6 +256,7 @@ public class PaymentServiceImpl implements PaymentService {
 			String status = rootNode.path("status").asText();
 			Payment payment = paymentRepository.getReferenceById(paymentId);
 			payment.updateStatus(status);
+			paymentRepository.save(payment);
 			Order order = orderRepository.getReferenceById(payment.getOrder().getOrderId());
 			orderServiceImpl.updateOrderStatus(order.getOrderId(), 3L);
 			return UpdatePaymentResponse.from(status);
@@ -263,6 +265,90 @@ public class PaymentServiceImpl implements PaymentService {
 				LocalDateTime.now());
 			throw new ParserFailException(errorStatus);
 		}
+	}
+
+	public void savePointPayment(String orderInfoId, @CurrentUser CurrentUserDetails currentUserDetails) {
+		Order order = orderRepository.findByOrderInfoId(orderInfoId);
+		if (order == null) {
+			throw new PaymentFailException(
+				ErrorStatus.from(ERROR_ORDER_EXITS, HttpStatus.NOT_FOUND, LocalDateTime.now()));
+		}
+		orderServiceImpl.updateOrderStatus(order.getOrderId(), 1L);
+		orderRepository.save(order);
+		paymentRepository.save(Payment.toEntity(null, order, order.getOrderPrice(), "포인트로 결제 완료", LocalDateTime.now()));
+
+		if (currentUserDetails == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_USER_EXITS, HttpStatus.NOT_FOUND,
+				LocalDateTime.now());
+			throw new PaymentFailException(errorStatus);
+		}
+		User user = userRepository.findById(currentUserDetails.getUserId()).orElse(null);
+		if (user == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_USER_EXITS, HttpStatus.NOT_FOUND,
+				LocalDateTime.now());
+			throw new PaymentFailException(errorStatus);
+		}
+		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
+				"포인트 사용")
+			.orElseThrow(
+				() -> new PointEarningPolicyNotFoundException("포인트 사용"));
+		pointTransactionRepository.save(PointTransaction.builder()
+			.user(user)
+			.pointEarningPolicy(pointEarningPolicy)
+			.pointTransactionAmount(
+				order.getOrderPointSale()
+					.multiply(pointEarningPolicy.getPointEarningAmount(), MathContext.UNLIMITED)
+					.setScale(0, RoundingMode.CEILING))
+			.build());
+		user.updateOutPoints(order.getOrderPointSale());
+
+	}
+
+	public void updatePayment(Long paymentId, @CurrentUser CurrentUserDetails currentUserDetails) {
+		Payment payment = paymentRepository.findById(paymentId).orElse(null);
+		if (payment == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_PAYMENT_EXITS, HttpStatus.NOT_FOUND,
+				LocalDateTime.now());
+			throw new PaymentFailException(errorStatus);
+		}
+		if (currentUserDetails == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_USER_EXITS, HttpStatus.NOT_FOUND,
+				LocalDateTime.now());
+			throw new PaymentFailException(errorStatus);
+		}
+		User user = userRepository.findById(currentUserDetails.getUserId()).orElse(null);
+		if (user == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_USER_EXITS, HttpStatus.NOT_FOUND,
+				LocalDateTime.now());
+			throw new PaymentFailException(errorStatus);
+		}
+		String paymentStatus = "결제 취소";
+		payment.updateStatus(paymentStatus);
+		paymentRepository.save(payment);
+		Order order = orderRepository.findByOrderInfoId(payment.getOrder().getOrderInfoId());
+		orderServiceImpl.updateOrderStatus(order.getOrderId(), 3L);
+		user.updatePoints(order.getOrderPointSale());
+		userRepository.save(user);
+		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
+				"포인트 결제 취소")
+			.orElseThrow(() -> new PointEarningPolicyNotFoundException("포인트 결제 취소"));
+		PointTransaction pointTransaction = PointTransaction.builder()
+			.user(user)
+			.pointEarningPolicy(pointEarningPolicy)
+			.pointTransactionAmount(order.getOrderPointSale())
+			.build();
+		pointTransactionRepository.save(pointTransaction);
+	}
+
+	public PaymentResponse getPayment(String orderInfoId) {
+		Payment payment = paymentRepository.findByOrder_OrderInfoId(orderInfoId);
+		if (payment == null) {
+			ErrorStatus errorStatus = ErrorStatus.from(ERROR_PAYMENT_EXITS, HttpStatus.NOT_FOUND,
+				LocalDateTime.now());
+			throw new PaymentFailException(errorStatus);
+		}
+		return PaymentResponse.from(payment.getPaymentKey(), payment.getOrder().getOrderInfoId(), payment.getAmount(),
+			payment.getStatus(), payment.getPaymentDate());
 	}
 
 }

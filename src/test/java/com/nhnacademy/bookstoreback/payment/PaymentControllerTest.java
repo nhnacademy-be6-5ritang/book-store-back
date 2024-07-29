@@ -24,6 +24,7 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfo
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.payment.controller.PaymentController;
 import com.nhnacademy.bookstoreback.payment.dto.response.CancelResponse;
+import com.nhnacademy.bookstoreback.payment.dto.response.PaymentResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.PaymentSaveResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.TransactionsResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.UpdatePaymentResponse;
@@ -188,12 +189,52 @@ class PaymentControllerTest {
 		when(paymentServiceImpl.updatePayment(anyString(), anyLong())).thenReturn(response);
 
 		// MockMvc를 사용한 요청 및 응답 검증
-		mockMvc.perform(post("/api/payments/cancel/test/{payment_id}", 1L)
+		mockMvc.perform(post("/api/payments/cancel/{payment_id}", 1L)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("{\"cancelData\": \"someData\"}"))
 			.andExpect(status().isOk())
 			.andExpect(content().json("{"
 				+ "\"status\":\"Success\""
+				+ "}"));
+	}
+
+	@Test
+	void cancelPointSale() throws Exception {
+		doNothing().when(paymentServiceImpl).updatePayment(anyLong(), any(CurrentUserDetails.class));
+
+		mockMvc.perform(get("/api/payments/cancel/pointSale/{payment_id}", 1L)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isNoContent());
+	}
+
+	@Test
+	void pointSale() throws Exception {
+		doNothing().when(paymentServiceImpl).savePointPayment(anyString(), any(CurrentUserDetails.class));
+
+		mockMvc.perform(get("/api/payments/pointSale/{orderInfoId}", "12345")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isNoContent());
+	}
+
+	@Test
+	void pointSaleInfo() throws Exception {
+		PaymentResponse paymentResponse = PaymentResponse.builder()
+			.paymentKey("abcd1234")
+			.orderId("12345")
+			.amount(new BigDecimal("100.00"))
+			.status("COMPLETED")
+			.build();
+
+		when(paymentServiceImpl.getPayment(anyString())).thenReturn(paymentResponse);
+
+		mockMvc.perform(get("/api/payments/pointSale/info/{orderInfoId}", "12345")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().json("{"
+				+ "\"paymentKey\":\"abcd1234\","
+				+ "\"orderId\":\"12345\","
+				+ "\"amount\":100.00,"
+				+ "\"status\":\"COMPLETED\""
 				+ "}"));
 	}
 
