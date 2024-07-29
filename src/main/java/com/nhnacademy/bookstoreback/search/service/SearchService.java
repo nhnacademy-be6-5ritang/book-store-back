@@ -215,20 +215,21 @@ public class SearchService {
 		List<BookSearchResponse> bookDetails = new ArrayList<>();
 		for (SearchHit hit : response.getHits().getHits()) {
 			Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+
 			BookSearchResponse book = BookSearchResponse.builder()
-				.bookId(Long.parseLong(sourceAsMap.get("bookId").toString()))
-				.authorName(sourceAsMap.get("authorName").toString())
-				.publisherName(sourceAsMap.get("publisherName").toString())
-				.bookStatusName(sourceAsMap.get("bookStatusName").toString())
-				.bookTitle(sourceAsMap.get("bookTitle").toString())
-				.bookDescription(sourceAsMap.get("bookDescription").toString())
-				.bookQuantity(Integer.parseInt(sourceAsMap.get("bookQuantity").toString()))
-				.bookPublishDate(new Date(Long.parseLong(sourceAsMap.get("bookPublishDate").toString())))
-				.bookIsbn(sourceAsMap.get("bookIsbn").toString())
-				.bookPrice(new BigDecimal(sourceAsMap.get("bookPrice").toString()))
-				.bookSalePrice(new BigDecimal(sourceAsMap.get("bookSalePrice").toString()))
-				.bookSalePercent(new BigDecimal(sourceAsMap.get("bookSalePercent").toString()))
-				.bookImageUrl(sourceAsMap.get("bookImageUrl").toString())
+				.bookId(Optional.ofNullable(sourceAsMap.get("bookId")).map(Object::toString).map(Long::parseLong).orElse(null))
+				.authorName(Optional.ofNullable(sourceAsMap.get("authorName")).map(Object::toString).orElse(null))
+				.publisherName(Optional.ofNullable(sourceAsMap.get("publisherName")).map(Object::toString).orElse(null))
+				.bookStatusName(Optional.ofNullable(sourceAsMap.get("bookStatusName")).map(Object::toString).orElse(null))
+				.bookTitle(Optional.ofNullable(sourceAsMap.get("bookTitle")).map(Object::toString).orElse(null))
+				.bookDescription(Optional.ofNullable(sourceAsMap.get("bookDescription")).map(Object::toString).orElse(null))
+				.bookQuantity(Optional.ofNullable(sourceAsMap.get("bookQuantity")).map(Object::toString).map(Integer::parseInt).orElse(null))
+				.bookPublishDate(Optional.ofNullable(sourceAsMap.get("bookPublishDate")).map(Object::toString).map(Long::parseLong).map(Date::new).orElse(null))
+				.bookIsbn(Optional.ofNullable(sourceAsMap.get("bookIsbn")).map(Object::toString).orElse(null))
+				.bookPrice(Optional.ofNullable(sourceAsMap.get("bookPrice")).map(Object::toString).map(BigDecimal::new).orElse(null))
+				.bookSalePrice(Optional.ofNullable(sourceAsMap.get("bookSalePrice")).map(Object::toString).map(BigDecimal::new).orElse(null))
+				.bookSalePercent(Optional.ofNullable(sourceAsMap.get("bookSalePercent")).map(Object::toString).map(BigDecimal::new).orElse(null))
+				.bookImageUrl(Optional.ofNullable(sourceAsMap.get("bookImageUrl")).map(Object::toString).orElse(null))
 				.build();
 			bookDetails.add(book);
 		}
