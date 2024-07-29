@@ -6,12 +6,9 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.nhnacademy.bookstoreback.book.domain.entity.Book;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 
 /**
  * 책 상세페이지 응답 DTO
@@ -19,7 +16,6 @@ import lombok.Builder;
  * @author 김기욱
  * @version 1.0
  */
-@Builder
 public record CreateBookRequest(
 	@NotBlank @Size(max = 17) String bookIsbn,
 	@NotNull List<Long> categories,
@@ -33,21 +29,6 @@ public record CreateBookRequest(
 	@NotNull int bookQuantity,
 	@NotNull BigDecimal bookPrice,
 	@NotNull BigDecimal bookSalePrice,
-	@NotNull BigDecimal bookSalePercent) {
-
-	public static CreateBookRequest fromEntity(Book book) {
-		return CreateBookRequest.builder()
-			.bookIsbn(book.getBookIsbn())
-			.bookTitle(book.getBookTitle())
-			.authorName(book.getAuthor().getAuthorName())
-			.publisherName(book.getPublisher().getPublisherName())
-			.bookPublishDate(book.getBookPublishDate())
-			.bookStatusName(book.getBookStatus().getBookStatusName())
-			.bookDescription(book.getBookDescription())
-			.bookQuantity(book.getBookQuantity())
-			.bookPrice(book.getBookPrice())
-			.bookSalePrice(book.getBookSalePrice())
-			.bookSalePercent(book.getBookSalePercent())
-			.build();
-	}
+	@NotNull BigDecimal bookSalePercent,
+	String fileName) {
 }

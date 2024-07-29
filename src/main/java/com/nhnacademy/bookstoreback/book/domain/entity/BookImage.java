@@ -48,4 +48,11 @@ public class BookImage {
 		this.book = book;
 		this.image = image;
 	}
+
+	public static BookImage toEntity(Book book, Image image) {
+		return BookImage.builder()
+			.book(book)
+			.image(image)
+			.build();
+	}
 }
