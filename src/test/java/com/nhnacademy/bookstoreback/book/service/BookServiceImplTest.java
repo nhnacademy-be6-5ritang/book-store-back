@@ -315,7 +315,7 @@ class BookServiceImplTest {
 		// Then
 		verify(bookCategoryRepository, times(1)).deleteAllByBookBookId(bookId);
 		verify(bookTagRepository, times(1)).deleteAllByBookBookId(bookId);
-		verify(bookImageRepository, times(1)).deleteAllByBookBookId(bookId);
+		verify(bookImageRepository, times(2)).deleteAllByBookBookId(bookId);
 		verify(bookRepository, times(1)).deleteById(bookId);
 	}
 

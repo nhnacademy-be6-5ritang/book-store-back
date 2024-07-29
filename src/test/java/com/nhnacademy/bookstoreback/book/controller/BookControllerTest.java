@@ -156,7 +156,7 @@ class BookControllerTest {
 			new BigDecimal("26.99")
 			, "test.png");
 
-		mockMvc.perform(put("/api/books/{bookId}", 1L)
+		mockMvc.perform(post("/api/books/{bookId}", 1L)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(request))
 				.header("Authorization", "Bearer token"))
