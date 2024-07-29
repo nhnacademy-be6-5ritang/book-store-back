@@ -15,10 +15,7 @@ public record UpdateUserInfoRequest(
 	@NotBlank
 	@Size(max = 10)
 	String name,
-	@NotBlank
-	@Size(max = 30)
-	String email,
-	@NotBlank
+
 	@Size(min = 8, max = 100)
 	String password,
 	@NotNull
@@ -28,6 +25,6 @@ public record UpdateUserInfoRequest(
 	String contact
 ) {
 	public UpdateUserInfoRequest encodePassword(PasswordEncoder passwordEncoder) {
-		return new UpdateUserInfoRequest(name, email, passwordEncoder.encode(password), birth, contact);
+		return new UpdateUserInfoRequest(name, passwordEncoder.encode(password), birth, contact);
 	}
 }
