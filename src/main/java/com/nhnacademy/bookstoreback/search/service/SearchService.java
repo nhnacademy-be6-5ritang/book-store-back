@@ -223,26 +223,15 @@ public class SearchService {
 
 		for (SearchHit hit : response.getHits().getHits()) {
 			Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+			Long bookId = Long.valueOf(sourceAsMap.getOrDefault("book_id", 0).toString());
 
-			BookSearchResponse bookDetail = BookSearchResponse.builder()
-				.bookId(Long.valueOf(sourceAsMap.getOrDefault("book_id", 0).toString()))
-				.authorName((String) sourceAsMap.getOrDefault("author_name", ""))
-				.publisherName((String) sourceAsMap.getOrDefault("publisher_name", ""))
-				.bookStatusName((String) sourceAsMap.getOrDefault("book_status_name", ""))
-				.bookTitle((String) sourceAsMap.getOrDefault("book_title", ""))
-				.bookDescription((String) sourceAsMap.getOrDefault("book_description", ""))
-				.bookQuantity((Integer) sourceAsMap.getOrDefault("book_quantity", 0))
-				.bookPublishDate(new Date((Long) sourceAsMap.getOrDefault("book_publish_date", 0L)))
-				.bookIsbn((String) sourceAsMap.getOrDefault("book_isbn", ""))
-				.bookPrice(new BigDecimal(sourceAsMap.getOrDefault("book_price", 0).toString()))
-				.bookSalePrice(new BigDecimal(sourceAsMap.getOrDefault("book_sale_price", 0).toString()))
-				.bookSalePercent(new BigDecimal(sourceAsMap.getOrDefault("book_sale_percent", 0).toString()))
-				.bookImageUrl((String) sourceAsMap.getOrDefault("book_image_url", ""))
-				.build();
-
-			bookDetails.add(bookDetail);
+			Optional<Book> bookOptional = bookRepository.findById(bookId);
+			if (bookOptional.isPresent()) {
+				Book book = bookOptional.get();
+				BookSearchResponse bookDetail = BookSearchResponse.fromEntity(book);
+				bookDetails.add(bookDetail);
+			}
 		}
 		return bookDetails;
 	}
-
 }
