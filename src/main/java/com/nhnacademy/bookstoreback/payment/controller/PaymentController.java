@@ -14,6 +14,7 @@ import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderByInfoIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByInfoResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.CancelResponse;
+import com.nhnacademy.bookstoreback.payment.dto.response.PaymentResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.PaymentSaveResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.TransactionsResponse;
 import com.nhnacademy.bookstoreback.payment.dto.response.UpdatePaymentResponse;
@@ -134,11 +135,51 @@ public class PaymentController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "404", description = "거래 정보를 찾을 수 없습니다")
 	})
-	@PostMapping("/cancel/test/{payment_id}")
+	@PostMapping("/cancel/{payment_id}")
 	public ResponseEntity<UpdatePaymentResponse> cancel(@RequestBody String paymentResponseJson,
 		@PathVariable("payment_id") Long paymentId) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(paymentServiceImpl.updatePayment(paymentResponseJson, paymentId));
 	}
 
+	@Operation(
+		summary = "거래 정보 업데이트",
+		description = "포인트 결제 취소"
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "404", description = "거래 정보를 찾을 수 없습니다")
+	})
+	@GetMapping("/cancel/pointSale/{payment_id}")
+	public ResponseEntity<Void> cancelPointSale(@PathVariable("payment_id") Long paymentId,
+		@CurrentUser CurrentUserDetails currentUser) {
+		paymentServiceImpl.updatePayment(paymentId, currentUser);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@Operation(
+		summary = "거래 정보 생성",
+		description = "포인트 결제 생성"
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "404", description = "거래 정보를 찾을 수 없습니다")
+	})
+	@GetMapping("/pointSale/{orderInfoId}")
+	public ResponseEntity<Void> pointSale(@PathVariable String orderInfoId,
+		@CurrentUser CurrentUserDetails currentUser) {
+		paymentServiceImpl.savePointPayment(orderInfoId, currentUser);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@Operation(
+		summary = "결제 정보 조회",
+		description = "주문 보안 아이디로 결제 정보 조회"
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "404", description = "거래 정보를 찾을 수 없습니다")
+	})
+	@GetMapping("/pointSale/info/{orderInfoId}")
+	public ResponseEntity<PaymentResponse> pointSaleInfo(@PathVariable String orderInfoId) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(paymentServiceImpl.getPayment(orderInfoId));
+	}
 }

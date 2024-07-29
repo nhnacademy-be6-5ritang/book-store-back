@@ -14,6 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
@@ -28,12 +34,15 @@ import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateCartOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.CreateOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllListOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllOrderResponse;
+import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusIdResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.entity.Order;
 import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.OrderRepository;
 import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
 import com.nhnacademy.bookstoreback.order.service.impl.OrderServiceImpl;
+import com.nhnacademy.bookstoreback.point.transaction.service.impl.PointTransactionServiceImpl;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
@@ -56,6 +65,9 @@ public class OrderServiceImplTest {
 
 	@Mock
 	private DeliveryStatusRepository deliveryStatusRepository;
+
+	@Mock
+	private PointTransactionServiceImpl pointTransactionService;
 
 	@BeforeEach
 	void setup() {
@@ -434,5 +446,115 @@ public class OrderServiceImplTest {
 	@Test
 	void testGetUserPoint_UserNotFound() {
 		assertThat(orderService.getUserPoint(null)).isNull();
+	}
+
+	@Test
+	void testFindAllPageByUserId_Success() {
+		CurrentUserDetails currentUser = mock(CurrentUserDetails.class);
+		Order order = mock(Order.class);
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "orderDate"));
+
+		when(currentUser.getUserId()).thenReturn(1L);
+		when(orderRepository.findAllByUser_Id(eq(1L), any(Pageable.class))).thenReturn(new PageImpl<>(List.of(order)));
+
+		Page<GetAllOrderResponse> response = orderService.findAllPageByUserId(currentUser, pageable);
+
+		assertThat(response).isNotNull();
+		assertThat(response.getContent()).hasSize(1);
+		verify(orderRepository).findAllByUser_Id(eq(1L), any(Pageable.class));
+	}
+
+	@Test
+	void testFindAllPageByUserId_UserNotFound() {
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "orderDate"));
+		assertThrows(OrderFailException.class, () -> orderService.findAllPageByUserId(null, pageable));
+	}
+
+	@Test
+	void testFindAllPageByUserId_OrdersNotFound() {
+		CurrentUserDetails currentUser = mock(CurrentUserDetails.class);
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "orderDate"));
+
+		when(currentUser.getUserId()).thenReturn(1L);
+		when(orderRepository.findAllByUser_Id(eq(1L), any(Pageable.class))).thenReturn(null);
+
+		assertThrows(OrderFailException.class, () -> orderService.findAllPageByUserId(currentUser, pageable));
+		verify(orderRepository).findAllByUser_Id(eq(1L), any(Pageable.class));
+	}
+
+	@Test
+	void testFindByOrderStatus_OrderStatusId_Success() {
+		Long orderStatusId = 1L;
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "orderDate"));
+		Order order = mock(Order.class);
+		Page<Order> orderPage = new PageImpl<>(List.of(order), pageable, 1);
+
+		when(orderRepository.findByOrderStatus_OrderStatusId(eq(orderStatusId), any(Pageable.class))).thenReturn(
+			orderPage);
+
+		GetOrderByStatusIdResponse response = orderService.findByOrderStatus_OrderStatusId(orderStatusId, pageable);
+
+		assertThat(response).isNotNull();
+		verify(orderRepository).findByOrderStatus_OrderStatusId(eq(orderStatusId), any(Pageable.class));
+	}
+
+	@Test
+	void testFindByOrderStatus_OrderStatusId_OrdersNotFound() {
+		Long orderStatusId = 1L;
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "orderDate"));
+
+		when(orderRepository.findByOrderStatus_OrderStatusId(eq(orderStatusId), any(Pageable.class))).thenReturn(null);
+
+		assertThrows(OrderFailException.class,
+			() -> orderService.findByOrderStatus_OrderStatusId(orderStatusId, pageable));
+		verify(orderRepository).findByOrderStatus_OrderStatusId(eq(orderStatusId), any(Pageable.class));
+	}
+
+	@Test
+	void testRefundedOrder_Success() {
+		String orderInfoId = "order123";
+		Order order = mock(Order.class);
+		Delivery delivery = mock(Delivery.class);
+		DeliveryStatus deliveryStatus = mock(DeliveryStatus.class);
+		OrderStatus orderStatus = mock(OrderStatus.class);
+		User user = mock(User.class);
+
+		when(orderRepository.findByOrderInfoId(orderInfoId)).thenReturn(order);
+		when(deliveryRepository.findByOrder_OrderId(anyLong())).thenReturn(delivery);
+		when(deliveryStatusRepository.findDeliveryStatusByDeliveryStatusName("반품")).thenReturn(deliveryStatus);
+		when(orderStatusRepository.findByOrderStatusName("반품")).thenReturn(orderStatus);
+		when(order.getOrderId()).thenReturn(1L);
+		when(order.getUser()).thenReturn(user);
+		when(order.getOrderPrice()).thenReturn(BigDecimal.TEN);
+
+		orderService.refundedOrder(orderInfoId);
+
+		verify(delivery).updateDeliveryStatus(deliveryStatus);
+		verify(order).updateOrderStatus(orderStatus);
+		verify(pointTransactionService).refundPointTransaction(user, BigDecimal.TEN);
+	}
+
+	@Test
+	void testRefundedOrder_OrderNotFound() {
+		String orderInfoId = "order123";
+
+		when(orderRepository.findByOrderInfoId(orderInfoId)).thenReturn(null);
+
+		OrderFailException exception = assertThrows(OrderFailException.class,
+			() -> orderService.refundedOrder(orderInfoId));
+		assertEquals("주문을 가져올 수 없습니다", exception.getErrorStatus().getMessage());
+		assertEquals(HttpStatus.NOT_FOUND, exception.getErrorStatus().getStatus());
+	}
+
+	@Test
+	void testRefundingOrder_DeliveryNotFound() {
+		Order order = mock(Order.class);
+
+		when(orderRepository.findByOrderInfoId("order123")).thenReturn(order);
+		when(deliveryRepository.findByOrder_OrderId(anyLong())).thenReturn(null); // Delivery not found
+
+		assertThrows(NotFoundException.class, () -> orderService.refundingOrder("order123"));
+		verify(orderRepository).findByOrderInfoId("order123");
+		verify(deliveryRepository).findByOrder_OrderId(order.getOrderId());
 	}
 }
