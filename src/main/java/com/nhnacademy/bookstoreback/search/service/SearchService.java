@@ -40,7 +40,7 @@ public class SearchService {
 	private final BookRepository bookRepository;
 	private static final Logger logger = Logger.getLogger(SearchService.class.getName());
 
-	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) throws IOException {
+	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		Sort sort = pageable.getSort();
@@ -60,18 +60,28 @@ public class SearchService {
 		sourceBuilder.size(pageSize);
 
 		// Add query
-		sourceBuilder.query(
-			QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn")
-				.type("best_fields")
-		);
+		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+		boolQuery.should(QueryBuilders.matchQuery("book_title", query))
+			.should(QueryBuilders.matchQuery("book_description", query))
+			.should(QueryBuilders.matchQuery("book_isbn", query));
+		sourceBuilder.query(boolQuery);
+
 		searchRequest.source(sourceBuilder);
 
-		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-		logger.info("책 검색 응답: " + response.toString());
+		logger.info("Elasticsearch query: " + sourceBuilder.toString());
 
-		List<BookSearchResponse> bookDetails = parseJsonResponse(response);
-		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
-			response.getHits().getTotalHits().value);
+		try {
+			SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+			logger.info("책 검색 응답: " + response.toString());
+
+			List<BookSearchResponse> bookDetails = parseJsonResponse(response);
+			return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
+				response.getHits().getTotalHits().value);
+		} catch (Exception e) {
+			logger.severe("Elasticsearch 검색 중 오류 발생: " + e.getMessage());
+			e.printStackTrace();
+			throw new RuntimeException("책 검색 중 오류가 발생했습니다.", e);
+		}
 	}
 
 	public Page<BookSearchResponse> searchAuthors(String query, Pageable pageable) throws IOException {
@@ -212,28 +222,22 @@ public class SearchService {
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		for (SearchHit hit : response.getHits().getHits()) {
-			JsonNode sourceNode;
-			try {
-				sourceNode = objectMapper.readTree(hit.getSourceAsString());
-			} catch (IOException e) {
-				logger.severe("검색 응답 파싱 중 오류 발생: " + e.getMessage());
-				continue;
-			}
+			Map<String, Object> sourceAsMap = hit.getSourceAsMap();
 
 			BookSearchResponse bookDetail = BookSearchResponse.builder()
-				.bookId(Optional.ofNullable(sourceNode.get("book_id")).map(JsonNode::asLong).orElse(null))
-				.authorName(Optional.ofNullable(sourceNode.get("author_name")).map(JsonNode::asText).orElse(""))
-				.publisherName(Optional.ofNullable(sourceNode.get("publisher_name")).map(JsonNode::asText).orElse(""))
-				.bookStatusName(Optional.ofNullable(sourceNode.get("book_status_name")).map(JsonNode::asText).orElse(""))
-				.bookTitle(Optional.ofNullable(sourceNode.get("book_title")).map(JsonNode::asText).orElse(""))
-				.bookDescription(Optional.ofNullable(sourceNode.get("book_description")).map(JsonNode::asText).orElse(""))
-				.bookQuantity(Optional.ofNullable(sourceNode.get("book_quantity")).map(JsonNode::intValue).orElse(0))
-				.bookPublishDate(Optional.ofNullable(sourceNode.get("book_publish_date")).map(JsonNode::asLong).map(Date::new).orElse(null))
-				.bookIsbn(Optional.ofNullable(sourceNode.get("book_isbn")).map(JsonNode::asText).orElse(""))
-				.bookPrice(Optional.ofNullable(sourceNode.get("book_price")).map(JsonNode::decimalValue).orElse(BigDecimal.ZERO))
-				.bookSalePrice(Optional.ofNullable(sourceNode.get("book_sale_price")).map(JsonNode::decimalValue).orElse(BigDecimal.ZERO))
-				.bookSalePercent(Optional.ofNullable(sourceNode.get("book_sale_percent")).map(JsonNode::decimalValue).orElse(BigDecimal.ZERO))
-				.bookImageUrl(Optional.ofNullable(sourceNode.get("book_image_url")).map(JsonNode::asText).orElse(""))
+				.bookId(Long.valueOf(sourceAsMap.getOrDefault("book_id", 0).toString()))
+				.authorName((String) sourceAsMap.getOrDefault("author_name", ""))
+				.publisherName((String) sourceAsMap.getOrDefault("publisher_name", ""))
+				.bookStatusName((String) sourceAsMap.getOrDefault("book_status_name", ""))
+				.bookTitle((String) sourceAsMap.getOrDefault("book_title", ""))
+				.bookDescription((String) sourceAsMap.getOrDefault("book_description", ""))
+				.bookQuantity((Integer) sourceAsMap.getOrDefault("book_quantity", 0))
+				.bookPublishDate(new Date((Long) sourceAsMap.getOrDefault("book_publish_date", 0L)))
+				.bookIsbn((String) sourceAsMap.getOrDefault("book_isbn", ""))
+				.bookPrice(new BigDecimal(sourceAsMap.getOrDefault("book_price", 0).toString()))
+				.bookSalePrice(new BigDecimal(sourceAsMap.getOrDefault("book_sale_price", 0).toString()))
+				.bookSalePercent(new BigDecimal(sourceAsMap.getOrDefault("book_sale_percent", 0).toString()))
+				.bookImageUrl((String) sourceAsMap.getOrDefault("book_image_url", ""))
 				.build();
 
 			bookDetails.add(bookDetail);
