@@ -30,7 +30,7 @@ public class SearchController {
 	private SearchService searchService;
 
 	@GetMapping("/books")
-	public ResponseEntity<Page<BookSearchResponse>> searchBooks(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) {
+	public ResponseEntity<Page<BookSearchResponse>> searchBooks(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
 		logger.info("컨트롤러 Received request to search books with query: " + query);
 		return ResponseEntity.status(HttpStatus.OK).body(searchService.searchBooks(query, pageable));
 	}

@@ -49,8 +49,21 @@ public class SearchService {
 		SearchRequest searchRequest = new SearchRequest("books");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
+		// Add sorting
+		sort.forEach(order -> {
+			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
+			sourceBuilder.sort(order.getProperty(), sortOrder);
+		});
+
+		// Add pagination
+		sourceBuilder.from(page * pageSize);
+		sourceBuilder.size(pageSize);
+
+		// Add query
 		sourceBuilder.query(
-			QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn").type("best_fields"));
+			QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn")
+				.type("best_fields")
+		);
 		searchRequest.source(sourceBuilder);
 
 		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -59,33 +72,6 @@ public class SearchService {
 		List<BookSearchResponse> bookDetails = parseJsonResponse(response);
 		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
 			response.getHits().getTotalHits().value);
-
-		// // Add sorting
-		// sort.forEach(order -> {
-		// 	SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-		// 	sourceBuilder.sort(order.getProperty(), sortOrder);
-		// });
-		//
-		// // Add pagination
-		// sourceBuilder.from(page * pageSize);
-		// sourceBuilder.size(pageSize);
-		//
-		// // Add query
-		// sourceBuilder.query(
-		// 	QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn").type("best_fields"));
-		// searchRequest.source(sourceBuilder);
-		//
-		// try {
-		// 	SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-		// 	logger.info("책 검색 응답: " + response.toString());
-		//
-		// 	List<BookSearchResponse> bookDetails = parseJsonResponse(response);
-		// 	return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
-		// 		response.getHits().getTotalHits().value);
-		// } catch (IOException e) {
-		// 	logger.severe("Elasticsearch 검색 요청 중 오류 발생: " + e.getMessage());
-		// 	throw new RuntimeException("검색 중 오류가 발생했습니다.", e);
-		// }
 	}
 
 	public Page<BookSearchResponse> searchAuthors(String query, Pageable pageable) throws IOException {
