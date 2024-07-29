@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 import com.nhnacademy.bookstoreback.global.exception.OrderStatusFailException;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
@@ -116,4 +117,23 @@ public class OrderStatusServiceImplTest {
 		assertThat(responses).isNotEmpty();
 		verify(orderStatusRepository).findAll();
 	}
+
+	@Test
+	void testDelete_Success() {
+		doNothing().when(orderStatusRepository).deleteById(anyLong());
+
+		orderStatusService.delete(1L);
+
+		verify(orderStatusRepository).deleteById(anyLong());
+	}
+
+	@Test
+	void testDelete_DataAccessException() {
+		doThrow(DataAccessResourceFailureException.class).when(orderStatusRepository).deleteById(anyLong());
+
+		assertThrows(OrderStatusFailException.class, () -> orderStatusService.delete(1L));
+
+		verify(orderStatusRepository).deleteById(anyLong());
+	}
+
 }
