@@ -40,7 +40,7 @@ public class SearchService {
 	private final BookRepository bookRepository;
 	private static final Logger logger = Logger.getLogger(SearchService.class.getName());
 
-	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) {
+	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) throws IOException {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		Sort sort = pageable.getSort();
@@ -49,32 +49,43 @@ public class SearchService {
 		SearchRequest searchRequest = new SearchRequest("books");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
-		// Add sorting
-		sort.forEach(order -> {
-			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-			sourceBuilder.sort(order.getProperty(), sortOrder);
-		});
-
-		// Add pagination
-		sourceBuilder.from(page * pageSize);
-		sourceBuilder.size(pageSize);
-
-		// Add query
 		sourceBuilder.query(
 			QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn").type("best_fields"));
 		searchRequest.source(sourceBuilder);
 
-		try {
-			SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-			logger.info("책 검색 응답: " + response.toString());
+		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+		logger.info("책 검색 응답: " + response.toString());
 
-			List<BookSearchResponse> bookDetails = parseJsonResponse(response);
-			return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
-				response.getHits().getTotalHits().value);
-		} catch (IOException e) {
-			logger.severe("Elasticsearch 검색 요청 중 오류 발생: " + e.getMessage());
-			throw new RuntimeException("검색 중 오류가 발생했습니다.", e);
-		}
+		List<BookSearchResponse> bookDetails = parseJsonResponse(response);
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
+			response.getHits().getTotalHits().value);
+
+		// // Add sorting
+		// sort.forEach(order -> {
+		// 	SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
+		// 	sourceBuilder.sort(order.getProperty(), sortOrder);
+		// });
+		//
+		// // Add pagination
+		// sourceBuilder.from(page * pageSize);
+		// sourceBuilder.size(pageSize);
+		//
+		// // Add query
+		// sourceBuilder.query(
+		// 	QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn").type("best_fields"));
+		// searchRequest.source(sourceBuilder);
+		//
+		// try {
+		// 	SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+		// 	logger.info("책 검색 응답: " + response.toString());
+		//
+		// 	List<BookSearchResponse> bookDetails = parseJsonResponse(response);
+		// 	return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
+		// 		response.getHits().getTotalHits().value);
+		// } catch (IOException e) {
+		// 	logger.severe("Elasticsearch 검색 요청 중 오류 발생: " + e.getMessage());
+		// 	throw new RuntimeException("검색 중 오류가 발생했습니다.", e);
+		// }
 	}
 
 	public Page<BookSearchResponse> searchAuthors(String query, Pageable pageable) throws IOException {
@@ -224,16 +235,24 @@ public class SearchService {
 			}
 
 			BookSearchResponse bookDetail = BookSearchResponse.builder()
+				.bookId(Optional.ofNullable(sourceNode.get("book_id")).map(JsonNode::asLong).orElse(null))
+				.authorName(Optional.ofNullable(sourceNode.get("author_name")).map(JsonNode::asText).orElse(""))
+				.publisherName(Optional.ofNullable(sourceNode.get("publisher_name")).map(JsonNode::asText).orElse(""))
+				.bookStatusName(Optional.ofNullable(sourceNode.get("book_status_name")).map(JsonNode::asText).orElse(""))
 				.bookTitle(Optional.ofNullable(sourceNode.get("book_title")).map(JsonNode::asText).orElse(""))
 				.bookDescription(Optional.ofNullable(sourceNode.get("book_description")).map(JsonNode::asText).orElse(""))
+				.bookQuantity(Optional.ofNullable(sourceNode.get("book_quantity")).map(JsonNode::intValue).orElse(0))
+				.bookPublishDate(Optional.ofNullable(sourceNode.get("book_publish_date")).map(JsonNode::asLong).map(Date::new).orElse(null))
 				.bookIsbn(Optional.ofNullable(sourceNode.get("book_isbn")).map(JsonNode::asText).orElse(""))
 				.bookPrice(Optional.ofNullable(sourceNode.get("book_price")).map(JsonNode::decimalValue).orElse(BigDecimal.ZERO))
-				.bookPublishDate(Optional.ofNullable(sourceNode.get("book_publish_date")).map(JsonNode::asLong)
-					.map(Date::new).orElse(null))
+				.bookSalePrice(Optional.ofNullable(sourceNode.get("book_sale_price")).map(JsonNode::decimalValue).orElse(BigDecimal.ZERO))
+				.bookSalePercent(Optional.ofNullable(sourceNode.get("book_sale_percent")).map(JsonNode::decimalValue).orElse(BigDecimal.ZERO))
+				.bookImageUrl(Optional.ofNullable(sourceNode.get("book_image_url")).map(JsonNode::asText).orElse(""))
 				.build();
 
 			bookDetails.add(bookDetail);
 		}
 		return bookDetails;
 	}
+
 }
