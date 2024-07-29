@@ -35,21 +35,21 @@ public class SearchController {
 		return ResponseEntity.status(HttpStatus.OK).body(searchService.searchBooks(query, pageable));
 	}
 
-	@GetMapping("/authors")
-	public ResponseEntity<Page<BookSearchResponse>> searchAuthors(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
-		logger.info("Service Received request to search authors with query: " + query);
-		return ResponseEntity.status(HttpStatus.OK).body(searchService.searchAuthors(query, pageable));
-	}
-
-	@GetMapping("/publisher")
-	public ResponseEntity<Page<BookSearchResponse>> searchPublishers(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
-		logger.info("Service Received request to search publishers with query: " + query);
-		return ResponseEntity.status(HttpStatus.OK).body(searchService.searchPublishers(query, pageable));
-	}
-
-	@GetMapping("/tag")
-	public ResponseEntity<Page<BookSearchResponse>> searchBooksByTag(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
-		logger.info("Service Received request to search books by tag with query: " + query);
-		return ResponseEntity.status(HttpStatus.OK).body(searchService.searchBooksByTag(query, pageable));
-	}
+	// @GetMapping("/authors")
+	// public ResponseEntity<Page<BookSearchResponse>> searchAuthors(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
+	// 	logger.info("Service Received request to search authors with query: " + query);
+	// 	return ResponseEntity.status(HttpStatus.OK).body(searchService.searchAuthors(query, pageable));
+	// }
+	//
+	// @GetMapping("/publisher")
+	// public ResponseEntity<Page<BookSearchResponse>> searchPublishers(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
+	// 	logger.info("Service Received request to search publishers with query: " + query);
+	// 	return ResponseEntity.status(HttpStatus.OK).body(searchService.searchPublishers(query, pageable));
+	// }
+	//
+	// @GetMapping("/tag")
+	// public ResponseEntity<Page<BookSearchResponse>> searchBooksByTag(@RequestParam String query, @PageableDefault(page = 1, size = 20) Pageable pageable) throws IOException {
+	// 	logger.info("Service Received request to search books by tag with query: " + query);
+	// 	return ResponseEntity.status(HttpStatus.OK).body(searchService.searchBooksByTag(query, pageable));
+	// }
 }
