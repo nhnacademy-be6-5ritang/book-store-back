@@ -57,12 +57,12 @@ class BookImageServiceTest {
 		bookImageService.mapImageToBook(book, null);
 
 		verify(imageRepository).save(argThat(image ->
-			"Test Book.jpg".equals(image.getImageName()) &&
+			"null.jpg".equals(image.getImageName()) &&
 				defaultImageUrl.equals(image.getImageUrl())
 		));
 		verify(bookImageRepository).save(argThat(bookImage ->
 			book.equals(bookImage.getBook()) &&
-				"Test Book.jpg".equals(bookImage.getImage().getImageName()) &&
+				"null.jpg".equals(bookImage.getImage().getImageName()) &&
 				defaultImageUrl.equals(bookImage.getImage().getImageUrl())
 		));
 	}
@@ -74,12 +74,12 @@ class BookImageServiceTest {
 		bookImageService.mapImageToBook(book, emptyImageUrl);
 
 		verify(imageRepository).save(argThat(image ->
-			"Test Book.jpg".equals(image.getImageName()) &&
+			"null.jpg".equals(image.getImageName()) &&
 				"http://image.toast.com/aaaacuf/5ritang/books/null.jpg".equals(image.getImageUrl())
 		));
 		verify(bookImageRepository).save(argThat(bookImage ->
 			book.equals(bookImage.getBook()) &&
-				"Test Book.jpg".equals(bookImage.getImage().getImageName()) &&
+				"null.jpg".equals(bookImage.getImage().getImageName()) &&
 				"http://image.toast.com/aaaacuf/5ritang/books/null.jpg".equals(bookImage.getImage().getImageUrl())
 		));
 	}

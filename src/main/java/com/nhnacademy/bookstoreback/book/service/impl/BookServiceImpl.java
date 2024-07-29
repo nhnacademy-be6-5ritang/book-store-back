@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
-import com.nhnacademy.bookstoreback.author.exception.AuthorNotFoundException;
 import com.nhnacademy.bookstoreback.author.repository.AuthorRepository;
 import com.nhnacademy.bookstoreback.author.service.AuthorService;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
@@ -28,6 +27,7 @@ import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.book.domain.entity.BookImage;
 import com.nhnacademy.bookstoreback.book.exception.BookAlreadyExistsException;
 import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
 import com.nhnacademy.bookstoreback.book.repository.BookRepository;
@@ -42,11 +42,13 @@ import com.nhnacademy.bookstoreback.category.exception.CategoryNotFoundException
 import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
 import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
 import com.nhnacademy.bookstoreback.category.service.CategoryService;
+import com.nhnacademy.bookstoreback.global.util.ImageUtil;
+import com.nhnacademy.bookstoreback.image.domain.entity.Image;
 import com.nhnacademy.bookstoreback.image.repository.BookImageRepository;
+import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
 import com.nhnacademy.bookstoreback.image.service.BookImageService;
 import com.nhnacademy.bookstoreback.image.service.CloudImageService;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
-import com.nhnacademy.bookstoreback.publisher.exception.PublisherNotFoundException;
 import com.nhnacademy.bookstoreback.publisher.repository.PublisherRepository;
 import com.nhnacademy.bookstoreback.publisher.service.PublisherService;
 import com.nhnacademy.bookstoreback.tag.domain.entity.BookTag;
@@ -82,6 +84,7 @@ public class BookServiceImpl implements BookService {
 	private final BookStatusService bookStatusService;
 	private final TagRepository tagRepository;
 	private final BookTagRepository bookTagRepository;
+	private final ImageRepository imageRepository;
 	private final CategoryService categoryService;
 	private final BookImageService bookImageService;
 	private final CloudImageService cloudImageService;
@@ -357,6 +360,17 @@ public class BookServiceImpl implements BookService {
 					new BookTag(book, tagRepository.findById(tagId).orElse(null)));
 			});
 		}
+
+		// 파일 이름이 비어있지 않으면 이미지 저장
+		Image image = null;
+		if (request.fileName() != null) {
+			image = imageRepository.save(
+				new Image(ImageUtil.fileNameParser(request.fileName()), request.fileName()));
+		} else {
+			image = imageRepository.save(
+				new Image("null.jpg", "http://image.toast.com/aaaacuf/5ritang/books/null.jpg"));
+		}
+		bookImageRepository.save(BookImage.toEntity(book, image));
 		bookRepository.save(book);
 	}
 
@@ -364,11 +378,9 @@ public class BookServiceImpl implements BookService {
 	public void updateBookById(Long bookId, UpdateBookRequest request) {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
 
-		Author author = authorRepository.findByAuthorName(request.authorName())
-			.orElseThrow(() -> new AuthorNotFoundException(request.authorName()));
+		Author author = authorService.findOrCreateAuthor(request.authorName());
 
-		Publisher publisher = publisherRepository.findByPublisherName(request.publisherName())
-			.orElseThrow(() -> new PublisherNotFoundException(request.publisherName()));
+		Publisher publisher = publisherService.findOrCreatePublisher(request.publisherName());
 
 		BookStatus bookStatus = bookStatusRepository.findByBookStatusName(request.bookStatusName())
 			.orElseThrow(() -> new BookStatusNotFoundException(request.bookStatusName()));
@@ -402,6 +414,19 @@ public class BookServiceImpl implements BookService {
 					new BookTag(book, tagRepository.findById(tagId).orElse(null)));
 			});
 		}
+
+		// 파일 이름이 비어있지 않으면 이미지 저장
+		Image image = null;
+		if (request.fileName() != null) {
+			bookImageRepository.deleteAllByBookBookId(bookId);
+			image = imageRepository.save(
+				new Image(ImageUtil.fileNameParser(request.fileName()), request.fileName()));
+		} else if (!bookImageRepository.existsById(bookId)) {
+			image = imageRepository.save(
+				new Image("null.jpg", "http://image.toast.com/aaaacuf/5ritang/books/null.jpg"));
+		}
+		bookImageRepository.save(BookImage.toEntity(book, image));
+		bookRepository.save(book);
 	}
 
 	@Override
@@ -410,9 +435,10 @@ public class BookServiceImpl implements BookService {
 			throw new BookNotFoundException(bookId);
 		}
 
-		// 해당 도서가 가지고 있는 카테고리, 태그 매핑 정보도 같이 삭제
+		// 해당 도서가 가지고 있는 카테고리, 태그 이미지, 매핑 정보도 같이 삭제
 		bookCategoryRepository.deleteAllByBookBookId(bookId);
 		bookTagRepository.deleteAllByBookBookId(bookId);
+		bookImageRepository.deleteAllByBookBookId(bookId);
 		bookImageRepository.deleteAllByBookBookId(bookId);
 		bookRepository.deleteById(bookId);
 	}

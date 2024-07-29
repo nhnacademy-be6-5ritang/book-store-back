@@ -129,7 +129,7 @@ class BookControllerTest {
 			new BigDecimal("29.99"),
 			new BigDecimal("10"),
 			new BigDecimal("26.99")
-		);
+			, "test.png");
 
 		mockMvc.perform(post("/api/books")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -154,9 +154,9 @@ class BookControllerTest {
 			new BigDecimal("29.99"),
 			new BigDecimal("10"),
 			new BigDecimal("26.99")
-		);
+			, "test.png");
 
-		mockMvc.perform(put("/api/books/{bookId}", 1L)
+		mockMvc.perform(post("/api/books/{bookId}", 1L)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(request))
 				.header("Authorization", "Bearer token"))
@@ -219,7 +219,7 @@ class BookControllerTest {
 		Page<GetBookDetailResponse> page = new PageImpl<>(Collections.singletonList(bookResponse), pageable, 1);
 
 		when(bookService.findAllBooksByCategoryName(pageable, "CategoryName")).thenReturn(page);
-		
+
 		mockMvc.perform(get("/api/books/page/category")
 				.param("page", "1")
 				.param("size", "20")
