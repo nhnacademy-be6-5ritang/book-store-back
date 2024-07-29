@@ -245,7 +245,6 @@ class UserServiceTest {
 	void testUpdateUserInfo() {
 		UpdateUserInfoRequest request = UpdateUserInfoRequest.builder()
 			.name("Updated User")
-			.email("updated@example.com")
 			.password("newpassword")
 			.birth(LocalDate.of(1991, 2, 2))
 			.contact("01098765432")
@@ -258,7 +257,6 @@ class UserServiceTest {
 		UpdateUserInfoResponse response = userService.updateUserInfo(currentUser, request);
 
 		assertThat(response).isNotNull();
-		assertThat(response.email()).isEqualTo(request.email());
 	}
 
 	@Test

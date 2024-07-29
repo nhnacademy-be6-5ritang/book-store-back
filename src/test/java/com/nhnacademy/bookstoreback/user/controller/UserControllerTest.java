@@ -292,7 +292,6 @@ public class UserControllerTest {
 	void updateUser() throws Exception {
 		UpdateUserInfoRequest updateUserInfoRequest = UpdateUserInfoRequest.builder()
 			.name("name")
-			.email("updated@example.com")
 			.password("newpassword")
 			.birth(LocalDate.of(1991, 2, 2))
 			.contact("01098765432")

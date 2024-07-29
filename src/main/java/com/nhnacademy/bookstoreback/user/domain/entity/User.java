@@ -151,7 +151,14 @@ public class User {
 
 	public void update(UpdateUserInfoRequest updateUserInfoRequest) {
 		this.name = updateUserInfoRequest.name();
-		this.email = updateUserInfoRequest.email();
+		this.birth = updateUserInfoRequest.birth();
+		this.contact = updateUserInfoRequest.contact();
+		this.updatedAt = LocalDateTime.now();
+		this.password = updateUserInfoRequest.password();
+	}
+
+	public void updateNotPassword(UpdateUserInfoRequest updateUserInfoRequest) {
+		this.name = updateUserInfoRequest.name();
 		this.birth = updateUserInfoRequest.birth();
 		this.contact = updateUserInfoRequest.contact();
 		this.updatedAt = LocalDateTime.now();
