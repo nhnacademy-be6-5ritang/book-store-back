@@ -83,7 +83,7 @@ public class CloudImageService {
 		return downloadAndUploadImage(book, coverUrl);
 	}
 
-	private ResponseEntity<Map> executeApiCall(String apiUrl, HttpEntity<String> requestEntity) {
+	public ResponseEntity<Map> executeApiCall(String apiUrl, HttpEntity<String> requestEntity) {
 		int attempt = 0;
 		while (attempt < MAX_RETRY_COUNT) {
 			try {
@@ -108,7 +108,7 @@ public class CloudImageService {
 		return null;
 	}
 
-	private String downloadAndUploadImage(Book book, String coverUrl) {
+	public String downloadAndUploadImage(Book book, String coverUrl) {
 		try {
 			URI uri = new URI(coverUrl);
 			BufferedImage image = ImageIO.read(uri.toURL());

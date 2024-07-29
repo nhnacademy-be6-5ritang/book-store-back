@@ -12,6 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -40,7 +45,8 @@ class TagControllerTest {
 	@BeforeEach
 	void setUp() {
 		objectMapper = new ObjectMapper();
-		mockMvc = MockMvcBuilders.standaloneSetup(tagController).build();
+		mockMvc = MockMvcBuilders.standaloneSetup(new TagController(tagService))
+			.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()).build();
 		tagDto = new TagDto(1L, "Sample Tag");
 	}
 
@@ -58,16 +64,27 @@ class TagControllerTest {
 		MockMvcResultMatchers.content().json(expectedJson).match(result);
 	}
 
-	// @Test
-	// void testGetTagsPageable() throws Exception {
-	// 	when(tagService.getTags(any())).thenReturn(Page.empty());
-	//
-	// 	mockMvc.perform(MockMvcRequestBuilders.get("/api/tags/page")
-	// 			.param("page", "0")
-	// 			.param("size", "10")
-	// 			.accept(MediaType.APPLICATION_JSON))
-	// 		.andExpect(status().isOk());
-	// }
+	@Test
+	void testGetTagsPageable() throws Exception {
+		// Create pageable and page response
+		Pageable pageable = PageRequest.of(0, 10);
+		List<TagDto> tagDtos = Collections.singletonList(tagDto);
+		Page<TagDto> page = new PageImpl<>(tagDtos, pageable, tagDtos.size());
+
+		// Mock the service method
+		given(tagService.getTags(pageable)).willReturn(page);
+
+		// Perform the request and verify the result
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/tags/page")
+				.param("page", "0")
+				.param("size", "10")
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andReturn();
+
+		String expectedJson = objectMapper.writeValueAsString(page);
+		MockMvcResultMatchers.content().json(expectedJson).match(result);
+	}
 
 	@Test
 	void testGetTagsByBookId() throws Exception {
