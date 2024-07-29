@@ -206,7 +206,7 @@ public class SearchService {
 		// Step 3: 책 검색
 		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
-		bookSourceBuilder.query(QueryBuilders.termsQuery("_id", bookIds));
+		bookSourceBuilder.query(QueryBuilders.termsQuery("book_id", bookIds));
 		bookSearchRequest.source(bookSourceBuilder);
 
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
