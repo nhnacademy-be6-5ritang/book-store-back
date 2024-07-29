@@ -40,7 +40,7 @@ public class SearchService {
 	private final BookRepository bookRepository;
 	private static final Logger logger = Logger.getLogger(SearchService.class.getName());
 
-	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) {
+	public Page<BookSearchResponse> searchBooks(String query, Pageable pageable) throws IOException {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		Sort sort = pageable.getSort();
@@ -49,39 +49,16 @@ public class SearchService {
 		SearchRequest searchRequest = new SearchRequest("books");
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
-		// Add sorting
-		sort.forEach(order -> {
-			SortOrder sortOrder = order.isAscending() ? SortOrder.ASC : SortOrder.DESC;
-			sourceBuilder.sort(order.getProperty(), sortOrder);
-		});
-
-		// Add pagination
-		sourceBuilder.from(page * pageSize);
-		sourceBuilder.size(pageSize);
-
-		// Add query
-		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-		boolQuery.should(QueryBuilders.matchQuery("book_title", query))
-			.should(QueryBuilders.matchQuery("book_description", query))
-			.should(QueryBuilders.matchQuery("book_isbn", query));
-		sourceBuilder.query(boolQuery);
-
+		sourceBuilder.query(
+			QueryBuilders.multiMatchQuery(query, "book_title", "book_description", "book_isbn").type("best_fields"));
 		searchRequest.source(sourceBuilder);
 
-		logger.info("Elasticsearch query: " + sourceBuilder.toString());
+		SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+		logger.info("책 검색 응답: " + response.toString());
 
-		try {
-			SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-			logger.info("책 검색 응답: " + response.toString());
-
-			List<BookSearchResponse> bookDetails = parseJsonResponse(response);
-			return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
-				response.getHits().getTotalHits().value);
-		} catch (Exception e) {
-			logger.severe("Elasticsearch 검색 중 오류 발생: " + e.getMessage());
-			e.printStackTrace();
-			throw new RuntimeException("책 검색 중 오류가 발생했습니다.", e);
-		}
+		List<BookSearchResponse> bookDetails = parseJsonResponse(response.toString());
+		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
+			response.getHits().getTotalHits().value);
 	}
 
 	public Page<BookSearchResponse> searchAuthors(String query, Pageable pageable) throws IOException {
@@ -119,7 +96,7 @@ public class SearchService {
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
-		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse);
+		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
 		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
 			bookResponse.getHits().getTotalHits().value);
 	}
@@ -160,7 +137,7 @@ public class SearchService {
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
-		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse);
+		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
 		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
 			bookResponse.getHits().getTotalHits().value);
 	}
@@ -194,44 +171,47 @@ public class SearchService {
 
 		SearchResponse bookTagResponse = client.search(bookTagSearchRequest, RequestOptions.DEFAULT);
 		if (bookTagResponse.getHits().getTotalHits().value == 0) {
-			logger.info("책 태그 매핑 검색 결과가 없습니다.");
-			return new PageImpl<>(new ArrayList<>(), pageable, 0); // 책 태그 매핑이 없을 경우 빈 리스트 반환
-		}
-
-		List<String> bookIds = new ArrayList<>();
-		for (SearchHit hit : bookTagResponse.getHits().getHits()) {
-			bookIds.add(hit.getId());
+			logger.info("해당 태그에 책이 없습니다.");
+			return new PageImpl<>(new ArrayList<>(),
+				PageRequest.of(page, pageSize, sort), 0); // 해당 태그의 책이 없을 경우 빈 리스트 반환
 		}
 
 		// Step 3: 책 검색
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+		for (var hit : bookTagResponse.getHits().getHits()) {
+			boolQueryBuilder.should(QueryBuilders.termQuery("book_id", hit.getSourceAsMap().get("book_id")));
+		}
+
 		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
-		bookSourceBuilder.query(QueryBuilders.termsQuery("book_id", bookIds));
+		bookSourceBuilder.query(boolQueryBuilder);
 		bookSearchRequest.source(bookSourceBuilder);
 
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
 		logger.info("책 검색 응답: " + bookResponse.toString());
 
-		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse);
+		List<BookSearchResponse> bookDetails = parseJsonResponse(bookResponse.toString());
 		return new PageImpl<>(bookDetails, PageRequest.of(page, pageSize, sort),
 			bookResponse.getHits().getTotalHits().value);
 	}
 
-	private List<BookSearchResponse> parseJsonResponse(SearchResponse response) {
-		List<BookSearchResponse> bookDetails = new ArrayList<>();
+	public List<BookSearchResponse> parseJsonResponse(String jsonResponse) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode rootNode = objectMapper.readTree(jsonResponse);
+		JsonNode hitsNode = rootNode.path("hits").path("hits");
 
-		for (SearchHit hit : response.getHits().getHits()) {
-			Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-			Long bookId = Long.valueOf(sourceAsMap.getOrDefault("book_id", 0).toString());
+		List<BookSearchResponse> bookList = new ArrayList<>();
+		for (JsonNode hit : hitsNode) {
+			JsonNode sourceNode = hit.path("_source");
+			Long bookId = sourceNode.path("book_id").asLong();
 
-			Optional<Book> bookOptional = bookRepository.findById(bookId);
-			if (bookOptional.isPresent()) {
-				Book book = bookOptional.get();
+			Optional<Book> optionalBook = bookRepository.findById(bookId);
+			if (optionalBook.isPresent()) {
+				Book book = optionalBook.get();
 				BookSearchResponse bookDetail = BookSearchResponse.fromEntity(book);
-				bookDetails.add(bookDetail);
+				bookList.add(bookDetail);
 			}
 		}
-		return bookDetails;
+		return bookList;
 	}
 }
