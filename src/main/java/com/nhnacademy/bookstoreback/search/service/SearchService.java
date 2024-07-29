@@ -187,20 +187,19 @@ public class SearchService {
 
 		SearchResponse bookTagResponse = client.search(bookTagSearchRequest, RequestOptions.DEFAULT);
 		if (bookTagResponse.getHits().getTotalHits().value == 0) {
-			logger.info("해당 태그에 책이 없습니다.");
-			return new PageImpl<>(new ArrayList<>(),
-				PageRequest.of(page, pageSize, sort), 0); // 해당 태그의 책이 없을 경우 빈 리스트 반환
+			logger.info("책 태그 매핑 검색 결과가 없습니다.");
+			return new PageImpl<>(new ArrayList<>(), pageable, 0); // 책 태그 매핑이 없을 경우 빈 리스트 반환
+		}
+
+		List<String> bookIds = new ArrayList<>();
+		for (SearchHit hit : bookTagResponse.getHits().getHits()) {
+			bookIds.add(hit.getId());
 		}
 
 		// Step 3: 책 검색
-		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-		for (var hit : bookTagResponse.getHits().getHits()) {
-			boolQueryBuilder.should(QueryBuilders.termQuery("book_id", hit.getSourceAsMap().get("book_id")));
-		}
-
 		SearchRequest bookSearchRequest = new SearchRequest("books");
 		SearchSourceBuilder bookSourceBuilder = new SearchSourceBuilder();
-		bookSourceBuilder.query(boolQueryBuilder);
+		bookSourceBuilder.query(QueryBuilders.termsQuery("_id", bookIds));
 		bookSearchRequest.source(bookSourceBuilder);
 
 		SearchResponse bookResponse = client.search(bookSearchRequest, RequestOptions.DEFAULT);
@@ -213,25 +212,27 @@ public class SearchService {
 
 	private List<BookSearchResponse> parseJsonResponse(SearchResponse response) {
 		List<BookSearchResponse> bookDetails = new ArrayList<>();
-		for (SearchHit hit : response.getHits().getHits()) {
-			Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+		ObjectMapper objectMapper = new ObjectMapper();
 
-			BookSearchResponse book = BookSearchResponse.builder()
-				.bookId(Optional.ofNullable(sourceAsMap.get("bookId")).map(Object::toString).map(Long::parseLong).orElse(null))
-				.authorName(Optional.ofNullable(sourceAsMap.get("authorName")).map(Object::toString).orElse(null))
-				.publisherName(Optional.ofNullable(sourceAsMap.get("publisherName")).map(Object::toString).orElse(null))
-				.bookStatusName(Optional.ofNullable(sourceAsMap.get("bookStatusName")).map(Object::toString).orElse(null))
-				.bookTitle(Optional.ofNullable(sourceAsMap.get("bookTitle")).map(Object::toString).orElse(null))
-				.bookDescription(Optional.ofNullable(sourceAsMap.get("bookDescription")).map(Object::toString).orElse(null))
-				.bookQuantity(Optional.ofNullable(sourceAsMap.get("bookQuantity")).map(Object::toString).map(Integer::parseInt).orElse(null))
-				.bookPublishDate(Optional.ofNullable(sourceAsMap.get("bookPublishDate")).map(Object::toString).map(Long::parseLong).map(Date::new).orElse(null))
-				.bookIsbn(Optional.ofNullable(sourceAsMap.get("bookIsbn")).map(Object::toString).orElse(null))
-				.bookPrice(Optional.ofNullable(sourceAsMap.get("bookPrice")).map(Object::toString).map(BigDecimal::new).orElse(null))
-				.bookSalePrice(Optional.ofNullable(sourceAsMap.get("bookSalePrice")).map(Object::toString).map(BigDecimal::new).orElse(null))
-				.bookSalePercent(Optional.ofNullable(sourceAsMap.get("bookSalePercent")).map(Object::toString).map(BigDecimal::new).orElse(null))
-				.bookImageUrl(Optional.ofNullable(sourceAsMap.get("bookImageUrl")).map(Object::toString).orElse(null))
+		for (SearchHit hit : response.getHits().getHits()) {
+			JsonNode sourceNode;
+			try {
+				sourceNode = objectMapper.readTree(hit.getSourceAsString());
+			} catch (IOException e) {
+				logger.severe("검색 응답 파싱 중 오류 발생: " + e.getMessage());
+				continue;
+			}
+
+			BookSearchResponse bookDetail = BookSearchResponse.builder()
+				.bookTitle(Optional.ofNullable(sourceNode.get("book_title")).map(JsonNode::asText).orElse(""))
+				.bookDescription(Optional.ofNullable(sourceNode.get("book_description")).map(JsonNode::asText).orElse(""))
+				.bookIsbn(Optional.ofNullable(sourceNode.get("book_isbn")).map(JsonNode::asText).orElse(""))
+				.bookPrice(Optional.ofNullable(sourceNode.get("book_price")).map(JsonNode::decimalValue).orElse(BigDecimal.ZERO))
+				.bookPublishDate(Optional.ofNullable(sourceNode.get("book_publish_date")).map(JsonNode::asLong)
+					.map(Date::new).orElse(null))
 				.build();
-			bookDetails.add(book);
+
+			bookDetails.add(bookDetail);
 		}
 		return bookDetails;
 	}
