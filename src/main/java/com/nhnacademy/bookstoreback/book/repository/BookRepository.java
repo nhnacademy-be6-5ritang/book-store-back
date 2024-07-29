@@ -28,6 +28,8 @@ public interface BookRepository extends JpaRepository<Book, Long>, CustomBookRep
 	 */
 	Optional<Book> findByBookIsbn(String bookIsbn);
 
+	List<Book> findAllById(List<String> bookIds);
+
 	/**
 	 * 주어진 제목을 가진 도서가 존재하는지 확인합니다.
 	 *
