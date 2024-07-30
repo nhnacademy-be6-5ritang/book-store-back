@@ -380,4 +380,11 @@ public class UserController {
 		userService.updateUserRoleByRoleName(updateUserRoleRequest);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
+
+	@GetMapping("/payco-connect/{memberId}")
+	public ResponseEntity<Void> paycoConnect(@CurrentUser CurrentUserDetails currentUser,
+		@RequestParam String memberId) {
+		userService.paycoConnect(currentUser, memberId);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
 }
