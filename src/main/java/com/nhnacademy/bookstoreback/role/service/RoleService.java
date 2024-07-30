@@ -14,12 +14,23 @@ import com.nhnacademy.bookstoreback.role.repository.RoleRepository;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author 김태환
+ * 역할 관리와 관련된 서비스 인터페이스입니다.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class RoleService {
 	private final RoleRepository roleRepository;
 
+	/**
+	 * 새로운 역할을 생성합니다.
+	 *
+	 * @param createRoleRequest 생성할 역할 정보
+	 * @return 생성된 역할의 정보
+	 * @throws RoleAlreadyExistsException 역할 이름이 이미 존재하는 경우 발생
+	 */
 	public CreateRoleResponse createRole(CreateRoleRequest createRoleRequest) {
 		if (roleRepository.existsByRoleName(createRoleRequest.roleName())) {
 			throw new RoleAlreadyExistsException(createRoleRequest.roleName());
@@ -31,6 +42,11 @@ public class RoleService {
 		return CreateRoleResponse.fromEntity(savedRole);
 	}
 
+	/**
+	 * 모든 역할을 조회합니다.
+	 *
+	 * @return 모든 역할의 목록
+	 */
 	public List<GetRoleResponse> getRoles() {
 		List<Role> roles = roleRepository.findAll();
 
@@ -39,6 +55,11 @@ public class RoleService {
 			.toList();
 	}
 
+	/**
+	 * 주어진 역할 이름으로 역할을 삭제합니다.
+	 *
+	 * @param roleName 삭제할 역할의 이름
+	 */
 	public void deleteRole(String roleName) {
 		roleRepository.deleteByRoleName(roleName);
 	}

@@ -25,10 +25,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
+ * @author 김기욱, 이경헌
  * 도서 상태 관리 HTTP 요청을 처리하는 컨트롤러입니다.
- * 이 컨트롤러는 도서 상태의 CRUD 기능을 제공합니다.
- *
- * @version 1.0
  */
 @Tag(name = "BookStatus", description = "도서상태 관련 API")
 @RestController

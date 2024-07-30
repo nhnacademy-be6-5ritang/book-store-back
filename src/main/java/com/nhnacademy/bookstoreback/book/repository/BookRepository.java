@@ -7,18 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 
 /**
- * 도서 Repository
- *
  * @author 김기욱
- * @version 1.0
+ * 도서 정보를 관리하는 Spring Data JPA 레포지토리입니다.
  */
-
-@Repository
 public interface BookRepository extends JpaRepository<Book, Long>, CustomBookRepository {
 	/**
 	 * ISBN 기반 도서 조회

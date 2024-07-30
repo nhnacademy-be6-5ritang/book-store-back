@@ -30,6 +30,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author 김태환
+ * 주소 관련 HTTP 요청을 처리하는 컨트롤러입니다.
+ */
 @Tag(name = "Address", description = "주소 관리 API")
 @RestController
 @RequiredArgsConstructor

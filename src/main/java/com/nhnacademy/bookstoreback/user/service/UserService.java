@@ -48,6 +48,10 @@ import com.nhnacademy.bookstoreback.userstatus.repository.UserStatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author 김태환
+ * 사용자 서비스 클래스.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -96,10 +100,22 @@ public class UserService {
 		return CreateUserResponse.fromEntity(savedUser);
 	}
 
+	/**
+	 * 이메일이 존재하는지 확인합니다.
+	 *
+	 * @param email 확인할 이메일 주소
+	 * @return 존재하면 true, 그렇지 않으면 false
+	 */
 	public boolean isEmailExist(String email) {
 		return userRepository.existsByEmail(email);
 	}
 
+	/**
+	 * 사용자에게 역할을 추가합니다.
+	 *
+	 * @param user 사용자 엔티티
+	 * @param roleName 추가할 역할 이름
+	 */
 	public void addUserRoleByRoleName(User user, String roleName) {
 		Role role = roleRepository.findByRoleName(roleName)
 			.orElseThrow(() -> new RoleNotFoundException(roleName));
@@ -116,6 +132,12 @@ public class UserService {
 		userRoleRepository.save(userRole);
 	}
 
+	/**
+	 * 현재 사용자의 정보를 조회합니다.
+	 *
+	 * @param currentUser 현재 사용자 세부 정보
+	 * @return 현재 사용자의 정보 응답 DTO
+	 */
 	public GetMyUserInfoResponse getMyUserInfo(@CurrentUser CurrentUserDetails currentUser) {
 		User user = userRepository.findById(currentUser.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
@@ -123,6 +145,12 @@ public class UserService {
 		return GetMyUserInfoResponse.fromEntity(user);
 	}
 
+	/**
+	 * 주문에 따라 현재 사용자의 정보를 조회합니다.
+	 *
+	 * @param currentUser 현재 사용자 세부 정보
+	 * @return 현재 사용자의 정보 응답 DTO 또는 null
+	 */
 	public GetMyUserInfoResponse getMyUserInfoByOrder(@CurrentUser CurrentUserDetails currentUser) {
 		if (currentUser == null) {
 			return null;
@@ -164,6 +192,11 @@ public class UserService {
 		return UpdateUserInfoResponse.fromEntity(updatedUser);
 	}
 
+	/**
+	 * 사용자를 탈퇴 처리합니다.
+	 *
+	 * @param currentUser 현재 사용자 세부 정보
+	 */
 	public void withdrawUser(@CurrentUser CurrentUserDetails currentUser) {
 		User user = userRepository.findById(currentUser.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
@@ -175,6 +208,11 @@ public class UserService {
 		userRepository.save(user);
 	}
 
+	/**
+	 * 사용자를 활성화합니다.
+	 *
+	 * @param user 활성화할 사용자 엔티티
+	 */
 	public void activateUser(User user) {
 		user.updateUserStatus(userStatusRepository.findByUserStatusName("ACTIVE")
 			.orElseThrow(() -> new UserStatusNotFoundException("ACTIVE")));
@@ -182,6 +220,12 @@ public class UserService {
 		userRepository.save(user);
 	}
 
+	/**
+	 * 이메일을 통해 사용자 토큰 정보를 조회합니다.
+	 *
+	 * @param userEmail 사용자 이메일
+	 * @return 사용자 토큰 정보 응답 DTO
+	 */
 	public UserTokenInfo getUserTokenInfoByEmail(String userEmail) {
 		User user = userRepository.findByEmail(userEmail);
 
@@ -193,12 +237,12 @@ public class UserService {
 	}
 
 	/**
-	 *  @author 이기훈
+	 * @author 이기훈
+	 * 생일 쿠폰 발급 대상자를 조회합니다.
 	 *
-	 * 생일쿠폰 발급시 생일 정보를 얻기위한 service
-	 *
+	 * @param date 조회할 날짜
+	 * @return 생일 쿠폰 발급 대상자 목록 응답 DTO
 	 */
-
 	public List<BirthdayCouponTargetResponse> getUsersWithBirthday(LocalDate date) {
 		int month = date.getMonthValue();
 		int day = date.getDayOfMonth();
@@ -207,6 +251,12 @@ public class UserService {
 		return userRepository.findUsersWithBirthMonthDay(month, day);
 	}
 
+	/**
+	 * 사용자의 마지막 로그인 시간을 업데이트합니다.
+	 *
+	 * @param currentUser 현재 사용자 세부 정보
+	 * @param lastLoginAt 업데이트할 마지막 로그인 시간
+	 */
 	public void updateLastLoginAt(CurrentUserDetails currentUser, LocalDateTime lastLoginAt) {
 		User user = userRepository.findById(currentUser.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
@@ -215,6 +265,12 @@ public class UserService {
 		userRepository.save(user);
 	}
 
+	/**
+	 * PAYCO ID를 통해 사용자 토큰 정보를 조회합니다.
+	 *
+	 * @param paycoIdNo PAYCO ID
+	 * @return PAYCO 사용자 토큰 정보 응답 DTO
+	 */
 	public GetPaycoUserTokenInfoResponse getUserTokenInfoByPaycoId(String paycoIdNo) {
 		User user = userRepository.findBySsoId(paycoIdNo).orElseThrow(
 			() -> new UserNotFoundException(paycoIdNo)
@@ -223,6 +279,12 @@ public class UserService {
 		return GetPaycoUserTokenInfoResponse.fromEntity(user);
 	}
 
+	/**
+	 * 페이지네이션된 사용자 정보를 조회합니다.
+	 *
+	 * @param pageable 페이지 정보
+	 * @return 페이지네이션된 사용자 정보 응답 DTO 목록
+	 */
 	public Page<GetUserInfoResponse> getUsers(Pageable pageable) {
 		int page = pageable.getPageNumber() > 0 ? pageable.getPageNumber() - 1 : 0;
 		int size = pageable.isPaged() && pageable.getPageSize() > 0 ? pageable.getPageSize() : 10;
@@ -231,6 +293,11 @@ public class UserService {
 			.map(GetUserInfoResponse::fromEntity);
 	}
 
+	/**
+	 * 사용자 역할을 업데이트합니다.
+	 *
+	 * @param updateUserRoleRequest 사용자 역할 업데이트 요청 DTO
+	 */
 	public void updateUserRoleByRoleName(UpdateUserRoleRequest updateUserRoleRequest) {
 		User user = userRepository.findById(updateUserRoleRequest.userId()).orElse(null);
 

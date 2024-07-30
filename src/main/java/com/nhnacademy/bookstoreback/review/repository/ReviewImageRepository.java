@@ -17,5 +17,10 @@ public interface ReviewImageRepository extends JpaRepository<ReviewImage, Long> 
 	 */
 	ReviewImage findByReviewReviewId(Long reviewId);
 
+	/**
+	 * 주어진 리뷰 ID에 해당하는 모든 {@link ReviewImage} 엔티티를 삭제합니다.
+	 *
+	 * @param reviewId 삭제할 리뷰의 ID
+	 */
 	void deleteAllByReview_ReviewId(Long reviewId);
 }

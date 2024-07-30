@@ -28,7 +28,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
- * @author 이경헌
+ * @author 김기욱, 이경헌
  * 출판사 관리 HTTP 요청을 처리하는 컨트롤러입니다.
  */
 @Tag(name = "Publisher", description = "출판사 API")

@@ -7,10 +7,8 @@ import com.nhnacademy.bookstoreback.bookstatus.domain.dto.respnse.BookStatusDto;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
 
 /**
- * BookStatusService 인터페이스
+ * @author 김기욱, 이경헌
  * 도서 상태 관련 서비스를 제공하는 인터페이스입니다.
- *
- * @version 1.0
  */
 public interface BookStatusService {
 

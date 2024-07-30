@@ -40,7 +40,7 @@ import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * @author
+ * @author 이경헌
  * 리뷰 서비스 구현체 클래스입니다.
  */
 @Service
@@ -322,7 +322,7 @@ public class ReviewServiceImpl implements ReviewService {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 
 		userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-		
+
 		List<BookOrder> bookOrders = bookOrderRepository.findAllByOrder_User_IdAndOrder_OrderStatus_OrderStatusName(
 			userId, "배송 완료");
 

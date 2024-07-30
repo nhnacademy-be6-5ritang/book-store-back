@@ -28,8 +28,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * @author 김기욱
  * 클라우드 이미지 서비스를 제공하는 클래스입니다.
- * 네이버 API를 통해 책의 표지 이미지를 가져와서 업로드합니다.
+ * 네이버 API 를 통해 책의 표지 이미지를 가져와서 업로드합니다.
  */
 @Slf4j
 @Service
@@ -83,6 +84,13 @@ public class CloudImageService {
 		return downloadAndUploadImage(book, coverUrl);
 	}
 
+	/**
+	 * 네이버 API 호출을 실행합니다.
+	 *
+	 * @param apiUrl         호출할 API 의 URL
+	 * @param requestEntity  요청에 사용할 HTTP 엔티티
+	 * @return API 호출의 응답, 실패 시 {@code null}
+	 */
 	public ResponseEntity<Map> executeApiCall(String apiUrl, HttpEntity<String> requestEntity) {
 		int attempt = 0;
 		while (attempt < MAX_RETRY_COUNT) {
@@ -108,6 +116,13 @@ public class CloudImageService {
 		return null;
 	}
 
+	/**
+	 * 주어진 URL 에서 이미지를 다운로드하고, 클라우드에 업로드합니다.
+	 *
+	 * @param book      이미지를 업로드할 책 엔티티
+	 * @param coverUrl  이미지의 URL
+	 * @return 업로드된 이미지의 URL, 업로드 실패 시 {@code null}
+	 */
 	public String downloadAndUploadImage(Book book, String coverUrl) {
 		try {
 			URI uri = new URI(coverUrl);

@@ -33,10 +33,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Book Controller
- *
- * @author 김기욱
- * @version 1.0
+ * @author 김기욱, 이경헌
+ * Book 엔티티와 관련된 API를 제공하는 컨트롤러 클래스입니다.
  */
 @Tag(name = "Book", description = "도서 관련 API")
 @Slf4j

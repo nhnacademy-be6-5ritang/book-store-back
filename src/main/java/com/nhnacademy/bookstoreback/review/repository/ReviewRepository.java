@@ -84,7 +84,19 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	 */
 	Page<Review> findAllByUserIdAndReviewImagesNotEmpty(Long userId, Pageable pageable);
 
+	/**
+	 * 특정 주문 목록 ID에 대한 리뷰의 존재 여부를 확인합니다.
+	 *
+	 * @param orderListId 주문 목록 ID
+	 * @return 해당 주문 목록 ID로 작성된 리뷰가 존재하면 {@code true}, 그렇지 않으면 {@code false}
+	 */
 	boolean existsByBookOrderOrderListId(Long orderListId);
 
+	/**
+	 * 특정 사용자의 ID를 기반으로 모든 리뷰를 조회합니다.
+	 *
+	 * @param userId 사용자의 ID
+	 * @return 해당 사용자의 모든 리뷰 리스트
+	 */
 	List<Review> findAllByUserId(Long userId);
 }

@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
- * @author 이경헌
+ * @author 김기욱, 이경헌
  * 카테고리 관리 HTTP 요청을 처리하는 컨트롤러입니다.
  */
 @Tag(name = "Category", description = "카테고리 관련 API")

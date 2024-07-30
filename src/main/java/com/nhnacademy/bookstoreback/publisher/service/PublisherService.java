@@ -9,6 +9,7 @@ import com.nhnacademy.bookstoreback.publisher.domain.dto.respnse.PublisherDto;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
 
 /**
+ * @author 이경헌, 김기욱
  * 출판사 관리 서비스 인터페이스입니다.
  */
 public interface PublisherService {

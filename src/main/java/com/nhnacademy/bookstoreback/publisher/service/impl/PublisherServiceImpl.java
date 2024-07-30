@@ -18,12 +18,6 @@ import com.nhnacademy.bookstoreback.publisher.service.PublisherService;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * 출판사 Service
- *
- * @author 김기욱
- * @version 1.0
- */
 @Service
 @RequiredArgsConstructor
 @Transactional
