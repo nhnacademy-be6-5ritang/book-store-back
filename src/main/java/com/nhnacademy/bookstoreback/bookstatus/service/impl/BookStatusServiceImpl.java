@@ -102,7 +102,6 @@ public class BookStatusServiceImpl implements BookStatusService {
 
 	@Override
 	public void deleteBookStatus(Long bookStatusId) {
-		bookStatusRepository.findById(bookStatusId).orElseThrow(() -> new BookStatusNotFoundException(bookStatusId));
 		bookStatusRepository.deleteById(bookStatusId);
 	}
 }

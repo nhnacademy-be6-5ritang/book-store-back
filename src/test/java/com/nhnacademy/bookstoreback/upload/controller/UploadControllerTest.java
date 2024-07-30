@@ -41,10 +41,13 @@ class UploadControllerTest {
 			"test image content".getBytes()
 		);
 
+		String folderName = "testFolder";
+
 		when(uploadService.upload(any(MultipartFile.class), anyString())).thenReturn("Image uploaded successfully");
 
 		mockMvc.perform(multipart("/api/uploads")
-				.file(mockFile))
+				.file(mockFile)
+				.param("folderName", folderName))
 			.andExpect(status().isCreated());
 	}
 }

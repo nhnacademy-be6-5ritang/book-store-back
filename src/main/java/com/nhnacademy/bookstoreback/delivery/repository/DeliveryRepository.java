@@ -20,5 +20,12 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
 	 */
 	Page<Delivery> findAllByOrderUserId(Long userId, Pageable pageable);
 
+	/**
+	 * 주어진 주문 ID에 대한 배송 정보를 조회합니다.
+	 *
+	 * @param orderId 조회할 주문의 ID
+	 * @return 주어진 주문 ID와 연관된 {@link Delivery} 객체
+	 *         만약 해당 주문 ID에 연관된 배송 정보가 존재하지 않는 경우, {@code null}을 반환합니다.
+	 */
 	Delivery findByOrder_OrderId(Long orderId);
 }

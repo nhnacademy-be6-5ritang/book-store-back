@@ -9,11 +9,8 @@ import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
 
 /**
- * AuthorService 인터페이스
- *
+ * @author 이경헌, 김기욱
  * 작가 관련 서비스를 제공하는 인터페이스입니다.
- *
- * @version 1.0
  */
 public interface AuthorService {
 

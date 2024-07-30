@@ -19,6 +19,10 @@ import com.nhnacademy.bookstoreback.userrole.repository.UserRoleRepository;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author 김태환
+ * 사용자 역할 관련 서비스를 제공하는 인터페이스입니다.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -27,6 +31,13 @@ public class UserRoleService {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 
+	/**
+	 * 사용자의 역할을 추가합니다.
+	 *
+	 * @param userId 역할을 추가할 사용자 ID
+	 * @param roleId 추가할 역할 ID
+	 * @return 추가된 사용자 역할 응답 DTO
+	 */
 	public AddUserRoleResponse addUserRole(Long userId, Long roleId) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new UserNotFoundException(userId));
@@ -48,6 +59,12 @@ public class UserRoleService {
 		return AddUserRoleResponse.fromEntity(savedUserRole);
 	}
 
+	/**
+	 * 특정 사용자의 역할을 조회합니다.
+	 *
+	 * @param userId 조회할 사용자 ID
+	 * @return 사용자 역할 응답 DTO
+	 */
 	public GetUserRoleResponse getUserRoles(Long userId) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new UserNotFoundException(userId));
@@ -57,6 +74,12 @@ public class UserRoleService {
 		return GetUserRoleResponse.fromEntities(userId, userRoles);
 	}
 
+	/**
+	 * 특정 사용자의 역할을 삭제합니다.
+	 *
+	 * @param userId 역할을 삭제할 사용자 ID
+	 * @param roleId 삭제할 역할 ID
+	 */
 	public void deleteUserRole(Long userId, Long roleId) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new UserNotFoundException(userId));

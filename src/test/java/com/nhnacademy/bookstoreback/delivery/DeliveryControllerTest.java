@@ -126,7 +126,7 @@ class DeliveryControllerTest {
 	void deleteDelivery() throws Exception {
 		mockMvc.perform(delete("/api/deliveries/{deliveryId}", 1L)
 				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isNoContent());
+			.andExpect(status().isOk());
 	}
 
 	@Test
@@ -173,6 +173,6 @@ class DeliveryControllerTest {
 		mockMvc.perform(put("/api/deliveries/sender/{deliveryId}", 1L)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isNoContent());
+			.andExpect(status().isOk());
 	}
 }

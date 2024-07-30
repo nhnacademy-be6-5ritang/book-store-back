@@ -12,16 +12,37 @@ import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.GetAll
 import com.nhnacademy.bookstoreback.point.transaction.domain.dto.response.GetPointTransactionResponse;
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
+/**
+ * @author 김태환
+ * 포인트 거래 관련 서비스를 제공하는 인터페이스입니다.
+ */
 public interface PointTransactionService {
+	/**
+	 * 포인트 거래를 생성합니다.
+	 *
+	 * @param currentUser 현재 사용자의 상세 정보
+	 * @param createPointTransactionRequest 생성할 포인트 거래 정보
+	 * @return 생성된 포인트 거래 정보
+	 */
 	CreatePointTransactionResponse createPointTransaction(
 		CurrentUserDetails currentUser, CreatePointTransactionRequest createPointTransactionRequest
 	);
 
+	/**
+	 * 현재 사용자의 포인트 거래 내역을 페이징하여 조회합니다.
+	 *
+	 * @param currentUser 현재 사용자의 상세 정보
+	 * @param pageable 페이징 정보
+	 * @return 현재 사용자의 포인트 거래 내역 페이지
+	 */
 	Page<GetPointTransactionResponse> getPointTransactions(CurrentUserDetails currentUser, Pageable pageable);
 
+	/**
+	 * 회원 가입 시 초기 포인트 거래를 생성합니다.
+	 *
+	 * @param user 초기 포인트 거래를 생성할 사용자
+	 */
 	void signUpPointTransaction(User user);
-
-	// 이 밑에 포인트 거래 생성 메서드들은 @CurrentUser로 수정해도 된다.
 
 	/**
 	 * 현재 사용자에게 해당 리뷰 타입에 따른 포인트 거래를 처리합니다.

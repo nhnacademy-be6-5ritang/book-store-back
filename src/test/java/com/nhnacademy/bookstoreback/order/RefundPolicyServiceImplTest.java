@@ -27,7 +27,7 @@ import com.nhnacademy.bookstoreback.order.domain.entity.RefundPolicy;
 import com.nhnacademy.bookstoreback.order.repository.RefundPolicyRepository;
 import com.nhnacademy.bookstoreback.order.service.impl.RefundPolicyServiceImpl;
 
-public class RefundPolicyServiceImplTest {
+class RefundPolicyServiceImplTest {
 
 	@InjectMocks
 	private RefundPolicyServiceImpl refundPolicyService;

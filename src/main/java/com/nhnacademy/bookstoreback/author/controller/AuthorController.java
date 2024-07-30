@@ -28,10 +28,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
+ * @author 이경헌
  * 저자 관련 HTTP 요청을 처리하는 컨트롤러입니다.
- * 이 컨트롤러는 저자의 CRUD 기능을 제공합니다.
- *
- * @version 1.0
  */
 @Tag(name = "Author", description = "저자 관련 API")
 @RestController

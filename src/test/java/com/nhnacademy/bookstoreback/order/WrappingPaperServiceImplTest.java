@@ -28,7 +28,7 @@ import com.nhnacademy.bookstoreback.order.repository.PaperTypeRepository;
 import com.nhnacademy.bookstoreback.order.repository.WrappingPaperRepository;
 import com.nhnacademy.bookstoreback.order.service.impl.WrappingPaperServiceImpl;
 
-public class WrappingPaperServiceImplTest {
+class WrappingPaperServiceImplTest {
 
 	@InjectMocks
 	private WrappingPaperServiceImpl wrappingPaperService;

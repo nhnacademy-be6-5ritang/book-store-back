@@ -135,7 +135,7 @@ class CategoryControllerTest {
 
 		given(categoryService.searchCategories("searchKey")).willReturn(results);
 
-		mockMvc.perform(get("/api/categories/search/test")
+		mockMvc.perform(get("/api/categories/search")
 				.param("key", "searchKey")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())

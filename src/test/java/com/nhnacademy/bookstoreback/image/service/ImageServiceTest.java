@@ -13,7 +13,7 @@ import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.image.repository.BookImageRepository;
 import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
 
-class BookImageServiceTest {
+class ImageServiceTest {
 
 	@InjectMocks
 	private BookImageService bookImageService;

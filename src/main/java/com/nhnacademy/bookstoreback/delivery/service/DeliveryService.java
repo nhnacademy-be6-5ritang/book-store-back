@@ -57,9 +57,28 @@ public interface DeliveryService {
 	 */
 	void deleteDelivery(Long deliveryId);
 
+	/**
+	 * 주어진 배달 ID에 대해 배달에 주문을 추가합니다.
+	 *
+	 * @param deliveryId 배달 ID
+	 * @param orderId    주문 ID
+	 * @return 주문 추가 후 업데이트된 배달 정보
+	 */
 	UpdateDeliveryAddOrderPolicyResponse updateDeliveryAddOrder(Long deliveryId, Long orderId);
 
+	/**
+	 * 주어진 주문 ID에 대한 배송 정보를 조회합니다.
+	 *
+	 * @param orderId 주문 ID
+	 * @return 주어진 주문 ID에 대한 배송 정보
+	 */
 	GetDeliveryResponse getDeliveryByOrderId(Long orderId);
 
+	/**
+	 * 주어진 주문 ID에 대한 배송 정보를 업데이트합니다.
+	 *
+	 * @param orderId 주문 ID
+	 * @param request 배송 상태 업데이트 요청
+	 */
 	void updateDeliveryByOrderId(Long orderId, UpdateDeliveryByOrderIdRequest request);
 }

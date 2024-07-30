@@ -6,8 +6,11 @@ import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.request.CreateWishListRequest;
 import com.nhnacademy.bookstoreback.wishlist.domain.dto.response.GetWishListResponse;
 
+/**
+ * @author 이경헌
+ * 위시리시트 관련 서비스를 제공하는 인터페이스입니다.
+ */
 public interface WishListService {
-
 	/**
 	 * 특정 사용자의 위시리스트 목록을 조회합니다.
 	 *

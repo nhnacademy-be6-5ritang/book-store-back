@@ -69,5 +69,12 @@ public interface BookCartService {
 	 */
 	String setupCart(CurrentUserDetails currentUser, String cartId);
 
+	/**
+	 * 장바구니 엔티티를 저장하고, 장바구니의 유효 기간을 Redis 에 설정합니다.
+	 *
+	 * @param entity 저장할 장바구니 엔티티입니다. 장바구니의 ID를 사용하여 Redis 에 저장된 TTL 값을 가져오고,
+	 *               TTL 값이 존재하는 경우 장바구니의 유효 기간을 갱신합니다.
+	 * @param <S>    장바구니 엔티티의 타입을 지정하는 제네릭 타입 파라미터입니다.
+	 */
 	<S extends BookCart> void saveWithTtl(S entity);
 }

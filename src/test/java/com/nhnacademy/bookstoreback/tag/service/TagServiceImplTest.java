@@ -23,7 +23,6 @@ import com.nhnacademy.bookstoreback.tag.domain.dto.respnse.TagDto;
 import com.nhnacademy.bookstoreback.tag.domain.entity.BookTag;
 import com.nhnacademy.bookstoreback.tag.domain.entity.Tag;
 import com.nhnacademy.bookstoreback.tag.exception.TagAlreadyExistsException;
-import com.nhnacademy.bookstoreback.tag.exception.TagNotFoundException;
 import com.nhnacademy.bookstoreback.tag.repository.BookTagRepository;
 import com.nhnacademy.bookstoreback.tag.repository.TagRepository;
 import com.nhnacademy.bookstoreback.tag.service.impl.TagServiceImpl;
@@ -81,7 +80,7 @@ class TagServiceImplTest {
 	void testGetTagsByTagId() {
 		given(bookTagRepository.findAllByBookBookId(anyLong())).willReturn(Collections.singletonList(bookTag));
 
-		List<TagDto> result = tagService.getTagsByTagId(1L);
+		List<TagDto> result = tagService.getTagsByBookId(1L);
 
 		assertEquals(1, result.size());
 		assertEquals(tagDto.tagName(), result.get(0).tagName());
@@ -140,12 +139,5 @@ class TagServiceImplTest {
 
 		verify(tagRepository).deleteById(anyLong());
 		verify(bookTagRepository).deleteAllByTagTagId(anyLong());
-	}
-
-	@Test
-	void testDeleteTagTagNotFoundException() {
-		given(tagRepository.findById(anyLong())).willReturn(Optional.empty());
-
-		assertThrows(TagNotFoundException.class, () -> tagService.deleteTag(1L));
 	}
 }

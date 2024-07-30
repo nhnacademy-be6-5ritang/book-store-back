@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
 
 /**
+ * @author 김기욱, 이경헌
  * BookCategory 엔티티를 관리하는 Spring Data JPA 리포지토리입니다.
  */
 public interface BookCategoryRepository extends JpaRepository<BookCategory, Long> {

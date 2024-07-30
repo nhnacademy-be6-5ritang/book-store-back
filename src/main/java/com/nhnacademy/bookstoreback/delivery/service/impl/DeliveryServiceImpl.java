@@ -23,6 +23,7 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResp
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryAddOrderPolicyResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
+import com.nhnacademy.bookstoreback.delivery.exception.DeliveryByOrderNotFoundException;
 import com.nhnacademy.bookstoreback.delivery.exception.DeliveryNotFoundException;
 import com.nhnacademy.bookstoreback.delivery.repository.DeliveryRepository;
 import com.nhnacademy.bookstoreback.delivery.service.DeliveryService;
@@ -171,9 +172,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 	@Transactional(readOnly = true)
 	public GetDeliveryResponse getDeliveryByOrderId(Long orderId) {
 		if (deliveryRepository.findByOrder_OrderId(orderId) == null) {
-			String errorMessage = "배송 정보를 찾을 수 없습니다.";
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new NotFoundException(errorStatus);
+			throw new DeliveryByOrderNotFoundException(orderId);
 		}
 		return GetDeliveryResponse.fromEntity(deliveryRepository.findByOrder_OrderId(orderId));
 	}
@@ -182,10 +181,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 	public void updateDeliveryByOrderId(Long orderId, UpdateDeliveryByOrderIdRequest request) {
 		Delivery delivery = deliveryRepository.findByOrder_OrderId(orderId);
 		if (deliveryRepository.findByOrder_OrderId(orderId) == null) {
-			String errorMessage = "배송 정보를 찾을 수 없습니다.";
-			ErrorStatus errorStatus = ErrorStatus.from(errorMessage, HttpStatus.NOT_FOUND, LocalDateTime.now());
-			throw new NotFoundException(errorStatus);
+			throw new DeliveryByOrderNotFoundException(orderId);
 		}
+		
 		DeliveryStatus deliveryStatus = deliveryStatusRepository.getReferenceById(2L);
 		delivery.updateDeliverySender(request.senderName(), request.senderPhone(),
 			request.senderAddress() + " " + request.senderAddress2(), deliveryStatus);

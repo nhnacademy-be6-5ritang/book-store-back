@@ -8,10 +8,8 @@ import org.springframework.data.domain.Pageable;
 import com.nhnacademy.bookstoreback.tag.domain.dto.respnse.TagDto;
 
 /**
+ * @author 김기욱, 이경헌
  * 태그 관리 서비스 인터페이스입니다.
- * 이 인터페이스는 도서의 태그 관련 기능을 제공합니다.
- *
- * @version 1.0
  */
 public interface TagService {
 
@@ -36,7 +34,7 @@ public interface TagService {
 	 * @param bookId 도서 ID
 	 * @return 해당 도서의 모든 태그의 목록
 	 */
-	List<TagDto> getTagsByTagId(Long bookId);
+	List<TagDto> getTagsByBookId(Long bookId);
 
 	/**
 	 * 주어진 태그 ID에 해당하는 태그를 조회합니다.
