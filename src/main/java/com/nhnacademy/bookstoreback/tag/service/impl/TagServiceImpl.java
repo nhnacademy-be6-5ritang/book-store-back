@@ -44,7 +44,7 @@ public class TagServiceImpl implements TagService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<TagDto> getTagsByTagId(Long bookId) {
+	public List<TagDto> getTagsByBookId(Long bookId) {
 		List<BookTag> bookTags = bookTagRepository.findAllByBookBookId(bookId);
 		List<Tag> tags = bookTags.stream().map(BookTag::getTag).toList();
 		return tags.stream().map(TagDto::fromEntity).toList();
@@ -78,7 +78,6 @@ public class TagServiceImpl implements TagService {
 
 	@Override
 	public void deleteTag(Long tagId) {
-		tagRepository.findById(tagId).orElseThrow(() -> new TagNotFoundException(tagId));
 		bookTagRepository.deleteAllByTagTagId(tagId);
 		tagRepository.deleteById(tagId);
 	}

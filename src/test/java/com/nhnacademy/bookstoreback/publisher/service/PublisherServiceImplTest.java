@@ -156,11 +156,4 @@ class PublisherServiceImplTest {
 
 		verify(publisherRepository).deleteById(1L);
 	}
-
-	@Test
-	void deletePublisher_WhenPublisherDoesNotExist_ShouldThrowException() {
-		when(publisherRepository.findById(1L)).thenReturn(Optional.empty());
-
-		assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(1L));
-	}
 }

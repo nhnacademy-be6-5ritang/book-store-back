@@ -180,7 +180,7 @@ class BookControllerTest {
 	@Test
 	void searchBooks_ShouldReturnOk() throws Exception {
 		when(bookService.searchBooks(any(String.class))).thenReturn(List.of());
-		mockMvc.perform(get("/api/books/search/test")
+		mockMvc.perform(get("/api/books/search")
 				.param("key", "searchTerm")
 				.header("Authorization", "Bearer token"))
 			.andExpect(status().isOk());

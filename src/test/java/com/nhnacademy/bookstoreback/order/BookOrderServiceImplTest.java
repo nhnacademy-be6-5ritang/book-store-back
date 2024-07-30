@@ -30,7 +30,7 @@ import com.nhnacademy.bookstoreback.order.service.impl.BookOrderServiceImpl;
 
 import jakarta.persistence.EntityNotFoundException;
 
-public class BookOrderServiceImplTest {
+class BookOrderServiceImplTest {
 
 	@InjectMocks
 	private BookOrderServiceImpl bookOrderService;

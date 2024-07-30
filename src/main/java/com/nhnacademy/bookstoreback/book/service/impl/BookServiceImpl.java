@@ -219,11 +219,6 @@ public class BookServiceImpl implements BookService {
 		bookImageService.mapImageToBook(book, imageUrl);
 	}
 
-	/**
-	 * 모든 도서를 조회
-	 *
-	 * @return 도서 리스트를 포함하는 List 객체
-	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<GetBookDetailResponse> getNewestBooks() {
@@ -431,10 +426,6 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public void deleteBook(Long bookId) {
-		if (!bookRepository.existsById(bookId)) {
-			throw new BookNotFoundException(bookId);
-		}
-
 		// 해당 도서가 가지고 있는 카테고리, 태그 이미지, 매핑 정보도 같이 삭제
 		bookCategoryRepository.deleteAllByBookBookId(bookId);
 		bookTagRepository.deleteAllByBookBookId(bookId);

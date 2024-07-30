@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.upload.service.impl;
+package com.nhnacademy.bookstoreback.upload.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nhnacademy.bookstoreback.upload.exception.FileExtensionException;
 import com.nhnacademy.bookstoreback.upload.exception.FileUploadException;
 import com.nhnacademy.bookstoreback.upload.exception.ParserException;
+import com.nhnacademy.bookstoreback.upload.service.impl.UploadServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 class UploadServiceImplTest {
@@ -44,7 +45,6 @@ class UploadServiceImplTest {
 
 	@BeforeEach
 	void setUp() {
-		// Set values directly if necessary
 		uploadService = new UploadServiceImpl(restTemplate);
 	}
 

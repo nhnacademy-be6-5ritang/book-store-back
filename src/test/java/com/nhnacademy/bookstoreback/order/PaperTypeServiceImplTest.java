@@ -28,7 +28,7 @@ import com.nhnacademy.bookstoreback.order.domain.entity.PaperType;
 import com.nhnacademy.bookstoreback.order.repository.PaperTypeRepository;
 import com.nhnacademy.bookstoreback.order.service.impl.PaperTypeServiceImpl;
 
-public class PaperTypeServiceImplTest {
+class PaperTypeServiceImplTest {
 
 	@InjectMocks
 	private PaperTypeServiceImpl paperTypeService;

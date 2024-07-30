@@ -27,7 +27,7 @@ import com.nhnacademy.bookstoreback.point.earningpolicy.repository.PointEarningP
 import com.nhnacademy.bookstoreback.point.earningpolicy.service.impl.PointEarningPolicyServiceImpl;
 
 @Transactional
-public class PointEarningPolicyServiceImplTest {
+class PointEarningPolicyServiceImplTest {
 
 	@InjectMocks
 	private PointEarningPolicyServiceImpl pointEarningPolicyService;

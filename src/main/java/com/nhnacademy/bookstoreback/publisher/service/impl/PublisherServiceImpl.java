@@ -80,7 +80,6 @@ public class PublisherServiceImpl implements PublisherService {
 
 	@Override
 	public void deletePublisher(Long publisherId) {
-		publisherRepository.findById(publisherId).orElseThrow(() -> new PublisherNotFoundException(publisherId));
 		publisherRepository.deleteById(publisherId);
 	}
 

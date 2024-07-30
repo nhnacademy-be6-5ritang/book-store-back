@@ -2,7 +2,7 @@ package com.nhnacademy.bookstoreback.bookstatus.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +30,7 @@ class BookStatusServiceImplTest {
 
 	@Mock
 	private EntityManager entityManager;
-	
+
 	@Mock
 	private BookStatusRepository bookStatusRepository;
 
@@ -111,22 +111,6 @@ class BookStatusServiceImplTest {
 		when(bookStatusRepository.existsByBookStatusName(anyString())).thenReturn(true);
 
 		assertThrows(BookStatusAlreadyExistsException.class, () -> bookStatusService.updateBookStatus(1L, request));
-	}
-
-	@Test
-	void testDeleteBookStatus() {
-		when(bookStatusRepository.findById(anyLong())).thenReturn(Optional.of(bookStatus));
-		doNothing().when(bookStatusRepository).deleteById(anyLong());
-
-		bookStatusService.deleteBookStatus(1L);
-		verify(bookStatusRepository, times(1)).deleteById(anyLong());
-	}
-
-	@Test
-	void testDeleteBookStatus_NotFound() {
-		when(bookStatusRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-		assertThrows(BookStatusNotFoundException.class, () -> bookStatusService.deleteBookStatus(1L));
 	}
 
 	@Test

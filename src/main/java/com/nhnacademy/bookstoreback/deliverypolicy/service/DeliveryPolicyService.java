@@ -11,7 +11,6 @@ import com.nhnacademy.bookstoreback.deliverypolicy.domain.dto.response.GetDelive
 /**
  * @author 이경헌
  * 배송비 정책 서비스 인터페이스.
- * 배송비 정책과 관련된 비즈니스 로직을 처리합니다.
  */
 public interface DeliveryPolicyService {
 	/**
@@ -51,6 +50,13 @@ public interface DeliveryPolicyService {
 	 */
 	void deleteDeliveryPolicy(Long deliveryPolicyId);
 
+	/**
+	 * 특정 배송비 정책을 조회합니다.
+	 *
+	 * @param deliveryId 배송비 정책이 적용될 배송의 ID.
+	 * @param price      배송비 정책의 기준 가격.
+	 * @return 기준 가격 이하의 배송비 정책을 포함하는 응답 객체.
+	 */
 	GetDeliveryPolicyResponse findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
 		Long deliveryId, BigDecimal price);
 }

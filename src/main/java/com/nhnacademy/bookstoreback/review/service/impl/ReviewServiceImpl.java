@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
+import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.global.exception.AccessDeniedException;
 import com.nhnacademy.bookstoreback.global.util.ImageUtil;
 import com.nhnacademy.bookstoreback.image.domain.entity.Image;
@@ -51,6 +52,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewImageRepository reviewImageRepository;
 	private final ImageRepository imageRepository;
 	private final BookOrderRepository bookOrderRepository;
+	private final BookRepository bookRepository;
 
 	/**
 	 * 모든 리뷰를 페이지네이션하여 조회합니다.
@@ -124,6 +126,8 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
+		bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
+
 		return reviewRepository.findAllByBookOrderBookBookId(bookId,
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
 			.map(review -> {
@@ -138,6 +142,8 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
+		bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
+
 		return reviewRepository.findAllByBookOrderBookBookIdAndReviewImagesEmpty(bookId,
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
 			.map(review -> GetReviewResponse.fromEntity(review, null));
@@ -148,6 +154,8 @@ public class ReviewServiceImpl implements ReviewService {
 	public Page<GetReviewResponse> getPhotoReviewsByBookId(Long bookId, Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
+
+		bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
 
 		return reviewRepository.findAllByBookOrderBookBookIdAndReviewImagesNotEmpty(bookId,
 				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
@@ -271,7 +279,7 @@ public class ReviewServiceImpl implements ReviewService {
 				new Image(ImageUtil.fileNameParser(request.fileName()), request.fileName()));
 			reviewImageRepository.save(ReviewImage.toEntity(review, image));
 		}
-		
+
 		review.updateReviewScore(request.reviewScore(), request.reviewComment());
 	}
 
@@ -288,6 +296,8 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public double getReviewsAverageScoreByBookId(Long bookId) {
+		bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
+
 		List<Review> reviews = reviewRepository.findAll();
 
 		double sum = 0;
@@ -310,6 +320,9 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public List<GetBookOrderWithoutReviewResponse> getBooksWithoutReviews(CurrentUserDetails currentUser) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
+
+		userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+		
 		List<BookOrder> bookOrders = bookOrderRepository.findAllByOrder_User_IdAndOrder_OrderStatus_OrderStatusName(
 			userId, "배송 완료");
 

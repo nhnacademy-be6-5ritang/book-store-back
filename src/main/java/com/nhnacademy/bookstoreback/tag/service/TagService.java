@@ -36,7 +36,7 @@ public interface TagService {
 	 * @param bookId 도서 ID
 	 * @return 해당 도서의 모든 태그의 목록
 	 */
-	List<TagDto> getTagsByTagId(Long bookId);
+	List<TagDto> getTagsByBookId(Long bookId);
 
 	/**
 	 * 주어진 태그 ID에 해당하는 태그를 조회합니다.

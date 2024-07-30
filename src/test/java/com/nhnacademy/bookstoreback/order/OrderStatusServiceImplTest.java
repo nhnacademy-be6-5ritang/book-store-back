@@ -21,7 +21,7 @@ import com.nhnacademy.bookstoreback.order.domain.entity.OrderStatus;
 import com.nhnacademy.bookstoreback.order.repository.OrderStatusRepository;
 import com.nhnacademy.bookstoreback.order.service.impl.OrderStatusServiceImpl;
 
-public class OrderStatusServiceImplTest {
+class OrderStatusServiceImplTest {
 
 	private final OrderStatusRepository orderStatusRepository = mock(OrderStatusRepository.class);
 	private final OrderStatusServiceImpl orderStatusService = new OrderStatusServiceImpl(orderStatusRepository);

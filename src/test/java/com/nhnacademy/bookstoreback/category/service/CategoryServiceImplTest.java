@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.category.service.impl;
+package com.nhnacademy.bookstoreback.category.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -29,6 +29,7 @@ import com.nhnacademy.bookstoreback.category.exception.CategoryAlreadyExistsExce
 import com.nhnacademy.bookstoreback.category.exception.CategoryNotFoundException;
 import com.nhnacademy.bookstoreback.category.repository.BookCategoryRepository;
 import com.nhnacademy.bookstoreback.category.repository.CategoryRepository;
+import com.nhnacademy.bookstoreback.category.service.impl.CategoryServiceImpl;
 
 class CategoryServiceImplTest {
 

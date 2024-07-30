@@ -46,7 +46,7 @@ import com.nhnacademy.bookstoreback.point.transaction.service.impl.PointTransact
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
-public class OrderServiceImplTest {
+class OrderServiceImplTest {
 
 	@InjectMocks
 	private OrderServiceImpl orderService;

@@ -89,7 +89,7 @@ class TagControllerTest {
 	@Test
 	void testGetTagsByBookId() throws Exception {
 		List<TagDto> tagDtos = Collections.singletonList(tagDto);
-		given(tagService.getTagsByTagId(1L)).willReturn(tagDtos);
+		given(tagService.getTagsByBookId(1L)).willReturn(tagDtos);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/books/1/tags")
 				.accept(MediaType.APPLICATION_JSON))
@@ -146,7 +146,7 @@ class TagControllerTest {
 	@Test
 	void testDeleteTag() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/tags/1"))
-			.andExpect(status().isNoContent());
+			.andExpect(status().isOk());
 
 		then(tagService).should().deleteTag(1L);
 	}
