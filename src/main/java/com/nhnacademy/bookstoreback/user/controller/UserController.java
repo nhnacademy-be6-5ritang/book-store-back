@@ -74,7 +74,6 @@ public class UserController {
 	}
 
 	@PostMapping("/send-email/dormant-to-active")
-	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<Void> sendMailDormantToActive(@RequestParam String email) {
 		String subject = "휴면계정 활성화";
 		mailService.sendMail(email, subject);
@@ -149,7 +148,6 @@ public class UserController {
 	}
 
 	@PatchMapping("/last-login-at")
-	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<Void> updateLastLoginAt(
 		@CurrentUser CurrentUserDetails currentUser, @Valid @RequestBody LocalDateTime lastLoginAt
 	) {

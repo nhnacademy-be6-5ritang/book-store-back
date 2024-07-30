@@ -16,10 +16,17 @@ import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.global.exception.InavailableAuthorizationException;
 import com.nhnacademy.bookstoreback.global.exception.UnauthorizedException;
+import com.nhnacademy.bookstoreback.global.exception.UserNotActiveException;
+import com.nhnacademy.bookstoreback.user.domain.entity.User;
+import com.nhnacademy.bookstoreback.user.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class RoleAuthorizationAspect {
+	private final UserRepository userRepository;
 
 	@Before("@annotation(authorizeRole)")
 	public void checkUserRole(JoinPoint joinPoint, AuthorizeRole authorizeRole) throws Throwable {
@@ -27,6 +34,12 @@ public class RoleAuthorizationAspect {
 
 		if (currentUserDetails == null) {
 			throw new UnauthorizedException();
+		}
+
+		Long userId = currentUserDetails.getUserId();
+		User user = userRepository.findById(userId).orElseThrow();
+		if ("DORMANT".equals(user.getStatus().getUserStatusName())) {
+			throw new UserNotActiveException();
 		}
 
 		List<String> roles = Arrays.asList(authorizeRole.value());
