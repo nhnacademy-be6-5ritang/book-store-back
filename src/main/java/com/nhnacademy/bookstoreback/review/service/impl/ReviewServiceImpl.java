@@ -270,11 +270,9 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new AccessDeniedException(requestId, userId);
 		}
 
-		// 기존 리뷰 이미지 매핑 제거
-		reviewImageRepository.deleteAllByReview_ReviewId(reviewId);
-
 		// 파일 이름이 비어있지 않으면 이미지 저장
 		if (request.fileName() != null) {
+			reviewImageRepository.deleteAllByReview_ReviewId(reviewId);
 			Image image = imageRepository.save(
 				new Image(ImageUtil.fileNameParser(request.fileName()), request.fileName()));
 			reviewImageRepository.save(ReviewImage.toEntity(review, image));
