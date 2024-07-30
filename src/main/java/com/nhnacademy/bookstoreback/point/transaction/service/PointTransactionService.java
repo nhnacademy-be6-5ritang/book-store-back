@@ -20,9 +20,7 @@ public interface PointTransactionService {
 	Page<GetPointTransactionResponse> getPointTransactions(CurrentUserDetails currentUser, Pageable pageable);
 
 	void signUpPointTransaction(User user);
-
-	// 이 밑에 포인트 거래 생성 메서드들은 @CurrentUser로 수정해도 된다.
-
+	
 	/**
 	 * 현재 사용자에게 해당 리뷰 타입에 따른 포인트 거래를 처리합니다.
 	 *
