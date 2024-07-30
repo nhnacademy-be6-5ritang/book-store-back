@@ -21,7 +21,6 @@ import com.nhnacademy.bookstoreback.author.domain.dto.respnse.AuthorDto;
 import com.nhnacademy.bookstoreback.author.service.impl.AuthorServiceImpl;
 
 class AuthorControllerTest {
-
 	@Mock
 	private AuthorServiceImpl authorService;
 
