@@ -53,6 +53,7 @@ spring:
 remote-addr: 127.0.0.1
 
 nhncloud:
+
   appkey: vyiy4M85i8mJ5mgP
   secretkey: fBlt6m4cSRJs07X05mhPBfmofWoBlcSU
 
