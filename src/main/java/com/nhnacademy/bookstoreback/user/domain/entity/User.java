@@ -193,4 +193,8 @@ public class User {
 	public void updateLastLoginAt(LocalDateTime lastLoginAt) {
 		this.lastLoginAt = lastLoginAt;
 	}
+
+	public void updateSsoId(String memberId) {
+		this.ssoId = memberId;
+	}
 }
