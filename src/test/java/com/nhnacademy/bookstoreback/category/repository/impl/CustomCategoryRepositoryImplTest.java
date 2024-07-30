@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 
 import com.nhnacademy.bookstoreback.category.domain.dto.respnse.CategorySearchResult;
 import com.nhnacademy.bookstoreback.category.domain.entity.Category;
@@ -21,7 +21,6 @@ import jakarta.persistence.EntityManager;
 
 @DataJpaTest
 @Import(QuerydslTestConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CustomCategoryRepositoryImplTest {
 
 	@Autowired
@@ -71,6 +70,13 @@ class CustomCategoryRepositoryImplTest {
 
 
 	}
+
+	@AfterEach
+	void resetAutoIncrementId() {
+		entityManager.createNativeQuery("ALTER TABLE categories ALTER COLUMN category_id RESTART WITH 1")
+			.executeUpdate();
+	}
+
 
 	@Test
 	void findCategoriesByPartialName_Custom() {

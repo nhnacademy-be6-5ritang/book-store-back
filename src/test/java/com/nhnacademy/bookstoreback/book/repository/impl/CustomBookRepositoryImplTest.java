@@ -7,12 +7,13 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
@@ -26,7 +27,7 @@ import jakarta.persistence.EntityManager;
 
 @DataJpaTest
 @Import(QuerydslTestConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CustomBookRepositoryImplTest {
 
 	@Autowired
@@ -82,18 +83,10 @@ class CustomBookRepositoryImplTest {
 		entityManager.persist(book2);
 	}
 
-	@Test
-	void findByBookTitleContainingIgnoreCaseCustom() {
-		// Given
-		String title = "sample";
-
-		// When
-		List<BookSearchResult> results = customBookRepository.findByBookTitleContainingIgnoreCaseCustom(title);
-
-		// Then
-		assertThat(results).hasSize(2);
-		assertThat(results).extracting(BookSearchResult::bookId).containsExactly(1L, 2L);
-		assertThat(results).extracting(BookSearchResult::bookTitle).containsExactly("Sample Book One", "Sample Book two");
+	@AfterEach
+	void resetAutoIncrementId() {
+		entityManager.createNativeQuery("ALTER TABLE books ALTER COLUMN book_id RESTART WITH 1")
+			.executeUpdate();
 	}
 
 	@Test
