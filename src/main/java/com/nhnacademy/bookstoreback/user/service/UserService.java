@@ -247,4 +247,12 @@ public class UserService {
 			userRoleRepository.save(userRole);
 		}
 	}
+
+	public void paycoConnect(CurrentUserDetails currentUser, String memberId) {
+		User user = userRepository.findById(currentUser.getUserId())
+			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
+
+		user.updateSsoId(memberId);
+		userRepository.save(user);
+	}
 }
