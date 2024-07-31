@@ -459,6 +459,13 @@ public class OrderController {
 	 * @param currentUserDetails 로그인된 사용자 아이디
 	 * @return 카트아이디를 가지고 있는 주문 전부 가져오기
 	 */
+	@Operation(
+		summary = "유저 이이디로 모든 주문 가져오기",
+		description = "유저 이이디로 주문정보를 가져옵니다."
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "404", description = "주문 정보를 찾을 수 없습니다.")
+	})
 	@GetMapping("/users/all")
 	public ResponseEntity<GetAllListOrderResponse> findAllByUserId(@CurrentUser CurrentUserDetails currentUserDetails) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findAllUserId(currentUserDetails));
@@ -571,6 +578,9 @@ public class OrderController {
 		summary = "회원 포인트 가져오기",
 		description = "회원 포인트를 가져와 주문시 사용합니다."
 	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "404", description = "유저 정보를 찾을 수 없습니다.")
+	})
 	@GetMapping("/orders-points")
 	public ResponseEntity<GetUserPointOrderResponse> getUserPointOrders(
 		@CurrentUser CurrentUserDetails currentUserDetails) {
