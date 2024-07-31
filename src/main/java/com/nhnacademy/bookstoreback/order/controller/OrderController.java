@@ -578,7 +578,7 @@ public class OrderController {
 		summary = "회원 포인트 가져오기",
 		description = "회원 포인트를 가져와 주문시 사용합니다."
 	)
-	@ApiResponses()
+	@ApiResponses
 	@GetMapping("/orders-points")
 	public ResponseEntity<GetUserPointOrderResponse> getUserPointOrders(
 		@CurrentUser CurrentUserDetails currentUserDetails) {
