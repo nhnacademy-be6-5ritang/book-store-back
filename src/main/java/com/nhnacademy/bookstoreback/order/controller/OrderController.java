@@ -471,6 +471,13 @@ public class OrderController {
 		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findAllUserId(currentUserDetails));
 	}
 
+	@Operation(
+		summary = "유저 이이디로 모든 주문 가져오기",
+		description = "유저 이이디로 주문정보를 가져옵니다."
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "404", description = "주문 정보를 찾을 수 없습니다.")
+	})
 	@GetMapping("/users/all/Page")
 	public ResponseEntity<Page<GetAllOrderResponse>> findAllPageByUserId(
 		@CurrentUser CurrentUserDetails currentUserDetails, Pageable pageable) {
@@ -591,6 +598,11 @@ public class OrderController {
 	 * @param orderListId 주문리스트 Id
 	 * @return 주문한 bookId, categoryId 가져옴
 	 */
+	@Operation(
+		summary = "주문리스트 아이디로 책 정보 가져오기",
+		description = "주문리스트 아이디로 책 정보 가져오기를 가져옵니다."
+	)
+	@ApiResponses
 	@GetMapping("/{orderListId}/book")
 	public ResponseEntity<GetBookByOrderCouponResponse> getBookByOneOrder(
 		@PathVariable("orderListId") Long orderListId) {
