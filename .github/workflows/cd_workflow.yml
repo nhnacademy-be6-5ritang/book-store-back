@@ -67,7 +67,7 @@ jobs:
           script: |
             echo "Starting new application..."
             source ~/.bashrc
-            nohup java -Xmx512m -jar ~/target/BOOK-STORE-BACK.jar --spring.profiles.active=prod --server.port=${{ secrets.BACK_PORT }} --spring.datasource.password=${{ secrets.MYSQL_PASSWORD }} --spring.data.redis.password=${{ secrets.REDIS_PASSWORD }} > Back_API.log 2>&1 &
+            nohup java -Xmx256m -jar ~/target/BOOK-STORE-BACK.jar --spring.profiles.active=prod --server.port=${{ secrets.BACK_PORT }} --spring.datasource.password=${{ secrets.MYSQL_PASSWORD }} --spring.data.redis.password=${{ secrets.REDIS_PASSWORD }} > Back_API.log 2>&1 &
             echo "New application started. Check app.log for details."
 
 
