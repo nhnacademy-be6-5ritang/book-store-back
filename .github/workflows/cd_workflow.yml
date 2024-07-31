@@ -82,7 +82,7 @@ jobs:
           script: |
             echo "Checking if application is running by checking log file..."
             for i in {1..30}; do
-              if grep -q "Started BookStoreFrontApplication" Back_API_A.log; then
+              if grep -q "Started BookStoreFrontApplication" BACK-A.log; then
                 echo "Application is running"
                 break
               else
@@ -90,7 +90,7 @@ jobs:
                 sleep 5
               fi
             done
-            if ! grep -q "Started BookStoreFrontApplication" Back_API_A; then
+            if ! grep -q "Started BookStoreFrontApplication" BACK-A; then
               echo "Application did not start in expected time" >&2
               exit 1
             fi
