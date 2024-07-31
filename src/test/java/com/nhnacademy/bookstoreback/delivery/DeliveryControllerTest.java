@@ -6,12 +6,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -19,9 +25,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.delivery.controller.DeliveryController;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryByOrderIdRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
+import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryAddOrderPolicyResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
@@ -44,6 +54,7 @@ class DeliveryControllerTest {
 			.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 			.build();
 		objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
 	}
 
 	@Test
@@ -175,4 +186,74 @@ class DeliveryControllerTest {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk());
 	}
+
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void getDeliveriesByUserId() throws Exception {
+		Pageable pageable = PageRequest.of(0, 10);
+
+		List<GetDeliveryResponse> deliveries = List.of(
+			GetDeliveryResponse.builder()
+				.deliverySenderName("Sender 1")
+				.deliverySenderPhone("1234567890")
+				.deliverySenderAddress("123 Sender St")
+				.deliveryReceiver("Receiver 1")
+				.deliveryReceiverPhone("0987654321")
+				.deliveryReceiverAddress("456 Receiver Ave")
+				.deliveryStatusName("Status1")
+				.build(),
+			GetDeliveryResponse.builder()
+				.deliverySenderName("Sender 2")
+				.deliverySenderPhone("1234567890")
+				.deliverySenderAddress("789 Sender St")
+				.deliveryReceiver("Receiver 2")
+				.deliveryReceiverPhone("0987654321")
+				.deliveryReceiverAddress("987 Receiver Ave")
+				.deliveryStatusName("Status2")
+				.build()
+		);
+
+		Page<GetDeliveryResponse> responsePage = new PageImpl<>(deliveries, pageable, deliveries.size());
+
+		when(deliveryService.getDeliveriesByUserId(any(CurrentUserDetails.class), any(Pageable.class)))
+			.thenReturn(responsePage);
+
+		mockMvc.perform(get("/api/deliveries/me/page")
+				.param("page", String.valueOf(pageable.getPageNumber()))
+				.param("size", String.valueOf(pageable.getPageSize()))
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().json(objectMapper.writeValueAsString(responsePage)));
+	}
+
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void createDelivery() throws Exception {
+		// CreateDeliveryRequest 객체 설정
+		CreateDeliveryRequest request = CreateDeliveryRequest.builder()
+			.deliveryReceiver("ReceiverName")
+			.deliveryReceiverPhone("ReceiverPhone")
+			.deliveryReceiverDate(LocalDateTime.now())
+			.deliveryReceiverAddress("ReceiverAddress")
+			.deliveryReceiverAddress2("ReceiverAddress2")
+			.build();
+
+		// CreateDeliveryResponse 객체 설정
+		CreateDeliveryResponse response = CreateDeliveryResponse.builder()
+			.deliveryId(1L)
+			.deliveryReceiver("ReceiverName")
+			.build();
+
+		// Mocking 서비스 메서드
+		when(deliveryService.createDelivery(any(CreateDeliveryRequest.class)))
+			.thenReturn(response);
+
+		// MockMvc 요청 및 검증
+		mockMvc.perform(post("/api/deliveries")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isCreated()) // 201 상태 코드 확인
+			.andExpect(content().json(objectMapper.writeValueAsString(response)));
+	}
+
 }
