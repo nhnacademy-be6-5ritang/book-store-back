@@ -90,7 +90,7 @@ jobs:
                 sleep 5
               fi
             done
-            if ! grep -q "Started BookStoreFrontApplication" BACK-A; then
+            if ! grep -q "Started BookStoreBackApplication" BACK-A; then
               echo "Application did not start in expected time" >&2
               exit 1
             fi
