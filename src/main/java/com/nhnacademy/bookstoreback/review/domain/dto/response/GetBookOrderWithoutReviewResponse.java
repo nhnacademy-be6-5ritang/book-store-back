@@ -5,10 +5,8 @@ import com.nhnacademy.bookstoreback.order.domain.entity.BookOrder;
 import lombok.Builder;
 
 /**
- * 리뷰 작성 가능 도서 응답 DTO
- *
  * @author 이경헌
- * @version 1.0
+ * 리뷰 작성 가능 도서 응답 DTO
  */
 @Builder
 public record GetBookOrderWithoutReviewResponse(
