@@ -1,7 +1,6 @@
 package com.nhnacademy.bookstoreback.global.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -12,23 +11,32 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import com.nhnacademy.bookstoreback.keymanager.property.RedisProperty;
+import com.nhnacademy.bookstoreback.keymanager.service.KeyManagerService;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
+@RequiredArgsConstructor
 @EnableRedisRepositories(basePackages = "com.nhnacademy.bookstoreback.bookcart.repository", redisTemplateRef = "cartRedisTemplate")
 public class CartRedisConfig {
-	@Value("${spring.data.redis.host}")
-	private String host;
-	@Value("${spring.data.redis.port}")
-	private int port;
-	@Value("${spring.data.redis.password}")
-	private String password;
+	private final KeyManagerService keyManagerService;
+	private final RedisProperty redisProperty;
+	// @Value("${spring.data.redis.host}")
+	// private String host;
+	// @Value("${spring.data.redis.port}")
+	// private int port;
+	// @Value("${spring.data.redis.password}")
+	// private String password;
 
 	@Bean("cartRedisConnectionFactory")
 	public RedisConnectionFactory cartRedisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-		redisStandaloneConfiguration.setHostName(host);
-		redisStandaloneConfiguration.setPort(port);
-		redisStandaloneConfiguration.setPassword(password);
-		redisStandaloneConfiguration.setDatabase(25);
+		redisStandaloneConfiguration.setHostName(keyManagerService.getSecret(redisProperty.getHost()));
+		redisStandaloneConfiguration.setPort(Integer.parseInt(keyManagerService.getSecret(redisProperty.getPort())));
+		redisStandaloneConfiguration.setPassword(keyManagerService.getSecret(redisProperty.getPassword()));
+		redisStandaloneConfiguration.setDatabase(
+			Integer.parseInt(keyManagerService.getSecret(redisProperty.getCartDatabase())));
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}
 

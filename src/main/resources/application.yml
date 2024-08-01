@@ -33,15 +33,6 @@ spring:
           starttls:
             enable: true
 
-nhncloud:
-  appkey: vyiy4M85i8mJ5mgP
-  secretkey: fBlt6m4cSRJs07X05mhPBfmofWoBlcSU
-
-naver:
-  client:
-    id: FqTcItBuNIlp3v3oMKdQ
-    secret: WQxeHO8nj5
-
 springdoc:
   api-docs:
     path: /back-api
@@ -66,9 +57,19 @@ oritang:
     url: 073309ef26b34581afc19feb7720380e
     username: 7d697c13adf84236b7ca5ea60870ff9c
     password: 4766eb1428334444b8a10ce26bd980e8
-  
+
   redis:
     host: 4c4a07c6d57c41cba23cf12de6c87559
     port: 0de6a31493de4282830c2dab83e7264c
     password: d9b767e1131b4434b75d1fb52444ee1e
-    database: d5311ac7b1164c6ea75202fc8d14085f
+    auth-database: d5311ac7b1164c6ea75202fc8d14085f
+    cart-database: 1d9b2f3612464cefae798e5493f0cc08
+
+  image-manager:
+    app-key: a9515465ff8d4a4ca708cdb2d0e80559
+    secret-key: 3d77d2561cd24bb38db74df098de1e71
+
+  naver:
+    client:
+      id: 0887cd2530494e9baf0943159badadc9
+      secret: 9c902b7f287a4b7f81d5665f8761ad63

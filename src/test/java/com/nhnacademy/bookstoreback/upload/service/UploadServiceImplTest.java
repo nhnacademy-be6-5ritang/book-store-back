@@ -23,6 +23,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.nhnacademy.bookstoreback.keymanager.property.ImageManagerProperty;
+import com.nhnacademy.bookstoreback.keymanager.service.KeyManagerService;
 import com.nhnacademy.bookstoreback.upload.exception.FileExtensionException;
 import com.nhnacademy.bookstoreback.upload.exception.FileUploadException;
 import com.nhnacademy.bookstoreback.upload.exception.ParserException;
@@ -40,12 +42,18 @@ class UploadServiceImplTest {
 	@Mock
 	private MultipartFile multipartFile;
 
+	@Mock
+	private KeyManagerService keyManagerService;
+
+	@Mock
+	private ImageManagerProperty imageManagerProperty;
+
 	private String appKey = "testAppKey";
 	private String secretKey = "testSecretKey";
 
 	@BeforeEach
 	void setUp() {
-		uploadService = new UploadServiceImpl(restTemplate);
+		uploadService = new UploadServiceImpl(restTemplate, keyManagerService, imageManagerProperty);
 	}
 
 	@Test

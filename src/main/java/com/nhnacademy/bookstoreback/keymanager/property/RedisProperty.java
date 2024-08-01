@@ -12,5 +12,6 @@ public class RedisProperty {
 	private String host;
 	private String port;
 	private String password;
-	private String database;
+	private String authDatabase;
+	private String cartDatabase;
 }

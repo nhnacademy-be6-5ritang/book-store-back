@@ -2,7 +2,6 @@ package com.nhnacademy.bookstoreback.upload.service.impl;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.bookstoreback.keymanager.property.ImageManagerProperty;
+import com.nhnacademy.bookstoreback.keymanager.service.KeyManagerService;
 import com.nhnacademy.bookstoreback.upload.exception.FileExtensionException;
 import com.nhnacademy.bookstoreback.upload.exception.FileUploadException;
 import com.nhnacademy.bookstoreback.upload.exception.ParserException;
@@ -28,12 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UploadServiceImpl implements UploadService {
 	private final RestTemplate restTemplate;
-
-	@Value("${nhncloud.appkey}")
-	private String appKey;
-
-	@Value("${nhncloud.secretkey}")
-	private String secretKey;
+	private final KeyManagerService keyManagerService;
+	private final ImageManagerProperty imageManagerProperty;
 
 	public String upload(MultipartFile file, String folderName) {
 		// 파일 확장자 검사
@@ -44,9 +41,10 @@ public class UploadServiceImpl implements UploadService {
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-			headers.add("Authorization", secretKey);
+			headers.add("Authorization", keyManagerService.getSecret(imageManagerProperty.getSecretKey()));
 
-			String url = "https://api-image.nhncloudservice.com/image/v2.0/appkeys/" + appKey + "/images?path=/5ritang/"
+			String url = "https://api-image.nhncloudservice.com/image/v2.0/appkeys/" + keyManagerService.getSecret(
+				imageManagerProperty.getAppKey()) + "/images?path=/5ritang/"
 				+ folderName + "/" + fileName + "&overwrite=true";
 
 			log.info("Uploading to URL: {}", url);
