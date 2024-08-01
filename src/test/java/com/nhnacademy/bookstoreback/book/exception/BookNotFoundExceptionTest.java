@@ -1,11 +1,11 @@
 package com.nhnacademy.bookstoreback.book.exception;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import java.time.LocalDateTime;
 
-public class BookNotFoundExceptionTest {
+class BookNotFoundExceptionTest {
 
 	@Test
 	void testBookNotFoundException() {
