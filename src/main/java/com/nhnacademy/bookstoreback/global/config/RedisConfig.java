@@ -17,14 +17,6 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class RedisConfig {
-	// @Value("${spring.data.redis.host}")
-	// private String host;
-	// @Value("${spring.data.redis.port}")
-	// private int port;
-	// @Value("${spring.data.redis.password}")
-	// private String password;
-	// @Value("${spring.data.redis.database}")
-	// private int database;
 	private final KeyManagerService keyManagerService;
 	private final RedisProperty redisProperty;
 
