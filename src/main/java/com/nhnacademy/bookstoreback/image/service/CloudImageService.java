@@ -9,7 +9,6 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.global.util.CustomMultipartFile;
+import com.nhnacademy.bookstoreback.keymanager.property.NaverApiProperty;
+import com.nhnacademy.bookstoreback.keymanager.service.KeyManagerService;
 import com.nhnacademy.bookstoreback.upload.service.UploadService;
 
 import lombok.RequiredArgsConstructor;
@@ -42,12 +43,8 @@ public class CloudImageService {
 
 	private final RestTemplate restTemplate;
 	private final UploadService uploadService;
-
-	@Value("${naver.client.id}")
-	private String naverClientId;
-
-	@Value("${naver.client.secret}")
-	private String naverClientSecret;
+	private final KeyManagerService keyManagerService;
+	private final NaverApiProperty naverApiProperty;
 
 	/**
 	 * 네이버 API 를 통해 책의 표지 이미지를 가져와서 업로드합니다.
@@ -60,8 +57,8 @@ public class CloudImageService {
 		String apiUrl = "https://openapi.naver.com/v1/search/book.json?query=" + isbn;
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-Naver-Client-Id", naverClientId);
-		headers.set("X-Naver-Client-Secret", naverClientSecret);
+		headers.set("X-Naver-Client-Id", keyManagerService.getSecret(naverApiProperty.getId()));
+		headers.set("X-Naver-Client-Secret", keyManagerService.getSecret(naverApiProperty.getSecret()));
 
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 

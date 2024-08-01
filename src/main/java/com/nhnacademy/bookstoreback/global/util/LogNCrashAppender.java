@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.global.config;
+package com.nhnacademy.bookstoreback.global.util;
 
 import java.util.HashMap;
 import java.util.Map;
