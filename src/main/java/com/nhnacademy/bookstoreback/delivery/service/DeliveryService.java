@@ -11,12 +11,23 @@ import com.nhnacademy.bookstoreback.delivery.domain.dto.response.CreateDeliveryR
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.GetDeliveryResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryAddOrderPolicyResponse;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.response.UpdateDeliveryResponse;
+import com.nhnacademy.bookstoreback.delivery.domain.entity.Delivery;
 
 /**
  * @author 이경헌
  * 배달과 관련된 서비스 인터페이스입니다.
  */
 public interface DeliveryService {
+
+	/**
+	 * 배송을 스케줄링합니다.
+	 *
+	 * 배송의 발송 날짜가 설정되어 있고, 배송 상태가 특정 상태인 경우에만 호출됩니다.
+	 *
+	 * @param delivery 배송 정보 객체
+	 */
+	void scheduleDeliveries(Delivery delivery);
+
 	/**
 	 * 주어진 사용자의 배송 목록을 페이지 단위로 조회합니다.
 	 *

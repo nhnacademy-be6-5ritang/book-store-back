@@ -48,18 +48,42 @@ public interface BookRepository extends JpaRepository<Book, Long>, CustomBookRep
 	 */
 	Page<Book> findAllByOrderByBookPublishDateDesc(Pageable pageable);
 
+	/**
+	 * 사용자 위시리스트에서 가장 많이 좋아요를 받은 책을 반환합니다.
+	 *
+	 * @param pageable 페이징 및 정렬 정보를 포함한 Pageable 객체
+	 * @return 좋아요 수에 따라 정렬된 책 목록
+	 */
 	@Query("SELECT b FROM Book b JOIN WishList wl ON b.bookId = wl.book.bookId " +
 		"GROUP BY b.bookId ORDER BY COUNT(wl.book.bookId) DESC")
 	Page<Book> findTopLikedBooks(Pageable pageable);
 
+	/**
+	 * 가장 많이 주문된 책을 반환합니다.
+	 *
+	 * @param pageable 페이징 및 정렬 정보를 포함한 Pageable 객체
+	 * @return 주문 수에 따라 정렬된 책 목록
+	 */
 	@Query("SELECT b FROM Book b JOIN BookOrder bo ON b.bookId = bo.book.bookId " +
 		"GROUP BY b.bookId ORDER BY COUNT(bo.book.bookId) DESC")
 	Page<Book> findTopOrderedBooks(Pageable pageable);
 
+	/**
+	 * 주문되지 않은 책을 무작위로 반환합니다.
+	 *
+	 * @param pageable 페이징 및 정렬 정보를 포함한 Pageable 객체
+	 * @return 무작위로 선택된, 주문되지 않은 책 목록
+	 */
 	@Query("SELECT b FROM Book b WHERE b.bookId NOT IN " +
 		"(SELECT bo.book.bookId FROM BookOrder bo) ORDER BY RAND()")
 	List<Book> findRandomOrderedBooks(Pageable pageable);
 
+	/**
+	 * 좋아요를 받지 않은 책을 무작위로 반환합니다.
+	 *
+	 * @param pageable 페이징 및 정렬 정보를 포함한 Pageable 객체
+	 * @return 무작위로 선택된, 좋아요를 받지 않은 책 목록
+	 */
 	@Query("SELECT b FROM Book b WHERE b.bookId NOT IN " +
 		"(SELECT wl.book.bookId FROM WishList wl) ORDER BY RAND()")
 	List<Book> findRandomLikedBooks(Pageable pageable);

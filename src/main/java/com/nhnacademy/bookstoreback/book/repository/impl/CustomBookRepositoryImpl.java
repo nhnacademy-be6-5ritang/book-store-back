@@ -11,13 +11,15 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
 public class CustomBookRepositoryImpl implements CustomBookRepository {
-
 	private final JPAQueryFactory queryFactory;
 
 	public CustomBookRepositoryImpl(EntityManager em) {
 		this.queryFactory = new JPAQueryFactory(em);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public List<BookSearchResult> findByBookTitleContainingIgnoreCaseCustom(String title) {
 		return queryFactory

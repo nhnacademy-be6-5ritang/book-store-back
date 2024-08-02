@@ -19,6 +19,10 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderByStatusId
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetUserPointOrderResponse;
 
+/**
+ * @author 김다운
+ * 주문에 관련된 서비스 인터페이스입니다.
+ */
 public interface OrderService {
 
 	/**

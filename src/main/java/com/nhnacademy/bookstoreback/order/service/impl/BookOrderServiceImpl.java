@@ -34,7 +34,6 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class BookOrderServiceImpl implements BookOrderService {
-
 	private final BookOrderRepository bookOrderRepository;
 	private final OrderRepository orderRepository;
 	private final BookRepository bookRepository;
@@ -42,6 +41,9 @@ public class BookOrderServiceImpl implements BookOrderService {
 	public static final String ERROR_ORDER_EXITS = "주문 정보를 찾을 수 없습니다";
 	public static final String ERROR_BOOKORDER_EXITS = "주문 리스트를 찾을 수 없습니다";
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public CreateBookOrderResponse createBookOrder(CreateBookOrderRequest createBookOrderRequest) {
 		Book book = bookRepository.getReferenceById(createBookOrderRequest.bookId());
@@ -58,7 +60,9 @@ public class BookOrderServiceImpl implements BookOrderService {
 			createBookOrderRequest.quantity(), bookOrder.getOrderListId());
 	}
 
-	// 주문 생성시 업데이트
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public UpdateBookOrderResponse updateOrder(Long bookOrderId, Long orderId) {
 		BookOrder bookOrder;
@@ -88,6 +92,9 @@ public class BookOrderServiceImpl implements BookOrderService {
 		return UpdateBookOrderResponse.from(bookOrder);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetBookOrderResponse getBookOrder(Long bookOrderId) {
@@ -106,12 +113,18 @@ public class BookOrderServiceImpl implements BookOrderService {
 			bookOrder.getBookQuantity(), bookOrder.getOrderListId());
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetBookByOrderCouponResponse getBookAndCategoryByOrderListId(Long orderListId) {
 		return bookOrderRepository.findBooksByOrderListId(orderListId);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<GetBookOrderResponse> getBookOrderByOrderId(String orderInfoId) {

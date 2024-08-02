@@ -6,6 +6,10 @@ server:
       enabled: true
       charset: UTF-8
 
+  tomcat:
+    threads:
+      max: 50
+
 spring:
   application:
     name: "book-store-back"

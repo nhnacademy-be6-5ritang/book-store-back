@@ -28,23 +28,35 @@ public class PaperTypeServiceImpl implements PaperTypeService {
 
 	public static final String ERROR_PAPER_EXITS = "포장지를 가져올 수 없습니다";
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public CreatePaperResponse createPaper(CreateWrappingTypeRequest createWrappingTypeRequest) {
 		return CreatePaperResponse.from(paperTypeRepository.save(PaperType.toEntity(createWrappingTypeRequest)));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetAllPaperResponse getAllPaperTypes() {
 		return GetAllPaperResponse.from(paperTypeRepository.findAll());
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetAdminAllPaperResponse getAdminAllPaperTypes() {
 		return GetAdminAllPaperResponse.from(paperTypeRepository.findAll());
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetPaperResponse getPaperTypeById(Long id) {
@@ -56,6 +68,9 @@ public class PaperTypeServiceImpl implements PaperTypeService {
 		return GetPaperResponse.from(paperType);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public GetPaperResponse updatePaperTypeById(Long id, UpdateWrappingTypeRequest updateWrappingTypeRequest) {
 		PaperType paperType = paperTypeRepository.findById(id).orElse(null);
@@ -69,6 +84,9 @@ public class PaperTypeServiceImpl implements PaperTypeService {
 		return GetPaperResponse.from(paperType);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deletePaperTypeById(Long id) {
 		paperTypeRepository.deleteById(id);

@@ -12,10 +12,8 @@ import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
 
 /**
- * BookService 인터페이스
+ * @author 김기욱, 이경헌
  * 도서 관련 서비스를 제공하는 인터페이스입니다.
- *
- * @version 1.0
  */
 public interface BookService {
 
@@ -41,13 +39,6 @@ public interface BookService {
 	void saveBook(JsonNode item) throws Exception;
 
 	/**
-	 * 모든 도서를 조회
-	 *
-	 * @return 도서 리스트를 포함하는 List 객체
-	 */
-	List<GetBookDetailResponse> getNewestBooks();
-
-	/**
 	 * 모든 도서를 페이지네이션하여 조회
 	 *
 	 * @param pageable 페이지네이션 정보를 포함하는 객체
@@ -64,7 +55,7 @@ public interface BookService {
 	GetBookDetailResponse getBook(Long bookId);
 
 	/**
-	 * ISBN을 기준으로 도서 조회
+	 * ISBN 을 기준으로 도서 조회
 	 *
 	 * @param isbn ISBN
 	 * @return 도서 상세 정보
@@ -88,10 +79,6 @@ public interface BookService {
 
 	/**
 	 * 주어진 ID를 가진 도서를 삭제합니다.
-	 * <p>
-	 * 도서가 도서 주문과 연관되어 있지 않으면 삭제가 가능하며,
-	 * 연관이 있을 경우 삭제가 불가능합니다.
-	 * </p>
 	 *
 	 * @param bookId 삭제할 도서의 ID
 	 */
@@ -103,7 +90,32 @@ public interface BookService {
 	 */
 	List<BookSearchResult> searchBooks(String query);
 
+	/**
+	 * 주문된 책들의 목록을 조회합니다.
+	 *
+	 * @return 주문된 책들의 세부 정보를 담고 있는 {@link GetBookDetailResponse} 객체의 리스트를 반환합니다.
+	 */
 	List<GetBookDetailResponse> getOrderedBooks();
 
+	/**
+	 * 좋아요가 눌린 책들의 목록을 조회합니다.
+	 *
+	 * @return 좋아요가 눌린 책들의 세부 정보를 담고 있는 {@link GetBookDetailResponse} 객체의 리스트를 반환합니다.
+	 */
 	List<GetBookDetailResponse> getLikesBooks();
+
+	/**
+	 * 신간 도서 리스트를 조회
+	 *
+	 * @return 신간 도서 리스트를 포함하는 List 객체
+	 */
+	List<GetBookDetailResponse> getNewestBooks();
+
+	/**
+	 * 책의 수량을 업데이트합니다.
+	 *
+	 * @param bookId  책의 고유 ID
+	 * @param quantity  업데이트할 수량
+	 */
+	void updateQuantity(Long bookId, int quantity);
 }

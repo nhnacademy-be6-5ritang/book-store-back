@@ -30,12 +30,18 @@ public class CategoryServiceImpl implements CategoryService {
 	private final CategoryRepository categoryRepository;
 	private final BookCategoryRepository bookCategoryRepository;
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<GetCategoryResponse> getCategories() {
 		return categoryRepository.findAll().stream().map(GetCategoryResponse::fromEntity).toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public Page<GetCategoryResponse> getCategories(Pageable pageable) {
@@ -47,6 +53,9 @@ public class CategoryServiceImpl implements CategoryService {
 			.map(GetCategoryResponse::fromEntity);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<GetCategoryResponse> getCategoriesByBookId(Long bookId) {
@@ -55,6 +64,9 @@ public class CategoryServiceImpl implements CategoryService {
 		return categories.stream().map(GetCategoryResponse::fromEntity).toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public GetCategoryResponse getCategory(Long categoryId) {
@@ -63,6 +75,9 @@ public class CategoryServiceImpl implements CategoryService {
 		return GetCategoryResponse.fromEntity(category);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void createCategory(CreateCategoryRequest request) {
 		if (categoryRepository.existsByCategoryName(request.categoryName())) {
@@ -74,10 +89,12 @@ public class CategoryServiceImpl implements CategoryService {
 			parentCategory = categoryRepository.findById(request.parentCategoryId())
 				.orElseThrow(() -> new CategoryNotFoundException(request.parentCategoryId()));
 		}
-
 		categoryRepository.save(Category.toEntity(request, parentCategory));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void updateCategory(Long categoryId, UpdateCategoryRequest request) {
 		Category category = categoryRepository.findById(categoryId)
@@ -100,12 +117,18 @@ public class CategoryServiceImpl implements CategoryService {
 		category.updateCategoryName(request.categoryName(), parentCategory);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deleteCategory(Long categoryId) {
 		bookCategoryRepository.deleteALlByCategoryCategoryId(categoryId);
 		categoryRepository.deleteById(categoryId);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional
 	public Category findOrCreateCategory(String categoryName, Long parentCategoryId) {
@@ -121,6 +144,9 @@ public class CategoryServiceImpl implements CategoryService {
 			});
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<CategorySearchResult> searchCategories(String query) {

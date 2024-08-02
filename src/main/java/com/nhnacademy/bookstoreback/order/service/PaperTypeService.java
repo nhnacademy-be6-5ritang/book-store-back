@@ -7,6 +7,10 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAdminAllPaperRe
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetAllPaperResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetPaperResponse;
 
+/**
+ * @author 김다운
+ * 포장지와 관련된 서비스 인터페이스입니다.
+ */
 public interface PaperTypeService {
 	/**
 	 * 포장지 만들기

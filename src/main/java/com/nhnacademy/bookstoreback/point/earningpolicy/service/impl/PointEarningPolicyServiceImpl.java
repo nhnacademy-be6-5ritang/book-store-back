@@ -1,7 +1,6 @@
 package com.nhnacademy.bookstoreback.point.earningpolicy.service.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +24,9 @@ import lombok.RequiredArgsConstructor;
 public class PointEarningPolicyServiceImpl implements PointEarningPolicyService {
 	private final PointEarningPolicyRepository pointEarningPolicyRepository;
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public CreatePointEarningPolicyResponse createPointEarningPolicy(
 		CreatePointEarningPolicyRequest createPointEarningPolicyRequest
@@ -44,15 +46,21 @@ public class PointEarningPolicyServiceImpl implements PointEarningPolicyService 
 		return CreatePointEarningPolicyResponse.fromEntity(savedPointEarningPolicy);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public List<GetPointEarningPolicyResponse> getPointEarningPolicies() {
 		List<PointEarningPolicy> pointEarningPolicies = pointEarningPolicyRepository.findAll();
 
 		return pointEarningPolicies.stream()
 			.map(GetPointEarningPolicyResponse::fromEntity)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public GetPointEarningPolicyResponse getPointEarningPolicy(Long pointEarningPolicyId) {
 		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findById(pointEarningPolicyId)
@@ -61,6 +69,9 @@ public class PointEarningPolicyServiceImpl implements PointEarningPolicyService 
 		return GetPointEarningPolicyResponse.fromEntity(pointEarningPolicy);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public UpdatePointEarningPolicyResponse updatePointEarningPolicy(Long pointEarningPolicyId,
 		UpdatePointEarningPolicyRequest updatePointEarningPolicyRequest) {
@@ -74,6 +85,9 @@ public class PointEarningPolicyServiceImpl implements PointEarningPolicyService 
 		return UpdatePointEarningPolicyResponse.fromEntity(savedPointEarningPolicy);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void activatePointEarningPolicy(Long pointEarningPolicyId) {
 		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findById(pointEarningPolicyId)
@@ -84,6 +98,9 @@ public class PointEarningPolicyServiceImpl implements PointEarningPolicyService 
 		pointEarningPolicyRepository.save(pointEarningPolicy);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deactivatePointEarningPolicy(Long pointEarningPolicyId) {
 		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findById(pointEarningPolicyId)
@@ -94,6 +111,9 @@ public class PointEarningPolicyServiceImpl implements PointEarningPolicyService 
 		pointEarningPolicyRepository.save(pointEarningPolicy);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deletePointEarningPolicy(Long pointEarningPolicyId) {
 		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findById(pointEarningPolicyId)

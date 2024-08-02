@@ -20,10 +20,8 @@ import com.nhnacademy.bookstoreback.author.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 
 /**
+ * @author 김기욱, 이경헌
  * 작가 Service
- *
- * @author 김기욱
- * @version 1.0
  */
 @Service
 @RequiredArgsConstructor
@@ -32,10 +30,7 @@ public class AuthorServiceImpl implements AuthorService {
 	private final AuthorRepository authorRepository;
 
 	/**
-	 * 작가 이름 기반 도서 조회.
-	 *
-	 * @param authorName 작가 이름
-	 * @return 작가가 존재하면 작가 정보, 없으면 null
+	 *{@inheritDoc}
 	 */
 	@Override
 	public Author findOrCreateAuthor(String authorName) {
@@ -43,12 +38,18 @@ public class AuthorServiceImpl implements AuthorService {
 		return optionalAuthor.orElseGet(() -> authorRepository.save(Author.builder().authorName(authorName).build()));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<AuthorDto> getAuthors() {
 		return authorRepository.findAll().stream().map(AuthorDto::fromEntity).toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public Page<AuthorDto> getAuthors(Pageable pageable) {
@@ -58,6 +59,9 @@ public class AuthorServiceImpl implements AuthorService {
 			.map(AuthorDto::fromEntity);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public AuthorDto getAuthor(Long authorId) {
@@ -65,6 +69,9 @@ public class AuthorServiceImpl implements AuthorService {
 		return AuthorDto.fromEntity(author);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void createAuthor(AuthorDto request) {
 		if (authorRepository.existsByAuthorName(request.authorName())) {
@@ -73,6 +80,9 @@ public class AuthorServiceImpl implements AuthorService {
 		authorRepository.save(Author.toEntity(request));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void updateAuthor(Long authorId, AuthorDto request) {
 		Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(authorId));
@@ -84,6 +94,9 @@ public class AuthorServiceImpl implements AuthorService {
 		author.updateAuthorName(request.authorName());
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deleteAuthor(Long authorId) {
 		authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException(authorId));

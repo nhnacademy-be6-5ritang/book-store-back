@@ -39,11 +39,6 @@ import com.nhnacademy.bookstoreback.order.service.impl.OrderServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * @author 이경헌
- * 배달 서비스의 구현 클래스입니다.
- * 배달 생성, 조회, 업데이트, 삭제 기능을 제공합니다.
- */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -57,6 +52,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 	private static final String NOT_FOUND_MESSAGE_DELIVERY_STATUS = "존재하지 않는 배달 상태입니다.";
 	private static final String INIT_DELIVERY_STATUS = "발송준비중";
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public void scheduleDeliveries(Delivery delivery) {
 		if (delivery.getDeliverySenderDate() != null && delivery.getDeliveryStatus().getDeliveryStatusId() == 2L) {
 			LocalDateTime senderDate = delivery.getDeliverySenderDate().plusMinutes(2);
@@ -66,10 +65,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 	}
 
 	/**
-	 * 사용자의 배송 목록을 페이지로 반환합니다.
-	 *
-	 * @param pageable 페이지 정보.
-	 * @return 페이지로 반환된 사용자의 배송 목록.
+	 *{@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -84,11 +80,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 	}
 
 	/**
-	 * 특정 배송 ID에 대한 배송 정보를 반환합니다.
-	 *
-	 * @param deliveryId 배송 ID.
-	 * @return 배송 정보.
-	 * @throws NotFoundException 배송이 존재하지 않는 경우 발생.
+	 *{@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -100,11 +92,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 	}
 
 	/**
-	 * 새로운 배송을 생성합니다.
-	 *
-	 * @param request 배송 생성 요청 정보.
-	 * @return 생성된 배송 정보.
-	 * @throws NotFoundException 배송 상태가 존재하지 않는 경우 발생.
+	 *{@inheritDoc}
 	 */
 	@Override
 	public CreateDeliveryResponse createDelivery(CreateDeliveryRequest request) {
@@ -122,12 +110,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 	}
 
 	/**
-	 * 특정 배송 ID에 대한 배송 상태를 업데이트합니다.
-	 *
-	 * @param deliveryId 배송 ID.
-	 * @param request    배송 업데이트 요청 정보.
-	 * @return 업데이트된 배송 정보.
-	 * @throws NotFoundException 배송 또는 주문 상태가 존재하지 않는 경우 발생.
+	 *{@inheritDoc}
 	 */
 	@Override
 	public UpdateDeliveryResponse updateDelivery(Long deliveryId, UpdateDeliveryRequest request) {
@@ -147,6 +130,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 		return UpdateDeliveryResponse.fromEntity(delivery);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public UpdateDeliveryAddOrderPolicyResponse updateDeliveryAddOrder(Long deliveryId, Long orderId) {
 		Delivery delivery = deliveryRepository.findById(deliveryId)
@@ -159,15 +145,16 @@ public class DeliveryServiceImpl implements DeliveryService {
 	}
 
 	/**
-	 * 지정된 배달 ID에 대한 배달 정보를 삭제합니다.
-	 *
-	 * @param deliveryId 삭제할 배달의 ID
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void deleteDelivery(Long deliveryId) {
 		deliveryRepository.deleteById(deliveryId);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetDeliveryResponse getDeliveryByOrderId(Long orderId) {
@@ -177,13 +164,16 @@ public class DeliveryServiceImpl implements DeliveryService {
 		return GetDeliveryResponse.fromEntity(deliveryRepository.findByOrder_OrderId(orderId));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void updateDeliveryByOrderId(Long orderId, UpdateDeliveryByOrderIdRequest request) {
 		Delivery delivery = deliveryRepository.findByOrder_OrderId(orderId);
 		if (deliveryRepository.findByOrder_OrderId(orderId) == null) {
 			throw new DeliveryByOrderNotFoundException(orderId);
 		}
-		
+
 		DeliveryStatus deliveryStatus = deliveryStatusRepository.getReferenceById(2L);
 		delivery.updateDeliverySender(request.senderName(), request.senderPhone(),
 			request.senderAddress() + " " + request.senderAddress2(), deliveryStatus);
@@ -192,6 +182,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 		scheduleDeliveries(delivery);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	public void completeDelivery(Long orderId) {
 		Delivery delivery = deliveryRepository.findByOrder_OrderId(orderId);
 		Order order = orderRepository.findByOrderId(orderId);

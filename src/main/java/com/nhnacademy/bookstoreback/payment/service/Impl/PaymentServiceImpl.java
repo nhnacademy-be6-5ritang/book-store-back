@@ -58,7 +58,6 @@ public class PaymentServiceImpl implements PaymentService {
 	public static final String ERROR_PAYMENT_EXITS = "결제를 찾을 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문 정보를 찾을 수 없습니다";
 	public static final String ERROR_USER_EXITS = "사용자를 찾을 수 없습니다";
-	public static final String ERROR_ORDER_EXITS_POINT = "포인트 오류 테스트";
 	public static final String ERROR_BOOKORDER_EXITS = "주문리스트를 찾을 수 없습니다";
 	private final PaymentRepository paymentRepository;
 	private final OrderRepository orderRepository;
@@ -69,6 +68,9 @@ public class PaymentServiceImpl implements PaymentService {
 	private final UserRepository userRepository;
 	private final UserGradeRepository userGradeRepository;
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public PaymentSaveResponse savePaymentResponse(String paymentResponseJson,
 		@CurrentUser CurrentUserDetails currentUser) {
@@ -130,7 +132,11 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentResponse.date())));
 	}
 
-	private void updateUserGrade(BigDecimal updatedOrderPrice, User user) {
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
+	public void updateUserGrade(BigDecimal updatedOrderPrice, User user) {
 		List<UserGrade> userGrades = userGradeRepository.findAll();
 		for (UserGrade userGrade : userGrades) {
 			if (userGrade.getUserGradeMinAmount().compareTo(updatedOrderPrice) <= 0
@@ -142,6 +148,10 @@ public class PaymentServiceImpl implements PaymentService {
 
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public PaymentResponse parsePaymentResponse(String paymentResponseJson) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
@@ -162,6 +172,9 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public TransactionsResponse transactions(String paymentResponseJson) {
@@ -185,6 +198,9 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetBookOrderByInfoIdResponse findByOrderInfoId(String orderInfoId) {
@@ -205,6 +221,9 @@ public class PaymentServiceImpl implements PaymentService {
 			FindByInfoIdBookOrderGetOrderResponse.from(bookOrder.getOrder()), bookOrder.getBookQuantity());
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetBookOrderByInfoIdResponse findByCartOrderInfoId(String orderInfoId) {
@@ -225,6 +244,9 @@ public class PaymentServiceImpl implements PaymentService {
 		return GetBookOrderByInfoIdResponse.from(title);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetOrderByInfoResponse findByOrder(String orderInfoId) {
@@ -236,6 +258,9 @@ public class PaymentServiceImpl implements PaymentService {
 		return GetOrderByInfoResponse.from(orderRepository.findByOrderInfoId(orderInfoId));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public CancelResponse paymentFindByOrderInfoId(String orderInfoId) {
@@ -248,6 +273,9 @@ public class PaymentServiceImpl implements PaymentService {
 		return CancelResponse.from(payment.getPaymentKey(), payment.getPaymentId());
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public UpdatePaymentResponse updatePayment(String paymentResponseJson, Long paymentId) {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -267,6 +295,10 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public void savePointPayment(String orderInfoId, @CurrentUser CurrentUserDetails currentUserDetails) {
 		Order order = orderRepository.findByOrderInfoId(orderInfoId);
 		if (order == null) {
@@ -304,6 +336,10 @@ public class PaymentServiceImpl implements PaymentService {
 
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public void updatePayment(Long paymentId, @CurrentUser CurrentUserDetails currentUserDetails) {
 		Payment payment = paymentRepository.findById(paymentId).orElse(null);
 		if (payment == null) {
@@ -340,6 +376,10 @@ public class PaymentServiceImpl implements PaymentService {
 		pointTransactionRepository.save(pointTransaction);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public PaymentResponse getPayment(String orderInfoId) {
 		Payment payment = paymentRepository.findByOrder_OrderInfoId(orderInfoId);
 		if (payment == null) {

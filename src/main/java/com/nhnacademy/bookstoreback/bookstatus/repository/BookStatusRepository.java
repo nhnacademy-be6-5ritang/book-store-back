@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
 
 /**
- * @author 김기욱, 이경헌
+ * @author 김기욱
  * 도서 상태 정보를 관리하는 Spring Data JPA 레포지토리입니다.
  */
 public interface BookStatusRepository extends JpaRepository<BookStatus, Long> {

@@ -54,7 +54,6 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @Slf4j
 public class OrderServiceImpl implements OrderService {
-
 	public static final String ERROR_STATUS_WAIT = "주문 상태를 대기로 지정할 수 없습니다";
 	public static final String ERROR_ORDER_EXITS = "주문을 가져올 수 없습니다";
 	public static final String ERROR_ORDERS_EXITS = "주문 내역을 가져올 수 없습니다";
@@ -69,7 +68,9 @@ public class OrderServiceImpl implements OrderService {
 	private final DeliveryRepository deliveryRepository;
 	private final DeliveryStatusRepository deliveryStatusRepository;
 
-	//카트 아이디를 가지고 있다면 그걸 사용해서 정보 추가로 가져오는 코드 추가 예정
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest,
 		@CurrentUser CurrentUserDetails currentUser) {
@@ -95,6 +96,9 @@ public class OrderServiceImpl implements OrderService {
 		throw new OrderFailException(errorStatus);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public CreateCartOrderResponse createCartOrder(@CurrentUser CurrentUserDetails currentUser) {
 		Order order = Order.builder()
@@ -108,6 +112,9 @@ public class OrderServiceImpl implements OrderService {
 		return CreateCartOrderResponse.from(order);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public CreateOrderResponse updateCartOrder(CreateOrderRequest createOrderRequest, Long orderId) {
 		List<OrderStatus> orderStatuses = orderStatusRepository.findAll();
@@ -131,7 +138,9 @@ public class OrderServiceImpl implements OrderService {
 		throw new OrderFailException(errorStatus);
 	}
 
-	// 특정 주문 가져오기
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetOrderResponse getOrder(Long orderId) {
@@ -143,7 +152,9 @@ public class OrderServiceImpl implements OrderService {
 		return GetOrderResponse.from(order);
 	}
 
-	//관리자가 배송중이라는 주문 상태를 찾는 jpa
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetOrderByStatusIdResponse findByOrderStatus_OrderStatusId(Long orderStatusId, Pageable pageable) {
@@ -155,6 +166,9 @@ public class OrderServiceImpl implements OrderService {
 		return GetOrderByStatusIdResponse.from(order);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetAllListOrderByStatusResponse findByOrderStatus(Long orderStatusId) {
@@ -167,7 +181,9 @@ public class OrderServiceImpl implements OrderService {
 		return GetAllListOrderByStatusResponse.from(orders);
 	}
 
-	// 주문의 상태 변경
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetOrderResponse updateOrderStatus(Long orderId, Long orderStatusId) {
@@ -184,6 +200,9 @@ public class OrderServiceImpl implements OrderService {
 		return GetOrderResponse.from(orderRepository.save(order));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetAllListOrderResponse findAllByUserId(Long userId) {
@@ -195,6 +214,9 @@ public class OrderServiceImpl implements OrderService {
 		return GetAllListOrderResponse.from(orders);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetAllListOrderResponse findAllUserId(@CurrentUser CurrentUserDetails currentUserDetails) {
@@ -216,6 +238,9 @@ public class OrderServiceImpl implements OrderService {
 		return new GetAllListOrderResponse(orderResponses);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetAllOrderResponse> findAllPageByUserId(@CurrentUser CurrentUserDetails currentUserDetails,
@@ -235,6 +260,9 @@ public class OrderServiceImpl implements OrderService {
 		return orders.map(GetAllOrderResponse::from);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetOrderByInfoResponse findByOrderInfoId(String orderInfoId) {
@@ -246,6 +274,9 @@ public class OrderServiceImpl implements OrderService {
 		return GetOrderByInfoResponse.from(order);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetNonOrderByInfoResponse findByOrderInfoIdByEmail(String orderInfoId, String email) {
@@ -260,6 +291,9 @@ public class OrderServiceImpl implements OrderService {
 		return GetNonOrderByInfoResponse.from(order);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetUserPointOrderResponse getUserPoint(@CurrentUser CurrentUserDetails currentUserDetails) {
@@ -270,6 +304,9 @@ public class OrderServiceImpl implements OrderService {
 		return GetUserPointOrderResponse.from(user.getPoints());
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void refundedOrder(String orderInfoId) {
 		Order order = orderRepository.findByOrderInfoId(orderInfoId);
@@ -295,6 +332,9 @@ public class OrderServiceImpl implements OrderService {
 		pointTransactionService.refundPointTransaction(order.getUser(), order.getOrderPrice());
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void refundingOrder(String orderInfoId) {
 		Order order = orderRepository.findByOrderInfoId(orderInfoId);
@@ -328,6 +368,9 @@ public class OrderServiceImpl implements OrderService {
 		order.updateOrderStatus(status);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public BigDecimal getTotalOrderPrice(CurrentUserDetails currentUser) {
@@ -339,7 +382,6 @@ public class OrderServiceImpl implements OrderService {
 				totalPaymentAmount = totalPaymentAmount.add(order.orderPrice());
 			}
 		}
-
 		return totalPaymentAmount;
 	}
 }
