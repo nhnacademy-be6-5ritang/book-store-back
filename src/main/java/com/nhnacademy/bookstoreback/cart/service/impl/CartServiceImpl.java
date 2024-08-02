@@ -29,12 +29,18 @@ public class CartServiceImpl implements CartService {
 	private final UserRepository userRepository;
 	private final BookCartRepository bookCartRepository;
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public GetCartResponse getCart(String cartId) {
 		Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException(cartId));
 		return GetCartResponse.fromEntity(cart);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public Cart createCart(CurrentUserDetails currentUser, HttpServletResponse resp) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;

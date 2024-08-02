@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
-import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
@@ -62,27 +61,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author 김다운
+ * 주문 관련 HTTP 요청을 처리하는 컨트롤러입니다.
+ */
 @Tag(name = "Order", description = "주문 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
-
 	private final OrderServiceImpl orderServiceImpl;
-
 	private final OrderStatusServiceImpl orderStatusServiceImpl;
-
 	private final WrappingPaperServiceImpl wrappingPaperServiceImpl;
-
 	private final BookOrderServiceImpl bookOrderServiceImpl;
-
 	private final PaperTypeServiceImpl paperTypeServiceImpl;
-
-	private final BookServiceImpl bookService;
-
 	private final RefundPolicyServiceImpl refundPolicyServiceImpl;
-
-	//TODO 주문
 
 	/**
 	 * 특정 주문 가져오기

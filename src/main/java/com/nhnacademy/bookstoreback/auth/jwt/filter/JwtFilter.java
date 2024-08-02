@@ -28,6 +28,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author 김태환
+ * JWT 필터를 구현한 클래스입니다.
+ */
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 	private final JwtUtils jwtUtils;
@@ -35,6 +39,16 @@ public class JwtFilter extends OncePerRequestFilter {
 	private final Long accessTokenExpiresIn;
 	private final Long refreshTokenExpiresIn;
 
+	/**
+	 * 요청을 필터링하고 JWT를 검사합니다. 만료된 토큰의 경우 토큰을 재발급하고,
+	 * 재발급된 토큰을 응답 헤더에 설정합니다.
+	 *
+	 * @param request  요청 객체
+	 * @param response 응답 객체
+	 * @param filterChain 필터 체인
+	 * @throws ServletException 서블릿 예외
+	 * @throws IOException I/O 예외
+	 */
 	@Override
 	protected void doFilterInternal(
 		@NonNull HttpServletRequest request,
@@ -103,8 +117,13 @@ public class JwtFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	@Override
+	/**
+	 * 이미 필터링된 요청을 식별하기 위한 속성 이름을 반환합니다.
+	 *
+	 * @return 필터링된 요청을 식별하는 속성 이름
+	 */
 	@NonNull
+	@Override
 	protected String getAlreadyFilteredAttributeName() {
 		return this.getClass().getName() + ".FILTERED";
 	}

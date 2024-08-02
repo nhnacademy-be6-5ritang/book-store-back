@@ -27,12 +27,18 @@ public class TagServiceImpl implements TagService {
 	private final TagRepository tagRepository;
 	private final BookTagRepository bookTagRepository;
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<TagDto> getTags() {
 		return tagRepository.findAll().stream().map(TagDto::fromEntity).toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public Page<TagDto> getTags(Pageable pageable) {
@@ -42,6 +48,9 @@ public class TagServiceImpl implements TagService {
 			.map(TagDto::fromEntity);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<TagDto> getTagsByBookId(Long bookId) {
@@ -50,6 +59,9 @@ public class TagServiceImpl implements TagService {
 		return tags.stream().map(TagDto::fromEntity).toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public TagDto getTag(Long tagId) {
@@ -57,6 +69,9 @@ public class TagServiceImpl implements TagService {
 		return TagDto.fromEntity(tag);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public TagDto createTag(TagDto request) {
 		if (tagRepository.existsByTagName(request.tagName())) {
@@ -65,6 +80,9 @@ public class TagServiceImpl implements TagService {
 		return TagDto.fromEntity(tagRepository.save(Tag.toEntity(request)));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public TagDto updateTag(Long tagId, TagDto request) {
 		Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new TagNotFoundException(tagId));
@@ -76,6 +94,9 @@ public class TagServiceImpl implements TagService {
 		return TagDto.fromEntity(tag);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deleteTag(Long tagId) {
 		bookTagRepository.deleteAllByTagTagId(tagId);

@@ -5,6 +5,10 @@ import java.util.List;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetOrderStatusResponse;
 
+/**
+ * @author 김다운
+ * 주문 상태에 관련된 서비스 인터페이스입니다.
+ */
 public interface OrderStatusService {
 	/**
 	 * 주문 상태 만들기

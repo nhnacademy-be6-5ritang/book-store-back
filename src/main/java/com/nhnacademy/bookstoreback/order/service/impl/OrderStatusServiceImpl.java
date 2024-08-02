@@ -23,18 +23,23 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 public class OrderStatusServiceImpl implements OrderStatusService {
-
 	private final OrderStatusRepository orderStatusRepository;
 
 	public static final String ERROR_STATUS_EXITS = "주문 상태를 가져올 수 없습니다";
 	public static final String ERROR_STATUS_DELETE = "주문 상태를 가져올 수 없습니다";
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public GetOrderStatusResponse create(CreateOrderStatusRequest createOrderStatusRequest) {
 		OrderStatus orderStatus = OrderStatus.toEntity(createOrderStatusRequest);
 		return GetOrderStatusResponse.from(orderStatusRepository.save(orderStatus));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public GetOrderStatusResponse update(CreateOrderStatusRequest createOrderStatusRequest, Long id) {
 		OrderStatus newOrderStatus = orderStatusRepository.findById(id).orElse(null);
@@ -47,6 +52,9 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 		return GetOrderStatusResponse.from(orderStatusRepository.save(newOrderStatus));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void delete(Long id) {
 		try {
@@ -58,6 +66,9 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 		}
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public GetOrderStatusResponse findById(Long id) {
@@ -69,6 +80,9 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 		return GetOrderStatusResponse.from(orderStatus);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public List<GetOrderStatusResponse> findAll() {
 		List<GetOrderStatusResponse> list = new ArrayList<>();

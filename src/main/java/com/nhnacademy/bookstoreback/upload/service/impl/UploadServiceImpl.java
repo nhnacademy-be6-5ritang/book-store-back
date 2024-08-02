@@ -32,6 +32,10 @@ public class UploadServiceImpl implements UploadService {
 	private final KeyManagerService keyManagerService;
 	private final ImageManagerProperty imageManagerProperty;
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public String upload(MultipartFile file, String folderName) {
 		// 파일 확장자 검사
 		checkFileExtension(file.getContentType());
@@ -70,6 +74,10 @@ public class UploadServiceImpl implements UploadService {
 		}
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public String extractImageUrlFromResponse(String responseBody) {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -80,6 +88,10 @@ public class UploadServiceImpl implements UploadService {
 		}
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public void checkFileExtension(String fileContentType) {
 		String[] imageExtensions = {"jpg", "jpeg", "png"};
 

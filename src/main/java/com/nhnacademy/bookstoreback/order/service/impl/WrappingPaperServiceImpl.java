@@ -19,11 +19,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 public class WrappingPaperServiceImpl implements WrappingPaperService {
-
 	private final WrappingPaperRepository wrappingPaperRepository;
 	private final PaperTypeRepository paperTypeRepository;
 	private final BookOrderRepository bookOrderRepository;
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public GetWrappingResponse createWrappingPapers(Long paperId, Long bookOrderId, Integer quantity) {
 		BookOrder bookOrder = null;
@@ -39,11 +41,17 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
 			wrappingPaperRepository.save(WrappingPaper.toEntity(bookOrder, paperType, null)));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deleteWrappingPapers(Long id) {
 		wrappingPaperRepository.deleteById(id);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public GetListWrappingResponse getWrappingPaperByOrderListId(Long id) {
 		return GetListWrappingResponse.from(wrappingPaperRepository.findAllByBookOrder_OrderListId(id));

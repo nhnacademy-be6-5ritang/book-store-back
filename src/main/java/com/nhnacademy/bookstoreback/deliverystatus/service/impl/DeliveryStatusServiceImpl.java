@@ -13,7 +13,6 @@ import com.nhnacademy.bookstoreback.deliverystatus.exception.DeliveryStatusAlrea
 import com.nhnacademy.bookstoreback.deliverystatus.exception.DeliveryStatusNotFoundException;
 import com.nhnacademy.bookstoreback.deliverystatus.repository.DeliveryStatusRepository;
 import com.nhnacademy.bookstoreback.deliverystatus.service.DeliveryStatusService;
-import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,9 +27,7 @@ public class DeliveryStatusServiceImpl implements DeliveryStatusService {
 	private final DeliveryStatusRepository deliveryStatusRepository;
 
 	/**
-	 * 모든 배송 상태 목록을 조회합니다.
-	 *
-	 * @return 모든 배송 상태 목록
+	 *{@inheritDoc}
 	 */
 	@Override
 	public List<GetDeliveryStatusResponse> getDeliveryStatuses() {
@@ -43,11 +40,7 @@ public class DeliveryStatusServiceImpl implements DeliveryStatusService {
 	}
 
 	/**
-	 * 특정 배송 상태의 정보를 조회합니다.
-	 *
-	 * @param deliveryStatusId 조회할 배송 상태의 ID
-	 * @return 조회된 배송 상태 정보
-	 * @throws NotFoundException 해당 ID에 해당하는 배송 상태가 없는 경우 발생합니다.
+	 *{@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -62,9 +55,7 @@ public class DeliveryStatusServiceImpl implements DeliveryStatusService {
 	}
 
 	/**
-	 * 새로운 배송 상태를 생성합니다.
-	 *
-	 * @param request 생성할 배송 상태의 정보 요청 객체
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void createDeliveryStatus(CreateDeliveryStatusRequest request) {
@@ -75,11 +66,7 @@ public class DeliveryStatusServiceImpl implements DeliveryStatusService {
 	}
 
 	/**
-	 * 특정 배송 상태를 수정합니다.
-	 *
-	 * @param deliveryStatusId 수정할 배송 상태의 ID
-	 * @param request          수정할 배송 상태의 정보 요청 객체
-	 * @throws NotFoundException 해당 ID에 해당하는 배송 상태가 없는 경우 발생합니다.
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void updateDeliveryStatus(Long deliveryStatusId,
@@ -90,14 +77,11 @@ public class DeliveryStatusServiceImpl implements DeliveryStatusService {
 		if (deliveryStatusRepository.existsByDeliveryStatusName(request.deliveryStatusName())) {
 			throw new DeliveryStatusAlreadyExistsException(request.deliveryStatusName());
 		}
-
 		deliveryStatus.updateDeliveryStatus(request.deliveryStatusName());
 	}
 
 	/**
-	 * 특정 배송 상태를 삭제합니다.
-	 *
-	 * @param deliveryStatusId 삭제할 배송 상태의 ID
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void deleteDeliveryStatus(Long deliveryStatusId) {

@@ -16,7 +16,7 @@ public interface BookStatusService {
 	 * 도서 상태 이름 기반 도서 조회
 	 *
 	 * @param bookStatusName 도서 상태 이름
-	 * @return 도서 상태 (Optional로 반환)
+	 * @return 도서 상태 (Optional 로 반환)
 	 */
 	Optional<BookStatus> findByBookStatusName(String bookStatusName);
 

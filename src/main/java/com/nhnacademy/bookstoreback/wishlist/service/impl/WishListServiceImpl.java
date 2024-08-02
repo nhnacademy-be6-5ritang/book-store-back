@@ -30,6 +30,9 @@ public class WishListServiceImpl implements WishListService {
 	private final BookRepository bookRepository;
 	private final UserRepository userRepository;
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<GetWishListResponse> getWishLists(CurrentUserDetails currentUser) {
@@ -42,6 +45,9 @@ public class WishListServiceImpl implements WishListService {
 			.map(GetWishListResponse::fromEntity).toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void createWishList(CurrentUserDetails currentUser, CreateWishListRequest request) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
@@ -63,6 +69,9 @@ public class WishListServiceImpl implements WishListService {
 		wishListRepository.save(new WishList(book, user));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deleteWishList(Long wishListId, CurrentUserDetails currentUser) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;

@@ -18,17 +18,32 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SecurityException;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author 김태환
+ * JWT 유틸리티 클래스입니다.
+ */
 @Slf4j
 @Component
 public class JwtUtils {
 	private final SecretKey secretKey;
 
+	/**
+	 * 주입된 비밀 키를 사용하여 JWT 서명 키를 초기화합니다.
+	 *
+	 * @param secret JWT 비밀 키
+	 */
 	public JwtUtils(@Value("${spring.jwt.secret}") String secret) {
 		secretKey = new SecretKeySpec(
 			secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm()
 		);
 	}
 
+	/**
+	 * 토큰에서 Claims 객체를 추출합니다.
+	 *
+	 * @param token JWT 토큰
+	 * @return Claims 객체
+	 */
 	private Claims getClaims(String token) {
 		return Jwts.parser()
 			.verifyWith(secretKey)
@@ -37,10 +52,22 @@ public class JwtUtils {
 			.getPayload();
 	}
 
+	/**
+	 * JWT 토큰에서 사용자 ID를 추출합니다.
+	 *
+	 * @param token JWT 토큰
+	 * @return 사용자 ID
+	 */
 	public Long getUserIdFromToken(String token) {
 		return getClaims(token).get("userId", Long.class);
 	}
 
+	/**
+	 * JWT 토큰에서 사용자 역할 목록을 추출합니다.
+	 *
+	 * @param token JWT 토큰
+	 * @return 사용자 역할 목록
+	 */
 	public List<String> getUserRolesFromToken(String token) {
 		Claims claims = getClaims(token);
 		return ((List<?>)claims.get("roles")).stream()
@@ -48,6 +75,12 @@ public class JwtUtils {
 			.collect(Collectors.toList());
 	}
 
+	/**
+	 * JWT 토큰의 유효성을 검사합니다.
+	 *
+	 * @param token JWT 토큰
+	 * @return 유효성 검사 결과 메시지
+	 */
 	public String validateToken(String token) {
 		String errorMessage = null;
 		try {
