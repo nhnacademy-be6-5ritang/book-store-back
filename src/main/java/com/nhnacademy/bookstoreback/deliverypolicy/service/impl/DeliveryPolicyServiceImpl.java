@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * @author 이경헌
- * DeliveryPolicyService 구현 클래스.
  * 배송비 정책과 관련된 비즈니스 로직을 처리합니다.
  */
 @Service
@@ -34,9 +33,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	private final DeliveryRepository deliveryRepository;
 
 	/**
-	 * 모든 배송비 정책을 조회합니다.
-	 *
-	 * @return 모든 배송비 정책의 목록.
+	 *{@inheritDoc}
 	 */
 	@Override
 	public List<GetDeliveryPoliciesResponse> getDeliveryPolicies() {
@@ -45,11 +42,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	}
 
 	/**
-	 * 특정 배송비 정책을 조회합니다.
-	 *
-	 * @param deliveryPolicyId 조회할 배송비 정책의 ID.
-	 * @return 조회된 배송비 정책의 정보.
-	 * @throws DeliveryPolicyNotFoundException 배송비 정책이 존재하지 않는 경우 발생.
+	 *{@inheritDoc}
 	 */
 	@Override
 	public GetDeliveryPolicyResponse getDeliveryPolicy(Long deliveryPolicyId) {
@@ -60,10 +53,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	}
 
 	/**
-	 * 새로운 배송비 정책을 생성합니다.
-	 *
-	 * @param request 생성할 배송비 정책의 정보.
-	 * @throws DeliveryPolicyAlreadyExistsException 동일한 이름의 배송비 정책이 이미 존재하는 경우 발생
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void createDeliveryPolicy(CreateDeliveryPolicyRequest request) {
@@ -75,12 +65,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	}
 
 	/**
-	 * 특정 배송비 정책을 업데이트합니다.
-	 *
-	 * @param deliveryPolicyId 업데이트할 배송비 정책의 ID
-	 * @param request          배송비 정책의 업데이트 정보를 담고 있는 요청 객체
-	 * @throws DeliveryPolicyNotFoundException 배송비 정책이 존재하지 않는 경우 발생
-	 * @throws DeliveryPolicyAlreadyExistsException 배송비 정책의 이름이 이미 존재하는 경우 발생
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void updateDeliveryPolicy(Long deliveryPolicyId,
@@ -99,16 +84,16 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 	}
 
 	/**
-	 * 특정 배송비 정책을 삭제합니다.
-	 *
-	 * @param deliveryPolicyId 삭제할 배송비 정책의 ID.
-	 * @throws DeliveryNotFoundException 배송비 정책이 존재하지 않는 경우 발생.
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void deleteDeliveryPolicy(Long deliveryPolicyId) {
 		deliveryPolicyRepository.deleteById(deliveryPolicyId);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public GetDeliveryPolicyResponse findByDeliveryPolicyStandardPriceLessThanEqualOrderByDeliveryPolicyStandardPriceDesc(
 		Long deliveryId, BigDecimal price) {
@@ -120,6 +105,7 @@ public class DeliveryPolicyServiceImpl implements DeliveryPolicyService {
 
 		delivery.updateDeliveryAddPolicy(deliveryPolicy.getFirst());
 		deliveryRepository.save(delivery);
+		
 		return GetDeliveryPolicyResponse.fromEntity(deliveryPolicy.getFirst());
 	}
 }

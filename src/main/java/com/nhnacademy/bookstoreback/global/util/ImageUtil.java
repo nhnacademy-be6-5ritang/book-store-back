@@ -2,6 +2,10 @@ package com.nhnacademy.bookstoreback.global.util;
 
 import com.nhnacademy.bookstoreback.upload.exception.ParserException;
 
+/**
+ * @author 이경헌
+ * 이미지 관련 작업을 위한 유틸리티 클래스입니다.
+ */
 public class ImageUtil {
 	private ImageUtil() {
 	}

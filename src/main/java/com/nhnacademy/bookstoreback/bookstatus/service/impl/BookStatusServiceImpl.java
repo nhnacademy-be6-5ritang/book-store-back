@@ -17,10 +17,8 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 도서 상태 Service
- *
  * @author 김기욱
- * @version 1.0
+ * 도서 상태 Service
  */
 @Service
 @RequiredArgsConstructor
@@ -30,10 +28,7 @@ public class BookStatusServiceImpl implements BookStatusService {
 	private final BookStatusRepository bookStatusRepository;
 
 	/**
-	 * 도서 상태 이름 기반 도서 조회
-	 *
-	 * @param bookStatusName 도서 상태 이름
-	 * @return 도서 상태 (Optional로 반환)
+	 *{@inheritDoc}
 	 */
 	@Override
 	public Optional<BookStatus> findByBookStatusName(String bookStatusName) {
@@ -50,10 +45,7 @@ public class BookStatusServiceImpl implements BookStatusService {
 	}
 
 	/**
-	 * 도서 상태 생성 또는 조회
-	 *
-	 * @param bookStatusName 도서 상태 이름
-	 * @return 도서 상태가 존재하면 도서 상태 정보, 없으면 생성된 도서 상태 정보
+	 *{@inheritDoc}
 	 */
 	@Override
 	public BookStatus findOrCreateBookStatus(String bookStatusName) {
@@ -66,12 +58,18 @@ public class BookStatusServiceImpl implements BookStatusService {
 		});
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<BookStatusDto> getBookStatuses() {
 		return bookStatusRepository.findAll().stream().map(BookStatusDto::fromEntity).toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public BookStatusDto getBookStatus(Long bookStatusId) {
@@ -80,15 +78,20 @@ public class BookStatusServiceImpl implements BookStatusService {
 		return BookStatusDto.fromEntity(bookStatus);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void createBookStatus(BookStatusDto request) {
 		if (bookStatusRepository.existsByBookStatusName(request.bookStatusName())) {
 			throw new BookStatusAlreadyExistsException(request.bookStatusName());
 		}
-
 		bookStatusRepository.save(BookStatus.toEntity(request));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void updateBookStatus(Long bookStatusId, BookStatusDto request) {
 		BookStatus bookStatus = bookStatusRepository.findById(bookStatusId)
@@ -100,6 +103,9 @@ public class BookStatusServiceImpl implements BookStatusService {
 		bookStatus.updateBookStatusName(request.bookStatusName());
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deleteBookStatus(Long bookStatusId) {
 		bookStatusRepository.deleteById(bookStatusId);

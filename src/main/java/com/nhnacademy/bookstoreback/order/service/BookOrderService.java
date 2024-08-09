@@ -8,6 +8,10 @@ import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookByOrderCoup
 import com.nhnacademy.bookstoreback.order.domain.dto.response.GetBookOrderResponse;
 import com.nhnacademy.bookstoreback.order.domain.dto.response.UpdateBookOrderResponse;
 
+/**
+ * @author 김다운
+ * 도서주문에 관련된 서비스 인터페이스입니다.
+ */
 public interface BookOrderService {
 
 	/**

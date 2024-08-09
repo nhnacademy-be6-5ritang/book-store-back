@@ -14,14 +14,15 @@ import com.nhnacademy.bookstoreback.order.repository.CustomBookOrderRepository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-public class CustomBookOrderRepositoryImpl implements CustomBookOrderRepository {
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+public class CustomBookOrderRepositoryImpl implements CustomBookOrderRepository {
 	private final JPAQueryFactory queryFactory;
 
-	public CustomBookOrderRepositoryImpl(JPAQueryFactory queryFactory) {
-		this.queryFactory = queryFactory;
-	}
-
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public GetBookByOrderCouponResponse findBooksByOrderListId(Long orderListId) {
 		QBookOrder bookOrder = QBookOrder.bookOrder;

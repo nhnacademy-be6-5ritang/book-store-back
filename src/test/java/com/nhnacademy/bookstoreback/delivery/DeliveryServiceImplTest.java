@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +15,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.TaskScheduler;
 
+import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.CreateDeliveryRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryByOrderIdRequest;
 import com.nhnacademy.bookstoreback.delivery.domain.dto.request.UpdateDeliveryRequest;
@@ -353,71 +360,6 @@ class DeliveryServiceImplTest {
 		assertThrows(NotFoundException.class, () -> deliveryService.updateDeliveryByOrderId(orderId, request));
 	}
 
-	// @Test
-	// void testGetDeliveriesByUserId_Success() {
-	// 	Long userId = 1L;
-	// 	Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "delivery_sender_date"));
-	//
-	// 	OrderStatus orderStatus = mock(OrderStatus.class);
-	// 	Order order = Order.builder().orderStatus(orderStatus).build();
-	// 	DeliveryStatus deliveryStatus = mock(DeliveryStatus.class);
-	// 	DeliveryPolicy deliveryPolicy = mock(DeliveryPolicy.class);
-	//
-	// 	Delivery delivery1 = Delivery.builder()
-	// 		.deliverySenderName("Sender 1")
-	// 		.deliverySenderPhone("1234567890")
-	// 		.deliverySenderDate(LocalDateTime.now())
-	// 		.deliveryReceiver("Receiver 1")
-	// 		.deliveryReceiverPhone("0987654321")
-	// 		.order(order)
-	// 		.deliveryStatus(deliveryStatus)
-	// 		.deliveryPolicy(deliveryPolicy)
-	// 		.build();
-	//
-	// 	Delivery delivery2 = Delivery.builder()
-	// 		.deliverySenderName("Sender 2")
-	// 		.deliverySenderPhone("1234567890")
-	// 		.deliverySenderDate(LocalDateTime.now())
-	// 		.deliveryReceiver("Receiver 2")
-	// 		.deliveryReceiverPhone("0987654321")
-	// 		.order(order)
-	// 		.deliveryStatus(deliveryStatus)
-	// 		.deliveryPolicy(deliveryPolicy)
-	// 		.build();
-	//
-	// 	List<Delivery> deliveries = List.of(delivery1, delivery2);
-	// 	Page<Delivery> deliveryPage = new PageImpl<>(deliveries, pageable, deliveries.size());
-	//
-	// 	GetDeliveriesRequest request = new GetDeliveriesRequest(userId);
-	//
-	// 	when(deliveryRepository.findAllByOrder_User_Id(anyLong(), any(Pageable.class)))
-	// 		.thenReturn(deliveryPage);
-	//
-	// 	Page<GetDeliveryResponse> responsePage = deliveryService.getDeliveriesByUserId(request, pageable);
-	//
-	// 	verify(deliveryRepository, times(1)).findAllByOrderUserId(eq(userId), any(Pageable.class));
-	// 	assertEquals(2, responsePage.getTotalElements());
-	// 	assertEquals("Sender 1", responsePage.getContent().get(0).deliverySenderName());
-	// 	assertEquals("Sender 2", responsePage.getContent().get(1).deliverySenderName());
-	// }
-	//
-	// @Test
-	// void testGetDeliveriesByUserId_InvalidPageRequest() {
-	// 	Long userId = 1L;
-	// 	Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "delivery_sender_date"));
-	//
-	// 	GetDeliveriesRequest request = new GetDeliveriesRequest(userId);
-	//
-	// 	// Simulate no deliveries found for invalid page request
-	// 	when(deliveryRepository.findAllByOrder_User_Id(anyLong(), any(Pageable.class)))
-	// 		.thenReturn(Page.empty());
-	//
-	// 	Page<GetDeliveryResponse> responsePage = deliveryService.getDeliveriesByUserId(request, pageable);
-	//
-	// 	verify(deliveryRepository, times(1)).findAllByOrder_User_Id(anyLong(), any(Pageable.class));
-	// 	assertTrue(responsePage.getContent().isEmpty());
-	// }
-
 	@Test
 	void testGetDeliveryById_Success() {
 		Long deliveryId = 1L;
@@ -448,23 +390,6 @@ class DeliveryServiceImplTest {
 		assertEquals("Sender", response.deliverySenderName());
 		assertEquals("Receiver", response.deliveryReceiver());
 	}
-
-	// @Test
-	// void testGetDeliveryById_NotFound() {
-	// 	Long deliveryId = 1L;
-	//
-	// 	when(deliveryRepository.findById(deliveryId))
-	// 		.thenReturn(Optional.empty());
-	//
-	// 	NotFoundException thrownException = assertThrows(NotFoundException.class, () -> {
-	// 		deliveryService.getDelivery(deliveryId);
-	// 	});
-	//
-	// 	String expectedMessage = String.format("해당 배송 '%s'은 존재하지 않는 배송입니다.", deliveryId);
-	// 	assertEquals(expectedMessage, thrownException.getErrorStatus().getMessage());
-	//
-	// 	assertEquals(HttpStatus.NOT_FOUND, thrownException.getErrorStatus().getStatus());
-	// }
 
 	@Test
 	void testScheduleDeliveries() {
@@ -515,25 +440,6 @@ class DeliveryServiceImplTest {
 		verify(deliveryRepository).save(delivery);
 	}
 
-	// @Test
-	// void testUpdateDeliveryAddOrder_DeliveryNotFound() {
-	// 	Long deliveryId = 1L;
-	// 	Long orderId = 2L;
-	//
-	// 	when(deliveryRepository.findById(deliveryId))
-	// 		.thenReturn(Optional.empty());
-	//
-	// 	// 예외가 발생하는지 확인
-	// 	NotFoundException thrownException = assertThrows(NotFoundException.class, () -> {
-	// 		deliveryService.updateDeliveryAddOrder(deliveryId, orderId);
-	// 	});
-	//
-	// 	String expectedMessage = String.format("해당 배송 '%s'은 존재하지 않는 배송입니다.", deliveryId);
-	// 	assertEquals(expectedMessage, thrownException.getErrorStatus().getMessage());
-	//
-	// 	assertEquals(HttpStatus.NOT_FOUND, thrownException.getErrorStatus().getStatus());
-	// }
-
 	@Test
 	void testGetDeliveryByOrderId_Success() {
 		Long orderId = 1L;
@@ -571,6 +477,84 @@ class DeliveryServiceImplTest {
 		assertEquals(order, delivery.getOrder());
 		assertEquals(deliveryStatus, delivery.getDeliveryStatus());
 		assertEquals(deliveryPolicy, delivery.getDeliveryPolicy());
+	}
+
+	@Test
+	void testGetDeliveriesByUserId_Success() {
+		// Arrange
+		Long userId = 1L;
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "deliveryId"));
+		CurrentUserDetails currentUser = mock(CurrentUserDetails.class);
+
+		// Mock userId
+		when(currentUser.getUserId()).thenReturn(userId);
+
+		// Mock delivery data
+		OrderStatus orderStatus = mock(OrderStatus.class);
+		Order order = Order.builder().orderStatus(orderStatus).build();
+		DeliveryStatus deliveryStatus = mock(DeliveryStatus.class);
+		DeliveryPolicy deliveryPolicy = mock(DeliveryPolicy.class);
+
+		Delivery delivery1 = Delivery.builder()
+			.deliverySenderName("Sender 1")
+			.deliverySenderPhone("1234567890")
+			.deliverySenderDate(LocalDateTime.now().minusDays(1))
+			.deliveryReceiver("Receiver 1")
+			.deliveryReceiverPhone("0987654321")
+			.deliveryReceiverDate(LocalDateTime.now())
+			.order(order)
+			.deliveryStatus(deliveryStatus)
+			.deliveryPolicy(deliveryPolicy)
+			.build();
+
+		Delivery delivery2 = Delivery.builder()
+			.deliverySenderName("Sender 2")
+			.deliverySenderPhone("1234567890")
+			.deliverySenderDate(LocalDateTime.now().minusDays(1))
+			.deliveryReceiver("Receiver 2")
+			.deliveryReceiverPhone("0987654321")
+			.deliveryReceiverDate(LocalDateTime.now())
+			.order(order)
+			.deliveryStatus(deliveryStatus)
+			.deliveryPolicy(deliveryPolicy)
+			.build();
+
+		List<Delivery> deliveries = List.of(delivery1, delivery2);
+		Page<Delivery> deliveryPage = new PageImpl<>(deliveries, pageable, deliveries.size());
+
+		// Mock repository behavior
+		when(deliveryRepository.findAllByOrderUserId(eq(userId), any(Pageable.class))).thenReturn(deliveryPage);
+
+		// Act
+		Page<GetDeliveryResponse> responsePage = deliveryService.getDeliveriesByUserId(currentUser, pageable);
+
+		// Assert
+		verify(deliveryRepository, times(1)).findAllByOrderUserId(eq(userId), any(Pageable.class));
+		assertEquals(2, responsePage.getTotalElements());
+		assertEquals("Sender 1", responsePage.getContent().get(0).deliverySenderName());
+		assertEquals("Sender 2", responsePage.getContent().get(1).deliverySenderName());
+	}
+
+	@Test
+	void testGetDeliveriesByUserId_NoDeliveries() {
+		// Arrange
+		Long userId = 1L;
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "deliveryId"));
+		CurrentUserDetails currentUser = mock(CurrentUserDetails.class);
+
+		// Mock userId
+		when(currentUser.getUserId()).thenReturn(userId);
+
+		// Mock repository behavior to return empty page
+		when(deliveryRepository.findAllByOrderUserId(eq(userId), any(Pageable.class)))
+			.thenReturn(Page.empty(pageable));
+
+		// Act
+		Page<GetDeliveryResponse> responsePage = deliveryService.getDeliveriesByUserId(currentUser, pageable);
+
+		// Assert
+		verify(deliveryRepository, times(1)).findAllByOrderUserId(eq(userId), any(Pageable.class));
+		assertTrue(responsePage.getContent().isEmpty());
 	}
 
 }

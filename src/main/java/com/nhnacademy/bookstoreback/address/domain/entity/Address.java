@@ -20,7 +20,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-// TODO: Valation 처리 추가, 테스트 코드 작성
 @Entity
 @NoArgsConstructor
 @Getter

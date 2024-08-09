@@ -11,7 +11,7 @@ import com.nhnacademy.bookstoreback.upload.exception.FileUploadException;
 public interface UploadService {
 
 	/**
-	 * 주어진 MultipartFile을 업로드하고 업로드된 이미지의 URL을 반환합니다.
+	 * 주어진 MultipartFile 을 업로드하고 업로드된 이미지의 URL 을 반환합니다.
 	 *
 	 * @param file 업로드할 파일 (MultipartFile)
 	 * @return 업로드된 이미지의 URL
@@ -20,9 +20,9 @@ public interface UploadService {
 	String upload(MultipartFile file, String folderName) throws FileUploadException;
 
 	/**
-	 * 이미지 업로드 API의 응답 본문에서 이미지 URL을 추출합니다.
+	 * 이미지 업로드 API 의 응답 본문에서 이미지 URL 을 추출합니다.
 	 *
-	 * @param responseBody 이미지 업로드 API의 응답 본문
+	 * @param responseBody 이미지 업로드 API 의 응답 본문
 	 * @return 응답 본문에서 추출한 업로드된 이미지의 URL
 	 */
 	String extractImageUrlFromResponse(String responseBody);

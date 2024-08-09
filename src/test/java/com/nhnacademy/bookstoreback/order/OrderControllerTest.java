@@ -159,7 +159,6 @@ class OrderControllerTest {
 				wrappingPaperServiceImpl,
 				bookOrderServiceImpl,
 				paperTypeServiceImpl,
-				bookServiceImpl,
 				refundPolicyServiceImpl))
 			.setControllerAdvice(new GlobalExceptionHandler())
 			.build();

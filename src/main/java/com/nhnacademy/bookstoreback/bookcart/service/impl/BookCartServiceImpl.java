@@ -36,6 +36,9 @@ public class BookCartServiceImpl implements BookCartService {
 	private final BookCartRepository bookCartRepository;
 	private final RedisTemplate<String, Object> cartRedisTemplate;
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public List<GetBookCartResponse> getBookCartsByCartId(CurrentUserDetails currentUser, String cartId) {
 		String nowCartId = setupCart(currentUser, cartId);
@@ -49,6 +52,9 @@ public class BookCartServiceImpl implements BookCartService {
 			.toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void createBookCart(CurrentUserDetails currentUser, CreateBookCartRequest request, String cartId) {
 		String nowCartId = setupCart(currentUser, cartId);
@@ -67,6 +73,9 @@ public class BookCartServiceImpl implements BookCartService {
 		saveWithTtl(BookCart.toEntity(bookCart, request));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void updateBookCart(Long bookId, CurrentUserDetails currentUser, UpdateBookCartRequest request,
 		String cartId) {
@@ -80,6 +89,9 @@ public class BookCartServiceImpl implements BookCartService {
 		saveWithTtl(bookCart);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deleteBookCart(Long bookId, CurrentUserDetails currentUser, String cartId) {
 		String nowCartId = setupCart(currentUser, cartId);
@@ -91,6 +103,9 @@ public class BookCartServiceImpl implements BookCartService {
 		saveWithTtl(bookCart);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deleteAllBookCart(CurrentUserDetails currentUser, String cartId) {
 		String nowCartId = setupCart(currentUser, cartId);
@@ -102,6 +117,10 @@ public class BookCartServiceImpl implements BookCartService {
 		bookCartRepository.save(bookCart);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public String setupCart(CurrentUserDetails currentUser, String cartId) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
 
@@ -122,7 +141,10 @@ public class BookCartServiceImpl implements BookCartService {
 		}
 	}
 
-	// 유효기간 유지
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public <S extends BookCart> void saveWithTtl(S entity) {
 		String key = "bookCarts:" + entity.getCartId();
 		Long remainingTtl = cartRedisTemplate.getExpire(key, TimeUnit.SECONDS);

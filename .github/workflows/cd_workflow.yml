@@ -67,10 +67,57 @@ jobs:
           script: |
             echo "Starting new application..."
             source ~/.bashrc
-            nohup java -Xmx512m -jar ~/target/BOOK-STORE-BACK.jar --spring.profiles.active=prod --server.port=${{ secrets.BACK_PORT }} --spring.datasource.password=${{ secrets.MYSQL_PASSWORD }} --spring.data.redis.password=${{ secrets.REDIS_PASSWORD }} > Back_API.log 2>&1 &
+            nohup java -Xmx256m -jar ~/target/BOOK-STORE-BACK.jar --spring.profiles.active=prod --server.port=${{ secrets.BACK_PORT }} --spring.datasource.password=${{ secrets.MYSQL_PASSWORD }} --spring.data.redis.password=${{ secrets.REDIS_PASSWORD }} > BACK-A.log 2>&1 &
             echo "New application started. Check app.log for details."
+      
 
+      # JAR 파일 실행 확인
+      - name: Check if JAR is running by checking log file
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_ID }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            echo "Checking if application is running by checking log file..."
+            for i in {1..100}; do
+              if grep -q "Started BookStoreBackApplication" BACK-A.log; then
+                echo "Application is running"
+                break
+              else
+                echo "Waiting for application to start..."
+                sleep 5
+              fi
+            done
+            if ! grep -q "Started BookStoreBackApplication" BACK-A.log; then
+              echo "Application did not start in expected time" >&2
+              exit 1
+            fi
 
-# 버전 추가? 잡 나누기 조건 걸기  주문 결제 다 끝나고 진행
+          # 앱 포트로 실행된 jar 파일 종료
+      - name: Stop existing Spring Boot application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_ID }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            echo "Stopping existing application..."
+            pid=$(lsof -t -i:${{ secrets.BACK_PORT_B }}) && kill -9 $pid || echo "No application running on port ${{ secrets.BACK_PORT_B }}"
 
-
+      #앱 포트로 배포 한 jar 파일 실행
+      - name: execute shell script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_ID }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            echo "Starting new application..."
+            source ~/.bashrc
+            nohup java -Xmx256m -jar ~/target/BOOK-STORE-BACK.jar --spring.profiles.active=prod --server.port=${{ secrets.BACK_PORT_B }} --spring.datasource.password=${{ secrets.MYSQL_PASSWORD }} --spring.data.redis.password=${{ secrets.REDIS_PASSWORD }} > BACK-B.log 2>&1 &
+            echo "New application started. Check app.log for details."

@@ -28,9 +28,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.point.transaction.service.PointTransactionService;
 import com.nhnacademy.bookstoreback.role.domain.entity.Role;
+import com.nhnacademy.bookstoreback.role.exception.RoleNotFoundException;
 import com.nhnacademy.bookstoreback.role.repository.RoleRepository;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.CreateUserRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserInfoRequest;
+import com.nhnacademy.bookstoreback.user.domain.dto.request.UpdateUserRoleRequest;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.BirthdayCouponTargetResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.CreateUserResponse;
 import com.nhnacademy.bookstoreback.user.domain.dto.response.GetMyUserInfoResponse;
@@ -394,5 +396,115 @@ class UserServiceTest {
 		assertThat(result.getContent().size()).isEqualTo(10);
 		assertThat(result.getContent().get(0).name()).isEqualTo("User 0");
 		assertThat(result.getContent().get(0).email()).isEqualTo("user0@example.com");
+	}
+
+	@Test
+	void testUpdateUserRoleByRoleNameThrowsRoleNotFoundException() {
+		Long userId = 1L;
+		User user = User.builder()
+			.id(userId)
+			.name("Test User")
+			.email("test@example.com")
+			.build();
+
+		UpdateUserRoleRequest request = UpdateUserRoleRequest.builder()
+			.userId(userId)
+			.roleName(List.of("NON_EXISTENT_ROLE"))
+			.build();
+
+		when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+		when(userRoleRepository.findByUser(user)).thenReturn(List.of());
+		when(roleRepository.findByRoleName("NON_EXISTENT_ROLE")).thenReturn(Optional.empty());
+
+		assertThrows(RoleNotFoundException.class, () -> {
+			userService.updateUserRoleByRoleName(request);
+		});
+	}
+
+	@Test
+	void testPaycoConnectUpdatesSsoIdSuccessfully() {
+		// Arrange
+		Long userId = 1L;
+		String newMemberId = "paycoMemberId";
+		User user = User.builder()
+			.id(userId)
+			.name("Test User")
+			.email("test@example.com")
+			.build();
+
+		// Mocking CurrentUserDetails to return the user ID
+		CurrentUserDetails currentUserDetails = new CurrentUserDetails(
+			UserTokenInfo.builder()
+				.id(userId)
+				.password("password")
+				.roles(List.of("ROLE_MEMBER"))
+				.status("ACTIVE")
+				.build()
+		);
+
+		when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+		// Act
+		userService.paycoConnect(currentUserDetails, newMemberId);
+
+		// Assert
+		assertThat(user.getSsoId()).isEqualTo(newMemberId);
+		verify(userRepository, times(1)).save(user);
+	}
+
+	@Test
+	void testPaycoConnectThrowsUserNotFoundException() {
+		// Arrange
+		Long userId = 1L;
+		String newMemberId = "paycoMemberId";
+		CurrentUserDetails currentUserDetails = new CurrentUserDetails(
+			UserTokenInfo.builder()
+				.id(userId)
+				.password("password")
+				.roles(List.of("ROLE_MEMBER"))
+				.status("ACTIVE")
+				.build()
+		);
+
+		// Mocking userRepository to return an empty Optional
+		when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+		// Act & Assert
+		assertThrows(UserNotFoundException.class, () -> {
+			userService.paycoConnect(currentUserDetails, newMemberId);
+		});
+	}
+
+	@Test
+	void testGetMyUserInfoByOrderReturnsNullWhenCurrentUserIsNull() {
+		// Arrange
+		CurrentUserDetails currentUser = null;
+
+		// Act
+		GetMyUserInfoResponse response = userService.getMyUserInfoByOrder(currentUser);
+
+		// Assert
+		assertThat(response).isNull();
+	}
+
+	@Test
+	void testGetMyUserInfoByOrderThrowsUserNotFoundException() {
+		// Arrange
+		Long userId = 1L;
+		CurrentUserDetails currentUserDetails = new CurrentUserDetails(
+			UserTokenInfo.builder()
+				.id(userId)
+				.password("password")
+				.roles(List.of("ROLE_MEMBER"))
+				.status("ACTIVE")
+				.build()
+		);
+
+		when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+		// Act & Assert
+		assertThrows(UserNotFoundException.class, () -> {
+			userService.getMyUserInfoByOrder(currentUserDetails);
+		});
 	}
 }

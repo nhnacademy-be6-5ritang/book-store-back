@@ -7,8 +7,11 @@ import java.io.InputStream;
 
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * @author 이경헌
+ * MultipartFile 인터페이스를 구현한 사용자 정의 클래스입니다.
+ */
 public class CustomMultipartFile implements MultipartFile {
-
 	private final byte[] content;
 	private final String name;
 	private final String contentType;

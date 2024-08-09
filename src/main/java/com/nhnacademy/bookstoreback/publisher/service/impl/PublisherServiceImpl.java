@@ -24,18 +24,27 @@ import lombok.RequiredArgsConstructor;
 public class PublisherServiceImpl implements PublisherService {
 	private final PublisherRepository publisherRepository;
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public Publisher findOrCreatePublisher(String publisherName) {
 		return publisherRepository.findByPublisherName(publisherName)
 			.orElseGet(() -> publisherRepository.save(new Publisher(publisherName)));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<PublisherDto> getPublishers() {
 		return publisherRepository.findAll().stream().map(PublisherDto::fromEntity).toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public Page<PublisherDto> getPublishers(Pageable pageable) {
@@ -45,6 +54,9 @@ public class PublisherServiceImpl implements PublisherService {
 			.map(PublisherDto::fromEntity);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public PublisherDto getPublisher(Long publisherId) {
@@ -53,6 +65,9 @@ public class PublisherServiceImpl implements PublisherService {
 		return PublisherDto.fromEntity(publisher);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void createPublisher(PublisherDto request) {
 		if (publisherRepository.existsByPublisherName(request.publisherName())) {
@@ -61,6 +76,9 @@ public class PublisherServiceImpl implements PublisherService {
 		publisherRepository.save(Publisher.toEntity(request));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void updatePublisher(Long publisherId, PublisherDto request) {
 		Publisher publisher = publisherRepository.findById(publisherId)
@@ -72,6 +90,9 @@ public class PublisherServiceImpl implements PublisherService {
 		publisher.updatePublisherName(request.publisherName());
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deletePublisher(Long publisherId) {
 		publisherRepository.deleteById(publisherId);

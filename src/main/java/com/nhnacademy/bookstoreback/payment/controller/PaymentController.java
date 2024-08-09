@@ -26,12 +26,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author 김다운
+ * 결제 관련 HTTP 요청을 처리하는 컨트롤러입니다.
+ */
 @Tag(name = "Payment", description = "결제 API")
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
 public class PaymentController {
-
 	private final PaymentServiceImpl paymentServiceImpl;
 
 	/**

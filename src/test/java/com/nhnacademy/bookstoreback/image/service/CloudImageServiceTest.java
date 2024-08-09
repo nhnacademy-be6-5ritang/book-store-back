@@ -19,6 +19,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
+import com.nhnacademy.bookstoreback.keymanager.property.NaverApiProperty;
+import com.nhnacademy.bookstoreback.keymanager.service.KeyManagerService;
 import com.nhnacademy.bookstoreback.upload.service.UploadService;
 
 class CloudImageServiceTest {
@@ -31,6 +33,12 @@ class CloudImageServiceTest {
 
 	@Mock
 	private UploadService uploadService;
+
+	@Mock
+	private NaverApiProperty naverApiProperty;
+
+	@Mock
+	private KeyManagerService keyManagerService;
 
 	private Book book;
 

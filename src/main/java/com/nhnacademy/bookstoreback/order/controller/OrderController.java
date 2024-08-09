@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.auth.annotation.CurrentUser;
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
-import com.nhnacademy.bookstoreback.book.service.impl.BookServiceImpl;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateBookOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderRequest;
 import com.nhnacademy.bookstoreback.order.domain.dto.request.CreateOrderStatusRequest;
@@ -62,27 +61,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author 김다운
+ * 주문 관련 HTTP 요청을 처리하는 컨트롤러입니다.
+ */
 @Tag(name = "Order", description = "주문 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
-
 	private final OrderServiceImpl orderServiceImpl;
-
 	private final OrderStatusServiceImpl orderStatusServiceImpl;
-
 	private final WrappingPaperServiceImpl wrappingPaperServiceImpl;
-
 	private final BookOrderServiceImpl bookOrderServiceImpl;
-
 	private final PaperTypeServiceImpl paperTypeServiceImpl;
-
-	private final BookServiceImpl bookService;
-
 	private final RefundPolicyServiceImpl refundPolicyServiceImpl;
-
-	//TODO 주문
 
 	/**
 	 * 특정 주문 가져오기
@@ -459,11 +452,25 @@ public class OrderController {
 	 * @param currentUserDetails 로그인된 사용자 아이디
 	 * @return 카트아이디를 가지고 있는 주문 전부 가져오기
 	 */
+	@Operation(
+		summary = "유저 이이디로 모든 주문 가져오기",
+		description = "유저 이이디로 주문정보를 가져옵니다."
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "404", description = "주문 정보를 찾을 수 없습니다.")
+	})
 	@GetMapping("/users/all")
 	public ResponseEntity<GetAllListOrderResponse> findAllByUserId(@CurrentUser CurrentUserDetails currentUserDetails) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImpl.findAllUserId(currentUserDetails));
 	}
 
+	@Operation(
+		summary = "유저 이이디로 모든 주문 가져오기",
+		description = "유저 이이디로 주문정보를 가져옵니다."
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "404", description = "주문 정보를 찾을 수 없습니다.")
+	})
 	@GetMapping("/users/all/Page")
 	public ResponseEntity<Page<GetAllOrderResponse>> findAllPageByUserId(
 		@CurrentUser CurrentUserDetails currentUserDetails, Pageable pageable) {
@@ -571,6 +578,7 @@ public class OrderController {
 		summary = "회원 포인트 가져오기",
 		description = "회원 포인트를 가져와 주문시 사용합니다."
 	)
+	@ApiResponses
 	@GetMapping("/orders-points")
 	public ResponseEntity<GetUserPointOrderResponse> getUserPointOrders(
 		@CurrentUser CurrentUserDetails currentUserDetails) {
@@ -583,6 +591,11 @@ public class OrderController {
 	 * @param orderListId 주문리스트 Id
 	 * @return 주문한 bookId, categoryId 가져옴
 	 */
+	@Operation(
+		summary = "주문리스트 아이디로 책 정보 가져오기",
+		description = "주문리스트 아이디로 책 정보 가져오기를 가져옵니다."
+	)
+	@ApiResponses
 	@GetMapping("/{orderListId}/book")
 	public ResponseEntity<GetBookByOrderCouponResponse> getBookByOneOrder(
 		@PathVariable("orderListId") Long orderListId) {

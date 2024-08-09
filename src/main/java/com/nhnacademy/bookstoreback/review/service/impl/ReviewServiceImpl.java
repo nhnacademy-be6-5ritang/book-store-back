@@ -39,10 +39,6 @@ import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * @author 이경헌
- * 리뷰 서비스 구현체 클래스입니다.
- */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -55,10 +51,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final BookRepository bookRepository;
 
 	/**
-	 * 모든 리뷰를 페이지네이션하여 조회합니다.
-	 *
-	 * @param pageable 페이지네이션 정보
-	 * @return 페이지네이션된 리뷰 응답
+	 *{@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -74,10 +67,7 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	/**
-	 * 모든 사진 리뷰를 페이지네이션하여 조회합니다.
-	 *
-	 * @param pageable 페이지네이션 정보
-	 * @return 페이지네이션된 리뷰 응답
+	 *{@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -94,10 +84,7 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	/**
-	 * 모든 일반 리뷰를 페이지네이션하여 조회합니다.
-	 *
-	 * @param pageable 페이지네이션 정보
-	 * @return 페이지네이션된 리뷰 응답
+	 *{@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -114,11 +101,7 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	/**
-	 * 책 ID를 기준으로 리뷰를 페이지네이션하여 조회합니다.
-	 *
-	 * @param bookId 책의 ID
-	 * @param pageable 페이지네이션 정보
-	 * @return 페이지네이션된 리뷰 응답
+	 *{@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -136,6 +119,9 @@ public class ReviewServiceImpl implements ReviewService {
 			});
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> getGeneralReviewsByBookId(Long bookId, Pageable pageable) {
@@ -149,6 +135,9 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(review -> GetReviewResponse.fromEntity(review, null));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> getPhotoReviewsByBookId(Long bookId, Pageable pageable) {
@@ -165,6 +154,9 @@ public class ReviewServiceImpl implements ReviewService {
 			});
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> getReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
@@ -180,6 +172,9 @@ public class ReviewServiceImpl implements ReviewService {
 			});
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> getGeneralReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
@@ -192,6 +187,9 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(review -> GetReviewResponse.fromEntity(review, null));
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GetReviewResponse> getPhotoReviewsByUserId(Pageable pageable, CurrentUserDetails currentUser) {
@@ -208,9 +206,7 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	/**
-	 * 새로운 리뷰를 저장합니다.
-	 *
-	 * @param request 리뷰 생성 요청 DTO
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void createReview(CreateReviewRequest request, CurrentUserDetails currentUser) {
@@ -238,10 +234,7 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	/**
-	 * 리뷰 ID를 기준으로 리뷰를 조회합니다.
-	 *
-	 * @param reviewId 리뷰의 ID
-	 * @return 조회된 리뷰 응답 DTO
+	 *{@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -252,10 +245,7 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	/**
-	 * 리뷰를 업데이트합니다.
-	 *
-	 * @param reviewId 리뷰의 ID
-	 * @param request 리뷰 업데이트 요청 DTO
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void updateReview(Long reviewId, UpdateReviewRequest request, CurrentUserDetails currentUser) {
@@ -282,9 +272,7 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	/**
-	 * 리뷰를 삭제합니다.
-	 *
-	 * @param reviewId 리뷰의 ID
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void deleteReview(Long reviewId) {
@@ -292,6 +280,9 @@ public class ReviewServiceImpl implements ReviewService {
 		reviewRepository.deleteById(reviewId);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public double getReviewsAverageScoreByBookId(Long bookId) {
 		bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
@@ -315,6 +306,9 @@ public class ReviewServiceImpl implements ReviewService {
 		return Math.round(averageScore * 100) / 100.0;
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public List<GetBookOrderWithoutReviewResponse> getBooksWithoutReviews(CurrentUserDetails currentUser) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;

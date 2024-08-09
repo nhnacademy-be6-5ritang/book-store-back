@@ -67,4 +67,12 @@ public interface PointTransactionService {
 	 * @return 모든 포인트 거래 정보
 	 */
 	Page<GetAllPointTransactionResponse> getAllPointTransaction(Pageable pageable);
+
+	/**
+	 * 포인트 거래를 반품으로 처리합니다.
+	 *
+	 * @param user 사용자
+	 * @param totalPrice 반품에 대한 총 가격
+	 */
+	void refundPointTransaction(User user, BigDecimal totalPrice);
 }

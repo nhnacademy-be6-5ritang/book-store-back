@@ -1,6 +1,10 @@
 package com.nhnacademy.bookstoreback.category.domain.entity;
 
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import com.nhnacademy.bookstoreback.category.domain.dto.request.CreateCategoryRequest;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,14 +19,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
- * 카테고리 Entity
- *
  * @author 김기욱
- * @version 1.0
+ * 카테고리 Entity
  */
 @Entity
 @Getter

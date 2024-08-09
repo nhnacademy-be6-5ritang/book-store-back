@@ -59,10 +59,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * @author 김기욱, 이경헌
  * 도서 Service
- *
- * @author 김기욱
- * @version 1.0
  */
 @Slf4j
 @Service
@@ -87,9 +85,7 @@ public class BookServiceImpl implements BookService {
 	private final WishListRepository wishListRepository;
 
 	/**
-	 * 도서 리스트 조회 및 저장 (베스트셀러, 신간, 주목할만한 신간 등)
-	 *
-	 * @param apiUrl 도서 정보 API url
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void fetchAndSaveBooks(String apiUrl) {
@@ -114,9 +110,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 * ISBN 을 기준으로 도서 조회 및 저장
-	 *
-	 * @param apiUrl 도서 정보 API Url
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void saveBookByIsbn(String apiUrl) {
@@ -135,9 +129,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 * 도서 저장 메소드
-	 *
-	 * @param item 도서 정보
+	 *{@inheritDoc}
 	 */
 	@Override
 	public void saveBook(JsonNode item) throws Exception {
@@ -215,6 +207,9 @@ public class BookServiceImpl implements BookService {
 		bookImageService.mapImageToBook(book, imageUrl);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<GetBookDetailResponse> getNewestBooks() {
@@ -226,6 +221,9 @@ public class BookServiceImpl implements BookService {
 			.toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<GetBookDetailResponse> getOrderedBooks() {
@@ -244,6 +242,9 @@ public class BookServiceImpl implements BookService {
 			.toList();
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<GetBookDetailResponse> getLikesBooks() {
@@ -263,10 +264,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 * 모든 도서를 페이지네이션하여 조회
-	 *
-	 * @param pageable 페이지네이션 정보를 포함하는 객체
-	 * @return 페이지네이션된 도서 리스트를 포함하는 Page 객체
+	 *{@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
 	@Override
@@ -280,10 +278,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 * 도서 ID를 기준으로 도서 조회
-	 *
-	 * @param bookId 도서 ID
-	 * @return 도서 상세 정보
+	 *{@inheritDoc}
 	 */
 	@Override
 	public GetBookDetailResponse getBook(Long bookId) {
@@ -295,10 +290,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 * ISBN을 기준으로 도서 조회
-	 *
-	 * @param isbn ISBN
-	 * @return 도서 상세 정보
+	 *{@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
 	@Override
@@ -318,6 +310,9 @@ public class BookServiceImpl implements BookService {
 		return GetBookDetailResponse.fromEntity(book);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void createBook(CreateBookRequest request) {
 		if (bookRepository.existsByBookTitle(request.bookTitle())) {
@@ -325,12 +320,9 @@ public class BookServiceImpl implements BookService {
 		}
 
 		Author author = authorService.findOrCreateAuthor(request.authorName());
-
 		Publisher publisher = publisherService.findOrCreatePublisher(request.publisherName());
-
 		BookStatus bookStatus = bookStatusRepository.findByBookStatusName(request.bookStatusName())
 			.orElseThrow(() -> new BookStatusNotFoundException(request.bookStatusName()));
-
 		Book book = bookRepository.save(Book.toEntity(request, author, publisher, bookStatus));
 
 		List<Long> categories = request.categories();
@@ -365,14 +357,14 @@ public class BookServiceImpl implements BookService {
 		bookRepository.save(book);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void updateBookById(Long bookId, UpdateBookRequest request) {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
-
 		Author author = authorService.findOrCreateAuthor(request.authorName());
-
 		Publisher publisher = publisherService.findOrCreatePublisher(request.publisherName());
-
 		BookStatus bookStatus = bookStatusRepository.findByBookStatusName(request.bookStatusName())
 			.orElseThrow(() -> new BookStatusNotFoundException(request.bookStatusName()));
 
@@ -420,6 +412,9 @@ public class BookServiceImpl implements BookService {
 		bookRepository.save(book);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void deleteBook(Long bookId) {
 		// 해당 도서가 가지고 있는 카테고리, 태그 이미지, 매핑 정보도 같이 삭제
@@ -430,18 +425,28 @@ public class BookServiceImpl implements BookService {
 		bookRepository.deleteById(bookId);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public void updateQuantity(Long bookId, int quantity) {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
 		book.updateQuantity(quantity);
 		bookRepository.save(book);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<BookSearchResult> searchBooks(String title) {
 		return bookRepository.findByBookTitleContainingIgnoreCaseCustom(title);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Transactional(readOnly = true)
 	public Page<GetBookDetailResponse> findAllBooksByCategoryName(Pageable pageable, String categoryName) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);

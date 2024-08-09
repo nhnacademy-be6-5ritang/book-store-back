@@ -35,16 +35,18 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 	private final PointEarningPolicyRepository pointEarningPolicyRepository;
 	private final UserRepository userRepository;
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public CreatePointTransactionResponse createPointTransaction(
 		CurrentUserDetails currentUser,
-		CreatePointTransactionRequest createPointTransactionRequest
-	) {
+		CreatePointTransactionRequest createPointTransactionRequest) {
 		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findById(
-			createPointTransactionRequest.pointEarningPolicyId()
-		).orElseThrow(() -> new PointEarningPolicyNotFoundException(
-			createPointTransactionRequest.pointEarningPolicyId()
-		));
+				createPointTransactionRequest.pointEarningPolicyId())
+			.orElseThrow(() -> new PointEarningPolicyNotFoundException(
+				createPointTransactionRequest.pointEarningPolicyId()
+			));
 
 		User user = userRepository.findById(currentUser.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
@@ -56,6 +58,9 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 		return CreatePointTransactionResponse.fromEntity(savedPointTransaction);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public Page<GetPointTransactionResponse> getPointTransactions(@CurrentUser CurrentUserDetails currentUser,
 		Pageable pageable) {
@@ -69,6 +74,9 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 		return pointTransactionPage.map(GetPointTransactionResponse::fromEntity);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void signUpPointTransaction(User user) {
 		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType("SIGN_UP")
@@ -87,6 +95,9 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 		userRepository.save(user);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void reviewPointTransaction(CurrentUserDetails currentUser, String reviewType) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
@@ -115,6 +126,9 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 		userRepository.save(user);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public void orderPointTransaction(User user, BigDecimal totalPrice) {
 		PointEarningPolicy pointEarningPolicy = switch (user.getUserGrade().getUserGradeName()) {
@@ -144,6 +158,9 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 		userRepository.save(user);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
 	@Override
 	public Page<GetAllPointTransactionResponse> getAllPointTransaction(Pageable pageable) {
 		int page = pageable.getPageNumber() > 0 ? pageable.getPageNumber() - 1 : 0;
@@ -154,6 +171,10 @@ public class PointTransactionServiceImpl implements PointTransactionService {
 		return pointTransactionPage.map(GetAllPointTransactionResponse::fromEntity);
 	}
 
+	/**
+	 *{@inheritDoc}
+	 */
+	@Override
 	public void refundPointTransaction(User user, BigDecimal totalPrice) {
 		PointEarningPolicy pointEarningPolicy = pointEarningPolicyRepository.findByPointEarningPolicyType(
 				"반품")
