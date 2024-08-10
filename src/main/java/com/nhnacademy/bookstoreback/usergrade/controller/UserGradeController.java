@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Tag(name = "UserGrade", description = "사용자 등급 API")
 @RestController
-@RequestMapping("/user-grades")
+@RequestMapping("/api/user-grades")
 @RequiredArgsConstructor
 public class UserGradeController {
 	private final UserGradeService userGradeService;
@@ -74,7 +74,6 @@ public class UserGradeController {
 		@ApiResponse(responseCode = "200", description = "사용자 등급 목록 조회 성공")
 	})
 	@GetMapping
-	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<List<GetUserGradeResponse>> getUserGrades() {
 		List<GetUserGradeResponse> getUserGradeResponses = userGradeService.getUserGrades();
 		return ResponseEntity.status(HttpStatus.OK).body(getUserGradeResponses);
