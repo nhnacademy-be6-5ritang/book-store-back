@@ -315,6 +315,7 @@ public class UserService {
 		}
 	}
 
+	// TODO: currentUser 대신 user id로 변경
 	public void paycoConnect(CurrentUserDetails currentUser, String memberId) {
 		User user = userRepository.findById(currentUser.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
