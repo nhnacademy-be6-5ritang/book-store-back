@@ -82,7 +82,7 @@ class UserGradeControllerTest {
 
 		given(userGradeService.createUserGrade(any(CreateUserGradeRequest.class))).willReturn(createUserGradeResponse);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/user-grades")
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/user-grades")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isCreated())
@@ -97,7 +97,7 @@ class UserGradeControllerTest {
 		List<GetUserGradeResponse> userGrades = Collections.singletonList(getUserGradeResponse);
 		given(userGradeService.getUserGrades()).willReturn(userGrades);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/user-grades")
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/user-grades")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andReturn();
@@ -111,7 +111,7 @@ class UserGradeControllerTest {
 		String userGradeName = "Silver";
 		given(userGradeService.getUserGrade(userGradeName)).willReturn(getUserGradeResponse);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/user-grades/{userGradeName}", userGradeName)
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/user-grades/{userGradeName}", userGradeName)
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andReturn();
@@ -132,7 +132,7 @@ class UserGradeControllerTest {
 		given(userGradeService.updateUserGrade(eq(userGradeName), any(UpdateUserGradeRequest.class))).willReturn(
 			updateUserGradeResponse);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/user-grades/{userGradeName}", userGradeName)
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/api/user-grades/{userGradeName}", userGradeName)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
@@ -146,7 +146,7 @@ class UserGradeControllerTest {
 	void testDeleteUserGrade() throws Exception {
 		String userGradeName = "Silver";
 
-		mockMvc.perform(MockMvcRequestBuilders.delete("/user-grades/{userGradeName}", userGradeName))
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/user-grades/{userGradeName}", userGradeName))
 			.andExpect(status().isNoContent());
 
 		then(userGradeService).should().deleteUserGrade(userGradeName);
