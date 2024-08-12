@@ -88,6 +88,8 @@ public class AddressController {
 		return ResponseEntity.status(HttpStatus.OK).body(addresses);
 	}
 
+	// [POLICY] TODO: 캐싱 처리 할 것
+
 	/**
 	 * 기본 주소를 조회합니다.
 	 *
@@ -95,7 +97,7 @@ public class AddressController {
 	 * @return 기본 주소 정보 (존재하지 않을 경우 Optional.empty() 반환)
 	 */
 	@Operation(
-		summary = "기본 주소 조회",
+		summary = "마이페이지용 기본 주소 조회",
 		description = "기본 주소를 조회합니다.",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "기본 주소가 성공적으로 반환되었습니다."),
