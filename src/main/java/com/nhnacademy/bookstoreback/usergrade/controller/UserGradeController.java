@@ -60,9 +60,7 @@ public class UserGradeController {
 		CreateUserGradeResponse createUserGradeResponse = userGradeService.createUserGrade(createUserGradeRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserGradeResponse);
 	}
-
-	// [POLICY] TODO: 캐싱 처리 할 것
-
+	
 	/**
 	 * 모든 사용자 등급 정보를 조회합니다.
 	 *

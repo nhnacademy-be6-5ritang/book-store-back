@@ -88,8 +88,6 @@ public class AddressController {
 		return ResponseEntity.status(HttpStatus.OK).body(addresses);
 	}
 
-	// [POLICY] TODO: 캐싱 처리 할 것
-
 	/**
 	 * 기본 주소를 조회합니다.
 	 *

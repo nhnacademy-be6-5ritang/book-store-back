@@ -217,8 +217,6 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(getUserInfoResponses);
 	}
 
-	// [POLICY] TODO: 캐싱 처리 할 것
-
 	/**
 	 * 현재 사용자의 정보를 조회합니다.
 	 *
