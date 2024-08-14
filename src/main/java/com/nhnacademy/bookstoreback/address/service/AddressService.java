@@ -172,7 +172,7 @@ public class AddressService {
 	 * @return 현재 사용자의 기본 주소에 대한 {@link GetAddressResponse} 객체를 포함하는 {@link Optional}.
 	 *         기본 주소가 없을 경우 빈 {@link Optional}을 반환합니다.
 	 */
-	@Cacheable(value = "defaultAddressCache", key = "'defaultAddressByUser:' + #currentUser.getUserId()")
+	@Cacheable(value = "defaultAddressCache", key = "#currentUser.getUserId()")
 	public Optional<GetAddressResponse> getDefaultAddress(CurrentUserDetails currentUser) {
 		if (currentUser == null) {
 			return Optional.empty();
