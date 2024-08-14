@@ -139,8 +139,10 @@ public class UserService {
 	 * @param currentUser 현재 사용자 세부 정보
 	 * @return 현재 사용자의 정보 응답 DTO
 	 */
-	@Cacheable(cacheNames = "userCache", key = "'user' + #currentUser.getUserId()")
+	@Cacheable(cacheNames = "userCache", key = "#currentUser.getUserId()")
 	public GetMyUserInfoResponse getMyUserInfo(@CurrentUser CurrentUserDetails currentUser) {
+		// 데이터베이스에서 가져오는지 캐시에서 가져오는지 확인
+		log.warn("getMyUserInfo 메서드 실행");
 		User user = userRepository.findById(currentUser.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(currentUser.getUserId()));
 
