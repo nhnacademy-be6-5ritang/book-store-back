@@ -39,9 +39,9 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
                         book.bookSalePercent,
                         image.imageUrl))
                 .from(book)
-                .join(bookCategory).on(bookCategory.book.eq(book))
-                .join(bookCategory.category, category)
-                .leftJoin(bookImage).on(bookImage.book.eq(book))
+                .leftJoin(bookImage).on(book.eq(bookImage.book))  // book 을 기준으로 bookImage 와 조인
+                .join(bookCategory).on(book.eq(bookCategory.book))  // book 을 기준으로 bookCategory 와 조인
+                .join(category).on(bookCategory.category.eq(category))  // bookCategory 의 category 와 category 조인
                 .where(category.categoryName.eq(categoryName))
                 .offset(pageable.getOffset()) // 페이지 시작점
                 .limit(pageable.getPageSize()) // 페이지 크기
