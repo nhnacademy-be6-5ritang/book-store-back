@@ -122,8 +122,8 @@ public interface BookService {
     /**
      * 지정된 카테고리에 해당하는 책 목록을 조회합니다.
      *
-     * @param pageable 페이지 정보와 정렬 기준을 포함하는 객체입니다. 페이지 번호, 페이지 크기 및 정렬 정보를 설정합니다.
-     * @param category 조회할 책의 카테고리 이름입니다. 이 카테고리에 속하는 책들만 조회됩니다.
+     * @param pageable     페이지 정보와 정렬 기준을 포함하는 객체입니다. 페이지 번호, 페이지 크기 및 정렬 정보를 설정합니다.
+     * @param categoryName 조회할 책의 카테고리 이름입니다. 이 카테고리에 속하는 책들만 조회됩니다.
      * @return 지정된 카테고리에 속하는 책들의 {@link GetBookSimpleResponse} 객체 목록입니다.
      */
     Page<GetBookSimpleResponse> getBooksByCategory(Pageable pageable, String categoryName);
