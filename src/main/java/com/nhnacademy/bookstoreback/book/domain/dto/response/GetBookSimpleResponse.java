@@ -5,10 +5,8 @@ import lombok.Builder;
 import java.math.BigDecimal;
 
 /**
- * 책 간략 페이지 응답 DTO
- *
  * @author 이경헌
- * @version 1.0
+ * 책 간략 페이지 응답 DTO
  */
 @Builder
 public record GetBookSimpleResponse(
