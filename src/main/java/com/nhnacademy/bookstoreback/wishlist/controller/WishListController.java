@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "WishList", description = "위시리스트 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/wishLists")
+@RequestMapping("/api/wish-lists")
 public class WishListController {
 	private final WishListService wishListService;
 
@@ -51,7 +51,7 @@ public class WishListController {
 		@ApiResponse(responseCode = "200", description = "위시리스트 조회 성공")
 	})
 	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
-	@GetMapping
+	@GetMapping("/me")
 	public ResponseEntity<List<GetWishListResponse>> getWishLists(@CurrentUser CurrentUserDetails currentUser) {
 		return ResponseEntity.status(HttpStatus.OK).body(wishListService.getWishLists(currentUser));
 	}

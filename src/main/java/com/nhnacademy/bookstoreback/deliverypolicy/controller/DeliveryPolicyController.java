@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "DeliveryPolicy", description = "배송비 정책 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/deliveryPolicies")
+@RequestMapping("/api/delivery-policies")
 public class DeliveryPolicyController {
 	private final DeliveryPolicyService deliveryPolicyService;
 
