@@ -49,7 +49,7 @@ class PublisherControllerTest {
 	void testGetPublishersWithPagination() throws Exception {
 		when(publisherService.getPublishers(any())).thenReturn(Page.empty());
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/publishers/page")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/publishers")
 				.param("page", "1")
 				.param("size", "10")
 				.contentType(MediaType.APPLICATION_JSON))

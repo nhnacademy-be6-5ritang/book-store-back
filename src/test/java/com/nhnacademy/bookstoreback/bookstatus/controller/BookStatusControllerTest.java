@@ -47,7 +47,7 @@ class BookStatusControllerTest {
 
 		when(bookStatusService.getBookStatuses()).thenReturn(bookStatusList);
 
-		mockMvc.perform(get("/api/bookStatuses")
+		mockMvc.perform(get("/api/book-statuses")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].bookStatusId").value(1L))
@@ -62,7 +62,7 @@ class BookStatusControllerTest {
 
 		when(bookStatusService.getBookStatus(anyLong())).thenReturn(bookStatusDto);
 
-		mockMvc.perform(get("/api/bookStatuses/{bookStatusId}", 1L)
+		mockMvc.perform(get("/api/book-statuses/{bookStatusId}", 1L)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.bookStatusId").value(1L))
@@ -75,7 +75,7 @@ class BookStatusControllerTest {
 
 		doNothing().when(bookStatusService).createBookStatus(any(BookStatusDto.class));
 
-		mockMvc.perform(post("/api/bookStatuses")
+		mockMvc.perform(post("/api/book-statuses")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(request)))
 			.andExpect(status().isCreated());
@@ -87,7 +87,7 @@ class BookStatusControllerTest {
 
 		doNothing().when(bookStatusService).updateBookStatus(anyLong(), any(BookStatusDto.class));
 
-		mockMvc.perform(put("/api/bookStatuses/{bookStatusId}", 1L)
+		mockMvc.perform(put("/api/book-statuses/{bookStatusId}", 1L)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(request)))
 			.andExpect(status().isOk());
@@ -97,7 +97,7 @@ class BookStatusControllerTest {
 	void testDeleteBookStatus() throws Exception {
 		doNothing().when(bookStatusService).deleteBookStatus(anyLong());
 
-		mockMvc.perform(delete("/api/bookStatuses/{bookStatusId}", 1L)
+		mockMvc.perform(delete("/api/book-statuses/{bookStatusId}", 1L)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 	}
