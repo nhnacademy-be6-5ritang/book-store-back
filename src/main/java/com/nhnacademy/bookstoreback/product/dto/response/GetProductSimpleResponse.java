@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.book.domain.dto.response;
+package com.nhnacademy.bookstoreback.product.dto.response;
 
 import lombok.Builder;
 
@@ -6,10 +6,10 @@ import java.math.BigDecimal;
 
 /**
  * @author 이경헌
- * 책 간략 페이지 응답 DTO
+ * 상품 리스트 응답 DTO
  */
 @Builder
-public record GetBookSimpleResponse(
+public record GetProductSimpleResponse(
         Long bookId,
         String authorName,
         String bookTitle,

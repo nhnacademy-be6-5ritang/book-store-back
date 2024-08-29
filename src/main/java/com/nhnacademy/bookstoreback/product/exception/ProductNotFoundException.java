@@ -1,4 +1,4 @@
-package com.nhnacademy.bookstoreback.tag.exception;
+package com.nhnacademy.bookstoreback.product.exception;
 
 import com.nhnacademy.bookstoreback.global.exception.NotFoundException;
 import com.nhnacademy.bookstoreback.global.exception.payload.ErrorStatus;
@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
-public class TagNotFoundException extends NotFoundException {
-    public TagNotFoundException(Object value) {
-        super(ErrorStatus.from(String.format("해당 태그 '%s'는 존재하지 않는 태그 입니다.", value),
+public class ProductNotFoundException extends NotFoundException {
+    public ProductNotFoundException(Object value) {
+        super(ErrorStatus.from(String.format("해당 상품 '%s'는 존재하지 않는 상품 입니다.", value),
                 HttpStatus.NOT_FOUND,
                 LocalDateTime.now()));
     }

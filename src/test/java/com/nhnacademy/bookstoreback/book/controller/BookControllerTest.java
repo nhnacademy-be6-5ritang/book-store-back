@@ -60,40 +60,6 @@ class BookControllerTest {
     }
 
     @Test
-    void getNewestBooks_ShouldReturnOk() throws Exception {
-        when(bookService.getNewestBooks()).thenReturn(List.of());
-        mockMvc.perform(get("/api/books")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getOrderedBooks_ShouldReturnOk() throws Exception {
-        when(bookService.getOrderedBooks()).thenReturn(List.of());
-        mockMvc.perform(get("/api/books/ordered")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getLikesBooks_ShouldReturnOk() throws Exception {
-        when(bookService.getLikesBooks()).thenReturn(List.of());
-        mockMvc.perform(get("/api/books/likes")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk());
-    }
-
-    // @Test
-    // void getNewestBooksWithPagination_ShouldReturnOk() throws Exception {
-    // 	when(bookService.findAllBooks(any(Pageable.class))).thenReturn(Page.empty());
-    // 	mockMvc.perform(get("/api/books/page")
-    // 			.param("page", "1")
-    // 			.param("size", "10")
-    // 			.header("Authorization", "Bearer token"))
-    // 		.andExpect(status().isOk());
-    // }
-
-    @Test
     void findBookByIsbn_ShouldReturnOk() throws Exception {
         when(bookService.findBookByIsbn(any(String.class))).thenReturn(mock(GetBookDetailResponse.class));
         mockMvc.perform(get("/api/books/details/{isbn}", "978-3-16-148410-0")

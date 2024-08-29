@@ -106,10 +106,10 @@ public interface ReviewService {
 	/**
 	 * 주어진 ID에 해당하는 리뷰를 조회합니다.
 	 *
-	 * @param id 리뷰 ID
+	 * @param reviewId 리뷰 ID
 	 * @return 조회된 리뷰의 정보 (작성자 ID, 책 ID, 평점, 코멘트 등)
 	 */
-	GetReviewResponse findReviewById(Long id);
+	GetReviewResponse getReview(Long reviewId);
 
 	/**
 	 * 주어진 ID에 해당하는 리뷰를 수정합니다.
@@ -135,10 +135,11 @@ public interface ReviewService {
 	double getReviewsAverageScoreByBookId(Long bookId);
 
 	/**
-	 * 특정 사용자가 완료한 주문에 따라 해당 사용자가 리뷰할 수 있는 책 목록을 조회합니다.
+	 * 특정 사용자가 배송완료된 주문에 따라 해당 사용자가 리뷰할 수 있는 책 목록을 조회합니다.
 	 *
-	 * @param currentUser 현재 사용자의 정보 (사용자 ID 등)
-	 * @return 사용자가 리뷰할 수 있는 책 목록
+	 * @param currentUser 현재 사용자의 정보가 담긴 {@link CurrentUserDetails} 객체입니다.
+	 * @return 사용자가 리뷰할 수 있는 책 목록을 담은 {@link List}입니다. 각 책의 정보는
 	 */
-	List<GetBookOrderWithoutReviewResponse> getBooksWithoutReviews(CurrentUserDetails currentUser);
+	List<GetBookOrderWithoutReviewResponse> getBooksWithoutReviewsByUserId(CurrentUserDetails currentUser);
+
 }

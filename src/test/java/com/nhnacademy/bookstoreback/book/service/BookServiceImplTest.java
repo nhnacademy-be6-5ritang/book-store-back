@@ -3,7 +3,6 @@ package com.nhnacademy.bookstoreback.book.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
-import com.nhnacademy.bookstoreback.author.repository.AuthorRepository;
 import com.nhnacademy.bookstoreback.author.service.AuthorService;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
@@ -28,18 +27,15 @@ import com.nhnacademy.bookstoreback.image.repository.ImageRepository;
 import com.nhnacademy.bookstoreback.image.service.BookImageService;
 import com.nhnacademy.bookstoreback.image.service.CloudImageService;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
-import com.nhnacademy.bookstoreback.publisher.repository.PublisherRepository;
 import com.nhnacademy.bookstoreback.publisher.service.PublisherService;
 import com.nhnacademy.bookstoreback.tag.domain.entity.Tag;
 import com.nhnacademy.bookstoreback.tag.repository.BookTagRepository;
 import com.nhnacademy.bookstoreback.tag.repository.TagRepository;
-import com.nhnacademy.bookstoreback.wishlist.repository.WishListRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -56,38 +52,45 @@ class BookServiceImplTest {
 
     @Mock
     private RestTemplate restTemplate;
+
     @Mock
     private BookRepository bookRepository;
-    @Mock
-    private AuthorRepository authorRepository;
-    @Mock
-    private PublisherRepository publisherRepository;
+
     @Mock
     private BookStatusRepository bookStatusRepository;
+
     @Mock
     private CategoryRepository categoryRepository;
+
     @Mock
     private BookCategoryRepository bookCategoryRepository;
+
     @Mock
     private BookImageRepository bookImageRepository;
+
     @Mock
     private AuthorService authorService;
+
     @Mock
     private PublisherService publisherService;
+
     @Mock
     private BookStatusService bookStatusService;
+
     @Mock
     private TagRepository tagRepository;
+
     @Mock
     private BookTagRepository bookTagRepository;
+
     @Mock
     private CategoryService categoryService;
+
     @Mock
     private BookImageService bookImageService;
+
     @Mock
     private CloudImageService cloudImageService;
-    @Mock
-    private WishListRepository wishListRepository;
 
     @Mock
     private ImageRepository imageRepository;
@@ -162,57 +165,6 @@ class BookServiceImplTest {
         bookService.saveBook(item);
 
         verify(bookRepository, times(1)).save(any(Book.class));
-    }
-
-    @Test
-    void testGetNewestBooks() {
-        // Given
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "bookPublishDate"));
-
-        // Mocking Author object
-        Author mockAuthor = mock(Author.class);
-        when(mockAuthor.getAuthorName()).thenReturn("John Doe");
-
-        // Mocking Publisher object
-        Publisher mockPublisher = mock(Publisher.class);
-        when(mockPublisher.getPublisherName()).thenReturn("Test Publisher");
-
-        // Mocking BookStatus object
-        BookStatus mockBookStatus = mock(BookStatus.class);
-        when(mockBookStatus.getBookStatusName()).thenReturn("판매중");
-
-        // Mocking Book objects
-        Book book1 = mock(Book.class);
-        Book book2 = mock(Book.class);
-
-        // Ensure that getBookImages() returns an empty list
-        when(book1.getBookImages()).thenReturn(Collections.emptyList());
-        when(book2.getBookImages()).thenReturn(Collections.emptyList());
-
-        // Ensure that getAuthor() returns a mock Author
-        when(book1.getAuthor()).thenReturn(mockAuthor);
-        when(book2.getAuthor()).thenReturn(mockAuthor);
-
-        // Ensure that getPublisher() returns a mock Publisher
-        when(book1.getPublisher()).thenReturn(mockPublisher);
-        when(book2.getPublisher()).thenReturn(mockPublisher);
-
-        // Ensure that getBookStatus() returns a mock BookStatus
-        when(book1.getBookStatus()).thenReturn(mockBookStatus);
-        when(book2.getBookStatus()).thenReturn(mockBookStatus);
-
-        List<Book> books = Arrays.asList(book1, book2);
-        Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
-
-        when(bookRepository.findAllByOrderByBookPublishDateDesc(pageable)).thenReturn(bookPage);
-
-        // When
-        List<GetBookDetailResponse> result = bookService.getNewestBooks();
-
-        // Then
-        assertNotNull(result);
-        assertEquals(books.size(), result.size());
-        verify(bookRepository, times(1)).findAllByOrderByBookPublishDateDesc(pageable);
     }
 
     @Test
@@ -352,87 +304,6 @@ class BookServiceImplTest {
         assertNotNull(result);
         assertEquals(results.size(), result.size());
         verify(bookRepository, times(1)).findByBookTitleContainingIgnoreCaseCustom(title);
-    }
-
-    @Test
-    void testGetOrderedBooks() {
-        // Given
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Book> books = Arrays.asList(mock(Book.class), mock(Book.class));
-        Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
-        List<Book> additionalBooks = new ArrayList<>(books); // 예시로 동일한 리스트를 사용
-
-        Author mockAuthor = mock(Author.class);
-        Publisher mockPublisher = mock(Publisher.class);
-        BookStatus mockBookStatus = mock(BookStatus.class);
-
-        when(mockAuthor.getAuthorName()).thenReturn("John Doe");
-        when(mockPublisher.getPublisherName()).thenReturn("Test Publisher");
-        when(mockBookStatus.getBookStatusName()).thenReturn("판매중");
-
-        for (Book book : books) {
-            when(book.getAuthor()).thenReturn(mockAuthor);
-            when(book.getPublisher()).thenReturn(mockPublisher);
-            when(book.getBookStatus()).thenReturn(mockBookStatus);
-        }
-
-        when(bookRepository.findTopOrderedBooks(pageable)).thenReturn(bookPage);
-        when(bookRepository.findRandomOrderedBooks(Pageable.ofSize(10 - books.size())))
-                .thenReturn(additionalBooks);
-
-        // When
-        List<GetBookDetailResponse> result = bookService.getOrderedBooks();
-
-        // Then
-        assertNotNull(result);
-        assertEquals(books.size() + additionalBooks.size(), result.size());
-        verify(bookRepository, times(1)).findTopOrderedBooks(pageable);
-        if (books.size() < 10) {
-            verify(bookRepository, times(1)).findRandomOrderedBooks(Pageable.ofSize(10 - books.size()));
-        }
-    }
-
-    @Test
-    void testGetLikesBooks() {
-        // Given
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Book> books = Arrays.asList(mock(Book.class), mock(Book.class));
-        Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
-        List<Book> additionalBooks = new ArrayList<>(books); // 예시로 동일한 리스트를 사용
-
-        // Mocking Author object
-        Author mockAuthor = mock(Author.class);
-        when(mockAuthor.getAuthorName()).thenReturn("John Doe");
-
-        // Mocking Publisher object
-        Publisher mockPublisher = mock(Publisher.class);
-        when(mockPublisher.getPublisherName()).thenReturn("Test Publisher");
-
-        // Mocking BookStatus object
-        BookStatus mockBookStatus = mock(BookStatus.class);
-        when(mockBookStatus.getBookStatusName()).thenReturn("판매중");
-
-        // Setting up mock Book objects
-        for (Book book : books) {
-            when(book.getAuthor()).thenReturn(mockAuthor);
-            when(book.getPublisher()).thenReturn(mockPublisher);
-            when(book.getBookStatus()).thenReturn(mockBookStatus);
-        }
-
-        when(bookRepository.findTopLikedBooks(pageable)).thenReturn(bookPage);
-        when(bookRepository.findRandomLikedBooks(Pageable.ofSize(10 - books.size())))
-                .thenReturn(additionalBooks);
-
-        // When
-        List<GetBookDetailResponse> result = bookService.getLikesBooks();
-
-        // Then
-        assertNotNull(result);
-        assertEquals(books.size() + additionalBooks.size(), result.size());
-        verify(bookRepository, times(1)).findTopLikedBooks(pageable);
-        if (books.size() < 10) {
-            verify(bookRepository, times(1)).findRandomLikedBooks(Pageable.ofSize(10 - books.size()));
-        }
     }
 
     @Test
@@ -637,50 +508,5 @@ class BookServiceImplTest {
 //		assertEquals(2, result.getTotalElements());
 //		verify(bookRepository, times(1)).findAllByBookCategories_Category_CategoryName(pageable, categoryName);
 //	}
-
-    @Test
-    void testFindAllBooks() {
-        // Given
-        Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Direction.ASC, "bookId"));
-        Book book1 = mock(Book.class);
-        Book book2 = mock(Book.class);
-
-        // Mocking Author object
-        Author mockAuthor = mock(Author.class);
-        when(mockAuthor.getAuthorName()).thenReturn("John Doe");
-
-        // Mocking Publisher object
-        Publisher mockPublisher = mock(Publisher.class);
-        when(mockPublisher.getPublisherName()).thenReturn("Test Publisher");
-
-        // Mocking BookStatus object
-        BookStatus mockBookStatus = mock(BookStatus.class);
-        when(mockBookStatus.getBookStatusName()).thenReturn("판매중");
-
-        // Setting up Book mock objects to return the mocked Author, Publisher, and BookStatus
-        when(book1.getAuthor()).thenReturn(mockAuthor);
-        when(book1.getPublisher()).thenReturn(mockPublisher);
-        when(book1.getBookStatus()).thenReturn(mockBookStatus);
-
-        when(book2.getAuthor()).thenReturn(mockAuthor);
-        when(book2.getPublisher()).thenReturn(mockPublisher);
-        when(book2.getBookStatus()).thenReturn(mockBookStatus);
-
-        // Setting up the list of books
-        List<Book> books = Arrays.asList(book1, book2);
-        int totalElements = 2; // 예상된 요소 수를 정확히 설정합니다
-        Page<Book> bookPage = new PageImpl<>(books, pageable, totalElements);
-
-        when(bookRepository.findAll(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "bookId"))))
-                .thenReturn(bookPage);
-
-        // When
-        Page<GetBookDetailResponse> result = bookService.findAllBooks(pageable);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(totalElements, result.getTotalPages());
-        verify(bookRepository, times(1)).findAll(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "bookId")));
-    }
 
 }

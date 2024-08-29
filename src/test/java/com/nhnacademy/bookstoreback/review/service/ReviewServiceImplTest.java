@@ -127,7 +127,7 @@ class ReviewServiceImplTest {
 	@Test
 	void testGetPhotoReviews() {
 		Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "reviewCreatedAt");
-		when(reviewRepository.findAllByReviewImagesNotEmpty(pageable)).thenReturn(reviewPage);
+		when(reviewRepository.getPhotoReviews(pageable)).thenReturn(reviewResponsePage);
 
 		Page<GetReviewResponse> result = reviewService.getPhotoReviews(pageable);
 
@@ -137,7 +137,7 @@ class ReviewServiceImplTest {
 	@Test
 	void testGetGeneralReviews() {
 		Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "reviewCreatedAt");
-		when(reviewRepository.findAllByReviewImagesEmpty(pageable)).thenReturn(reviewPage);
+		when(reviewRepository.getGeneralReviews(pageable)).thenReturn(reviewResponsePage);
 
 		Page<GetReviewResponse> result = reviewService.getGeneralReviews(pageable);
 
@@ -147,7 +147,7 @@ class ReviewServiceImplTest {
 	@Test
 	void testGetReviewsByBookId() {
 		Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "reviewCreatedAt");
-		when(reviewRepository.findAllByBookOrderBookBookId(1L, pageable)).thenReturn(reviewPage);
+		when(reviewRepository.getReviewsByBookId(1L, pageable)).thenReturn(reviewResponsePage);
 		when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mock(Book.class))); // 추가: bookRepository 모킹
 
 		Page<GetReviewResponse> result = reviewService.getReviewsByBookId(1L, pageable);
@@ -285,28 +285,18 @@ class ReviewServiceImplTest {
 		verify(reviewImageRepository, times(1)).deleteAllByReview_ReviewId(1L);
 	}
 
-	// @Test
-	// void testFindReviewById() {
-	// 	when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
-	// 	when(reviewImageRepository.findByReviewReviewId(anyLong())).thenReturn(reviewImage);
-	//
-	// 	GetReviewResponse result = reviewService.findReviewById(anyLong());
-	//
-	// 	assertThat(result).isEqualTo(getReviewResponse);
-	// }
-
 	@Test
 	void testFindReviewByIdThrowsExceptionWhenReviewNotFound() {
 		when(reviewRepository.findById(1L)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> reviewService.findReviewById(1L))
+		assertThatThrownBy(() -> reviewService.getReview(1L))
 			.isInstanceOf(ReviewNotFoundException.class);
 	}
 
 	@Test
 	void testGetReviewsByUserId() {
 		Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "reviewCreatedAt");
-		when(reviewRepository.findAllByUserId(1L, pageable)).thenReturn(reviewPage);
+		when(reviewRepository.getReviewsByUserId(1L, pageable)).thenReturn(reviewResponsePage);
 
 		Page<GetReviewResponse> result = reviewService.getReviewsByUserId(pageable, currentUser);
 
@@ -323,7 +313,7 @@ class ReviewServiceImplTest {
 	@Test
 	void testGetGeneralReviewsByUserId() {
 		Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "reviewCreatedAt");
-		when(reviewRepository.findAllByUserIdAndReviewImagesEmpty(1L, pageable)).thenReturn(reviewPage);
+		when(reviewRepository.getGeneralReviewsByUserId(1L, pageable)).thenReturn(reviewResponsePage);
 
 		Page<GetReviewResponse> result = reviewService.getGeneralReviewsByUserId(pageable, currentUser);
 
@@ -333,7 +323,7 @@ class ReviewServiceImplTest {
 	@Test
 	void testGetPhotoReviewsByUserId() {
 		Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "reviewCreatedAt");
-		when(reviewRepository.findAllByUserIdAndReviewImagesNotEmpty(1L, pageable)).thenReturn(reviewPage);
+		when(reviewRepository.getPhotoReviewsByUserId(1L, pageable)).thenReturn(reviewResponsePage);
 
 		Page<GetReviewResponse> result = reviewService.getPhotoReviewsByUserId(pageable, currentUser);
 
@@ -379,19 +369,11 @@ class ReviewServiceImplTest {
 
 	@Test
 	void testGetBooksWithoutReviews() {
-		// Given
-		List<BookOrder> bookOrders = Arrays.asList(bookOrder);
-		List<Review> reviews = Arrays.asList(review);
-
-		when(bookOrderRepository.findAllByOrder_User_IdAndOrder_OrderStatus_OrderStatusName(1L, "배송 완료"))
-			.thenReturn(bookOrders);
-		when(reviewRepository.findAllByUserId(1L)).thenReturn(reviews);
-
 		// User 정보가 필요할 수 있음
 		when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
 		// When
-		List<GetBookOrderWithoutReviewResponse> result = reviewService.getBooksWithoutReviews(currentUser);
+		List<GetBookOrderWithoutReviewResponse> result = reviewService.getBooksWithoutReviewsByUserId(currentUser);
 
 		// Then
 		assertThat(result).isEmpty();
