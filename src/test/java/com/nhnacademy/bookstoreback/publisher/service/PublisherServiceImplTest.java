@@ -68,18 +68,6 @@ class PublisherServiceImplTest {
 	}
 
 	@Test
-	void getPublishers_ShouldReturnPublisherDtos() {
-		Publisher publisher = new Publisher("Publisher");
-		PublisherDto publisherDto = PublisherDto.fromEntity(publisher);
-		when(publisherRepository.findAll()).thenReturn(Collections.singletonList(publisher));
-
-		var result = publisherService.getPublishers();
-
-		assertEquals(1, result.size());
-		assertEquals(publisherDto, result.get(0));
-	}
-
-	@Test
 	void getPublishers_Pageable_ShouldReturnPagedPublisherDtos() {
 		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "publisherId"));
 		Publisher publisher = new Publisher("Publisher");

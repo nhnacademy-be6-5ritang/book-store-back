@@ -1,7 +1,5 @@
 package com.nhnacademy.bookstoreback.publisher.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -39,23 +37,6 @@ public class PublisherController {
 	private final PublisherServiceImpl publisherService;
 
 	/**
-	 * 모든 출판사 정보를 조회합니다.
-	 *
-	 * @return 모든 출판사 정보 리스트
-	 */
-	@Operation(
-		summary = "모든 출판사 조회",
-		description = "모든 출판사 정보를 조회합니다."
-	)
-	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "출판사 목록 조회 성공")
-	})
-	@GetMapping
-	public ResponseEntity<List<PublisherDto>> getPublishers() {
-		return ResponseEntity.status(HttpStatus.OK).body(publisherService.getPublishers());
-	}
-
-	/**
 	 * 페이징 처리된 태그 정보를 조회합니다.
 	 *
 	 * @param pageable 페이지 정보
@@ -68,7 +49,7 @@ public class PublisherController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "출판사 목록(페이징) 조회 성공")
 	})
-	@GetMapping("/page")
+	@GetMapping
 	public ResponseEntity<Page<PublisherDto>> getPublishers(@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(publisherService.getPublishers(pageable));
 	}

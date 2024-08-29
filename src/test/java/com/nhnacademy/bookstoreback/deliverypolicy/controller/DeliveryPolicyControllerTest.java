@@ -63,7 +63,7 @@ class DeliveryPolicyControllerTest {
 	void testGetDeliveryPolicies() throws Exception {
 		when(deliveryPolicyService.getDeliveryPolicies()).thenReturn(Collections.singletonList(getPoliciesResponse));
 
-		mockMvc.perform(get("/api/deliveryPolicies")
+		mockMvc.perform(get("/api/delivery-policies")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(content().json(objectMapper.writeValueAsString(Collections.singletonList(getPoliciesResponse))));
@@ -73,7 +73,7 @@ class DeliveryPolicyControllerTest {
 	void testGetDeliveryPolicy() throws Exception {
 		when(deliveryPolicyService.getDeliveryPolicy(anyLong())).thenReturn(getPolicyResponse);
 
-		mockMvc.perform(get("/api/deliveryPolicies/1")
+		mockMvc.perform(get("/api/delivery-policies/1")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(content().json(objectMapper.writeValueAsString(getPolicyResponse)));
@@ -81,7 +81,7 @@ class DeliveryPolicyControllerTest {
 
 	@Test
 	void testCreateDeliveryPolicy() throws Exception {
-		mockMvc.perform(post("/api/deliveryPolicies")
+		mockMvc.perform(post("/api/delivery-policies")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(createRequest)))
 			.andExpect(status().isCreated());
@@ -89,7 +89,7 @@ class DeliveryPolicyControllerTest {
 
 	@Test
 	void testUpdateDeliveryPolicy() throws Exception {
-		mockMvc.perform(put("/api/deliveryPolicies/1")
+		mockMvc.perform(put("/api/delivery-policies/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateRequest)))
 			.andExpect(status().isOk());
@@ -97,7 +97,7 @@ class DeliveryPolicyControllerTest {
 
 	@Test
 	void testDeleteDeliveryPolicy() throws Exception {
-		mockMvc.perform(delete("/api/deliveryPolicies/1")
+		mockMvc.perform(delete("/api/delivery-policies/1")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 	}
@@ -108,7 +108,7 @@ class DeliveryPolicyControllerTest {
 			anyLong(), any(BigDecimal.class)))
 			.thenReturn(getPolicyResponse);
 
-		mockMvc.perform(put("/api/deliveryPolicies/1/1500.00/addPolicies")
+		mockMvc.perform(put("/api/delivery-policies/1/1500.00/addPolicies")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(content().json(objectMapper.writeValueAsString(getPolicyResponse)));

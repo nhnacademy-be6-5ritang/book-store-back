@@ -62,18 +62,6 @@ class AuthorServiceImplTest {
 	}
 
 	@Test
-	void testGetAuthors() {
-		List<Author> authors = List.of(new Author(1L, "Author 1"), new Author(2L, "Author 2"));
-		when(authorRepository.findAll()).thenReturn(authors);
-
-		List<AuthorDto> authorDtos = authorService.getAuthors();
-
-		assertEquals(2, authorDtos.size());
-		assertEquals("Author 1", authorDtos.get(0).authorName());
-		verify(authorRepository, times(1)).findAll();
-	}
-
-	@Test
 	void testGetAuthors_WithPagination() {
 		Pageable pageable = PageRequest.of(0, 10);
 		List<Author> authors = List.of(new Author(1L, "Author 1"), new Author(2L, "Author 2"));

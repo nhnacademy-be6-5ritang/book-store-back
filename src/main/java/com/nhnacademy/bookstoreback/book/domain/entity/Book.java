@@ -1,36 +1,22 @@
 package com.nhnacademy.bookstoreback.book.domain.entity;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-
 import com.nhnacademy.bookstoreback.author.domain.entity.Author;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.bookstatus.domain.entity.BookStatus;
-import com.nhnacademy.bookstoreback.category.domain.entity.BookCategory;
 import com.nhnacademy.bookstoreback.publisher.domain.entity.Publisher;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Book Entity
@@ -43,127 +29,124 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "books")
 public class Book {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "book_id")
-	private Long bookId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "book_id")
+    private Long bookId;
 
-	@ManyToOne
-	@NotNull
-	@JoinColumn(name = "author_id")
-	private Author author;
+    @ManyToOne
+    @NotNull
+    @JoinColumn(name = "author_id")
+    private Author author;
 
-	@ManyToOne
-	@NotNull
-	@JoinColumn(name = "publisher_id")
-	private Publisher publisher;
+    @ManyToOne
+    @NotNull
+    @JoinColumn(name = "publisher_id")
+    private Publisher publisher;
 
-	@ManyToOne
-	@NotNull
-	@JoinColumn(name = "book_status_id")
-	private BookStatus bookStatus;
+    @ManyToOne
+    @NotNull
+    @JoinColumn(name = "book_status_id")
+    private BookStatus bookStatus;
 
-	@NotBlank
-	@Size(max = 300)
-	@Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
-	@Column(name = "book_title", length = 300)
-	private String bookTitle;
-	
-	@Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
-	@Column(name = "book_description")
-	private String bookDescription;
+    @NotBlank
+    @Size(max = 300)
+    @Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
+    @Column(name = "book_title", length = 300)
+    private String bookTitle;
 
-	@NotNull
-	@Column(name = "book_quantity")
-	private int bookQuantity = 100;
+    @Field(type = FieldType.Text, analyzer = "nori_analyzer") // Nori 분석기 적용
+    @Column(name = "book_description")
+    private String bookDescription;
 
-	@NotNull
-	@Column(name = "book_publish_date")
-	@Temporal(TemporalType.DATE)
-	private Date bookPublishDate;
+    @NotNull
+    @Column(name = "book_quantity")
+    private int bookQuantity = 100;
 
-	@NotBlank
-	@Size(max = 17)
-	@Column(name = "book_isbn", length = 17)
-	private String bookIsbn;
+    @NotNull
+    @Column(name = "book_publish_date")
+    @Temporal(TemporalType.DATE)
+    private Date bookPublishDate;
 
-	@NotNull
-	@Column(name = "book_price")
-	private BigDecimal bookPrice;
+    @NotBlank
+    @Size(max = 17)
+    @Column(name = "book_isbn", length = 17)
+    private String bookIsbn;
 
-	@NotNull
-	@Column(name = "book_sale_percent")
-	private BigDecimal bookSalePercent;
+    @NotNull
+    @Column(name = "book_price")
+    private BigDecimal bookPrice;
 
-	@NotNull
-	@Column(name = "book_sale_price")
-	private BigDecimal bookSalePrice;
+    @NotNull
+    @Column(name = "book_sale_percent")
+    private BigDecimal bookSalePercent;
 
-	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
-	private List<BookImage> bookImages;
+    @NotNull
+    @Column(name = "book_sale_price")
+    private BigDecimal bookSalePrice;
 
-	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
-	private List<BookCategory> bookCategories;
+    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
+    private List<BookImage> bookImages;
 
-	@Builder
-	public Book(
-		Author author,
-		Publisher publisher,
-		BookStatus bookStatus,
-		String bookTitle,
-		String bookDescription,
-		int bookQuantity,
-		Date bookPublishDate,
-		String bookIsbn,
-		BigDecimal bookPrice,
-		BigDecimal bookSalePercent,
-		BigDecimal bookSalePrice) {
-		this.author = author;
-		this.publisher = publisher;
-		this.bookStatus = bookStatus;
-		this.bookTitle = bookTitle;
-		this.bookDescription = bookDescription;
-		this.bookQuantity = bookQuantity;
-		this.bookPublishDate = bookPublishDate;
-		this.bookIsbn = bookIsbn;
-		this.bookPrice = bookPrice;
-		this.bookSalePercent = bookSalePercent;
-		this.bookSalePrice = bookSalePrice;
-	}
+    @Builder
+    public Book(
+            Author author,
+            Publisher publisher,
+            BookStatus bookStatus,
+            String bookTitle,
+            String bookDescription,
+            int bookQuantity,
+            Date bookPublishDate,
+            String bookIsbn,
+            BigDecimal bookPrice,
+            BigDecimal bookSalePercent,
+            BigDecimal bookSalePrice) {
+        this.author = author;
+        this.publisher = publisher;
+        this.bookStatus = bookStatus;
+        this.bookTitle = bookTitle;
+        this.bookDescription = bookDescription;
+        this.bookQuantity = bookQuantity;
+        this.bookPublishDate = bookPublishDate;
+        this.bookIsbn = bookIsbn;
+        this.bookPrice = bookPrice;
+        this.bookSalePercent = bookSalePercent;
+        this.bookSalePrice = bookSalePrice;
+    }
 
-	public static Book toEntity(CreateBookRequest request, Author author, Publisher publisher, BookStatus bookStatus) {
-		return Book.builder()
-			.author(author)
-			.publisher(publisher)
-			.bookStatus(bookStatus)
-			.bookTitle(request.bookTitle())
-			.bookDescription(request.bookDescription())
-			.bookQuantity(request.bookQuantity())
-			.bookPublishDate(request.bookPublishDate())
-			.bookIsbn(request.bookIsbn())
-			.bookPrice(request.bookPrice())
-			.bookSalePercent(request.bookSalePercent())
-			.bookSalePrice(request.bookSalePrice())
-			.build();
-	}
+    public static Book toEntity(CreateBookRequest request, Author author, Publisher publisher, BookStatus bookStatus) {
+        return Book.builder()
+                .author(author)
+                .publisher(publisher)
+                .bookStatus(bookStatus)
+                .bookTitle(request.bookTitle())
+                .bookDescription(request.bookDescription())
+                .bookQuantity(request.bookQuantity())
+                .bookPublishDate(request.bookPublishDate())
+                .bookIsbn(request.bookIsbn())
+                .bookPrice(request.bookPrice())
+                .bookSalePercent(request.bookSalePercent())
+                .bookSalePrice(request.bookSalePrice())
+                .build();
+    }
 
-	public void updateBook(Author author, Publisher publisher, BookStatus bookStatus, String bookTitle,
-		String bookDescription, int bookQuantity, Date bookPublishDate,
-		String bookIsbn, BigDecimal bookPrice, BigDecimal bookSalePercent, BigDecimal bookSalePrice) {
-		this.author = author;
-		this.publisher = publisher;
-		this.bookStatus = bookStatus;
-		this.bookTitle = bookTitle;
-		this.bookDescription = bookDescription;
-		this.bookQuantity = bookQuantity;
-		this.bookPublishDate = bookPublishDate;
-		this.bookIsbn = bookIsbn;
-		this.bookPrice = bookPrice;
-		this.bookSalePercent = bookSalePercent;
-		this.bookSalePrice = bookSalePrice;
-	}
+    public void updateBook(Author author, Publisher publisher, BookStatus bookStatus, String bookTitle,
+                           String bookDescription, int bookQuantity, Date bookPublishDate,
+                           String bookIsbn, BigDecimal bookPrice, BigDecimal bookSalePercent, BigDecimal bookSalePrice) {
+        this.author = author;
+        this.publisher = publisher;
+        this.bookStatus = bookStatus;
+        this.bookTitle = bookTitle;
+        this.bookDescription = bookDescription;
+        this.bookQuantity = bookQuantity;
+        this.bookPublishDate = bookPublishDate;
+        this.bookIsbn = bookIsbn;
+        this.bookPrice = bookPrice;
+        this.bookSalePercent = bookSalePercent;
+        this.bookSalePrice = bookSalePrice;
+    }
 
-	public void updateQuantity(int bookQuantity) {
-		this.bookQuantity -= bookQuantity;
-	}
+    public void updateQuantity(int bookQuantity) {
+        this.bookQuantity -= bookQuantity;
+    }
 }

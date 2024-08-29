@@ -44,7 +44,7 @@ class WishListControllerTest {
 	void testGetWishLists() throws Exception {
 		when(wishListService.getWishLists(any())).thenReturn(Collections.emptyList());
 
-		mockMvc.perform(get("/api/wishLists"))
+		mockMvc.perform(get("/api/wish-lists/me"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.length()").value(0));
@@ -56,7 +56,7 @@ class WishListControllerTest {
 
 		doNothing().when(wishListService).createWishList(any(), any(CreateWishListRequest.class));
 
-		mockMvc.perform(post("/api/wishLists")
+		mockMvc.perform(post("/api/wish-lists")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isCreated());
@@ -66,7 +66,7 @@ class WishListControllerTest {
 	void testDeleteWishList() throws Exception {
 		doNothing().when(wishListService).deleteWishList(eq(1L), any());
 
-		mockMvc.perform(delete("/api/wishLists/1"))
+		mockMvc.perform(delete("/api/wish-lists/1"))
 			.andExpect(status().isOk());
 	}
 }

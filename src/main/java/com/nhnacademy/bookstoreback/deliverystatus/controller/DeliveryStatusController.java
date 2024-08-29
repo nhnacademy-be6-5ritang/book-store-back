@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "DeliveryStatus", description = "배송상태 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/deliveryStatuses")
+@RequestMapping("/api/delivery-statuses")
 public class DeliveryStatusController {
 	private final DeliveryStatusService deliveryStatusService;
 

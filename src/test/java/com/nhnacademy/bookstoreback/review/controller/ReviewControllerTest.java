@@ -67,7 +67,7 @@ class ReviewControllerTest {
 	void testGetReviews() throws Exception {
 		when(reviewService.getReviews(any())).thenReturn(new PageImpl<>(Collections.singletonList(reviewResponse)));
 
-		mockMvc.perform(get("/api/reviews/all/page"))
+		mockMvc.perform(get("/api/reviews/all"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.length()").value(11));
@@ -78,7 +78,7 @@ class ReviewControllerTest {
 		when(reviewService.getPhotoReviews(any())).thenReturn(
 			new PageImpl<>(Collections.singletonList(reviewResponse)));
 
-		mockMvc.perform(get("/api/reviews/photo/page")
+		mockMvc.perform(get("/api/reviews/photo")
 				.param("page", "1")
 				.param("size", "5"))
 			.andExpect(status().isOk())
@@ -91,7 +91,7 @@ class ReviewControllerTest {
 		when(reviewService.getGeneralReviews(any(Pageable.class))).thenReturn(
 			new PageImpl<>(Collections.singletonList(reviewResponse)));
 
-		mockMvc.perform(get("/api/reviews/general/page")
+		mockMvc.perform(get("/api/reviews/general")
 				.param("page", "1")
 				.param("size", "5"))
 			.andExpect(status().isOk())
@@ -105,7 +105,7 @@ class ReviewControllerTest {
 	void testGetReviewsByBookId() throws Exception {
 		when(reviewService.getReviewsByBookId(anyLong(), any(Pageable.class))).thenReturn(reviewPage);
 
-		mockMvc.perform(get("/api/books/1/reviews/all/page"))
+		mockMvc.perform(get("/api/books/1/reviews/all"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.content[0].reviewComment").value("comment"))
 			.andExpect(jsonPath("$.content[0].reviewScore").value(3));
@@ -123,7 +123,7 @@ class ReviewControllerTest {
 
 	@Test
 	void testGetReview() throws Exception {
-		when(reviewService.findReviewById(anyLong())).thenReturn(reviewResponse);
+		when(reviewService.getReview(anyLong())).thenReturn(reviewResponse);
 
 		mockMvc.perform(get("/api/reviews/1"))
 			.andExpect(status().isOk())
@@ -161,7 +161,7 @@ class ReviewControllerTest {
 	void testGetBooksByOrderStatusCompletionAndUserId() throws Exception {
 		List<GetBookOrderWithoutReviewResponse> books = Collections.singletonList(
 			new GetBookOrderWithoutReviewResponse(1L, "Book Title"));
-		when(reviewService.getBooksWithoutReviews(any(CurrentUserDetails.class))).thenReturn(books);
+		when(reviewService.getBooksWithoutReviewsByUserId(any(CurrentUserDetails.class))).thenReturn(books);
 
 		mockMvc.perform(get("/api/reviews/create/possible"))
 			.andExpect(status().isOk())
@@ -173,7 +173,7 @@ class ReviewControllerTest {
 	void testGetPhotoReviewsByBookId() throws Exception {
 		when(reviewService.getPhotoReviewsByBookId(anyLong(), any(PageRequest.class))).thenReturn(reviewPage);
 
-		mockMvc.perform(get("/api/books/1/reviews/photo/page"))
+		mockMvc.perform(get("/api/books/1/reviews/photo"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.content.length()").value(1));
@@ -184,7 +184,7 @@ class ReviewControllerTest {
 	void testGetGeneralReviewsByBookId() throws Exception {
 		when(reviewService.getGeneralReviewsByBookId(anyLong(), any(PageRequest.class))).thenReturn(reviewPage);
 
-		mockMvc.perform(get("/api/books/1/reviews/general/page"))
+		mockMvc.perform(get("/api/books/1/reviews/general"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.content.length()").value(1));
@@ -195,7 +195,7 @@ class ReviewControllerTest {
 	void testGetReviewsByUserId() throws Exception {
 		when(reviewService.getReviewsByUserId(any(PageRequest.class), any())).thenReturn(reviewPage);
 
-		mockMvc.perform(get("/api/users/me/reviews/all/page"))
+		mockMvc.perform(get("/api/users/me/reviews/all"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.content.length()").value(1));
@@ -206,7 +206,7 @@ class ReviewControllerTest {
 	void testGetGeneralReviewsByUserId() throws Exception {
 		when(reviewService.getGeneralReviewsByUserId(any(PageRequest.class), any())).thenReturn(reviewPage);
 
-		mockMvc.perform(get("/api/users/me/reviews/general/page"))
+		mockMvc.perform(get("/api/users/me/reviews/general"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.content.length()").value(1));
@@ -217,7 +217,7 @@ class ReviewControllerTest {
 	void testGetPhotoReviewsByUserId() throws Exception {
 		when(reviewService.getPhotoReviewsByUserId(any(PageRequest.class), any())).thenReturn(reviewPage);
 
-		mockMvc.perform(get("/api/users/me/reviews/photo/page"))
+		mockMvc.perform(get("/api/users/me/reviews/photo"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.content.length()").value(1));

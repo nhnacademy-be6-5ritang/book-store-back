@@ -3,7 +3,6 @@ package com.nhnacademy.bookstoreback.book.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -25,6 +24,8 @@ import com.nhnacademy.bookstoreback.book.domain.dto.request.CreateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.request.UpdateBookRequest;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.BookSearchResult;
 import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookDetailResponse;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookResponse;
+import com.nhnacademy.bookstoreback.book.domain.dto.response.GetBookTitleResponse;
 import com.nhnacademy.bookstoreback.book.domain.entity.Book;
 import com.nhnacademy.bookstoreback.book.domain.entity.BookImage;
 import com.nhnacademy.bookstoreback.book.exception.BookAlreadyExistsException;
@@ -85,7 +86,7 @@ public class BookServiceImpl implements BookService {
 	private final WishListRepository wishListRepository;
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void fetchAndSaveBooks(String apiUrl) {
@@ -110,7 +111,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void saveBookByIsbn(String apiUrl) {
@@ -129,7 +130,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void saveBook(JsonNode item) throws Exception {
@@ -208,89 +209,27 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
 	@Override
-	public List<GetBookDetailResponse> getNewestBooks() {
-		Pageable topTenNewest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "bookPublishDate"));
-		Page<Book> newestBooksPage = bookRepository.findAllByOrderByBookPublishDateDesc(topTenNewest);
-		List<Book> newestBooks = newestBooksPage.getContent();
-		return newestBooks.stream()
-			.map(GetBookDetailResponse::fromEntity)
-			.toList();
-	}
-
-	/**
-	 *{@inheritDoc}
-	 */
-	@Transactional(readOnly = true)
-	@Override
-	public List<GetBookDetailResponse> getOrderedBooks() {
-		Pageable topTen = PageRequest.of(0, 10);
-		Page<Book> topOrderedBooksPage = bookRepository.findTopOrderedBooks(topTen);
-		List<Book> topOrderedBooks = new ArrayList<>(topOrderedBooksPage.getContent());
-
-		if (topOrderedBooks.size() < 10) {
-			int booksToAdd = 10 - topOrderedBooks.size();
-			List<Book> additionalBooks = bookRepository.findRandomOrderedBooks(Pageable.ofSize(booksToAdd));
-			topOrderedBooks.addAll(additionalBooks);
-		}
-
-		return topOrderedBooks.stream()
-			.map(GetBookDetailResponse::fromEntity)
-			.toList();
-	}
-
-	/**
-	 *{@inheritDoc}
-	 */
-	@Transactional(readOnly = true)
-	@Override
-	public List<GetBookDetailResponse> getLikesBooks() {
-		Pageable topTen = PageRequest.of(0, 10);
-		Page<Book> topLikedBooksPage = bookRepository.findTopLikedBooks(topTen);
-		List<Book> topLikedBooks = new ArrayList<>(topLikedBooksPage.getContent());
-
-		if (topLikedBooks.size() < 10) {
-			int booksToAdd = 10 - topLikedBooks.size();
-			List<Book> additionalBooks = bookRepository.findRandomLikedBooks(Pageable.ofSize(booksToAdd));
-			topLikedBooks.addAll(additionalBooks);
-		}
-
-		return topLikedBooks.stream()
-			.map(GetBookDetailResponse::fromEntity)
-			.toList();
-	}
-
-	/**
-	 *{@inheritDoc}
-	 */
-	@Transactional(readOnly = true)
-	@Override
-	public Page<GetBookDetailResponse> findAllBooks(Pageable pageable) {
+	public Page<GetBookTitleResponse> getBooks(Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		return bookRepository.findAll(
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookId")))
-			.map(GetBookDetailResponse::fromEntity);
+		return bookRepository.getBooks(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "bookId")));
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
-	public GetBookDetailResponse getBook(Long bookId) {
-		Book book = bookRepository.findById(bookId).orElse(null);
-		if (book != null) {
-			return GetBookDetailResponse.fromEntity(book);
-		}
-		return null;
+	public GetBookResponse getBook(Long bookId) {
+		return bookRepository.getBook(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
 	@Override
@@ -311,7 +250,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void createBook(CreateBookRequest request) {
@@ -358,7 +297,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void updateBookById(Long bookId, UpdateBookRequest request) {
@@ -399,21 +338,17 @@ public class BookServiceImpl implements BookService {
 		}
 
 		// 파일 이름이 비어있지 않으면 이미지 저장
-		Image image = null;
 		if (request.fileName() != null) {
 			bookImageRepository.deleteAllByBookBookId(bookId);
-			image = imageRepository.save(
+			Image image = imageRepository.save(
 				new Image(ImageUtil.fileNameParser(request.fileName()), request.fileName()));
-		} else if (!bookImageRepository.existsById(bookId)) {
-			image = imageRepository.save(
-				new Image("null.jpg", "http://image.toast.com/aaaacuf/5ritang/books/null.jpg"));
+			bookImageRepository.save(BookImage.toEntity(book, image));
 		}
-		bookImageRepository.save(BookImage.toEntity(book, image));
 		bookRepository.save(book);
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void deleteBook(Long bookId) {
@@ -426,7 +361,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void updateQuantity(Long bookId, int quantity) {
@@ -436,26 +371,12 @@ public class BookServiceImpl implements BookService {
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<BookSearchResult> searchBooks(String title) {
 		return bookRepository.findByBookTitleContainingIgnoreCaseCustom(title);
-	}
-
-	/**
-	 *{@inheritDoc}
-	 */
-	@Transactional(readOnly = true)
-	public Page<GetBookDetailResponse> findAllBooksByCategoryName(Pageable pageable, String categoryName) {
-		int page = Math.max(pageable.getPageNumber() - 1, 0);
-		int pageSize = pageable.getPageSize();
-		Sort sort = pageable.getSort();
-
-		return bookRepository.findAllByBookCategories_Category_CategoryName(
-				PageRequest.of(page, pageSize, sort), categoryName)
-			.map(GetBookDetailResponse::fromEntity);
 	}
 
 }

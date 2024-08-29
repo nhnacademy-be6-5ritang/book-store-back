@@ -55,7 +55,7 @@ public class ReviewController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "모든 리뷰 조회 성공")
 	})
-	@GetMapping("/reviews/all/page")
+	@GetMapping("/reviews/all")
 	public ResponseEntity<Page<GetReviewResponse>> getReviews(@PageableDefault(page = 1, size = 5) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getReviews(pageable));
 	}
@@ -73,7 +73,7 @@ public class ReviewController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "모든 사진 리뷰 조회 성공")
 	})
-	@GetMapping("/reviews/photo/page")
+	@GetMapping("/reviews/photo")
 	public ResponseEntity<Page<GetReviewResponse>> getPhotoReviews(
 		@PageableDefault(page = 1, size = 5) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getPhotoReviews(pageable));
@@ -92,7 +92,7 @@ public class ReviewController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "모든 일반 리뷰 조회 성공")
 	})
-	@GetMapping("/reviews/general/page")
+	@GetMapping("/reviews/general")
 	public ResponseEntity<Page<GetReviewResponse>> getGeneralReviews(
 		@PageableDefault(page = 1, size = 5) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getGeneralReviews(pageable));
@@ -113,7 +113,7 @@ public class ReviewController {
 		@ApiResponse(responseCode = "200", description = "특정 책의 모든 리뷰 조회 성공"),
 		@ApiResponse(responseCode = "404", description = "책을 찾을 수 없음")
 	})
-	@GetMapping("/books/{bookId}/reviews/all/page")
+	@GetMapping("/books/{bookId}/reviews/all")
 	public ResponseEntity<Page<GetReviewResponse>> getReviewsByBookId(
 		@PageableDefault(page = 1, size = 5) Pageable pageable,
 		@PathVariable Long bookId) {
@@ -136,7 +136,7 @@ public class ReviewController {
 		@ApiResponse(responseCode = "200", description = "특정 책의 사진 리뷰 조회 성공"),
 		@ApiResponse(responseCode = "404", description = "책을 찾을 수 없음")
 	})
-	@GetMapping("/books/{bookId}/reviews/photo/page")
+	@GetMapping("/books/{bookId}/reviews/photo")
 	public ResponseEntity<Page<GetReviewResponse>> getPhotoReviewsByBookId(
 		@PageableDefault(page = 1, size = 5) Pageable pageable,
 		@PathVariable Long bookId) {
@@ -159,7 +159,7 @@ public class ReviewController {
 		@ApiResponse(responseCode = "200", description = "특정 책의 일반 리뷰 조회 성공"),
 		@ApiResponse(responseCode = "404", description = "책을 찾을 수 없음")
 	})
-	@GetMapping("/books/{bookId}/reviews/general/page")
+	@GetMapping("/books/{bookId}/reviews/general")
 	public ResponseEntity<Page<GetReviewResponse>> getGeneralReviewsByBookId(
 		@PageableDefault(page = 1, size = 5) Pageable pageable,
 		@PathVariable Long bookId) {
@@ -183,7 +183,7 @@ public class ReviewController {
 		@ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
 	})
 	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
-	@GetMapping("/users/me/reviews/all/page")
+	@GetMapping("/users/me/reviews/all")
 	public ResponseEntity<Page<GetReviewResponse>> getReviewsByUserId(
 		@PageableDefault(page = 1, size = 5) Pageable pageable, @CurrentUser CurrentUserDetails currentUser) {
 		Page<GetReviewResponse> reviews = reviewService.getReviewsByUserId(pageable, currentUser);
@@ -206,7 +206,7 @@ public class ReviewController {
 		@ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
 	})
 	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
-	@GetMapping("/users/me/reviews/general/page")
+	@GetMapping("/users/me/reviews/general")
 	public ResponseEntity<Page<GetReviewResponse>> getGeneralReviewsByUserId(
 		@PageableDefault(page = 1, size = 5) Pageable pageable, @CurrentUser CurrentUserDetails currentUser) {
 		Page<GetReviewResponse> reviews = reviewService.getGeneralReviewsByUserId(pageable, currentUser);
@@ -229,7 +229,7 @@ public class ReviewController {
 		@ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
 	})
 	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
-	@GetMapping("/users/me/reviews/photo/page")
+	@GetMapping("/users/me/reviews/photo")
 	public ResponseEntity<Page<GetReviewResponse>> getPhotoReviewsByUserId(
 		@PageableDefault(page = 1, size = 5) Pageable pageable, @CurrentUser CurrentUserDetails currentUser) {
 		Page<GetReviewResponse> reviews = reviewService.getPhotoReviewsByUserId(pageable, currentUser);
@@ -278,7 +278,7 @@ public class ReviewController {
 	})
 	@GetMapping("/reviews/{reviewId}")
 	public ResponseEntity<GetReviewResponse> getReview(@PathVariable Long reviewId) {
-		return ResponseEntity.status(HttpStatus.OK).body(reviewService.findReviewById(reviewId));
+		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getReview(reviewId));
 	}
 
 	/**
@@ -362,9 +362,9 @@ public class ReviewController {
 	})
 	@AuthorizeRole({"MEMBER", "HEAD_ADMIN"})
 	@GetMapping("/reviews/create/possible")
-	ResponseEntity<List<GetBookOrderWithoutReviewResponse>> getBooksWithoutReviews(
+	ResponseEntity<List<GetBookOrderWithoutReviewResponse>> getBooksWithoutReviewsByUserId(
 		@CurrentUser CurrentUserDetails currentUser) {
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(reviewService.getBooksWithoutReviews(currentUser));
+			.body(reviewService.getBooksWithoutReviewsByUserId(currentUser));
 	}
 }

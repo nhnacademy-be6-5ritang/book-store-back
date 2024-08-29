@@ -1,7 +1,5 @@
 package com.nhnacademy.bookstoreback.author.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,13 +19,6 @@ public interface AuthorService {
 	 * @return 작가가 존재하면 작가 정보, 없으면 null
 	 */
 	Author findOrCreateAuthor(String authorName);
-
-	/**
-	 * 모든 작가 조회.
-	 *
-	 * @return 모든 작가의 리스트
-	 */
-	List<AuthorDto> getAuthors();
 
 	/**
 	 * 페이징된 형식으로 모든 저자를 조회합니다.

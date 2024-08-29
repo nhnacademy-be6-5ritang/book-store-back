@@ -1,10 +1,6 @@
 package com.nhnacademy.bookstoreback.review.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nhnacademy.bookstoreback.auth.jwt.dto.CurrentUserDetails;
 import com.nhnacademy.bookstoreback.book.exception.BookNotFoundException;
-import com.nhnacademy.bookstoreback.book.repository.BookRepository;
 import com.nhnacademy.bookstoreback.global.exception.AccessDeniedException;
 import com.nhnacademy.bookstoreback.global.util.ImageUtil;
 import com.nhnacademy.bookstoreback.image.domain.entity.Image;
@@ -48,10 +43,9 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewImageRepository reviewImageRepository;
 	private final ImageRepository imageRepository;
 	private final BookOrderRepository bookOrderRepository;
-	private final BookRepository bookRepository;
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -59,32 +53,12 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		return reviewRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(review -> {
-				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
-				return GetReviewResponse.fromEntity(review, reviewImage);
-			});
+		return reviewRepository.getReviews(
+			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
 	}
 
 	/**
-	 *{@inheritDoc}
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public Page<GetReviewResponse> getPhotoReviews(Pageable pageable) {
-		int page = Math.max(pageable.getPageNumber() - 1, 0);
-		int pageSize = pageable.getPageSize();
-
-		return reviewRepository.findAllByReviewImagesNotEmpty(
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(review -> {
-				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
-				return GetReviewResponse.fromEntity(review, reviewImage);
-			});
-	}
-
-	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -92,16 +66,25 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		return reviewRepository.findAllByReviewImagesEmpty(
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(review -> {
-				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
-				return GetReviewResponse.fromEntity(review, reviewImage);
-			});
+		return reviewRepository.getGeneralReviews(
+			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Page<GetReviewResponse> getPhotoReviews(Pageable pageable) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+
+		return reviewRepository.getPhotoReviews(
+			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -109,18 +92,12 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
-
-		return reviewRepository.findAllByBookOrderBookBookId(bookId,
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(review -> {
-				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
-				return GetReviewResponse.fromEntity(review, reviewImage);
-			});
+		return reviewRepository.getReviewsByBookId(bookId,
+			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -128,15 +105,12 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
-
-		return reviewRepository.findAllByBookOrderBookBookIdAndReviewImagesEmpty(bookId,
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(review -> GetReviewResponse.fromEntity(review, null));
+		return reviewRepository.getGeneralReviewsByBookId(bookId,
+			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -144,18 +118,12 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
-
-		return reviewRepository.findAllByBookOrderBookBookIdAndReviewImagesNotEmpty(bookId,
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(review -> {
-				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
-				return GetReviewResponse.fromEntity(review, reviewImage);
-			});
+		return reviewRepository.getPhotoReviewsByBookId(bookId,
+			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -164,16 +132,12 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		return reviewRepository.findAllByUserId(userId,
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(review -> {
-				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
-				return GetReviewResponse.fromEntity(review, reviewImage);
-			});
+		return reviewRepository.getReviewsByUserId(userId,
+			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -182,13 +146,12 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		return reviewRepository.findAllByUserIdAndReviewImagesEmpty(userId,
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(review -> GetReviewResponse.fromEntity(review, null));
+		return reviewRepository.getGeneralReviewsByUserId(userId,
+			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -197,16 +160,12 @@ public class ReviewServiceImpl implements ReviewService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 
-		return reviewRepository.findAllByUserIdAndReviewImagesNotEmpty(userId,
-				PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")))
-			.map(review -> {
-				ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
-				return GetReviewResponse.fromEntity(review, reviewImage);
-			});
+		return reviewRepository.getPhotoReviewsByUserId(userId,
+			PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "reviewCreatedAt")));
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void createReview(CreateReviewRequest request, CurrentUserDetails currentUser) {
@@ -234,24 +193,20 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public GetReviewResponse findReviewById(Long reviewId) {
-		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
-		ReviewImage reviewImage = reviewImageRepository.findByReviewReviewId(review.getReviewId());
-		return GetReviewResponse.fromEntity(review, reviewImage);
+	public GetReviewResponse getReview(Long reviewId) {
+		return reviewRepository.getReview(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void updateReview(Long reviewId, UpdateReviewRequest request, CurrentUserDetails currentUser) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
-
-		userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
 		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException(reviewId));
 		Long requestId = review.getUser().getId();
@@ -272,7 +227,7 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void deleteReview(Long reviewId) {
@@ -285,54 +240,16 @@ public class ReviewServiceImpl implements ReviewService {
 	 */
 	@Override
 	public double getReviewsAverageScoreByBookId(Long bookId) {
-		bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
-
-		List<Review> reviews = reviewRepository.findAll();
-
-		double sum = 0;
-		double count = 0;
-		for (Review review : reviews) {
-			if (Objects.equals(review.getBookOrder().getBook().getBookId(), bookId)) {
-				sum += review.getReviewScore();
-				count++;
-			}
-		}
-
-		if (sum == 0) {
-			return 0;
-		}
-
-		double averageScore = sum / count;
-		return Math.round(averageScore * 100) / 100.0;
+		return reviewRepository.getReviewsAverageScoreByBookId(bookId);
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
-	public List<GetBookOrderWithoutReviewResponse> getBooksWithoutReviews(CurrentUserDetails currentUser) {
+	public List<GetBookOrderWithoutReviewResponse> getBooksWithoutReviewsByUserId(CurrentUserDetails currentUser) {
 		Long userId = currentUser != null ? currentUser.getUserId() : null;
-
-		userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-
-		List<BookOrder> bookOrders = bookOrderRepository.findAllByOrder_User_IdAndOrder_OrderStatus_OrderStatusName(
-			userId, "배송 완료");
-
-		List<Review> reviews = reviewRepository.findAllByUserId(userId);
-
-		Set<Long> reviewedOrderListIds = new HashSet<>();
-		for (Review review : reviews) {
-			reviewedOrderListIds.add(review.getBookOrder().getOrderListId());
-		}
-
-		List<BookOrder> bookOrdersWithoutReviews = new ArrayList<>();
-		for (BookOrder bookOrder : bookOrders) {
-			if (!reviewedOrderListIds.contains(bookOrder.getOrderListId())) {
-				bookOrdersWithoutReviews.add(bookOrder);
-			}
-		}
-
-		return bookOrdersWithoutReviews.stream().map(GetBookOrderWithoutReviewResponse::fromEntity).toList();
+		return reviewRepository.getBooksWithoutReviewsByUserId(userId);
 	}
 
 }

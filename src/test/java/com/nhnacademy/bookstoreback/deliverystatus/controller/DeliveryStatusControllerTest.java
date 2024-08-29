@@ -56,7 +56,7 @@ class DeliveryStatusControllerTest {
 		List<GetDeliveryStatusResponse> responses = Collections.singletonList(getDeliveryStatusResponse);
 		when(deliveryStatusService.getDeliveryStatuses()).thenReturn(responses);
 
-		mockMvc.perform(get("/api/deliveryStatuses"))
+		mockMvc.perform(get("/api/delivery-statuses"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].deliveryStatusId").value(1L))
 			.andExpect(jsonPath("$[0].deliveryStatusName").value("Shipped"));
@@ -66,7 +66,7 @@ class DeliveryStatusControllerTest {
 	void testGetDeliveryStatus() throws Exception {
 		when(deliveryStatusService.getDeliveryStatus(anyLong())).thenReturn(getDeliveryStatusResponse);
 
-		mockMvc.perform(get("/api/deliveryStatuses/1"))
+		mockMvc.perform(get("/api/delivery-statuses/1"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.deliveryStatusId").value(1L))
 			.andExpect(jsonPath("$.deliveryStatusName").value("Shipped"));
@@ -76,7 +76,7 @@ class DeliveryStatusControllerTest {
 	void testCreateDeliveryStatus() throws Exception {
 		doNothing().when(deliveryStatusService).createDeliveryStatus(any(CreateDeliveryStatusRequest.class));
 
-		mockMvc.perform(post("/api/deliveryStatuses")
+		mockMvc.perform(post("/api/delivery-statuses")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(createDeliveryStatusRequest)))
 			.andExpect(status().isCreated());
@@ -86,7 +86,7 @@ class DeliveryStatusControllerTest {
 	void testUpdateDeliveryStatus() throws Exception {
 		doNothing().when(deliveryStatusService).updateDeliveryStatus(anyLong(), any(UpdateDeliveryStatusRequest.class));
 
-		mockMvc.perform(put("/api/deliveryStatuses/1")
+		mockMvc.perform(put("/api/delivery-statuses/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateDeliveryStatusRequest)))
 			.andExpect(status().isOk());
@@ -96,7 +96,7 @@ class DeliveryStatusControllerTest {
 	void testDeleteDeliveryStatus() throws Exception {
 		doNothing().when(deliveryStatusService).deleteDeliveryStatus(anyLong());
 
-		mockMvc.perform(delete("/api/deliveryStatuses/1"))
+		mockMvc.perform(delete("/api/delivery-statuses/1"))
 			.andExpect(status().isOk());
 	}
 }

@@ -5,8 +5,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,20 +46,10 @@ class PublisherControllerTest {
 	}
 
 	@Test
-	void testGetPublishers() throws Exception {
-		when(publisherService.getPublishers()).thenReturn(List.of(publisherDto));
-
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/publishers")
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(MockMvcResultMatchers.jsonPath("$[0].publisherName").value("Test Publisher"));
-	}
-
-	@Test
 	void testGetPublishersWithPagination() throws Exception {
 		when(publisherService.getPublishers(any())).thenReturn(Page.empty());
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/publishers/page")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/publishers")
 				.param("page", "1")
 				.param("size", "10")
 				.contentType(MediaType.APPLICATION_JSON))

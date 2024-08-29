@@ -1,7 +1,5 @@
 package com.nhnacademy.bookstoreback.publisher.service.impl;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,15 +29,6 @@ public class PublisherServiceImpl implements PublisherService {
 	public Publisher findOrCreatePublisher(String publisherName) {
 		return publisherRepository.findByPublisherName(publisherName)
 			.orElseGet(() -> publisherRepository.save(new Publisher(publisherName)));
-	}
-
-	/**
-	 *{@inheritDoc}
-	 */
-	@Transactional(readOnly = true)
-	@Override
-	public List<PublisherDto> getPublishers() {
-		return publisherRepository.findAll().stream().map(PublisherDto::fromEntity).toList();
 	}
 
 	/**
