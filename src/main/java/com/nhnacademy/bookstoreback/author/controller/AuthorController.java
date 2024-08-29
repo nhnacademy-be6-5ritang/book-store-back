@@ -1,7 +1,5 @@
 package com.nhnacademy.bookstoreback.author.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -39,23 +37,6 @@ public class AuthorController {
 	private final AuthorServiceImpl authorService;
 
 	/**
-	 * 모든 저자 정보를 조회합니다.
-	 *
-	 * @return 모든 저자 정보 리스트
-	 */
-	@Operation(
-		summary = "저자 리스트 조회",
-		description = "모든 저자 리스트를 조회 합니다"
-	)
-	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "모든 저자 리스트가 성공적으로 조회 되었습니다."),
-	})
-	@GetMapping
-	public ResponseEntity<List<AuthorDto>> getAuthors() {
-		return ResponseEntity.status(HttpStatus.OK).body(authorService.getAuthors());
-	}
-
-	/**
 	 * 페이징 처리된 저자 정보를 조회합니다.
 	 *
 	 * @param pageable 페이지 정보
@@ -68,7 +49,7 @@ public class AuthorController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "모든 저자 페이지가 성공적으로 조회 되었습니다."),
 	})
-	@GetMapping("/page")
+	@GetMapping
 	public ResponseEntity<Page<AuthorDto>> getAuthors(@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(authorService.getAuthors(pageable));
 	}

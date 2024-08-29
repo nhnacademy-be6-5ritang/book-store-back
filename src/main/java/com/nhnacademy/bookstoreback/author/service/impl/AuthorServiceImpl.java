@@ -1,6 +1,5 @@
 package com.nhnacademy.bookstoreback.author.service.impl;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -36,15 +35,6 @@ public class AuthorServiceImpl implements AuthorService {
 	public Author findOrCreateAuthor(String authorName) {
 		Optional<Author> optionalAuthor = authorRepository.findByAuthorName(authorName);
 		return optionalAuthor.orElseGet(() -> authorRepository.save(Author.builder().authorName(authorName).build()));
-	}
-
-	/**
-	 *{@inheritDoc}
-	 */
-	@Transactional(readOnly = true)
-	@Override
-	public List<AuthorDto> getAuthors() {
-		return authorRepository.findAll().stream().map(AuthorDto::fromEntity).toList();
 	}
 
 	/**

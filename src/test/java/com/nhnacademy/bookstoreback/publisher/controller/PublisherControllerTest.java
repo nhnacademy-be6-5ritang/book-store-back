@@ -5,8 +5,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,16 +43,6 @@ class PublisherControllerTest {
 	void setUp() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 		publisherDto = new PublisherDto(1L, "Test Publisher");
-	}
-
-	@Test
-	void testGetPublishers() throws Exception {
-		when(publisherService.getPublishers()).thenReturn(List.of(publisherDto));
-
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/publishers")
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(MockMvcResultMatchers.jsonPath("$[0].publisherName").value("Test Publisher"));
 	}
 
 	@Test
