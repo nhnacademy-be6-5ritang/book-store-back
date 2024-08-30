@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.InstanceInfo;
-import com.nhnacademy.bookstoreback.auth.annotation.AuthorizeRole;
 import com.nhnacademy.bookstoreback.eureka.actuator.ApplicationStatus;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +36,6 @@ public class ApplicationStatusController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "애플리케이션 상태가 성공적으로 DOWN 으로 설정되었습니다."),
 	})
-	@AuthorizeRole({"HEAD_ADMIN"})
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.OK)
 	public void stopStatus() {
