@@ -1,13 +1,12 @@
 package com.nhnacademy.bookstoreback.user.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import com.nhnacademy.bookstoreback.user.domain.entity.User;
 
@@ -16,14 +15,9 @@ import com.nhnacademy.bookstoreback.user.domain.entity.User;
  * 사용자 정보에 대한 데이터 액세스를 제공하는 레포지토리 인터페이스입니다.
  */
 public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
+	@EntityGraph(attributePaths = {"userRoles.role"})
 	@Query("SELECT u FROM User u")
-	Page<User> findAllWithPagination(Pageable pageable);
-
-	@Query("SELECT u FROM User u "
-		+ "LEFT JOIN FETCH u.userRoles ur "
-		+ "LEFT JOIN FETCH ur.role r "
-		+ "WHERE u IN :users")
-	List<User> findUsersWithRoles(@Param("users") List<User> users);
+	Page<User> findAllWithRoles(Pageable pageable);
 
 	/**
 	 * 주어진 이메일 주소로 사용자 존재 여부를 확인합니다.
