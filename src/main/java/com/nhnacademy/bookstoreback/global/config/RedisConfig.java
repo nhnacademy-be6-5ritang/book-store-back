@@ -10,24 +10,21 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import com.nhnacademy.bookstoreback.keymanager.property.RedisProperty;
-import com.nhnacademy.bookstoreback.keymanager.service.KeyManagerService;
 
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
 public class RedisConfig {
-	private final KeyManagerService keyManagerService;
 	private final RedisProperty redisProperty;
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-		redisStandaloneConfiguration.setHostName(keyManagerService.getSecret(redisProperty.getHost()));
-		redisStandaloneConfiguration.setPort(Integer.parseInt(keyManagerService.getSecret(redisProperty.getPort())));
-		redisStandaloneConfiguration.setPassword(keyManagerService.getSecret(redisProperty.getPassword()));
-		redisStandaloneConfiguration.setDatabase(
-			Integer.parseInt(keyManagerService.getSecret(redisProperty.getAuthDatabase())));
+		redisStandaloneConfiguration.setHostName(redisProperty.getHost());
+		redisStandaloneConfiguration.setPort(Integer.parseInt(redisProperty.getPort()));
+		redisStandaloneConfiguration.setPassword(redisProperty.getPassword());
+		redisStandaloneConfiguration.setDatabase(Integer.parseInt(redisProperty.getAuthDatabase()));
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}
 

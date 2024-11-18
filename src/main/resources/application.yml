@@ -58,17 +58,17 @@ logging:
 
 oritang:
   mysql:
-    url: 073309ef26b34581afc19feb7720380e
-    username: 7d697c13adf84236b7ca5ea60870ff9c
-    password: 4766eb1428334444b8a10ce26bd980e8
+    url: jdbc:mysql://localhost:3306/oritang
+    username: monte
+    password: 1234
 
   redis:
-    host: 4c4a07c6d57c41cba23cf12de6c87559
-    port: 0de6a31493de4282830c2dab83e7264c
-    password: d9b767e1131b4434b75d1fb52444ee1e
-    auth-database: d5311ac7b1164c6ea75202fc8d14085f
-    cart-database: 1d9b2f3612464cefae798e5493f0cc08
-    back-cache-database: dbc79c2930f24d83b8029f527ac63998
+    host: localhost
+    port: 6379
+    password: ""
+    auth-database: 2
+    cart-database: 3
+    back-cache-database: 4
 
   image-manager:
     app-key: a9515465ff8d4a4ca708cdb2d0e80559
