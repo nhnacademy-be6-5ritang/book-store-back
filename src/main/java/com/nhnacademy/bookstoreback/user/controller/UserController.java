@@ -212,8 +212,10 @@ public class UserController {
 	})
 	@GetMapping
 	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
-	public ResponseEntity<Page<GetUserInfoResponse>> getUsers(@PageableDefault(size = 10) Pageable pageable) {
+	public ResponseEntity<Page<GetUserInfoResponse>> getUsers(@PageableDefault Pageable pageable) {
+		log.info("getUsers 컨트롤러 실행");
 		Page<GetUserInfoResponse> getUserInfoResponses = userService.getUsers(pageable);
+		log.info("getUsers 컨트롤러 종료");
 		return ResponseEntity.status(HttpStatus.OK).body(getUserInfoResponses);
 	}
 
@@ -233,7 +235,9 @@ public class UserController {
 	@GetMapping("/self")
 	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<GetMyUserInfoResponse> getMyUserInfo(@CurrentUser CurrentUserDetails currentUser) {
+		log.info("getMyUserInfo 컨트롤러 실행");
 		GetMyUserInfoResponse getMyUserInfoResponse = userService.getMyUserInfo(currentUser);
+		log.info("getMyUserInfo 컨트롤러 종료");
 		return ResponseEntity.status(HttpStatus.OK).body(getMyUserInfoResponse);
 	}
 
@@ -316,8 +320,9 @@ public class UserController {
 	@GetMapping("/self/total-order-price")
 	@AuthorizeRole({"MEMBER", "MEMBER_ADMIN", "HEAD_ADMIN"})
 	public ResponseEntity<BigDecimal> getTotalOrderPrice(@CurrentUser CurrentUserDetails currentUser) {
+		log.info("getTotalOrderPrice 컨트롤러 실행");
 		BigDecimal totalPaymentAmount = orderService.getTotalOrderPrice(currentUser);
-
+		log.info("getTotalOrderPrice 컨트롤러 종료");
 		return ResponseEntity.status(HttpStatus.OK).body(totalPaymentAmount);
 	}
 

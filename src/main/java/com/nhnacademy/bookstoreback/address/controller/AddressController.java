@@ -29,11 +29,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author 김태환
  * 주소 관련 HTTP 요청을 처리하는 컨트롤러입니다.
  */
+@Slf4j
 @Tag(name = "Address", description = "주소 관리 API")
 @RestController
 @RequiredArgsConstructor
@@ -104,7 +106,9 @@ public class AddressController {
 	)
 	@GetMapping("/default")
 	public ResponseEntity<Optional<GetAddressResponse>> getDefaultAddress(@CurrentUser CurrentUserDetails currentUser) {
+		log.info("getDefaultAddress 컨트롤러 실행");
 		Optional<GetAddressResponse> address = addressService.getDefaultAddress(currentUser);
+		log.info("getDefaultAddress 컨트롤러 종료");
 		return ResponseEntity.status(HttpStatus.OK).body(address);
 	}
 
