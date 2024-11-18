@@ -2,7 +2,6 @@ package com.nhnacademy.bookstoreback.usergrade.service;
 
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +49,6 @@ public class UserGradeService {
 	 *
 	 * @return 사용자 등급 응답 DTO 목록
 	 */
-	@Cacheable(cacheNames = "userGradesCache", key = "'userGrades'", unless = "#result.isEmpty()")
 	public List<GetUserGradeResponse> getUserGrades() {
 		List<UserGrade> userGrades = userGradeRepository.findAll();
 		return userGrades.stream()

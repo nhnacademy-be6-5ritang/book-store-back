@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.nhnacademy.bookstoreback.keymanager.property.MysqlProperty;
-import com.nhnacademy.bookstoreback.keymanager.service.KeyManagerService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MysqlConfig {
 	private final MysqlProperty mysqlProperty;
-	private final KeyManagerService keyManagerService;
 
 	@Bean
 	public DataSource dataSource() {
@@ -23,9 +21,9 @@ public class MysqlConfig {
 
 		basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-		basicDataSource.setUrl(keyManagerService.getSecret(mysqlProperty.getUrl()));
-		basicDataSource.setUsername(keyManagerService.getSecret(mysqlProperty.getUsername()));
-		basicDataSource.setPassword(keyManagerService.getSecret(mysqlProperty.getPassword()));
+		basicDataSource.setUrl(mysqlProperty.getUrl());
+		basicDataSource.setUsername(mysqlProperty.getUsername());
+		basicDataSource.setPassword(mysqlProperty.getPassword());
 
 		basicDataSource.setInitialSize(50);    // 초기로 생성할 연결의 수를 설정합니다.
 		basicDataSource.setMaxTotal(50);        // 풀에서 유지할 수 있는 최대 연결 수를 설정합니다.

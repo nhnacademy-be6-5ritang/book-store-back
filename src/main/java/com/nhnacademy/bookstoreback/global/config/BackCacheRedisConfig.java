@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.nhnacademy.bookstoreback.keymanager.property.RedisProperty;
-import com.nhnacademy.bookstoreback.keymanager.service.KeyManagerService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,17 +33,16 @@ import lombok.RequiredArgsConstructor;
 @EnableRedisRepositories(basePackages = {"com.nhnacademy.bookstoreback.user", "com.nhnacademy.bookstoreback.address",
 	"com.nhnacademy.bookstoreback.usergrade"}, redisTemplateRef = "backCacheRedisTemplate")
 public class BackCacheRedisConfig {
-	private final KeyManagerService keyManagerService;
 	private final RedisProperty redisProperty;
 
 	@Bean("backCacheRedisConnectionFactory")
 	public RedisConnectionFactory backCacheRedisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-		redisStandaloneConfiguration.setHostName(keyManagerService.getSecret(redisProperty.getHost()));
-		redisStandaloneConfiguration.setPort(Integer.parseInt(keyManagerService.getSecret(redisProperty.getPort())));
-		redisStandaloneConfiguration.setPassword(keyManagerService.getSecret(redisProperty.getPassword()));
+		redisStandaloneConfiguration.setHostName(redisProperty.getHost());
+		redisStandaloneConfiguration.setPort(Integer.parseInt(redisProperty.getPort()));
+		redisStandaloneConfiguration.setPassword(redisProperty.getPassword());
 		redisStandaloneConfiguration.setDatabase(
-			Integer.parseInt(keyManagerService.getSecret(redisProperty.getBackCacheDatabase())));
+			Integer.parseInt(redisProperty.getBackCacheDatabase()));
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}
 

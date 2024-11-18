@@ -27,11 +27,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author 김태환
  * 사용자 등급 관리 HTTP 요청을 처리하는 컨트롤러입니다.
  */
+@Slf4j
 @Tag(name = "UserGrade", description = "사용자 등급 API")
 @RestController
 @RequestMapping("/api/user-grades")
@@ -60,7 +62,7 @@ public class UserGradeController {
 		CreateUserGradeResponse createUserGradeResponse = userGradeService.createUserGrade(createUserGradeRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createUserGradeResponse);
 	}
-	
+
 	/**
 	 * 모든 사용자 등급 정보를 조회합니다.
 	 *
@@ -75,7 +77,9 @@ public class UserGradeController {
 	})
 	@GetMapping
 	public ResponseEntity<List<GetUserGradeResponse>> getUserGrades() {
+		log.info("getUserGrades() 컨트롤러 실행");
 		List<GetUserGradeResponse> getUserGradeResponses = userGradeService.getUserGrades();
+		log.info("getUserGrades() 컨트롤러 종료");
 		return ResponseEntity.status(HttpStatus.OK).body(getUserGradeResponses);
 	}
 
