@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Objects;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -289,8 +289,15 @@ public class UserService {
 		int page = pageable.getPageNumber() > 0 ? pageable.getPageNumber() - 1 : 0;
 		int size = pageable.isPaged() && pageable.getPageSize() > 0 ? pageable.getPageSize() : 10;
 
-		return userRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")))
-			.map(GetUserInfoResponse::fromEntity);
+		Page<User> pagedUsers = userRepository.findAllWithPagination(PageRequest.of(page, size, pageable.getSort()));
+		List<User> usersWithRoles = userRepository.findUsersWithRoles(pagedUsers.getContent());
+
+		List<GetUserInfoResponse> userInfoResponses = usersWithRoles.stream()
+			.map(GetUserInfoResponse::fromEntity)
+			.toList();
+
+		return new PageImpl<>(userInfoResponses, PageRequest.of(page, size, pageable.getSort()),
+			pagedUsers.getTotalElements());
 	}
 
 	/**

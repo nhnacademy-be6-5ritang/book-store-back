@@ -212,8 +212,10 @@ public class UserController {
 	})
 	@GetMapping
 	@AuthorizeRole({"MEMBER_ADMIN", "HEAD_ADMIN"})
-	public ResponseEntity<Page<GetUserInfoResponse>> getUsers(@PageableDefault(size = 10) Pageable pageable) {
+	public ResponseEntity<Page<GetUserInfoResponse>> getUsers(@PageableDefault Pageable pageable) {
+		log.info("getUsers 컨트롤러 실행");
 		Page<GetUserInfoResponse> getUserInfoResponses = userService.getUsers(pageable);
+		log.info("getUsers 컨트롤러 종료");
 		return ResponseEntity.status(HttpStatus.OK).body(getUserInfoResponses);
 	}
 
