@@ -46,6 +46,7 @@ import com.nhnacademy.bookstoreback.user.exception.UserNotFoundException;
 import com.nhnacademy.bookstoreback.user.repository.UserRepository;
 import com.nhnacademy.bookstoreback.usergrade.domain.entity.UserGrade;
 import com.nhnacademy.bookstoreback.usergrade.repository.UserGradeRepository;
+import com.nhnacademy.bookstoreback.userrole.domain.entity.UserRole;
 import com.nhnacademy.bookstoreback.userrole.exception.UserHasRoleAlreadyException;
 import com.nhnacademy.bookstoreback.userrole.repository.UserRoleRepository;
 import com.nhnacademy.bookstoreback.userstatus.domain.entity.UserStatus;
@@ -373,25 +374,32 @@ class UserServiceTest {
 
 	@Test
 	void testGetUsers() {
-		Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+		// Pageable 설정
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
 
+		// Mock User 데이터 생성
 		List<User> userList = IntStream.range(0, 10)
 			.mapToObj(i -> User.builder()
 				.id((long)i)
 				.name("User " + i)
 				.email("user" + i + "@example.com")
 				.createdAt(LocalDateTime.now().minusDays(i))
-				.status(userStatus)
-				.userGrade(userGrade)
+				.status(userStatus) // userStatus는 테스트 데이터로 초기화 필요
+				.userGrade(userGrade) // userGrade도 초기화 필요
+				.userRoles(List.of(UserRole.builder().role(Role.builder().roleName("ROLE_USER").build()).build()))
 				.build())
 			.collect(Collectors.toList());
 
+		// Mock Page 객체 생성
 		PageImpl<User> userPage = new PageImpl<>(userList, pageable, 20);
 
-		when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
+		// findAllWithRoles Mocking
+		when(userRepository.findAllWithRoles(any(Pageable.class))).thenReturn(userPage);
 
+		// 테스트 실행
 		Page<GetUserInfoResponse> result = userService.getUsers(pageable);
 
+		// 검증
 		assertThat(result).isNotNull();
 		assertThat(result.getContent().size()).isEqualTo(10);
 		assertThat(result.getContent().get(0).name()).isEqualTo("User 0");
