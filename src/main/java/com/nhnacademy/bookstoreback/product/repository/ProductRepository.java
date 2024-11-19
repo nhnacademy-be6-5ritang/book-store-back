@@ -37,6 +37,14 @@ public interface ProductRepository {
 	List<GetProductSimpleResponse> getNewestBooks();
 
 	/**
+	 * 10권 목록 중 빈 권수 만큼 목록을 조회합니다.
+	 *
+	 * @param limit    조회할 도서의 수
+	 * @return 무작위 도서 {@link GetProductSimpleResponse} 객체의 리스트를 반환합니다.
+	 */
+	List<GetProductSimpleResponse> getRandomBooks(int limit);
+
+	/**
 	 * 지정된 카테고리에 해당하는 상품 목록을 조회합니다.
 	 *
 	 * @param pageable     페이지 정보와 정렬 기준을 포함하는 객체

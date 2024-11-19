@@ -25,19 +25,43 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<GetProductSimpleResponse> getBestSellerBooks() {
-		return productRepository.getBestSellerBooks();
+		List<GetProductSimpleResponse> bestSellerBooks = productRepository.getBestSellerBooks();
+
+		int requiredBooks = 10 - bestSellerBooks.size();
+		if (requiredBooks > 0) {
+			List<GetProductSimpleResponse> randomBooks = productRepository.getRandomBooks(requiredBooks);
+			bestSellerBooks.addAll(randomBooks);
+		}
+
+		return bestSellerBooks;
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public List<GetProductSimpleResponse> getLikesBooks() {
-		return productRepository.getLikesBooks();
+		List<GetProductSimpleResponse> likesBooks = productRepository.getLikesBooks();
+
+		int requiredBooks = 10 - likesBooks.size();
+		if (requiredBooks > 0) {
+			List<GetProductSimpleResponse> randomBooks = productRepository.getRandomBooks(requiredBooks);
+			likesBooks.addAll(randomBooks);
+		}
+
+		return likesBooks;
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public List<GetProductSimpleResponse> getNewestBooks() {
-		return productRepository.getNewestBooks();
+		List<GetProductSimpleResponse> newestBooks = productRepository.getNewestBooks();
+
+		int requiredBooks = 10 - newestBooks.size();
+		if (requiredBooks > 0) {
+			List<GetProductSimpleResponse> randomBooks = productRepository.getRandomBooks(requiredBooks);
+			newestBooks.addAll(randomBooks);
+		}
+
+		return newestBooks;
 	}
 
 	@Transactional(readOnly = true)
