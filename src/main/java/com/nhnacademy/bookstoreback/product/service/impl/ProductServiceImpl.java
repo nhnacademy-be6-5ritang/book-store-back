@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.product.service.impl;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Transactional(readOnly = true)
 	@Override
+	@Cacheable(value = "bestSellerBooksCached", key = "'bestSellerBooks'")
 	public List<GetProductSimpleResponse> getBestSellerBooks() {
 		List<GetProductSimpleResponse> bestSellerBooks = productRepository.getBestSellerBooks();
 
@@ -38,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Transactional(readOnly = true)
 	@Override
+	@Cacheable(value = "likesBooksCached", key = "'likesBooks'")
 	public List<GetProductSimpleResponse> getLikesBooks() {
 		List<GetProductSimpleResponse> likesBooks = productRepository.getLikesBooks();
 
@@ -52,6 +55,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Transactional(readOnly = true)
 	@Override
+	@Cacheable(value = "newestBooksCached", key = "'newestBooks'")
 	public List<GetProductSimpleResponse> getNewestBooks() {
 		List<GetProductSimpleResponse> newestBooks = productRepository.getNewestBooks();
 

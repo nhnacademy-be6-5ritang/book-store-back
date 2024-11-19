@@ -14,5 +14,6 @@ public class RedisProperty {
 	private String password;
 	private String authDatabase;
 	private String cartDatabase;
-	private String backCacheDatabase;
+
+	private String bookCacheDatabase;
 }
