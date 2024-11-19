@@ -68,7 +68,7 @@ oritang:
     password: ""
     auth-database: 2
     cart-database: 3
-    back-cache-database: 4
+    book-cache-database: 5
 
   image-manager:
     app-key: a9515465ff8d4a4ca708cdb2d0e80559

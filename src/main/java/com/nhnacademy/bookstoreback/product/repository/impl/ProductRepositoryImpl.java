@@ -106,6 +106,25 @@ public class ProductRepositoryImpl implements ProductRepository {
 			.fetch();
 	}
 
+	@Override
+	public List<GetProductSimpleResponse> getRandomBooks(int limit) {
+		return queryFactory
+			.select(Projections.constructor(
+				GetProductSimpleResponse.class,
+				book.bookId,
+				book.author.authorName,
+				book.bookTitle,
+				book.bookPrice,
+				book.bookSalePrice,
+				book.bookSalePercent,
+				image.imageUrl))
+			.from(book)
+			.leftJoin(bookImage).on(book.eq(bookImage.book))
+			.orderBy(Expressions.stringTemplate("function('RAND')").asc())
+			.limit(limit)
+			.fetch();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

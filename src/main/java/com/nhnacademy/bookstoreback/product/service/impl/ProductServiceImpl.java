@@ -2,6 +2,7 @@ package com.nhnacademy.bookstoreback.product.service.impl;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,20 +25,47 @@ public class ProductServiceImpl implements ProductService {
 
 	@Transactional(readOnly = true)
 	@Override
+	@Cacheable(value = "bestSellerBooksCached", key = "'bestSellerBooks'")
 	public List<GetProductSimpleResponse> getBestSellerBooks() {
-		return productRepository.getBestSellerBooks();
+		List<GetProductSimpleResponse> bestSellerBooks = productRepository.getBestSellerBooks();
+
+		int requiredBooks = 10 - bestSellerBooks.size();
+		if (requiredBooks > 0) {
+			List<GetProductSimpleResponse> randomBooks = productRepository.getRandomBooks(requiredBooks);
+			bestSellerBooks.addAll(randomBooks);
+		}
+
+		return bestSellerBooks;
 	}
 
 	@Transactional(readOnly = true)
 	@Override
+	@Cacheable(value = "likesBooksCached", key = "'likesBooks'")
 	public List<GetProductSimpleResponse> getLikesBooks() {
-		return productRepository.getLikesBooks();
+		List<GetProductSimpleResponse> likesBooks = productRepository.getLikesBooks();
+
+		int requiredBooks = 10 - likesBooks.size();
+		if (requiredBooks > 0) {
+			List<GetProductSimpleResponse> randomBooks = productRepository.getRandomBooks(requiredBooks);
+			likesBooks.addAll(randomBooks);
+		}
+
+		return likesBooks;
 	}
 
 	@Transactional(readOnly = true)
 	@Override
+	@Cacheable(value = "newestBooksCached", key = "'newestBooks'")
 	public List<GetProductSimpleResponse> getNewestBooks() {
-		return productRepository.getNewestBooks();
+		List<GetProductSimpleResponse> newestBooks = productRepository.getNewestBooks();
+
+		int requiredBooks = 10 - newestBooks.size();
+		if (requiredBooks > 0) {
+			List<GetProductSimpleResponse> randomBooks = productRepository.getRandomBooks(requiredBooks);
+			newestBooks.addAll(randomBooks);
+		}
+
+		return newestBooks;
 	}
 
 	@Transactional(readOnly = true)

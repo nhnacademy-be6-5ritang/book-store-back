@@ -30,42 +30,30 @@ import lombok.RequiredArgsConstructor;
 @CacheConfig
 @Configuration
 @RequiredArgsConstructor
-@EnableRedisRepositories(basePackages = {"com.nhnacademy.bookstoreback.user", "com.nhnacademy.bookstoreback.address",
-	"com.nhnacademy.bookstoreback.usergrade"}, redisTemplateRef = "backCacheRedisTemplate")
-public class BackCacheRedisConfig {
+@EnableRedisRepositories(basePackages = {
+	"com.nhnacademy.bookstoreback.product"}, redisTemplateRef = "bookCacheRedisTemplate")
+public class BookCacheRedisConfig {
 	private final RedisProperty redisProperty;
 
-	@Bean("backCacheRedisConnectionFactory")
-	public RedisConnectionFactory backCacheRedisConnectionFactory() {
+	@Bean("bookCacheRedisConnectionFactory")
+	public RedisConnectionFactory bookCacheRedisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
 		redisStandaloneConfiguration.setHostName(redisProperty.getHost());
 		redisStandaloneConfiguration.setPort(Integer.parseInt(redisProperty.getPort()));
 		redisStandaloneConfiguration.setPassword(redisProperty.getPassword());
 		redisStandaloneConfiguration.setDatabase(
-			Integer.parseInt(redisProperty.getBackCacheDatabase()));
+			Integer.parseInt(redisProperty.getBookCacheDatabase()));
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}
 
-	@Bean("backCacheRedisTemplate")
-	public RedisTemplate<String, Object> backCacheRedisTemplate(
-		@Qualifier("backCacheRedisConnectionFactory") RedisConnectionFactory redisConnectionFactory) {
+	@Bean("bookCacheRedisTemplate")
+	public RedisTemplate<String, Object> bookCacheRedisTemplate(
+		@Qualifier("bookCacheRedisConnectionFactory") RedisConnectionFactory redisConnectionFactory) {
 		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
 		redisTemplate.setConnectionFactory(redisConnectionFactory);
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
 
-		BasicPolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
-			.allowIfSubType(Object.class)
-			.build();
-
-		ObjectMapper objectMapper = new ObjectMapper()
-			.activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY)
-			.registerModule(new JavaTimeModule())
-			.registerModule(new ParameterNamesModule())
-			.setDefaultTyping(new StdTypeResolverBuilder()
-				.init(JsonTypeInfo.Id.CLASS, null)
-				.inclusion(JsonTypeInfo.As.PROPERTY));
-
-		GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+		GenericJackson2JsonRedisSerializer serializer = getSerializer();
 
 		redisTemplate.setValueSerializer(serializer);
 		redisTemplate.setHashKeySerializer(new StringRedisSerializer());
@@ -75,7 +63,23 @@ public class BackCacheRedisConfig {
 
 	@Bean
 	public RedisCacheManager redisCacheManager(
-		@Qualifier("backCacheRedisConnectionFactory") RedisConnectionFactory connectionFactory) {
+		@Qualifier("bookCacheRedisConnectionFactory") RedisConnectionFactory connectionFactory) {
+
+		GenericJackson2JsonRedisSerializer serializer = getSerializer();
+
+		RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
+			.entryTtl(Duration.ofDays(1))
+			.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+			.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
+
+		return RedisCacheManager
+			.RedisCacheManagerBuilder
+			.fromConnectionFactory(connectionFactory)
+			.cacheDefaults(configuration)
+			.build();
+	}
+
+	private GenericJackson2JsonRedisSerializer getSerializer() {
 		BasicPolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
 			.allowIfSubType(Object.class)
 			.build();
@@ -88,17 +92,6 @@ public class BackCacheRedisConfig {
 				.init(JsonTypeInfo.Id.CLASS, null)
 				.inclusion(JsonTypeInfo.As.PROPERTY));
 
-		GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
-
-		RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
-			.entryTtl(Duration.ofMinutes(10))
-			.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-			.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
-
-		return RedisCacheManager
-			.RedisCacheManagerBuilder
-			.fromConnectionFactory(connectionFactory)
-			.cacheDefaults(configuration)
-			.build();
+		return new GenericJackson2JsonRedisSerializer(objectMapper);
 	}
 }

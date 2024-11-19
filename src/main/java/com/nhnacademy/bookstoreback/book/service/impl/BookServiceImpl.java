@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -89,6 +90,7 @@ public class BookServiceImpl implements BookService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@CacheEvict(cacheNames = "newestBooksCached", key = "'newestBooks'")
 	public void fetchAndSaveBooks(String apiUrl) {
 		String response = restTemplate.getForObject(apiUrl, String.class);
 
@@ -114,6 +116,7 @@ public class BookServiceImpl implements BookService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@CacheEvict(cacheNames = "newestBooksCached", key = "'newestBooks'")
 	public void saveBookByIsbn(String apiUrl) {
 		try {
 			// API Url 울 이용하여 도서 정보를 조회
@@ -133,6 +136,7 @@ public class BookServiceImpl implements BookService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@CacheEvict(cacheNames = "newestBooksCached", key = "'newestBooks'")
 	public void saveBook(JsonNode item) throws Exception {
 		// Book 정보 파싱
 		String bookIsbn = item.path("isbn13").asText("");
@@ -300,6 +304,7 @@ public class BookServiceImpl implements BookService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@CacheEvict(cacheNames = "newestBooksCached", key = "'newestBooks'")
 	public void updateBookById(Long bookId, UpdateBookRequest request) {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
 		Author author = authorService.findOrCreateAuthor(request.authorName());
@@ -351,6 +356,7 @@ public class BookServiceImpl implements BookService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@CacheEvict(cacheNames = {"newestBooksCached", "likesBooksCached", "bestSellerBooksCached"}, allEntries = true)
 	public void deleteBook(Long bookId) {
 		// 해당 도서가 가지고 있는 카테고리, 태그 이미지, 매핑 정보도 같이 삭제
 		bookCategoryRepository.deleteAllByBookBookId(bookId);
